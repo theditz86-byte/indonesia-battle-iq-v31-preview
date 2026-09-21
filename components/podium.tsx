@@ -1,89 +1,115 @@
 import type { BattleEntry } from "@/lib/battle"
 import { formatScore } from "@/lib/battle"
 
-type Spot = {
-  place: 1 | 2 | 3
-  bodyHeight: string
-  avatarSize: string
+type Visual = {
   crown: string
-  crownSize: string
+  laurel: string
   metal: string
-  bodyGradient: string
+  panel: string
+  iq: string
   glow: string
-  iqColor: string
-  badge: string
+  ring: string
 }
 
-const spots: Record<number, Spot> = {
-  1: { place: 1, bodyHeight: "h-60", avatarSize: "h-28 w-28", crown: "/images/crown-gold.webp", crownSize: "h-16 w-16", metal: "from-yellow-300 via-amber-500 to-amber-700", bodyGradient: "from-amber-50 via-white to-amber-100", glow: "shadow-[0_0_70px_rgba(250,204,21,.45)]", iqColor: "text-amber-600", badge: "from-yellow-300 to-amber-600" },
-  2: { place: 2, bodyHeight: "h-44", avatarSize: "h-24 w-24", crown: "/images/crown-silver.webp", crownSize: "h-12 w-12", metal: "from-slate-200 via-slate-400 to-slate-600", bodyGradient: "from-white via-slate-50 to-slate-200", glow: "shadow-[0_0_45px_rgba(203,213,225,.32)]", iqColor: "text-blue-600", badge: "from-slate-400 to-slate-600" },
-  3: { place: 3, bodyHeight: "h-36", avatarSize: "h-24 w-24", crown: "/images/crown-bronze.webp", crownSize: "h-12 w-12", metal: "from-orange-300 via-orange-600 to-amber-800", bodyGradient: "from-orange-50 via-white to-orange-100", glow: "shadow-[0_0_45px_rgba(251,146,60,.32)]", iqColor: "text-blue-600", badge: "from-orange-400 to-amber-700" },
+const visuals: Record<1|2|3, Visual> = {
+  1: {
+    crown:"/images/crown-gold.svg",
+    laurel:"/images/laurel-gold.svg",
+    metal:"from-[#ffd966] via-[#f6b70a] to-[#c77600]",
+    panel:"from-[#fffdf5] via-[#fffaf0] to-[#fff0bc]",
+    iq:"text-[#d48800]",
+    glow:"shadow-[0_0_38px_rgba(251,191,36,.58)]",
+    ring:"ring-[#ffd34e]"
+  },
+  2: {
+    crown:"/images/crown-silver.svg",
+    laurel:"/images/laurel-silver.svg",
+    metal:"from-[#f8fafc] via-[#b8c7d9] to-[#66768b]",
+    panel:"from-[#ffffff] via-[#f8fbff] to-[#e8eef7]",
+    iq:"text-[#3459e6]",
+    glow:"shadow-[0_0_24px_rgba(203,213,225,.42)]",
+    ring:"ring-[#dbe7f5]"
+  },
+  3: {
+    crown:"/images/crown-bronze.svg",
+    laurel:"/images/laurel-bronze.svg",
+    metal:"from-[#ffc28f] via-[#e97c38] to-[#a33f12]",
+    panel:"from-[#fffaf6] via-[#fff7f1] to-[#ffe8da]",
+    iq:"text-[#3459e6]",
+    glow:"shadow-[0_0_24px_rgba(251,146,60,.42)]",
+    ring:"ring-[#f59b5a]"
+  },
 }
 
-function initials(name?: string) {
-  return (name || "IQ").split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]).join("").toUpperCase() || "IQ"
+function initials(name?:string){
+  return (name||"IQ").trim().split(/\s+/).filter(Boolean).slice(0,2).map(s=>s[0]).join("").toUpperCase() || "IQ"
 }
 
-function Laurel({ place }: { place: 1 | 2 | 3 }) {
-  const tone = place === 1 ? "border-amber-300/80 shadow-[0_0_28px_rgba(250,204,21,.45)]" : place === 2 ? "border-slate-200/80 shadow-[0_0_22px_rgba(226,232,240,.3)]" : "border-orange-300/80 shadow-[0_0_22px_rgba(251,146,60,.3)]"
+function playerAt(entries:BattleEntry[], rank:number){
+  return entries.find(e=>Number(e.national_rank)===rank) || entries[rank-1]
+}
+
+function PlayerHead({place, player}:{place:1|2|3; player?:BattleEntry}){
+  const v=visuals[place]
+  const name=player?.nickname || "Posisi terbuka"
+  const avatarSize=place===1 ? "h-[116px] w-[116px]" : "h-[92px] w-[92px]"
+  const wreathSize=place===1 ? "h-[190px] w-[190px]" : "h-[154px] w-[154px]"
+  const crownSize=place===1 ? "h-[76px] w-[112px] -top-[52px]" : "h-[58px] w-[88px] -top-[38px]"
   return (
-    <div className={`absolute inset-[-18px] rounded-full border-[7px] border-dashed ${tone}`} aria-hidden="true">
-      <div className="absolute inset-2 rounded-full border border-white/20" />
+    <div className={`relative flex ${wreathSize} items-center justify-center`}>
+      <img src={v.laurel} alt="" aria-hidden="true" className="absolute inset-0 h-full w-full object-contain drop-shadow-[0_0_12px_rgba(255,255,255,.18)]"/>
+      <img src={v.crown} alt="" aria-hidden="true" className={`absolute left-1/2 ${crownSize} -translate-x-1/2 object-contain drop-shadow-[0_0_18px_rgba(251,191,36,.55)]`}/>
+      <div className={`relative rounded-full bg-[#06142f] p-[5px] ring-4 ${v.ring} ${v.glow}`}>
+        {player?.avatar_url
+          ? <img src={player.avatar_url} alt={name} className={`${avatarSize} rounded-full object-cover`}/>
+          : <div className={`${avatarSize} flex items-center justify-center rounded-full bg-gradient-to-br from-[#132c5e] to-[#050d20] text-2xl font-black text-white`}>{initials(name)}</div>
+        }
+        <span className={`absolute -bottom-2 left-1/2 flex h-9 w-9 -translate-x-1/2 items-center justify-center rounded-full bg-gradient-to-b ${v.metal} text-sm font-black text-white ring-[4px] ring-[#06142f]`}>{place}</span>
+      </div>
     </div>
   )
 }
 
-function PodiumColumn({ place, player }: { place: 1 | 2 | 3; player?: BattleEntry }) {
-  const s = spots[place]
-  const isChampion = place === 1
-  const name = player?.nickname || "Posisi terbuka"
-  const region = player?.province_name || "Indonesia"
+function PodiumBlock({place, player}:{place:1|2|3; player?:BattleEntry}){
+  const v=visuals[place]
+  const isOne=place===1
+  const infoHeight=isOne ? "h-[150px]" : place===2 ? "h-[124px]" : "h-[112px]"
+  const baseHeight=isOne ? "h-[82px]" : "h-[66px]"
+  const name=player?.nickname || "Posisi terbuka"
+  const region=player?.province_name || "Indonesia"
   return (
-    <div className="flex min-w-0 flex-1 flex-col items-center justify-end">
-      <div className="relative z-20 mb-1 flex flex-col items-center">
-        <img src={s.crown} alt="" aria-hidden="true" className={`absolute -top-12 left-1/2 ${s.crownSize} -translate-x-1/2 object-contain drop-shadow-[0_0_16px_rgba(250,204,21,.55)]`} />
-        <div className="relative">
-          <Laurel place={place} />
-          <div className={`rounded-full bg-gradient-to-br ${s.metal} p-[4px] ${s.glow}`}>
-            <div className="rounded-full bg-slate-950 p-[3px]">
-              {player?.avatar_url ? (
-                <img src={player.avatar_url} alt={name} className={`${s.avatarSize} rounded-full object-cover`} />
-              ) : (
-                <div className={`${s.avatarSize} flex items-center justify-center rounded-full bg-gradient-to-br from-slate-800 to-slate-950 text-xl font-black text-white`}>{initials(name)}</div>
-              )}
-            </div>
-          </div>
-          <span className={`absolute -bottom-3 left-1/2 flex h-9 w-9 -translate-x-1/2 items-center justify-center rounded-full bg-gradient-to-br ${s.badge} text-sm font-black text-white ring-4 ring-slate-950`}>{place}</span>
-        </div>
+    <div className={`flex min-w-0 flex-1 flex-col items-center justify-end ${isOne ? "z-20" : "z-10"}`}>
+      <div className={`${isOne ? "mb-[-7px]" : "mb-[-5px]"}`}>
+        <PlayerHead place={place} player={player}/>
       </div>
-
-      <div className={`relative z-10 mt-5 flex w-full ${s.bodyHeight} flex-col items-center rounded-t-2xl bg-gradient-to-b ${s.bodyGradient} px-2 pb-4 pt-8 text-center text-slate-900 ring-1 ring-white/50 ${s.glow}`}>
-        <p className={`max-w-full truncate font-bold ${isChampion ? "text-base" : "text-sm"}`}>{name}</p>
-        <p className="max-w-full truncate text-xs text-slate-500">{region}</p>
-        <p className={`mt-1 font-black ${s.iqColor} ${isChampion ? "text-3xl" : "text-2xl"}`}>IQ {player?.iq_estimate ?? "—"}</p>
-        <p className="text-xs text-slate-500">{player ? formatScore(player.battle_score) : "0"} poin</p>
+      <div className={`relative w-full overflow-hidden rounded-t-[20px] bg-gradient-to-b ${v.panel} ${infoHeight} px-2 pt-8 text-center text-slate-900 ring-1 ring-white/70 ${v.glow}`}>
+        <div className="absolute inset-x-0 top-0 h-10 bg-gradient-to-b from-white/80 to-transparent"/>
+        <p className={`relative truncate font-extrabold ${isOne ? "text-[17px]" : "text-sm"}`}>{name}</p>
+        <p className="relative mt-1 truncate text-[11px] text-slate-500">{region}</p>
+        <p className={`relative mt-2 font-black ${v.iq} ${isOne ? "text-[30px]" : "text-[23px]"}`}>IQ {player?.iq_estimate ?? "—"}</p>
+        <p className="relative text-[11px] font-medium text-slate-500">{player ? formatScore(player.battle_score) : "0"} poin</p>
       </div>
-
-      <div className={`relative flex h-16 w-full items-center justify-center rounded-b-[26px] bg-gradient-to-b ${s.metal} ${s.glow}`}>
-        <div className="absolute inset-x-4 top-1 h-2 rounded-full bg-white/30 blur-sm" />
-        <span className="relative text-3xl font-black text-slate-900/65">{place}</span>
-        {isChampion && <span className="absolute bottom-1 text-[9px] font-black uppercase tracking-[.25em] text-amber-950/70">Champion</span>}
+      <div className={`relative flex w-full ${baseHeight} items-center justify-center overflow-hidden rounded-b-[18px] bg-gradient-to-b ${v.metal} ${v.glow}`}>
+        <div className="absolute inset-x-4 top-1.5 h-2 rounded-full bg-white/35 blur-[2px]"/>
+        <div className="absolute inset-x-0 bottom-0 h-4 bg-black/15"/>
+        <span className={`${isOne ? "text-[34px]" : "text-[30px]"} font-black text-white drop-shadow`}>{place}</span>
+        {isOne && <span className="absolute bottom-2 text-[9px] font-black uppercase tracking-[.28em] text-[#784a00]">Champion</span>}
       </div>
     </div>
   )
 }
 
-export function Podium({ entries }: { entries: BattleEntry[] }) {
-  const first = entries.find((entry) => Number(entry.national_rank) === 1) || entries[0]
-  const second = entries.find((entry) => Number(entry.national_rank) === 2) || entries[1]
-  const third = entries.find((entry) => Number(entry.national_rank) === 3) || entries[2]
+export function Podium({entries}:{entries:BattleEntry[]}){
+  const first=playerAt(entries,1)
+  const second=playerAt(entries,2)
+  const third=playerAt(entries,3)
   return (
-    <div className="relative">
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 top-1/4 rounded-[40px] bg-[radial-gradient(circle_at_50%_45%,rgba(250,204,21,.18),transparent_55%)] blur-2xl" />
-      <div className="relative flex items-end gap-2 sm:gap-3">
-        <PodiumColumn place={2} player={second} />
-        <PodiumColumn place={1} player={first} />
-        <PodiumColumn place={3} player={third} />
+    <div className="relative mx-auto w-full max-w-[650px]">
+      <div className="pointer-events-none absolute left-1/2 top-[35%] h-[280px] w-[390px] -translate-x-1/2 rounded-full bg-amber-300/18 blur-[70px]"/>
+      <div className="relative grid grid-cols-[.92fr_1.14fr_.92fr] items-end gap-2 sm:gap-3">
+        <PodiumBlock place={2} player={second}/>
+        <PodiumBlock place={1} player={first}/>
+        <PodiumBlock place={3} player={third}/>
       </div>
     </div>
   )
