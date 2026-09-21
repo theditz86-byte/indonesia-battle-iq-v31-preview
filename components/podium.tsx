@@ -1,115 +1,174 @@
 import type { BattleEntry } from "@/lib/battle"
 import { formatScore } from "@/lib/battle"
 
-type Visual = {
+function Sparkle({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className={`${className} motion-safe:animate-[twinkle_1.8s_ease-in-out_infinite]`}>
+      <path d="M12 0c.6 5.4 3 7.8 8.4 8.4-5.4.6-7.8 3-8.4 8.4-.6-5.4-3-7.8-8.4-8.4C9 7.8 11.4 5.4 12 0z" />
+    </svg>
+  )
+}
+
+function LaurelBranch({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 40" fill="currentColor" aria-hidden="true" className={className}>
+      <path d="M13 40C9 30 8 20 12 8c1.5 8 2 20-1 32z" opacity="0.9" />
+      <path d="M12 34c-4-1-6-3-7-7 3 .5 5 2 7 7zM13 28c-4-1-6-3-6-8 3 1 5 3 6 8zM13 21c-3-1-5-4-5-8 3 1 4 4 5 8zM14 15c-3-1-4-4-4-8 3 1 4 4 4 8z" />
+    </svg>
+  )
+}
+
+type PodiumSpot = {
+  place: 1 | 2 | 3
+  bodyHeight: string
+  avatarSize: string
+  laurelSize: string
+  crownSize: string
+  crownOffset: string
   crown: string
   laurel: string
   metal: string
-  panel: string
-  iq: string
+  bodyGradient: string
+  bodyRing: string
+  ringColor: string
   glow: string
-  ring: string
+  badgeGradient: string
+  numberColor: string
 }
 
-const visuals: Record<1|2|3, Visual> = {
+const spots: Record<number, PodiumSpot> = {
   1: {
-    crown:"/images/crown-gold.svg",
-    laurel:"/images/laurel-gold.svg",
-    metal:"from-[#ffd966] via-[#f6b70a] to-[#c77600]",
-    panel:"from-[#fffdf5] via-[#fffaf0] to-[#fff0bc]",
-    iq:"text-[#d48800]",
-    glow:"shadow-[0_0_38px_rgba(251,191,36,.58)]",
-    ring:"ring-[#ffd34e]"
+    place: 1,
+    bodyHeight: "h-48",
+    avatarSize: "h-24 w-24",
+    laurelSize: "h-44 w-44",
+    crownSize: "h-14 w-14",
+    crownOffset: "-top-9",
+    crown: "https://indonesia-battle-iq-ui-update.v0.build/images/crown-gold.png",
+    laurel: "https://indonesia-battle-iq-ui-update.v0.build/images/laurel-gold.png",
+    metal: "from-yellow-300 via-amber-500 to-amber-700",
+    bodyGradient: "from-amber-300 via-amber-500 to-amber-600",
+    bodyRing: "ring-amber-200/70",
+    ringColor: "ring-yellow-300",
+    glow: "shadow-[0_0_70px_-5px_rgba(250,204,21,0.7)]",
+    badgeGradient: "from-yellow-300 to-amber-600",
+    numberColor: "text-amber-900/70",
   },
   2: {
-    crown:"/images/crown-silver.svg",
-    laurel:"/images/laurel-silver.svg",
-    metal:"from-[#f8fafc] via-[#b8c7d9] to-[#66768b]",
-    panel:"from-[#ffffff] via-[#f8fbff] to-[#e8eef7]",
-    iq:"text-[#3459e6]",
-    glow:"shadow-[0_0_24px_rgba(203,213,225,.42)]",
-    ring:"ring-[#dbe7f5]"
+    place: 2,
+    bodyHeight: "h-36",
+    avatarSize: "h-20 w-20",
+    laurelSize: "h-40 w-40",
+    crownSize: "h-11 w-11",
+    crownOffset: "-top-6",
+    crown: "https://indonesia-battle-iq-ui-update.v0.build/images/crown-silver.png",
+    laurel: "https://indonesia-battle-iq-ui-update.v0.build/images/laurel-silver.png",
+    metal: "from-slate-200 via-slate-400 to-slate-600",
+    bodyGradient: "from-slate-300 via-slate-400 to-slate-500",
+    bodyRing: "ring-slate-200/70",
+    ringColor: "ring-slate-200",
+    glow: "shadow-[0_0_45px_-8px_rgba(203,213,225,0.55)]",
+    badgeGradient: "from-slate-400 to-slate-600",
+    numberColor: "text-slate-600/70",
   },
   3: {
-    crown:"/images/crown-bronze.svg",
-    laurel:"/images/laurel-bronze.svg",
-    metal:"from-[#ffc28f] via-[#e97c38] to-[#a33f12]",
-    panel:"from-[#fffaf6] via-[#fff7f1] to-[#ffe8da]",
-    iq:"text-[#3459e6]",
-    glow:"shadow-[0_0_24px_rgba(251,146,60,.42)]",
-    ring:"ring-[#f59b5a]"
+    place: 3,
+    bodyHeight: "h-28",
+    avatarSize: "h-20 w-20",
+    laurelSize: "h-40 w-40",
+    crownSize: "h-11 w-11",
+    crownOffset: "-top-6",
+    crown: "https://indonesia-battle-iq-ui-update.v0.build/images/crown-bronze.png",
+    laurel: "https://indonesia-battle-iq-ui-update.v0.build/images/laurel-bronze.png",
+    metal: "from-orange-300 via-orange-600 to-amber-800",
+    bodyGradient: "from-orange-400 via-orange-500 to-orange-700",
+    bodyRing: "ring-orange-200/70",
+    ringColor: "ring-orange-400",
+    glow: "shadow-[0_0_45px_-8px_rgba(251,146,60,0.55)]",
+    badgeGradient: "from-orange-400 to-amber-700",
+    numberColor: "text-amber-950/60",
   },
 }
 
-function initials(name?:string){
-  return (name||"IQ").trim().split(/\s+/).filter(Boolean).slice(0,2).map(s=>s[0]).join("").toUpperCase() || "IQ"
+function initials(name?: string) {
+  return (name || "IQ").trim().split(/\s+/).filter(Boolean).slice(0, 2).map((v) => v[0]).join("").toUpperCase() || "IQ"
 }
 
-function playerAt(entries:BattleEntry[], rank:number){
-  return entries.find(e=>Number(e.national_rank)===rank) || entries[rank-1]
-}
-
-function PlayerHead({place, player}:{place:1|2|3; player?:BattleEntry}){
-  const v=visuals[place]
-  const name=player?.nickname || "Posisi terbuka"
-  const avatarSize=place===1 ? "h-[116px] w-[116px]" : "h-[92px] w-[92px]"
-  const wreathSize=place===1 ? "h-[190px] w-[190px]" : "h-[154px] w-[154px]"
-  const crownSize=place===1 ? "h-[76px] w-[112px] -top-[52px]" : "h-[58px] w-[88px] -top-[38px]"
+function PodiumColumn({ place, player, className = "" }: { place: 1 | 2 | 3; player?: BattleEntry; className?: string }) {
+  const s = spots[place]
+  const isChampion = place === 1
+  const name = player?.nickname || "Posisi terbuka"
+  const region = player?.province_name || "Indonesia"
   return (
-    <div className={`relative flex ${wreathSize} items-center justify-center`}>
-      <img src={v.laurel} alt="" aria-hidden="true" className="absolute inset-0 h-full w-full object-contain drop-shadow-[0_0_12px_rgba(255,255,255,.18)]"/>
-      <img src={v.crown} alt="" aria-hidden="true" className={`absolute left-1/2 ${crownSize} -translate-x-1/2 object-contain drop-shadow-[0_0_18px_rgba(251,191,36,.55)]`}/>
-      <div className={`relative rounded-full bg-[#06142f] p-[5px] ring-4 ${v.ring} ${v.glow}`}>
-        {player?.avatar_url
-          ? <img src={player.avatar_url} alt={name} className={`${avatarSize} rounded-full object-cover`}/>
-          : <div className={`${avatarSize} flex items-center justify-center rounded-full bg-gradient-to-br from-[#132c5e] to-[#050d20] text-2xl font-black text-white`}>{initials(name)}</div>
-        }
-        <span className={`absolute -bottom-2 left-1/2 flex h-9 w-9 -translate-x-1/2 items-center justify-center rounded-full bg-gradient-to-b ${v.metal} text-sm font-black text-white ring-[4px] ring-[#06142f]`}>{place}</span>
+    <div className={`flex flex-col items-center justify-end ${className}`}>
+      <div className="relative z-20 flex flex-col items-center">
+        {isChampion && (
+          <>
+            <div className="pointer-events-none absolute -top-6 h-32 w-32 rounded-full bg-yellow-400/25 blur-3xl" />
+            <div className="pointer-events-none absolute inset-0 -top-8">
+              <Sparkle className="absolute -left-2 top-2 h-3 w-3 text-yellow-200/90 [animation-delay:0ms]" />
+              <Sparkle className="absolute right-0 top-6 h-4 w-4 text-amber-300/90 [animation-delay:400ms]" />
+              <Sparkle className="absolute -right-3 top-20 h-2.5 w-2.5 text-yellow-100/80 [animation-delay:800ms]" />
+              <Sparkle className="absolute left-0 top-24 h-3 w-3 text-amber-200/80 [animation-delay:1200ms]" />
+            </div>
+          </>
+        )}
+        <div className={`relative flex ${s.laurelSize} items-center justify-center`}>
+          <img src={s.crown} alt="" aria-hidden="true" className={`absolute ${s.crownOffset} left-1/2 ${s.crownSize} -translate-x-1/2 object-contain ${isChampion ? "drop-shadow-[0_0_18px_rgba(250,204,21,0.8)]" : "drop-shadow-[0_4px_10px_rgba(0,0,0,0.5)]"}`} />
+          <img src={s.laurel} alt="" aria-hidden="true" className={`absolute inset-0 ${s.laurelSize} object-contain ${isChampion ? "drop-shadow-[0_0_16px_rgba(250,204,21,0.5)]" : "drop-shadow-[0_4px_12px_rgba(0,0,0,0.45)]"}`} />
+          <div className="relative">
+            <div className={`rounded-full bg-gradient-to-br ${s.metal} p-[3px] ${s.glow}`}>
+              <div className="rounded-full bg-slate-950 p-[2px]">
+                {player?.avatar_url ? (
+                  <img src={player.avatar_url} alt={name} className={`${s.avatarSize} rounded-full object-cover ring-2 ${s.ringColor}/60`} />
+                ) : (
+                  <div className={`${s.avatarSize} flex items-center justify-center rounded-full bg-slate-900 text-xl font-black text-white ring-2 ${s.ringColor}/60`}>{initials(name)}</div>
+                )}
+              </div>
+            </div>
+            <span className={`absolute -bottom-2 left-1/2 flex h-9 w-9 -translate-x-1/2 items-center justify-center rounded-full bg-gradient-to-br ${s.badgeGradient} text-sm font-black text-white shadow-lg ring-4 ring-slate-950`}>{place}</span>
+          </div>
+        </div>
+      </div>
+      <div className={`relative z-10 -mt-6 flex w-full ${s.bodyHeight} flex-col items-center rounded-t-2xl bg-gradient-to-b ${s.bodyGradient} px-3 pb-4 pt-9 text-center ring-1 ${s.bodyRing} ${s.glow}`}>
+        <div className="absolute inset-x-0 top-0 h-1/3 rounded-t-2xl bg-gradient-to-b from-white/45 to-transparent" />
+        <p className={`relative max-w-full truncate font-bold text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.45)] ${isChampion ? "text-base" : "text-sm"}`}>{name}</p>
+        <p className="relative max-w-full truncate text-xs font-medium text-white/85 [text-shadow:0_1px_2px_rgba(0,0,0,0.4)]">{region}</p>
+        <p className={`relative mt-1 font-black text-white [text-shadow:0_2px_6px_rgba(0,0,0,0.45)] ${isChampion ? "text-3xl" : "text-2xl"}`}>IQ <span className="tabular-nums">{player?.iq_estimate ?? "—"}</span></p>
+        <p className="relative text-xs font-medium text-white/85 [text-shadow:0_1px_2px_rgba(0,0,0,0.4)]">{formatScore(player?.battle_score)} poin</p>
+      </div>
+      <div className="relative w-full">
+        <div className="pointer-events-none absolute -bottom-3 left-1/2 h-7 w-[92%] -translate-x-1/2 blur-[6px]" style={{ background: "radial-gradient(closest-side, rgba(0,0,0,0.5), rgba(0,0,0,0.28) 55%, rgba(0,0,0,0) 78%)" }} />
+        <div className={`relative flex ${isChampion ? "h-16" : "h-14"} w-full items-center justify-center overflow-hidden rounded-b-[26px] rounded-t-sm bg-gradient-to-b ${s.metal} ${s.glow}`}>
+          <div className="absolute inset-x-3 top-0.5 h-3 rounded-full bg-white/40 blur-[3px]" />
+          <div className="absolute inset-x-6 top-[3px] h-px bg-white/60" />
+          <div className="absolute -inset-y-2 -left-1/3 w-1/3 rotate-12 bg-gradient-to-r from-transparent via-white/35 to-transparent blur-[2px] motion-safe:animate-[sheen_3.5s_ease-in-out_infinite]" />
+          <div className="absolute inset-x-0 bottom-0 h-5 rounded-b-[26px] bg-gradient-to-t from-black/30 to-transparent" />
+          <div className="absolute inset-y-0 left-0 w-1/5 rounded-bl-[26px] bg-gradient-to-r from-white/25 to-transparent" />
+          <div className="absolute inset-y-0 right-0 w-1/5 rounded-br-[26px] bg-gradient-to-l from-black/25 to-transparent" />
+          {isChampion ? (
+            <div className="relative flex flex-col items-center leading-none">
+              <div className="flex items-center gap-1.5"><LaurelBranch className="h-6 w-4 text-amber-900/70" /><span className={`text-3xl font-black ${s.numberColor}`}>1</span><LaurelBranch className="h-6 w-4 -scale-x-100 text-amber-900/70" /></div>
+              <span className="mt-0.5 text-[9px] font-black uppercase tracking-[0.3em] text-amber-950/70">Champion</span>
+            </div>
+          ) : <span className={`relative text-3xl font-black ${s.numberColor}`}>{place}</span>}
+        </div>
       </div>
     </div>
   )
 }
 
-function PodiumBlock({place, player}:{place:1|2|3; player?:BattleEntry}){
-  const v=visuals[place]
-  const isOne=place===1
-  const infoHeight=isOne ? "h-[150px]" : place===2 ? "h-[124px]" : "h-[112px]"
-  const baseHeight=isOne ? "h-[82px]" : "h-[66px]"
-  const name=player?.nickname || "Posisi terbuka"
-  const region=player?.province_name || "Indonesia"
+export function Podium({ entries }: { entries: BattleEntry[] }) {
+  const first = entries.find((e) => Number(e.national_rank) === 1) || entries[0]
+  const second = entries.find((e) => Number(e.national_rank) === 2) || entries[1]
+  const third = entries.find((e) => Number(e.national_rank) === 3) || entries[2]
   return (
-    <div className={`flex min-w-0 flex-1 flex-col items-center justify-end ${isOne ? "z-20" : "z-10"}`}>
-      <div className={`${isOne ? "mb-[-7px]" : "mb-[-5px]"}`}>
-        <PlayerHead place={place} player={player}/>
-      </div>
-      <div className={`relative w-full overflow-hidden rounded-t-[20px] bg-gradient-to-b ${v.panel} ${infoHeight} px-2 pt-8 text-center text-slate-900 ring-1 ring-white/70 ${v.glow}`}>
-        <div className="absolute inset-x-0 top-0 h-10 bg-gradient-to-b from-white/80 to-transparent"/>
-        <p className={`relative truncate font-extrabold ${isOne ? "text-[17px]" : "text-sm"}`}>{name}</p>
-        <p className="relative mt-1 truncate text-[11px] text-slate-500">{region}</p>
-        <p className={`relative mt-2 font-black ${v.iq} ${isOne ? "text-[30px]" : "text-[23px]"}`}>IQ {player?.iq_estimate ?? "—"}</p>
-        <p className="relative text-[11px] font-medium text-slate-500">{player ? formatScore(player.battle_score) : "0"} poin</p>
-      </div>
-      <div className={`relative flex w-full ${baseHeight} items-center justify-center overflow-hidden rounded-b-[18px] bg-gradient-to-b ${v.metal} ${v.glow}`}>
-        <div className="absolute inset-x-4 top-1.5 h-2 rounded-full bg-white/35 blur-[2px]"/>
-        <div className="absolute inset-x-0 bottom-0 h-4 bg-black/15"/>
-        <span className={`${isOne ? "text-[34px]" : "text-[30px]"} font-black text-white drop-shadow`}>{place}</span>
-        {isOne && <span className="absolute bottom-2 text-[9px] font-black uppercase tracking-[.28em] text-[#784a00]">Champion</span>}
-      </div>
-    </div>
-  )
-}
-
-export function Podium({entries}:{entries:BattleEntry[]}){
-  const first=playerAt(entries,1)
-  const second=playerAt(entries,2)
-  const third=playerAt(entries,3)
-  return (
-    <div className="relative mx-auto w-full max-w-[650px]">
-      <div className="pointer-events-none absolute left-1/2 top-[35%] h-[280px] w-[390px] -translate-x-1/2 rounded-full bg-amber-300/18 blur-[70px]"/>
-      <div className="relative grid grid-cols-[.92fr_1.14fr_.92fr] items-end gap-2 sm:gap-3">
-        <PodiumBlock place={2} player={second}/>
-        <PodiumBlock place={1} player={first}/>
-        <PodiumBlock place={3} player={third}/>
+    <div className="relative">
+      <div className="pointer-events-none absolute -inset-x-6 bottom-0 top-1/3 rounded-[40px] bg-gradient-to-t from-amber-500/12 via-transparent to-transparent blur-2xl" />
+      <div className="relative flex flex-wrap items-end justify-center gap-x-3 gap-y-8 lg:flex-nowrap">
+        <PodiumColumn place={2} player={second} className="order-2 basis-[46%] lg:order-1 lg:basis-0 lg:flex-1" />
+        <PodiumColumn place={1} player={first} className="order-1 basis-full lg:order-2 lg:basis-0 lg:flex-1" />
+        <PodiumColumn place={3} player={third} className="order-3 basis-[46%] lg:order-3 lg:basis-0 lg:flex-1" />
       </div>
     </div>
   )

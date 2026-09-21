@@ -53,6 +53,7 @@ export function BattleDashboard() {
       setUpdatedAt(new Date(data.generated_at || Date.now()))
       if (!data.participant && targetScope !== "country") {
         setScope("country")
+        scopeRef.current = "country"
       }
       if (!data.participant) removeParticipantToken()
     } catch (err) {
@@ -73,13 +74,11 @@ export function BattleDashboard() {
       window.clearInterval(refresh)
       abortRef.current?.abort()
     }
-    // first load only; the scope handler performs explicit scoped requests
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [load])
 
   const selectScope = useCallback((next: Scope) => {
     if (next !== "country" && !participantRef.current) {
-      window.location.href = "https://indonesia-battle-iq.netlify.app/account"
+      window.location.href = "/account"
       return
     }
     setScope(next)
@@ -95,17 +94,14 @@ export function BattleDashboard() {
   return (
     <div className="min-h-screen bg-slate-950 text-white">
       <SiteNavbar participant={participant} />
-
       <main>
         <Hero season={season} entries={heroEntries} />
-
         <div className="relative z-10 mx-auto -mt-24 max-w-7xl px-4 sm:px-6">
           <UserProfileCard participant={participant} ownEntry={ownEntry} scope={scope} />
         </div>
-
         <div className="mx-auto mt-10 max-w-7xl px-4 pb-16 sm:px-6">
           <div className="grid gap-6 lg:grid-cols-3">
-            <div className="lg:col-span-2" id="peringkat">
+            <div className="min-w-0 lg:col-span-2" id="peringkat">
               <Leaderboard
                 entries={entries}
                 participant={participant}
@@ -117,14 +113,13 @@ export function BattleDashboard() {
                 onRefresh={() => load(scopeRef.current)}
               />
             </div>
-            <div className="flex flex-col gap-6">
+            <div className="flex min-w-0 flex-col gap-6">
               <PathToTop />
               <PromoBanner />
             </div>
           </div>
         </div>
       </main>
-
       <SiteFooter />
     </div>
   )
