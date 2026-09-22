@@ -286,7 +286,7 @@ export default function BattleTestPage() {
         </header>
         <section className="mx-auto grid max-w-6xl gap-7 px-5 py-12 lg:grid-cols-[1.2fr_.8fr] lg:items-center">
           <div>
-            <p className="text-xs font-black uppercase tracking-[.2em] text-cyan-300">Tes Nalar Nasional</p>
+            <p className="text-xs font-black uppercase tracking-[.2em] text-cyan-300">Tes Kemampuan</p>
             <h1 className="mt-4 text-5xl font-black leading-[.95] tracking-[-.055em] sm:text-7xl">30 soal.<br/><span className="text-indigo-300">15 menit.</span></h1>
             <p className="mt-6 max-w-2xl text-base leading-7 text-slate-300">Numerik, logika, verbal, dan spasial dalam satu tes. Dua percobaan pertama setiap season adalah <b className="text-white">Ranked Attempt gratis</b> dan dapat masuk leaderboard resmi.</p>
             <div className="mt-5 max-w-2xl rounded-2xl border border-violet-300/20 bg-violet-400/10 p-4 text-sm leading-6 text-violet-100"><b>High Range adaptif:</b> bila Battle Score inti mencapai 850+, sistem membuka 10 soal yang lebih sulit dengan tambahan waktu 8 menit. Skor sangat tinggi harus dikonfirmasi pada tahap ini.</div>
