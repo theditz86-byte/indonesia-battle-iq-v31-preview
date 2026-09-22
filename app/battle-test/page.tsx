@@ -281,7 +281,7 @@ export default function BattleTestPage() {
         <header className="border-b border-white/10 bg-[#020817]/80 backdrop-blur-xl">
           <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
             <a href="/battle" className="inline-flex items-center gap-2 text-sm font-bold text-slate-300"><ArrowLeft className="h-4 w-4"/> Battle</a>
-            <span className="text-sm font-black">Indonesia Battle IQ</span>
+            <span className="text-sm font-black">ALZAVA Battle IQ</span>
           </div>
         </header>
         <section className="mx-auto grid max-w-6xl gap-7 px-5 py-12 lg:grid-cols-[1.2fr_.8fr] lg:items-center">
