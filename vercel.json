@@ -1,6 +1,40 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "cleanUrls": true,
+  "cleanUrls": false,
+  "rewrites": [
+    {
+      "source": "/account",
+      "destination": "/account.html"
+    },
+    {
+      "source": "/account/",
+      "destination": "/account.html"
+    },
+    {
+      "source": "/payment",
+      "destination": "/payment.html"
+    },
+    {
+      "source": "/payment/",
+      "destination": "/payment.html"
+    },
+    {
+      "source": "/admin",
+      "destination": "/admin.html"
+    },
+    {
+      "source": "/admin/",
+      "destination": "/admin.html"
+    },
+    {
+      "source": "/battle-test",
+      "destination": "/battle-test.html"
+    },
+    {
+      "source": "/battle-test/",
+      "destination": "/battle-test.html"
+    }
+  ],
   "headers": [
     {
       "source": "/images/(.*)",
