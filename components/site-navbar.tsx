@@ -7,7 +7,7 @@ import type { BattleParticipant } from "@/lib/battle"
 const links = [
   { label: "Beranda", href: "/battle" },
   { label: "Peringkat", href: "#peringkat" },
-  { label: "Tes Nalar", href: "/battle-test" },
+  { label: "Tes Kemampuan", href: "/battle-test" },
   { label: "Panduan", href: "#panduan" },
   { label: "Bantuan", href: "/help" },
 ]
@@ -19,10 +19,10 @@ export function SiteNavbar({ participant }: { participant: BattleParticipant | n
     <header className="sticky top-0 z-50 border-b border-white/10 bg-slate-950/60 backdrop-blur-xl">
       <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-4 sm:px-6">
         <a href="/battle" className="flex items-center gap-3">
-          <img src="/alzava-icon.png" alt="ALZAVA Battle IQ" className="h-11 w-11 object-contain drop-shadow-[0_0_14px_rgba(212,175,55,.38)]" />
+          <img src="/alzava-emblem-v2.png" alt="ALZAVA Battle IQ" className="h-11 w-11 object-contain drop-shadow-[0_0_14px_rgba(212,175,55,.38)]" />
           <div className="leading-tight">
             <p className="text-[15px] font-extrabold tracking-[.01em] text-white">ALZAVA <span className="text-[#D4AF37]">Battle IQ</span></p>
-            <p className="text-[10px] font-medium uppercase tracking-[.13em] text-slate-400">Higher Thinking Wins</p>
+            <p className="text-[10px] font-medium uppercase tracking-[.13em] text-slate-400">Asah Pikiran. Raih Puncak.</p>
           </div>
         </a>
         <nav className="hidden items-center gap-1 rounded-full border border-white/10 bg-white/5 p-1 backdrop-blur-lg lg:flex">
