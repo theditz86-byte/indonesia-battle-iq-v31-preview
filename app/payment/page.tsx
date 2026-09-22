@@ -12,6 +12,7 @@ type PaymentState = {
   product_type?: ProductType
   available_credits?: number
   premium_unlocked?: boolean
+  attempt_id?: string | null
   latest_payment?: {
     product_type?: ProductType
     amount?: number
@@ -35,8 +36,8 @@ const products = {
     title:"Laporan Premium Hasil Ini",
     eyebrow:"Analisis Hasil",
     amount:5000,
-    description:"Buka analisis kemampuan lengkap dari hasil Battle IQ season ini.",
-    detail:"Profil domain, kekuatan, area pengembangan, rekomendasi latihan, dan laporan yang dapat disimpan sebagai PDF.",
+    description:"Buka analisis kemampuan lengkap untuk hasil tes yang Anda pilih.",
+    detail:"Profil domain, kekuatan, area pengembangan, rekomendasi latihan, sertifikat hasil digital, dan PDF premium untuk satu percobaan tertentu.",
     icon:FileText,
   },
 } as const
@@ -74,14 +75,18 @@ export default function PaymentPage() {
   const [message, setMessage] = useState("")
   const [error, setError] = useState("")
   const [state, setState] = useState<PaymentState | null>(null)
+  const [attemptId,setAttemptId]=useState<string|null>(null)
 
   const config=products[product]
   const Icon=config.icon
 
   useEffect(() => {
-    const requested=new URLSearchParams(window.location.search).get("product")
+    const params=new URLSearchParams(window.location.search)
+    const requested=params.get("product")
+    const requestedAttempt=params.get("attempt")
     const initial:ProductType=requested==="premium_report"?"premium_report":"attempt_credit"
     setProduct(initial)
+    setAttemptId(requestedAttempt)
     if(initial==="premium_report") void track("premium_checkout_opened",{source:"payment_page"})
     const token = getParticipantToken()
     if (!token) return
@@ -90,7 +95,7 @@ export default function PaymentPage() {
       .then((data) => {
         if (data?.participant?.nickname) {
           setNickname(data.participant.nickname)
-          void checkStatus(data.participant.nickname,initial)
+          void checkStatus(data.participant.nickname,initial,requestedAttempt)
         }
       })
       .catch(() => {})
@@ -99,12 +104,13 @@ export default function PaymentPage() {
   function switchProduct(next:ProductType){
     setProduct(next)
     setState(null);setError("");setMessage("")
-    window.history.replaceState(null,"",`/payment?product=${next}`)
+    const suffix=next==="premium_report" && attemptId ? "&attempt="+encodeURIComponent(attemptId) : ""
+    window.history.replaceState(null,"",`/payment?product=${next}`+suffix)
     if(next==="premium_report") void track("premium_checkout_opened",{source:"product_switch"})
     if(nickname) void checkStatus(nickname,next)
   }
 
-  async function checkStatus(target = nickname, targetProduct = product) {
+  async function checkStatus(target = nickname, targetProduct = product, targetAttempt:string|null = attemptId) {
     if (!target.trim()) {
       setError("Isi Nama Arena terlebih dahulu.")
       return
@@ -113,7 +119,7 @@ export default function PaymentPage() {
     setError("")
     setMessage("")
     try {
-      const data = await callPaymentApi({ action: "payment_status", nickname: target.trim(), product_type:targetProduct })
+      const data = await callPaymentApi({ action: "payment_status", nickname: target.trim(), product_type:targetProduct, ...(targetProduct==="premium_report" && targetAttempt ? {attempt_id:targetAttempt}:{}) })
       if (!data.state) throw new Error("Nama Arena tidak ditemukan.")
       setState(data.state)
     } catch (e) {
@@ -155,12 +161,13 @@ export default function PaymentPage() {
         payer_name: payerName.trim(),
         proof_mime: proof.type,
         proof_base64: base64,
+        ...(product==="premium_report" && attemptId ? {attempt_id:attemptId}:{}),
       })
       setMessage(`Bukti pembayaran ${data.payment?.product_type==="premium_report"?"Laporan Premium":"Ranked Attempt Tambahan"} untuk ${data.payment?.nickname || nickname} sudah terkirim. Admin akan memverifikasinya.`)
       setProof(null)
       const input = document.getElementById("proof") as HTMLInputElement | null
       if (input) input.value = ""
-      await checkStatus(nickname,product)
+      await checkStatus(nickname,product,attemptId)
     } catch (e) {
       setError(e instanceof Error ? e.message : "Bukti pembayaran belum berhasil dikirim.")
     } finally {
@@ -171,7 +178,7 @@ export default function PaymentPage() {
   const status = state?.latest_payment?.status
   const statusText = status === "approved" ? "Disetujui" : status === "rejected" ? "Ditolak" : status === "pending" ? "Menunggu verifikasi" : "Belum ada pembayaran"
   const alreadyUnlocked=product==="premium_report" && state?.premium_unlocked
-  const successHref=product==="premium_report"?"/result":"/battle-test"
+  const successHref=product==="premium_report" ? (attemptId?"/result?attempt="+encodeURIComponent(attemptId):"/result") : "/battle-test"
   const successLabel=product==="premium_report"?"Buka Laporan Premium":"Mulai Ranked Attempt"
 
   return (
@@ -202,7 +209,7 @@ export default function PaymentPage() {
 
           <section className="rounded-3xl border border-white/10 bg-white/[.055] p-6 shadow-2xl backdrop-blur-xl">
             <h2 className="text-xl font-extrabold">Konfirmasi pembayaran</h2>
-            <p className="mt-1 text-sm text-slate-400">Tahap awal masih menggunakan verifikasi admin. Kredit/fitur hanya aktif setelah bukti disetujui.</p>
+            <p className="mt-1 text-sm text-slate-400">Tahap awal masih menggunakan verifikasi admin. {product==="premium_report"?"Premium akan dibuka khusus untuk hasil tes yang Anda pilih.":"Kredit Ranked aktif setelah bukti disetujui."}</p>
 
             {alreadyUnlocked ? <div className="mt-6 rounded-2xl border border-emerald-400/25 bg-emerald-500/10 p-5"><CheckCircle2 className="h-6 w-6 text-emerald-300"/><p className="mt-3 font-black">Laporan Premium untuk hasil terbaru ini sudah aktif.</p><a href="/result" className="mt-4 inline-flex rounded-xl bg-emerald-600 px-4 py-2.5 font-black">Buka laporan</a></div> :
             <form onSubmit={submit} className="mt-6 grid gap-4">
