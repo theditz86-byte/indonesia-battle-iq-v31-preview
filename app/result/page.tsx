@@ -256,7 +256,6 @@ export default function ResultPage() {
   const [loading,setLoading]=useState(true)
   const [error,setError]=useState("")
   const [copied,setCopied]=useState(false)
-  const [printMode,setPrintMode]=useState(false)
 
   useEffect(()=>{
     if(!getParticipantToken()){
@@ -334,10 +333,7 @@ export default function ResultPage() {
   }
 
   function printPremium() {
-    setPrintMode(true)
-    const restore = () => setPrintMode(false)
-    window.addEventListener("afterprint", restore, { once:true })
-    window.setTimeout(() => window.print(), 150)
+    window.print()
   }
 
   function openPremium() {
@@ -367,7 +363,7 @@ export default function ResultPage() {
           </div>
         </div>
 
-        <section style={{display:printMode?"none":"block"}} className="screen-report overflow-hidden rounded-[2.25rem] border border-white/10 bg-[#07162f]/95 shadow-[0_35px_120px_rgba(0,0,0,.45)]">
+        <section className="screen-report overflow-hidden rounded-[2.25rem] border border-white/10 bg-[#07162f]/95 shadow-[0_35px_120px_rgba(0,0,0,.45)]">
           <div className="relative overflow-hidden border-b border-white/10 p-6 sm:p-9 lg:p-11">
             <div className="absolute -right-24 -top-24 h-80 w-80 rounded-full bg-indigo-500/20 blur-3xl"/>
             <div className="absolute right-32 top-16 h-56 w-56 rounded-full bg-cyan-400/10 blur-3xl"/>
@@ -541,8 +537,8 @@ export default function ResultPage() {
         </section>
 
         {data.premium_unlocked && (
-          <section style={{display:printMode?"block":"none"}} className="pdf-report" aria-label="Laporan Premium PDF">
-            <div className="pdf-page" style={{breakAfter:"page",pageBreakAfter:"always"}}>
+          <section className="pdf-report" aria-label="Laporan Premium PDF">
+            <div className="pdf-page pdf-page-one" style={{breakAfter:"page",pageBreakAfter:"always"}}>
               <div className="pdf-brand-row">
                 <div>
                   <p className="pdf-brand">ALZAVA BATTLE IQ</p>
@@ -595,10 +591,8 @@ export default function ResultPage() {
                 <div><b>Distribusi kemampuan</b><span>{spread<=10 ? "Relatif merata lintas-domain." : spread<=20 ? "Ada satu kekuatan utama dengan dukungan domain lain yang cukup dekat." : "Cukup terspesialisasi; kekuatan utama terlihat jelas."}</span></div>
                 <div><b>Verifikasi atas</b><span>{result.high_range_attempted ? "High Range selesai; rentang atas mendapat pengujian tambahan." : "Hasil berasal dari tahap inti."}</span></div>
               </div>
-            </div>
 
-            <div className="pdf-page" style={{breakAfter:"page",pageBreakAfter:"always"}}>
-              <div className="pdf-page-title">
+              <div className="pdf-page-title pdf-deep-title">
                 <div><p className="pdf-section-label">DEEP DIVE</p><h2>Apa arti profil kemampuan Anda?</h2></div>
                 <span>{domains.length} domain terukur</span>
               </div>
@@ -631,7 +625,7 @@ export default function ResultPage() {
               </div>
             </div>
 
-            <div className="pdf-page" style={{breakAfter:"auto",pageBreakAfter:"auto"}}>
+            <div className="pdf-page pdf-page-two" style={{breakAfter:"auto",pageBreakAfter:"auto"}}>
               <div className="pdf-page-title">
                 <div><p className="pdf-section-label">ACTIONABLE INSIGHT</p><h2>Kekuatan, blind spot & rencana peningkatan</h2></div>
                 <span>Rencana personal</span>
