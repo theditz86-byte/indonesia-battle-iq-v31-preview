@@ -565,6 +565,86 @@
     font-size: 6.5px !important;
   }
 
+  .pdf-next-mission {
+    margin-top: 6px !important;
+    border: 1px solid rgba(99,102,241,.28) !important;
+    border-radius: 10px !important;
+    background:
+      radial-gradient(circle at 92% 12%, rgba(34,211,238,.10), transparent 30%),
+      linear-gradient(135deg, rgba(79,70,229,.14), rgba(15,23,42,.45)) !important;
+    padding: 7px !important;
+    break-inside: avoid !important;
+  }
+
+  .pdf-next-head {
+    display: flex !important;
+    align-items: flex-end !important;
+    justify-content: space-between !important;
+    gap: 8px !important;
+  }
+
+  .pdf-next-head h2 {
+    margin: 2px 0 0 !important;
+    color: #fff !important;
+    font-size: 12px !important;
+    line-height: 1.16 !important;
+    font-weight: 900 !important;
+  }
+
+  .pdf-next-head > span {
+    border-radius: 999px !important;
+    background: rgba(34,211,238,.10) !important;
+    padding: 3px 6px !important;
+    color: #67e8f9 !important;
+    font-size: 5.8px !important;
+    font-weight: 900 !important;
+    letter-spacing: .08em !important;
+    white-space: nowrap !important;
+  }
+
+  .pdf-next-copy {
+    margin: 4px 0 5px !important;
+    color: #cbd5e1 !important;
+    font-size: 6.8px !important;
+    line-height: 1.24 !important;
+  }
+
+  .pdf-next-grid > div {
+    border-radius: 7px !important;
+    background: rgba(2,6,23,.34) !important;
+    padding: 5px !important;
+  }
+
+  .pdf-next-grid b {
+    display: block !important;
+    color: #818cf8 !important;
+    font-size: 5.5px !important;
+    letter-spacing: .06em !important;
+  }
+
+  .pdf-next-grid strong {
+    display: block !important;
+    margin: 2px 0 !important;
+    color: #fff !important;
+    font-size: 10px !important;
+  }
+
+  .pdf-next-grid span {
+    color: #94a3b8 !important;
+    font-size: 6.2px !important;
+    line-height: 1.2 !important;
+  }
+
+  .pdf-motivation-line {
+    margin-top: 5px !important;
+    border-left: 2px solid #22d3ee !important;
+    padding: 4px 6px !important;
+    color: #c7d2fe !important;
+    font-size: 6.5px !important;
+    font-style: italic !important;
+    line-height: 1.22 !important;
+  }
+
   .pdf-footnote {
     margin-top: 5px !important;
     border-top: 1px solid rgba(148,163,184,.14) !important;
