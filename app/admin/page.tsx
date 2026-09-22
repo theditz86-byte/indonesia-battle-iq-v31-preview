@@ -43,7 +43,7 @@ async function api(body: Record<string, unknown>) {
   return data
 }
 
-function productLabel(type?:string){return type==="premium_report"?"Laporan Premium":"Practice Attempt"}
+function productLabel(type?:string){return type==="premium_report"?"Laporan Premium":"Ranked Attempt"}
 
 export default function AdminPage() {
   const [token, setToken] = useState("")
@@ -113,13 +113,13 @@ export default function AdminPage() {
   async function review(payment:Payment, decision:"approved"|"rejected") {
     const note = decision==="rejected" ? (window.prompt("Alasan penolakan (opsional)") || "") : ""
     if (decision==="approved") {
-      const action=payment.product_type==="premium_report"?"membuka Laporan Premium season ini":"membuka tepat 1 kredit Practice Attempt"
+      const action=payment.product_type==="premium_report"?"membuka Laporan Premium season ini":"membuka tepat 1 kredit Ranked Attempt"
       if(!window.confirm(`Setujui pembayaran ini dan ${action}?`)) return
     }
     setBusy(true); setError(""); setMessage("")
     try {
       await api({action:"admin_review",admin_token:token,payment_id:payment.id,decision,note})
-      setMessage(decision==="approved" ? `Pembayaran disetujui. ${payment.product_type==="premium_report"?"Laporan Premium sudah dibuka.":"1 kredit Practice Attempt sudah dibuka."}` : "Pembayaran ditolak.")
+      setMessage(decision==="approved" ? `Pembayaran disetujui. ${payment.product_type==="premium_report"?"Laporan Premium sudah dibuka.":"1 kredit Ranked Attempt sudah dibuka."}` : "Pembayaran ditolak.")
       await load()
     } catch(e) { setError(e instanceof Error ? e.message : "Pembayaran belum dapat diproses.") }
     finally { setBusy(false) }
@@ -160,7 +160,7 @@ export default function AdminPage() {
     <main className="min-h-screen bg-[radial-gradient(circle_at_20%_0%,rgba(56,189,248,.14),transparent_32rem),linear-gradient(180deg,#020817,#07142f)] px-4 py-8 text-white sm:px-6">
       <div className="mx-auto max-w-6xl">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-          <div><p className="text-xs font-bold uppercase tracking-[.18em] text-cyan-300">Admin</p><h1 className="text-3xl font-black">Monetisasi & Pembayaran</h1><p className="mt-1 text-sm text-slate-400">Pantau funnel sederhana dan verifikasi Practice Attempt maupun Laporan Premium.</p></div>
+          <div><p className="text-xs font-bold uppercase tracking-[.18em] text-cyan-300">Admin</p><h1 className="text-3xl font-black">Monetisasi & Pembayaran</h1><p className="mt-1 text-sm text-slate-400">Pantau funnel sederhana dan verifikasi Ranked Attempt tambahan maupun Laporan Premium.</p></div>
           <div className="flex gap-2"><button onClick={()=>load()} className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 font-bold"><RefreshCw className="h-4 w-4"/> Muat ulang</button><button onClick={logout} className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 font-bold"><LogOut className="h-4 w-4"/> Keluar</button></div>
         </div>
 
@@ -184,7 +184,7 @@ export default function AdminPage() {
                 </div>
                 <div className="mt-4 flex flex-wrap gap-2">
                   <button onClick={()=>showProof(p.id)} className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3.5 py-2 text-sm font-bold"><Eye className="h-4 w-4"/>{proofs[p.id]?"Tutup Bukti":"Lihat Bukti"}</button>
-                  {p.status==="pending" && <><button disabled={busy} onClick={()=>review(p,"approved")} className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-3.5 py-2 text-sm font-extrabold disabled:opacity-60"><Check className="h-4 w-4"/> Setujui {p.product_type==="premium_report"?"Premium":"+1 Practice"}</button><button disabled={busy} onClick={()=>review(p,"rejected")} className="inline-flex items-center gap-2 rounded-xl bg-rose-600 px-3.5 py-2 text-sm font-extrabold disabled:opacity-60"><X className="h-4 w-4"/> Tolak</button></>}
+                  {p.status==="pending" && <><button disabled={busy} onClick={()=>review(p,"approved")} className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-3.5 py-2 text-sm font-extrabold disabled:opacity-60"><Check className="h-4 w-4"/> Setujui {p.product_type==="premium_report"?"Premium":"+1 Ranked"}</button><button disabled={busy} onClick={()=>review(p,"rejected")} className="inline-flex items-center gap-2 rounded-xl bg-rose-600 px-3.5 py-2 text-sm font-extrabold disabled:opacity-60"><X className="h-4 w-4"/> Tolak</button></>}
                 </div>
                 {proofs[p.id] && <img src={proofs[p.id]} alt={"Bukti pembayaran "+(p.nickname||"peserta")} className="mt-4 max-h-[620px] w-auto max-w-full rounded-2xl border border-white/10" />}
               </article>
