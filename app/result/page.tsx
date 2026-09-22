@@ -251,8 +251,9 @@ async function track(event_type:string, details:Record<string,unknown>={}) {
   try { await post({action:"track",event_type,details}) } catch {}
 }
 
-function PremiumSeal({reference,compact=false}:{reference?:string;compact?:boolean}) {
+function PremiumSeal({reference,serial,compact=false}:{reference?:string;serial?:string;compact?:boolean}) {
   const ref=(reference || "ALZAVA").replace(/[^a-z0-9]/gi,"").slice(0,8).toUpperCase()
+  const shortSerial=(serial || ref || "PREMIUM").split("-").slice(-1)[0].slice(0,8)
   return (
     <div className={compact ? "alzava-premium-seal alzava-premium-seal-compact" : "alzava-premium-seal"} aria-label="ALZAVA Premium Report seal">
       <div className="alzava-seal-orbit alzava-seal-orbit-a"/>
@@ -263,7 +264,7 @@ function PremiumSeal({reference,compact=false}:{reference?:string;compact?:boole
         <b>ALZAVA</b>
         <strong>PREMIUM</strong>
         <small>ORIGINAL REPORT</small>
-        <em>REF {ref || "PREMIUM"}</em>
+        <em>NO. {shortSerial}</em>
       </div>
     </div>
   )
@@ -368,6 +369,16 @@ export default function ResultPage() {
   const iq=Number(result.iq_estimate||0)
   const iqProgress=clamp(((iq-55)/100)*100)
   const rankText=result.national_rank && data.leaderboard_total ? "#" + result.national_rank + " dari " + data.leaderboard_total : "#" + (result.national_rank ?? "—")
+  const reportDate=result.submitted_at ? new Date(result.submitted_at) : new Date()
+  const reportDateCode=[
+    reportDate.getFullYear(),
+    String(reportDate.getMonth()+1).padStart(2,"0"),
+    String(reportDate.getDate()).padStart(2,"0"),
+  ].join("")
+  const reportRef=(result.attempt_id || "ALZAVA").replace(/[^a-z0-9]/gi,"").slice(0,8).toUpperCase()
+  const reportNumber=`ALZ-BIQ-${reportDateCode}-${reportRef}`
+  const reportIssued=reportDate.toLocaleDateString("id-ID",{day:"2-digit",month:"long",year:"numeric"})
+
 
   return (
     <main className="min-h-screen overflow-hidden bg-[radial-gradient(circle_at_10%_-10%,rgba(79,70,229,.32),transparent_34rem),radial-gradient(circle_at_90%_5%,rgba(6,182,212,.18),transparent_30rem),linear-gradient(180deg,#020617_0%,#07142e_48%,#020617_100%)] px-4 py-8 text-white sm:px-6">
@@ -554,9 +565,9 @@ export default function ResultPage() {
               <div className="max-w-2xl">
                 <p className="text-[11px] font-black uppercase tracking-[.2em] text-amber-300">ALZAVA Premium Seal</p>
                 <h2 className="mt-2 text-2xl font-black text-white">Tanda khas laporan premium ALZAVA.</h2>
-                <p className="mt-3 text-sm leading-7 text-slate-400">Stempel ini adalah identitas visual original ALZAVA Battle IQ untuk laporan premium. Referensi laporan: <b className="text-slate-200">{(result.attempt_id || "ALZAVA").slice(0,8).toUpperCase()}</b>.</p>
+                <p className="mt-3 text-sm leading-7 text-slate-400">Setiap laporan premium memiliki nomor laporan unik yang terkait dengan satu hasil tes. <span className="mt-2 block text-slate-300"><b>No. Laporan:</b> {reportNumber} · <b>Diterbitkan:</b> {reportIssued}</span></p>
               </div>
-              <PremiumSeal reference={result.attempt_id}/>
+              <PremiumSeal reference={result.attempt_id} serial={reportNumber}/>
             </section>
           )}
 
@@ -624,6 +635,25 @@ export default function ResultPage() {
                 <div><b>Verifikasi atas</b><span>{result.high_range_attempted ? "High Range selesai; rentang atas mendapat pengujian tambahan." : "Hasil berasal dari tahap inti."}</span></div>
               </div>
 
+              <div className="pdf-executive-footer">
+                <div><span>KEKUATAN UTAMA</span><b>{strength?.label || "Profil kognitif"}</b><small>Indeks {strength?.index ?? "—"}</small></div>
+                <div><span>PRIORITAS PENGEMBANGAN</span><b>{development?.label || "Area terendah"}</b><small>Indeks {development?.index ?? "—"}</small></div>
+                <div><span>NO. LAPORAN PREMIUM</span><b>{reportNumber}</b><small>Diterbitkan {reportIssued}</small></div>
+              </div>
+            </div>
+
+            <div className="pdf-page pdf-page-two" style={{breakAfter:"page",pageBreakAfter:"always"}}>
+              <div className="pdf-page-mini-brand">
+                <div className="pdf-logo-lockup">
+                  <img src="/alzava-emblem-v3.svg" alt="ALZAVA Battle IQ" />
+                  <div>
+                    <p className="pdf-brand">ALZAVA <span>BATTLE IQ</span></p>
+                    <p className="pdf-kicker">COGNITIVE PROFILE · DEEP DIVE</p>
+                  </div>
+                </div>
+                <div className="pdf-report-number">NO. {reportNumber}</div>
+              </div>
+
               <div className="pdf-page-title pdf-deep-title">
                 <div><p className="pdf-section-label">DEEP DIVE</p><h2>Apa arti profil kemampuan Anda?</h2></div>
                 <span>{domains.length} domain terukur</span>
@@ -655,21 +685,33 @@ export default function ResultPage() {
                 <b>Interpretasi ringkas</b>
                 <p>{strength ? strength.label+" adalah kekuatan paling menonjol dengan indeks "+strength.index+". " : ""}{development ? development.label+" menjadi prioritas pengembangan paling efisien dengan indeks "+development.index+". " : ""}{spread<=10 ? "Profil keseluruhan relatif seimbang." : spread<=20 ? "Perbedaan antardomain moderat dan masih mendukung fleksibilitas." : "Jarak antardomain cukup lebar sehingga jenis soal dapat memengaruhi tempo dan akurasi secara nyata."}</p>
               </div>
+
+              <div className="pdf-profile-signature">
+                <div className="pdf-profile-signature-head">
+                  <div><p className="pdf-section-label">PERFORMANCE SIGNATURE</p><h2>Pola khas dari hasil tes ini</h2></div>
+                  <span>{signature.title}</span>
+                </div>
+                <div className="pdf-grid-3">
+                  <div><b>JANGKAR KINERJA</b><strong>{strength?.label || "—"}</strong><p>Domain dengan indeks tertinggi ({strength?.index ?? "—"}), menjadi modal utama saat pola soal sesuai.</p></div>
+                  <div><b>LEVER PERTUMBUHAN</b><strong>{development?.label || "—"}</strong><p>Area dengan ruang peningkatan paling efisien ({development?.index ?? "—"}).</p></div>
+                  <div><b>KONSISTENSI PROFIL</b><strong>{spread<=10?"Seimbang":spread<=20?"Moderat":"Terspesialisasi"}</strong><p>Selisih antardomain {spread} poin; gunakan ini untuk memilih fokus latihan berikutnya.</p></div>
+                </div>
+              </div>
             </div>
 
-            <div className="pdf-page pdf-page-two" style={{breakAfter:"auto",pageBreakAfter:"auto"}}>
+            <div className="pdf-page pdf-page-three" style={{breakAfter:"auto",pageBreakAfter:"auto"}}>
               <div className="pdf-page-mini-brand">
                 <div className="pdf-logo-lockup">
                   <img src="/alzava-emblem-v3.svg" alt="ALZAVA Battle IQ" />
                   <div>
                     <p className="pdf-brand">ALZAVA <span>BATTLE IQ</span></p>
-                    <p className="pdf-kicker">LAPORAN PREMIUM · HALAMAN 2</p>
+                    <p className="pdf-kicker">ACTION PLAN · DEVELOPMENT REPORT</p>
                   </div>
                 </div>
               </div>
               <div className="pdf-page-title">
                 <div><p className="pdf-section-label">ACTIONABLE INSIGHT</p><h2>Kekuatan, blind spot & rencana peningkatan</h2></div>
-                <span>Rencana personal</span>
+                <span>Rencana personal · {reportNumber}</span>
               </div>
 
               <div className="pdf-grid-2 pdf-insight-grid">
@@ -736,12 +778,18 @@ export default function ResultPage() {
               </section>
 
               <div className="pdf-seal-row">
-                <div>
-                  <p className="pdf-section-label pdf-gold">ALZAVA PREMIUM SEAL</p>
-                  <b>Original visual mark of ALZAVA Battle IQ Premium Report</b>
-                  <span>Referensi laporan: {(result.attempt_id || "ALZAVA").slice(0,8).toUpperCase()}</span>
+                <div className="pdf-certificate-meta">
+                  <p className="pdf-section-label pdf-gold">ALZAVA PREMIUM REPORT IDENTITY</p>
+                  <h3>Nomor Laporan Premium</h3>
+                  <b>{reportNumber}</b>
+                  <div className="pdf-certificate-fields">
+                    <span><small>DITERBITKAN</small>{reportIssued}</span>
+                    <span><small>PEMILIK HASIL</small>{data.nickname || "Peserta"}</span>
+                    <span><small>STATUS</small>Original Digital Report</span>
+                  </div>
+                  <p>Nomor ini mengidentifikasi dokumen hasil spesifik ini di sistem ALZAVA Battle IQ. Ini adalah nomor laporan, bukan sertifikasi profesi atau kredensial psikologis.</p>
                 </div>
-                <PremiumSeal reference={result.attempt_id} compact/>
+                <PremiumSeal reference={result.attempt_id} serial={reportNumber} compact/>
               </div>
 
               <div className="pdf-footnote"><b>Catatan interpretasi:</b> Estimasi IQ Battle dan analisis kognitif menggambarkan performa pada sistem ALZAVA Battle IQ. Ini bukan diagnosis psikologis, tes IQ klinis terstandarisasi, penilaian kepribadian, atau pengganti asesmen oleh psikolog berwenang.</div>
