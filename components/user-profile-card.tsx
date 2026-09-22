@@ -28,7 +28,7 @@ export function UserProfileCard({ participant, ownEntry, scope }: { participant:
   const remaining = Math.max(0, Number(participant.attempts_remaining ?? freeRemaining + paidCredits) || 0)
   const hasActive = Boolean(participant.active_attempt_id)
   const actionHref = hasActive || remaining > 0 ? "/battle-test" : "/payment"
-  const actionLabel = hasActive ? "Lanjutkan tes Battle" : freeRemaining > 0 ? `Mulai tes · sisa gratis ${freeRemaining}` : paidCredits > 0 ? `Mulai Practice · kredit ${paidCredits}` : "Buka Practice · Rp5.000"
+  const actionLabel = hasActive ? "Lanjutkan tes Battle" : freeRemaining > 0 ? `Mulai tes · sisa gratis ${freeRemaining}` : paidCredits > 0 ? `Mulai Ranked · kredit ${paidCredits}` : "Buka Ranked · Rp5.000"
 
   return (
     <div className="rounded-2xl border border-white/20 bg-white/10 p-6 backdrop-blur-md shadow-[0_10px_40px_rgba(0,0,0,0.4)]">
@@ -54,7 +54,7 @@ export function UserProfileCard({ participant, ownEntry, scope }: { participant:
           </div>
           <div className="flex flex-col items-start gap-2 sm:items-end">
             <p className="text-xs text-slate-400">Kuota gratis <span className="font-bold text-white">2x/season</span> · {Math.min(2, used)}/2 digunakan</p>
-            <p className="text-[11px] text-slate-500">{hasActive ? "Percobaan sedang berjalan" : paidCredits > 0 ? `${paidCredits} kredit Practice tersedia` : "2 Ranked Attempt gratis tiap season"}</p>
+            <p className="text-[11px] text-slate-500">{hasActive ? "Percobaan sedang berjalan" : paidCredits > 0 ? `${paidCredits} kredit Ranked tersedia` : "2 Ranked Attempt gratis tiap season"}</p>
             <a href={actionHref} className="mt-1 flex items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-5 py-3 text-sm font-bold text-white shadow-[0_0_24px_rgba(99,102,241,0.5)] transition-transform hover:scale-[1.02]"><Unlock className="h-4 w-4" />{actionLabel}</a>
           </div>
         </div>
