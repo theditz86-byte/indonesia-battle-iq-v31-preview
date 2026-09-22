@@ -23,7 +23,7 @@ export function UserProfileCard({ participant, ownEntry, scope }: { participant:
   }
 
   const used = Math.max(0, Number(participant.attempts_used) || 0)
-  const freeRemaining = Math.max(0, Number(participant.free_attempts_remaining ?? 1 - used) || 0)
+  const freeRemaining = Math.max(0, Number(participant.free_attempts_remaining ?? 2 - used) || 0)
   const paidCredits = Math.max(0, Number(participant.paid_credits) || 0)
   const remaining = Math.max(0, Number(participant.attempts_remaining ?? freeRemaining + paidCredits) || 0)
   const hasActive = Boolean(participant.active_attempt_id)
@@ -53,7 +53,7 @@ export function UserProfileCard({ participant, ownEntry, scope }: { participant:
             <p className="text-xs text-slate-400">{ownEntry ? `IQ ${ownEntry.iq_estimate ?? "—"} · ${formatScore(ownEntry.battle_score)} poin` : "Skor resmi belum tercatat"}</p>
           </div>
           <div className="flex flex-col items-start gap-2 sm:items-end">
-            <p className="text-xs text-slate-400"><span className="font-bold text-white">{Math.min(1, used)}/1</span> gratis digunakan</p>
+            <p className="text-xs text-slate-400"><span className="font-bold text-white">{Math.min(2, used)}/2</span> gratis digunakan</p>
             <p className="text-[11px] text-slate-500">{hasActive ? "Percobaan sedang berjalan" : paidCredits > 0 ? `${paidCredits} tiket tambahan tersedia` : "Gunakan dengan bijak, reset setiap minggu"}</p>
             <a href={actionHref} className="mt-1 flex items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-5 py-3 text-sm font-bold text-white shadow-[0_0_24px_rgba(99,102,241,0.5)] transition-transform hover:scale-[1.02]"><Unlock className="h-4 w-4" />{actionLabel}</a>
           </div>
