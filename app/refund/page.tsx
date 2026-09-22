@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import { LegalLayout } from "@/components/legal-layout"
 
-export const metadata:Metadata={title:"Kebijakan Pengembalian Dana",description:"Kebijakan pengembalian dana produk digital Indonesia Battle IQ."}
+export const metadata:Metadata={title:"Kebijakan Pengembalian Dana",description:"Kebijakan pengembalian dana produk digital ALZAVA Battle IQ."}
 
 export default function RefundPage(){
   return <LegalLayout eyebrow="Pembayaran" title="Kebijakan Pengembalian Dana">
