@@ -12,3 +12,4 @@ Cloudflare Pages build settings:
 - Node.js: 22
 
 The build generates WebP versions of heavy v0 assets, stages the legacy Battle IQ routes before Next.js export, and prunes heavyweight PNG copies from the deploy output.
+Cloudflare redeploy trigger: 2026-09-22
