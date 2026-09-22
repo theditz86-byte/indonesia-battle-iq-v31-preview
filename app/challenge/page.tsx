@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { ArrowRight, Brain, MapPin, Trophy } from "lucide-react"
+import { ArrowRight, MapPin, Trophy } from "lucide-react"
 import { BATTLE_API_URL, getParticipantToken } from "@/lib/battle"
 
 type ChallengeEntry = {
@@ -65,8 +65,8 @@ export default function ChallengePage(){
     <main className="grid min-h-screen place-items-center bg-[radial-gradient(circle_at_50%_0%,rgba(99,102,241,.22),transparent_32rem),linear-gradient(180deg,#020817,#07142f)] px-5 py-12 text-white">
       <section className="w-full max-w-3xl overflow-hidden rounded-[2rem] border border-white/10 bg-[#0a1a37]/90 shadow-2xl">
         <div className="bg-gradient-to-r from-indigo-600/25 via-violet-500/15 to-cyan-400/10 p-7 text-center sm:p-10">
-          <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-cyan-400 to-indigo-600 shadow-[0_0_30px_rgba(59,130,246,.35)]"><Brain className="h-7 w-7"/></div>
-          <p className="mt-5 text-xs font-black uppercase tracking-[.2em] text-cyan-300">Tantangan Indonesia Battle IQ</p>
+          <img src="/alzava-icon.png" alt="ALZAVA Battle IQ" className="mx-auto h-16 w-16 object-contain drop-shadow-[0_0_22px_rgba(212,175,55,.35)]" />
+          <p className="mt-5 text-xs font-black uppercase tracking-[.2em] text-cyan-300">Tantangan ALZAVA Battle IQ</p>
           {error || !entry ? (
             <><h1 className="mt-3 text-3xl font-black">Tantangan tidak ditemukan</h1><p className="mt-3 text-slate-400">{error || "Peserta ini belum memiliki hasil ranked pada season aktif."}</p></>
           ) : (
