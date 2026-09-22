@@ -540,9 +540,12 @@ export default function ResultPage() {
           <section className="pdf-report" aria-label="Laporan Premium PDF">
             <div className="pdf-page pdf-page-one" style={{breakAfter:"page",pageBreakAfter:"always"}}>
               <div className="pdf-brand-row">
-                <div>
-                  <p className="pdf-brand">ALZAVA BATTLE IQ</p>
-                  <p className="pdf-kicker">LAPORAN PREMIUM · COGNITIVE PERFORMANCE REPORT</p>
+                <div className="pdf-logo-lockup">
+                  <img src="/alzava-emblem-v3.svg" alt="ALZAVA Battle IQ" />
+                  <div>
+                    <p className="pdf-brand">ALZAVA <span>BATTLE IQ</span></p>
+                    <p className="pdf-kicker">ASAH PIKIRAN. RAIH PUNCAK. · LAPORAN PREMIUM</p>
+                  </div>
                 </div>
                 <div className="pdf-badge">{result.high_range_attempted ? "HIGH RANGE VERIFIED" : "CORE RESULT"}</div>
               </div>
@@ -626,6 +629,15 @@ export default function ResultPage() {
             </div>
 
             <div className="pdf-page pdf-page-two" style={{breakAfter:"auto",pageBreakAfter:"auto"}}>
+              <div className="pdf-page-mini-brand">
+                <div className="pdf-logo-lockup">
+                  <img src="/alzava-emblem-v3.svg" alt="ALZAVA Battle IQ" />
+                  <div>
+                    <p className="pdf-brand">ALZAVA <span>BATTLE IQ</span></p>
+                    <p className="pdf-kicker">LAPORAN PREMIUM · HALAMAN 2</p>
+                  </div>
+                </div>
+              </div>
               <div className="pdf-page-title">
                 <div><p className="pdf-section-label">ACTIONABLE INSIGHT</p><h2>Kekuatan, blind spot & rencana peningkatan</h2></div>
                 <span>Rencana personal</span>
