@@ -902,10 +902,12 @@
   .pdf-page-one .pdf-bottom-strip span { font-size: 9.4px !important; line-height: 1.32 !important; }
 
   .pdf-page1-reference-grid {
+    flex: 1 1 auto !important;
     display: grid !important;
     grid-template-columns: 1.03fr .97fr !important;
     gap: 7px !important;
     margin-top: 8px !important;
+    align-items: stretch !important;
   }
 
   .pdf-certificate-explainer,
@@ -918,6 +920,7 @@
       rgba(2,6,23,.30) !important;
     padding: 8px !important;
     break-inside: avoid !important;
+    height: 100% !important;
   }
 
   .pdf-certificate-explainer {
