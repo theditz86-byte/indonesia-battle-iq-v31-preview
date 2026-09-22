@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /payment
+Disallow: /account
+Disallow: /result
+
+Sitemap: https://alzava-battle-iq.pages.dev/sitemap.xml
