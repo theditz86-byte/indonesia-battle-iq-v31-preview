@@ -1,0 +1,9 @@
+# Cloudflare Pages route compatibility
+/account /account.html 200
+/account/ /account.html 200
+/payment /payment.html 200
+/payment/ /payment.html 200
+/admin /admin.html 200
+/admin/ /admin.html 200
+/battle-test /battle-test.html 200
+/battle-test/ /battle-test.html 200
