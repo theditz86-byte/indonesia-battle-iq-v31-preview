@@ -1,6 +1,6 @@
 "use client"
 
-import { Brain, ChevronDown } from "lucide-react"
+import { ChevronDown } from "lucide-react"
 import { useState } from "react"
 import type { BattleParticipant } from "@/lib/battle"
 
@@ -19,12 +19,10 @@ export function SiteNavbar({ participant }: { participant: BattleParticipant | n
     <header className="sticky top-0 z-50 border-b border-white/10 bg-slate-950/60 backdrop-blur-xl">
       <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-4 sm:px-6">
         <a href="/battle" className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-400 to-indigo-600 shadow-[0_0_20px_rgba(0,150,255,0.5)]">
-            <Brain className="h-5 w-5 text-white" />
-          </div>
+          <img src="/alzava-icon.png" alt="ALZAVA Battle IQ" className="h-11 w-11 object-contain drop-shadow-[0_0_14px_rgba(212,175,55,.38)]" />
           <div className="leading-tight">
-            <p className="text-[15px] font-extrabold tracking-tight text-white">Indonesia Battle IQ</p>
-            <p className="text-[11px] text-slate-400">Uji Nalar. Taklukkan Peringkat.</p>
+            <p className="text-[15px] font-extrabold tracking-[.01em] text-white">ALZAVA <span className="text-[#D4AF37]">Battle IQ</span></p>
+            <p className="text-[10px] font-medium uppercase tracking-[.13em] text-slate-400">Higher Thinking Wins</p>
           </div>
         </a>
         <nav className="hidden items-center gap-1 rounded-full border border-white/10 bg-white/5 p-1 backdrop-blur-lg lg:flex">
