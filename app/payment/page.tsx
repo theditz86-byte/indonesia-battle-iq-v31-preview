@@ -137,7 +137,7 @@ export default function PaymentPage() {
             <h2 className="text-xl font-extrabold">Konfirmasi pembayaran</h2>
             <p className="mt-1 text-sm text-slate-400">Kredit baru aktif setelah bukti disetujui admin.</p>
             <form onSubmit={submit} className="mt-6 grid gap-4">
-              <label className="grid gap-2 text-sm font-semibold">Nama Arena / Username
+              <label className="grid gap-2 text-sm font-semibold">Nama Arena
                 <input value={nickname} onChange={(e)=>setNickname(e.target.value)} required maxLength={24} className="rounded-xl border border-white/10 bg-slate-950/70 px-4 py-3 outline-none focus:border-cyan-400/60" placeholder="Nama peserta Battle IQ" />
               </label>
               <label className="grid gap-2 text-sm font-semibold">Nama pembayar
