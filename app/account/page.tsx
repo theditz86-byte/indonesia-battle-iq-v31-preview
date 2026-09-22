@@ -83,8 +83,8 @@ export default function AccountPage() {
   const action = useMemo(() => {
     if (participant?.active_attempt_id) return { href: "/battle-test", label: "Lanjutkan tes yang aktif" }
     if (freeRemaining > 0) return { href: "/battle-test", label: `Mulai tes · sisa gratis ${freeRemaining}x` }
-    if (paidCredits > 0) return { href: "/battle-test", label: `Mulai Practice · kredit ${paidCredits}x` }
-    return { href: "/payment?product=attempt_credit", label: "Buka Practice · Rp5.000" }
+    if (paidCredits > 0) return { href: "/battle-test", label: `Mulai Ranked · kredit ${paidCredits}x` }
+    return { href: "/payment?product=attempt_credit", label: "Buka Ranked · Rp5.000" }
   }, [participant?.active_attempt_id, freeRemaining, paidCredits])
 
   async function loadMe(rawToken: string) {
@@ -263,7 +263,7 @@ export default function AccountPage() {
         <div className="mb-7">
           <p className="text-xs font-black uppercase tracking-[.18em] text-cyan-300">AKUN PESERTA</p>
           <h1 className="mt-3 text-4xl font-black tracking-tight sm:text-6xl">Identitas Battle Anda</h1>
-          <p className="mt-4 max-w-3xl leading-7 text-slate-300">Kelola akun, Nama Arena, foto profil, dan kuota percobaan. Setiap peserta mendapat <strong className="text-white">2x percobaan gratis per season</strong>. Setelah itu, Practice Attempt tambahan Rp5.000 dan tidak mengubah leaderboard resmi.</p>
+          <p className="mt-4 max-w-3xl leading-7 text-slate-300">Kelola akun, Nama Arena, foto profil, dan kuota percobaan. Setiap peserta mendapat <strong className="text-white">2x percobaan gratis per season</strong>. Setelah itu, Ranked Attempt tambahan Rp5.000 tetap dapat mempengaruhi leaderboard resmi.</p>
         </div>
 
         {notice && <div className="mb-5 rounded-2xl border border-emerald-400/30 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-100">{notice}</div>}
@@ -350,9 +350,9 @@ export default function AccountPage() {
                 <div className="rounded-2xl border border-cyan-300/25 bg-cyan-300/10 p-4"><span className="text-xs text-cyan-100">Kuota gratis / season</span><strong className="mt-1 block text-3xl font-black">2x</strong></div>
                 <div className="rounded-2xl border border-white/10 bg-white/5 p-4"><span className="text-xs text-slate-400">Gratis digunakan</span><strong className="mt-1 block text-3xl font-black">{Math.min(2, used)}/2</strong></div>
                 <div className="rounded-2xl border border-white/10 bg-white/5 p-4"><span className="text-xs text-slate-400">Sisa gratis</span><strong className="mt-1 block text-3xl font-black">{freeRemaining}x</strong></div>
-                <div className="rounded-2xl border border-white/10 bg-white/5 p-4"><span className="text-xs text-slate-400">Practice kredit</span><strong className="mt-1 block text-3xl font-black">{paidCredits}x</strong></div>
+                <div className="rounded-2xl border border-white/10 bg-white/5 p-4"><span className="text-xs text-slate-400">Kredit Ranked</span><strong className="mt-1 block text-3xl font-black">{paidCredits}x</strong></div>
               </div>
-              <p className="mt-4 text-sm text-slate-400">Total percobaan yang masih dapat dipakai sekarang: <strong className="text-white">{totalRemaining}x</strong>. Setelah 2x Ranked Attempt gratis habis, setiap Rp5.000 yang disetujui admin membuka 1 Practice Attempt yang tidak mengubah leaderboard.</p>
+              <p className="mt-4 text-sm text-slate-400">Total percobaan yang masih dapat dipakai sekarang: <strong className="text-white">{totalRemaining}x</strong>. Setelah 2x Ranked Attempt gratis habis, setiap Rp5.000 yang disetujui admin membuka 1 Ranked Attempt tambahan yang dapat memperbaiki posisi leaderboard.</p>
             </section>
 
             {!participant.account_ready && (
