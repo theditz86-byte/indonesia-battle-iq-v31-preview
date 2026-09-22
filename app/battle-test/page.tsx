@@ -66,7 +66,7 @@ export default function BattleTestPage() {
   const [phase, setPhase] = useState<"loading"|"lobby"|"test"|"submitting"|"error">("loading")
   const [error, setError] = useState("")
   const [paywall, setPaywall] = useState(false)
-  const [remainingMs, setRemainingMs] = useState(30 * 60 * 1000)
+  const [remainingMs, setRemainingMs] = useState(15 * 60 * 1000)
   const [integrity, setIntegrity] = useState(false)
   const autoSubmitRef = useRef(false)
 
@@ -218,7 +218,7 @@ export default function BattleTestPage() {
         <section className="mx-auto grid max-w-6xl gap-7 px-5 py-12 lg:grid-cols-[1.2fr_.8fr] lg:items-center">
           <div>
             <p className="text-xs font-black uppercase tracking-[.2em] text-cyan-300">Tes Nalar Nasional</p>
-            <h1 className="mt-4 text-5xl font-black leading-[.95] tracking-[-.055em] sm:text-7xl">40 soal.<br/><span className="text-indigo-300">30 menit.</span></h1>
+            <h1 className="mt-4 text-5xl font-black leading-[.95] tracking-[-.055em] sm:text-7xl">30 soal.<br/><span className="text-indigo-300">15 menit.</span></h1>
             <p className="mt-6 max-w-2xl text-base leading-7 text-slate-300">Numerik, logika, verbal, dan spasial dalam satu tes. Dua percobaan pertama setiap season adalah <b className="text-white">Ranked Attempt gratis</b> dan dapat masuk leaderboard resmi.</p>
             <div className="mt-7 grid max-w-2xl gap-3 sm:grid-cols-3">
               <div className="rounded-2xl border border-white/10 bg-white/5 p-4"><span className="text-xs text-slate-400">Gratis tersisa</span><strong className="mt-1 block text-3xl font-black">{freeRemaining}x</strong></div>
@@ -227,13 +227,13 @@ export default function BattleTestPage() {
             </div>
           </div>
           <div className="rounded-3xl border border-cyan-300/20 bg-[#0a1c3b]/90 p-6 shadow-2xl">
-            <div className="flex items-start gap-3"><ShieldCheck className="mt-1 h-6 w-6 text-cyan-300"/><div><h2 className="text-xl font-black">Aturan Fair Play</h2><p className="mt-1 text-sm leading-6 text-slate-400">Kerjakan sendiri, tanpa kalkulator, pencarian web, atau bantuan orang lain.</p></div></div>
+            <div className="flex items-start gap-3"><ShieldCheck className="mt-1 h-6 w-6 text-cyan-300"/><div><h2 className="text-xl font-black">Aturan Fair Play</h2><p className="mt-1 text-sm leading-6 text-slate-400">Kerjakan sendiri. Dilarang menggunakan ChatGPT/AI lain, kalkulator, mesin pencari, catatan jawaban, atau bantuan orang lain.</p></div></div>
             <div className="mt-5 rounded-2xl border border-amber-300/20 bg-amber-300/10 p-4 text-sm leading-6 text-amber-100">
               Setelah 2 Ranked Attempt gratis habis, kredit Rp5.000 adalah <b>Practice Attempt</b>. Hasil practice tetap mendapat analisis pribadi, tetapi <b>tidak mengubah leaderboard resmi</b>.
             </div>
             <label className="mt-5 flex cursor-pointer items-start gap-3 rounded-2xl border border-white/10 bg-slate-950/40 p-4 text-sm leading-6 text-slate-200">
               <input type="checkbox" checked={integrity} onChange={(e)=>setIntegrity(e.target.checked)} className="mt-1 h-5 w-5 accent-indigo-500"/>
-              Saya siap mengerjakan sendiri dan memahami aturan kompetisi.
+              Saya akan mengerjakan sendiri tanpa ChatGPT/AI, kalkulator, pencarian web, atau bantuan lain.
             </label>
             {error && <div className="mt-4 rounded-xl border border-rose-400/20 bg-rose-500/10 p-3 text-sm text-rose-100">{error}</div>}
             {paywall ? (
@@ -260,7 +260,7 @@ export default function BattleTestPage() {
       </header>
 
       <section className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
-        {isPractice && <div className="mb-5 rounded-2xl border border-amber-300/20 bg-amber-300/10 px-4 py-3 text-sm text-amber-100">Mode Practice — hasil tes ini tidak akan menaikkan atau menurunkan leaderboard resmi.</div>}
+        {isPractice && <div className="mb-5 rounded-2xl border border-amber-300/20 bg-amber-300/10 px-4 py-3 text-sm text-amber-100">Mode Practice — hasil tes ini tidak akan menaikkan atau menurunkan leaderboard resmi.</div>}\n        <div className="mb-5 rounded-2xl border border-cyan-300/15 bg-cyan-400/[.06] px-4 py-3 text-xs font-semibold leading-5 text-cyan-100">Fair Play: 30 soal · 15 menit · kerjakan tanpa ChatGPT/AI, mesin pencari, kalkulator, atau bantuan orang lain.</div>
         {error && <div className="mb-5 rounded-2xl border border-rose-400/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-100">{error}</div>}
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_280px]">
           <article className="rounded-3xl border border-white/10 bg-[#0a1a37]/90 p-5 shadow-2xl sm:p-8">
