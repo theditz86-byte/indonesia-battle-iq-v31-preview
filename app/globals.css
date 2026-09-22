@@ -21,6 +21,136 @@
   50% { opacity: 1; transform: scale(1.15); }
 }
 
+.alzava-premium-seal {
+  position: relative;
+  width: 164px;
+  height: 164px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 50% 45%, rgba(255,244,181,.18), transparent 34%),
+    radial-gradient(circle, rgba(212,175,55,.16), rgba(7,22,47,.96) 68%);
+  border: 1px solid rgba(245,213,108,.48);
+  box-shadow:
+    inset 0 0 0 5px rgba(212,175,55,.06),
+    0 0 0 1px rgba(255,255,255,.025),
+    0 18px 45px rgba(0,0,0,.32),
+    0 0 36px rgba(212,175,55,.12);
+  color: #f5d56c;
+  overflow: hidden;
+}
+
+.alzava-seal-orbit {
+  position: absolute;
+  inset: 10px;
+  border: 1px dashed rgba(245,213,108,.38);
+  border-radius: 999px;
+}
+
+.alzava-seal-orbit-a { transform: rotate(12deg); }
+.alzava-seal-orbit-b {
+  inset: 17px;
+  border-style: solid;
+  border-color: rgba(212,175,55,.16);
+}
+
+.alzava-seal-core {
+  position: relative;
+  z-index: 2;
+  width: 112px;
+  height: 112px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 1px solid rgba(245,213,108,.42);
+  background: radial-gradient(circle at 50% 36%, rgba(212,175,55,.12), rgba(2,6,23,.82) 68%);
+  text-align: center;
+}
+
+.alzava-seal-core img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 7px rgba(212,175,55,.28));
+}
+
+.alzava-seal-star {
+  position: absolute;
+  top: -9px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #fff0a8;
+  font-size: 18px;
+  text-shadow: 0 0 12px rgba(245,213,108,.6);
+}
+
+.alzava-seal-core b {
+  margin-top: -2px;
+  color: #fff5c8;
+  font-size: 12px;
+  font-weight: 950;
+  letter-spacing: .18em;
+}
+
+.alzava-seal-core strong {
+  color: #d4af37;
+  font-size: 13px;
+  line-height: 1.05;
+  font-weight: 950;
+  letter-spacing: .09em;
+}
+
+.alzava-seal-core small {
+  margin-top: 2px;
+  color: #c7b36c;
+  font-size: 6px;
+  font-weight: 900;
+  letter-spacing: .14em;
+}
+
+.alzava-seal-core em {
+  margin-top: 3px;
+  color: #718096;
+  font-size: 6px;
+  font-style: normal;
+  font-weight: 800;
+  letter-spacing: .08em;
+}
+
+.alzava-premium-seal::before,
+.alzava-premium-seal::after {
+  content: "✦";
+  position: absolute;
+  top: 50%;
+  z-index: 3;
+  color: #d4af37;
+  font-size: 12px;
+  transform: translateY(-50%);
+}
+
+.alzava-premium-seal::before { left: 8px; }
+.alzava-premium-seal::after { right: 8px; }
+
+.alzava-premium-seal-compact {
+  width: 98px;
+  height: 98px;
+  box-shadow: inset 0 0 0 3px rgba(212,175,55,.05);
+}
+.alzava-premium-seal-compact .alzava-seal-orbit { inset: 6px; }
+.alzava-premium-seal-compact .alzava-seal-orbit-b { inset: 10px; }
+.alzava-premium-seal-compact .alzava-seal-core { width: 68px; height: 68px; }
+.alzava-premium-seal-compact .alzava-seal-core img { width: 28px; height: 28px; }
+.alzava-premium-seal-compact .alzava-seal-core b { font-size: 7px; }
+.alzava-premium-seal-compact .alzava-seal-core strong { font-size: 8px; }
+.alzava-premium-seal-compact .alzava-seal-core small { font-size: 3.8px; }
+.alzava-premium-seal-compact .alzava-seal-core em { font-size: 3.8px; }
+.alzava-premium-seal-compact::before,
+.alzava-premium-seal-compact::after { font-size: 8px; }
+
 .pdf-report { display: none; }
 
 @keyframes sheen {
@@ -684,6 +814,53 @@
     font-size: 9.4px !important;
     font-style: italic !important;
     line-height: 1.22 !important;
+  }
+
+  .pdf-seal-row {
+    margin-top: 8px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
+    border: 1px solid rgba(212,175,55,.18) !important;
+    border-radius: 11px !important;
+    background: linear-gradient(135deg, rgba(212,175,55,.07), rgba(15,23,42,.42)) !important;
+    padding: 8px 10px !important;
+    break-inside: avoid !important;
+  }
+
+  .pdf-seal-row > div:first-child {
+    display: flex !important;
+    min-width: 0 !important;
+    flex-direction: column !important;
+    gap: 2px !important;
+  }
+
+  .pdf-seal-row > div:first-child > b {
+    color: #f4e7b3 !important;
+    font-size: 10px !important;
+  }
+
+  .pdf-seal-row > div:first-child > span {
+    color: #8292aa !important;
+    font-size: 8px !important;
+  }
+
+  .pdf-seal-row .alzava-premium-seal {
+    width: 86px !important;
+    height: 86px !important;
+    min-width: 86px !important;
+    box-shadow: inset 0 0 0 2px rgba(212,175,55,.05) !important;
+  }
+
+  .pdf-seal-row .alzava-seal-core {
+    width: 60px !important;
+    height: 60px !important;
+  }
+
+  .pdf-seal-row .alzava-seal-core img {
+    width: 25px !important;
+    height: 25px !important;
   }
 
   .pdf-footnote {
