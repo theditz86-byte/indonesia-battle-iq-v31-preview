@@ -1,9 +1,5 @@
 # Cloudflare Pages route compatibility
-/account /account.html 200
-/account/ /account.html 200
-/payment /payment.html 200
-/payment/ /payment.html 200
-/admin /admin.html 200
-/admin/ /admin.html 200
-/battle-test /battle-test.html 200
-/battle-test/ /battle-test.html 200
+# Native Next.js routes (/battle, /account, /payment, /admin) are served directly.
+# Battle Test is still bridged to the legacy static test until its native migration is complete.
+/battle-test   /battle-test.html   200
+/battle-test/  /battle-test.html   200
