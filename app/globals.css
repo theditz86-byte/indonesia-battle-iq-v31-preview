@@ -59,8 +59,8 @@
     display: block !important;
     width: 100% !important;
     color: #e5eefc !important;
-    font-size: 9px !important;
-    line-height: 1.38 !important;
+    font-size: 8px !important;
+    line-height: 1.28 !important;
   }
 
   .pdf-report * {
@@ -71,9 +71,11 @@
 
   .pdf-page {
     width: 100% !important;
-    min-height: 283mm !important;
-    padding: 7mm !important;
-    overflow: hidden !important;
+    min-height: 0 !important;
+    padding: 5mm !important;
+    overflow: visible !important;
+    break-inside: avoid-page !important;
+    page-break-inside: avoid !important;
     background:
       radial-gradient(circle at 88% 2%, rgba(79,70,229,.24), transparent 34%),
       linear-gradient(180deg,#07162f 0%,#061227 100%) !important;
@@ -131,7 +133,7 @@
   }
 
   .pdf-hero {
-    margin-top: 12px !important;
+    margin-top: 6px !important;
     align-items: stretch !important;
   }
 
@@ -143,7 +145,7 @@
   .pdf-hero h1 {
     margin: 2px 0 3px !important;
     color: #fff !important;
-    font-size: 31px !important;
+    font-size: 27px !important;
     line-height: 1 !important;
     font-weight: 950 !important;
     letter-spacing: -.03em !important;
@@ -159,7 +161,7 @@
     display: flex !important;
     flex-wrap: wrap !important;
     gap: 5px !important;
-    margin-top: 8px !important;
+    margin-top: 6px !important;
   }
 
   .pdf-tags span {
@@ -173,8 +175,8 @@
   }
 
   .pdf-iq {
-    width: 125px !important;
-    min-width: 125px !important;
+    width: 112px !important;
+    min-width: 112px !important;
     border: 1.5px solid #22d3ee !important;
     border-radius: 18px !important;
     background: rgba(2,6,23,.55) !important;
@@ -194,7 +196,7 @@
     display: block !important;
     margin: 2px 0 !important;
     color: #fff !important;
-    font-size: 34px !important;
+    font-size: 30px !important;
     line-height: 1 !important;
     font-weight: 950 !important;
   }
@@ -251,7 +253,7 @@
   .pdf-grid-2 {
     display: grid !important;
     grid-template-columns: repeat(2,minmax(0,1fr)) !important;
-    gap: 7px !important;
+    gap: 5px !important;
   }
 
   .pdf-grid-3 {
@@ -261,7 +263,7 @@
   }
 
   .pdf-summary-grid {
-    margin-top: 8px !important;
+    margin-top: 6px !important;
     grid-template-columns: 1.15fr .85fr !important;
   }
 
@@ -269,7 +271,7 @@
     border: 1px solid rgba(148,163,184,.17) !important;
     border-radius: 10px !important;
     background: rgba(15,23,42,.46) !important;
-    padding: 9px !important;
+    padding: 7px !important;
     break-inside: avoid !important;
   }
 
@@ -289,7 +291,7 @@
   }
 
   .pdf-inline-note {
-    margin-top: 7px !important;
+    margin-top: 5px !important;
     border-radius: 7px !important;
     background: rgba(99,102,241,.12) !important;
     padding: 6px !important;
@@ -299,14 +301,14 @@
   .pdf-radar-card { padding-bottom: 7px !important; }
 
   .pdf-radar {
-    height: 150px !important;
+    height: 128px !important;
     overflow: hidden !important;
   }
 
   .pdf-radar svg {
     display: block !important;
-    width: 170px !important;
-    height: 165px !important;
+    width: 148px !important;
+    height: 142px !important;
     margin: -8px auto 0 !important;
   }
 
@@ -329,7 +331,7 @@
 
   .pdf-bottom-strip,
   .pdf-method {
-    margin-top: 7px !important;
+    margin-top: 5px !important;
   }
 
   .pdf-bottom-strip > div,
@@ -367,7 +369,7 @@
   .pdf-domain-list {
     display: grid !important;
     gap: 6px !important;
-    margin-top: 8px !important;
+    margin-top: 6px !important;
   }
 
   .pdf-domain-card {
@@ -383,7 +385,7 @@
 
   .pdf-domain-score {
     display: flex !important;
-    min-height: 78px !important;
+    min-height: 64px !important;
     flex-direction: column !important;
     align-items: center !important;
     justify-content: center !important;
@@ -399,7 +401,7 @@
 
   .pdf-domain-score strong {
     color: #67e8f9 !important;
-    font-size: 24px !important;
+    font-size: 21px !important;
     line-height: 1 !important;
   }
 
@@ -464,7 +466,7 @@
   }
 
   .pdf-interpret-box {
-    margin-top: 7px !important;
+    margin-top: 5px !important;
     border: 1px solid rgba(34,211,238,.18) !important;
     border-radius: 9px !important;
     background: rgba(6,182,212,.06) !important;
@@ -475,7 +477,7 @@
   .pdf-interpret-box p { margin: 2px 0 0 !important; color: #cbd5e1 !important; }
 
   .pdf-insight-grid {
-    margin-top: 8px !important;
+    margin-top: 6px !important;
   }
 
   .pdf-green { color: #6ee7b7 !important; }
@@ -523,7 +525,7 @@
   }
 
   .pdf-growth {
-    margin-top: 7px !important;
+    margin-top: 5px !important;
   }
 
   .pdf-growth-head > p {
@@ -564,7 +566,7 @@
   }
 
   .pdf-footnote {
-    margin-top: 7px !important;
+    margin-top: 5px !important;
     border-top: 1px solid rgba(148,163,184,.14) !important;
     padding-top: 6px !important;
     color: #64748b !important;
