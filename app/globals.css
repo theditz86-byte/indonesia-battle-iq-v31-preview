@@ -59,8 +59,8 @@
     display: block !important;
     width: 100% !important;
     color: #e5eefc !important;
-    font-size: 8px !important;
-    line-height: 1.28 !important;
+    font-size: 7.6px !important;
+    line-height: 1.24 !important;
   }
 
   .pdf-report * {
@@ -72,7 +72,7 @@
   .pdf-page {
     width: 100% !important;
     min-height: 0 !important;
-    padding: 5mm !important;
+    padding: 4.5mm !important;
     overflow: visible !important;
     break-inside: avoid-page !important;
     page-break-inside: avoid !important;
@@ -145,7 +145,7 @@
   .pdf-hero h1 {
     margin: 2px 0 3px !important;
     color: #fff !important;
-    font-size: 27px !important;
+    font-size: 25px !important;
     line-height: 1 !important;
     font-weight: 950 !important;
     letter-spacing: -.03em !important;
@@ -175,8 +175,8 @@
   }
 
   .pdf-iq {
-    width: 112px !important;
-    min-width: 112px !important;
+    width: 104px !important;
+    min-width: 104px !important;
     border: 1.5px solid #22d3ee !important;
     border-radius: 18px !important;
     background: rgba(2,6,23,.55) !important;
@@ -196,7 +196,7 @@
     display: block !important;
     margin: 2px 0 !important;
     color: #fff !important;
-    font-size: 30px !important;
+    font-size: 28px !important;
     line-height: 1 !important;
     font-weight: 950 !important;
   }
@@ -301,14 +301,14 @@
   .pdf-radar-card { padding-bottom: 7px !important; }
 
   .pdf-radar {
-    height: 128px !important;
+    height: 108px !important;
     overflow: hidden !important;
   }
 
   .pdf-radar svg {
     display: block !important;
-    width: 148px !important;
-    height: 142px !important;
+    width: 130px !important;
+    height: 122px !important;
     margin: -8px auto 0 !important;
   }
 
@@ -573,6 +573,59 @@
     font-size: 6.5px !important;
     line-height: 1.35 !important;
   }
+
+  /* Page 1 combines the overview and Deep Dive so portrait pages are filled efficiently. */
+  .pdf-page-one .pdf-stats { margin-top: 6px !important; }
+  .pdf-page-one .pdf-stats > div { padding: 5px !important; }
+  .pdf-page-one .pdf-stats b { font-size: 11px !important; }
+  .pdf-page-one .pdf-summary-grid { margin-top: 5px !important; }
+  .pdf-page-one .pdf-card { padding: 6px !important; }
+  .pdf-page-one .pdf-card h2 { font-size: 13px !important; margin-bottom: 3px !important; }
+  .pdf-page-one .pdf-card p { margin: 2px 0 !important; }
+  .pdf-page-one .pdf-bottom-strip { margin-top: 4px !important; }
+  .pdf-page-one .pdf-bottom-strip > div { padding: 5px !important; }
+  .pdf-page-one .pdf-bottom-strip span { font-size: 6.6px !important; line-height: 1.22 !important; }
+
+  .pdf-deep-title {
+    margin-top: 6px !important;
+    padding-top: 5px !important;
+    padding-bottom: 4px !important;
+    border-top: 1px solid rgba(148,163,184,.15) !important;
+  }
+  .pdf-deep-title h2 { font-size: 13px !important; margin: 1px 0 0 !important; }
+
+  .pdf-page-one .pdf-domain-list {
+    gap: 4px !important;
+    margin-top: 4px !important;
+  }
+  .pdf-page-one .pdf-domain-card {
+    grid-template-columns: 58px 1fr !important;
+    gap: 6px !important;
+    padding: 5px !important;
+    border-radius: 8px !important;
+  }
+  .pdf-page-one .pdf-domain-score {
+    min-height: 49px !important;
+    border-radius: 7px !important;
+  }
+  .pdf-page-one .pdf-domain-score strong { font-size: 18px !important; }
+  .pdf-page-one .pdf-domain-head h3 { font-size: 9.5px !important; }
+  .pdf-page-one .pdf-bar { height: 3px !important; margin: 3px 0 4px !important; }
+  .pdf-page-one .pdf-domain-cols { gap: 4px !important; }
+  .pdf-page-one .pdf-domain-cols > div { padding: 4px !important; border-radius: 6px !important; }
+  .pdf-page-one .pdf-domain-cols b { font-size: 5.2px !important; }
+  .pdf-page-one .pdf-domain-cols p { font-size: 6.25px !important; line-height: 1.18 !important; margin-top: 1px !important; }
+  .pdf-page-one .pdf-interpret-box { margin-top: 4px !important; padding: 5px !important; }
+  .pdf-page-one .pdf-interpret-box p { font-size: 6.5px !important; line-height: 1.2 !important; }
+
+  /* Page 2 keeps all actionable guidance together without oversized empty areas. */
+  .pdf-page-two .pdf-page-title { padding-bottom: 5px !important; }
+  .pdf-page-two .pdf-insight-grid { margin-top: 5px !important; }
+  .pdf-page-two .pdf-card { padding: 7px !important; }
+  .pdf-page-two .pdf-number-list li,
+  .pdf-page-two .pdf-bullet-list li { margin-bottom: 3px !important; }
+  .pdf-page-two .pdf-growth { margin-top: 5px !important; }
+  .pdf-page-two .pdf-method { margin-top: 5px !important; }
 
   svg {
     -webkit-print-color-adjust: exact !important;
