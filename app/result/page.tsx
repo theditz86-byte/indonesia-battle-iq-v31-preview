@@ -375,7 +375,7 @@ export default function ResultPage() {
                 <div className="mt-7 flex flex-wrap gap-2">
                   <span className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-bold text-slate-300">{signature.tag}</span>
                   <span className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-bold text-slate-300">{pace.title}</span>
-                  <span className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-bold text-slate-300">{result.ranked_attempt===false ? "Practice Result" : "Ranked Result"}</span>
+                  <span className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-bold text-slate-300">{"Ranked Result"}</span>
                 </div>
               </div>
 
@@ -426,7 +426,7 @@ export default function ResultPage() {
                   <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">Bukan sekadar angka. Baca cara otak Anda memecahkan masalah.</h2>
                   <p className="mt-3 leading-7 text-slate-300">Laporan Premium membuka peta kognitif visual, karakter pemecahan masalah, analisis setiap domain, 5 kekuatan utama, blind spot, strategi belajar, dan rencana peningkatan 30 hari.</p>
                 </div>
-                <button onClick={openPremium} className="no-print inline-flex shrink-0 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-500 to-fuchsia-500 px-7 py-4 font-black shadow-[0_0_35px_rgba(168,85,247,.3)]"><LockKeyhole className="h-5 w-5"/>Buka Premium · Rp9.900</button>
+                <button onClick={openPremium} className="no-print inline-flex shrink-0 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-500 to-fuchsia-500 px-7 py-4 font-black shadow-[0_0_35px_rgba(168,85,247,.3)]"><LockKeyhole className="h-5 w-5"/>Buka Premium · Rp5.000</button>
               </div>
               <div className="mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {[
