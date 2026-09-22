@@ -251,6 +251,24 @@ async function track(event_type:string, details:Record<string,unknown>={}) {
   try { await post({action:"track",event_type,details}) } catch {}
 }
 
+function PremiumSeal({reference,compact=false}:{reference?:string;compact?:boolean}) {
+  const ref=(reference || "ALZAVA").replace(/[^a-z0-9]/gi,"").slice(0,8).toUpperCase()
+  return (
+    <div className={compact ? "alzava-premium-seal alzava-premium-seal-compact" : "alzava-premium-seal"} aria-label="ALZAVA Premium Report seal">
+      <div className="alzava-seal-orbit alzava-seal-orbit-a"/>
+      <div className="alzava-seal-orbit alzava-seal-orbit-b"/>
+      <div className="alzava-seal-core">
+        <span className="alzava-seal-star">✦</span>
+        <img src="/alzava-emblem-v3.svg" alt="" />
+        <b>ALZAVA</b>
+        <strong>PREMIUM</strong>
+        <small>ORIGINAL REPORT</small>
+        <em>REF {ref || "PREMIUM"}</em>
+      </div>
+    </div>
+  )
+}
+
 export default function ResultPage() {
   const [data,setData]=useState<LatestResult|null>(null)
   const [loading,setLoading]=useState(true)
@@ -367,14 +385,14 @@ export default function ResultPage() {
           <div className="relative overflow-hidden border-b border-white/10 p-6 sm:p-9 lg:p-11">
             <div className="absolute -right-24 -top-24 h-80 w-80 rounded-full bg-indigo-500/20 blur-3xl"/>
             <div className="absolute right-32 top-16 h-56 w-56 rounded-full bg-cyan-400/10 blur-3xl"/>
-            <div className="relative grid gap-8 lg:grid-cols-[1fr_360px] lg:items-center">
+            <div className="relative grid gap-5 md:grid-cols-[minmax(0,1fr)_250px] md:items-center lg:grid-cols-[minmax(0,1fr)_310px] lg:gap-8">
               <div>
                 <div className="mb-5 flex flex-wrap items-center gap-2">
                   <span className="rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1.5 text-[11px] font-black uppercase tracking-[.18em] text-cyan-200">ALZAVA Battle IQ</span>
                   {result.high_range_attempted ? <span className="inline-flex items-center gap-1.5 rounded-full border border-violet-300/25 bg-violet-400/10 px-3 py-1.5 text-[11px] font-black uppercase tracking-[.12em] text-violet-200"><ShieldCheck className="h-3.5 w-3.5"/>High Range Verified</span> : <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[11px] font-black uppercase tracking-[.12em] text-slate-300">Core Result</span>}
                 </div>
                 <p className="text-sm font-bold uppercase tracking-[.22em] text-slate-500">Cognitive Performance Report</p>
-                <h1 className="mt-3 text-5xl font-black tracking-[-.05em] sm:text-7xl">{data.nickname || "Peserta"}</h1>
+                <h1 className="mt-3 text-4xl font-black tracking-[-.05em] sm:text-6xl lg:text-7xl">{data.nickname || "Peserta"}</h1>
                 <p className="mt-4 text-sm text-slate-400">{[data.district_name,data.regency_name,data.province_name].filter(Boolean).join(" · ")}</p>
                 <div className="mt-7 flex flex-wrap gap-2">
                   <span className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-bold text-slate-300">{signature.tag}</span>
@@ -383,13 +401,13 @@ export default function ResultPage() {
                 </div>
               </div>
 
-              <div className="relative mx-auto h-[310px] w-[310px]">
+              <div className="relative mx-auto h-[220px] w-[220px] sm:h-[245px] sm:w-[245px] md:h-[250px] md:w-[250px] lg:h-[300px] lg:w-[300px]">
                 <div className="absolute inset-0 rounded-full bg-cyan-400/10 blur-3xl"/>
                 <div className="absolute inset-4 rounded-full p-[2px]" style={{background:"conic-gradient(#67e8f9 "+iqProgress+"%, rgba(255,255,255,.08) "+iqProgress+"%)"}}>
                   <div className="grid h-full w-full place-items-center rounded-full bg-[#061329]">
                     <div className="text-center">
                       <p className="text-[11px] font-black uppercase tracking-[.18em] text-cyan-300">Estimasi IQ Battle</p>
-                      <strong className="mt-2 block text-7xl font-black tracking-[-.06em]">{iq || "—"}</strong>
+                      <strong className="mt-2 block text-5xl font-black tracking-[-.06em] sm:text-6xl lg:text-7xl">{iq || "—"}</strong>
                       <p className="mt-1 text-sm font-bold text-slate-300">{iqTier(iq)}</p>
                       <p className="mt-2 text-xs text-slate-500">Rentang {result.iq_low ?? "—"}–{result.iq_high ?? "—"}</p>
                     </div>
@@ -529,6 +547,17 @@ export default function ResultPage() {
                 <div className="rounded-3xl border border-white/10 bg-white/[.035] p-5"><Trophy className="h-6 w-6 text-amber-300"/><h3 className="mt-4 font-black">Benchmark</h3><p className="mt-2 text-sm leading-6 text-slate-400">Peringkat dan persentase bersifat dinamis mengikuti peserta season aktif. Gunakan terutama untuk membandingkan posisi kompetitif, bukan sebagai norma populasi Indonesia.</p></div>
               </section>
             </div>
+          )}
+
+          {data.premium_unlocked && (
+            <section className="mx-6 mb-8 flex flex-col items-center justify-between gap-6 rounded-[2rem] border border-amber-300/15 bg-[radial-gradient(circle_at_85%_20%,rgba(212,175,55,.12),transparent_30%),linear-gradient(135deg,rgba(15,23,42,.72),rgba(30,41,59,.42))] p-6 sm:mx-9 sm:flex-row sm:p-8">
+              <div className="max-w-2xl">
+                <p className="text-[11px] font-black uppercase tracking-[.2em] text-amber-300">ALZAVA Premium Seal</p>
+                <h2 className="mt-2 text-2xl font-black text-white">Tanda khas laporan premium ALZAVA.</h2>
+                <p className="mt-3 text-sm leading-7 text-slate-400">Stempel ini adalah identitas visual original ALZAVA Battle IQ untuk laporan premium. Referensi laporan: <b className="text-slate-200">{(result.attempt_id || "ALZAVA").slice(0,8).toUpperCase()}</b>.</p>
+              </div>
+              <PremiumSeal reference={result.attempt_id}/>
+            </section>
           )}
 
           <div className="border-t border-white/10 bg-slate-950/30 px-6 py-6 text-xs leading-6 text-slate-500 sm:px-9">
@@ -705,6 +734,15 @@ export default function ResultPage() {
                 </div>
                 <div className="pdf-motivation-line">“Kemajuan terbaik bukan selalu lompatan besar — tetapi bukti bahwa cara berpikir Anda semakin tajam dari percobaan ke percobaan.”</div>
               </section>
+
+              <div className="pdf-seal-row">
+                <div>
+                  <p className="pdf-section-label pdf-gold">ALZAVA PREMIUM SEAL</p>
+                  <b>Original visual mark of ALZAVA Battle IQ Premium Report</b>
+                  <span>Referensi laporan: {(result.attempt_id || "ALZAVA").slice(0,8).toUpperCase()}</span>
+                </div>
+                <PremiumSeal reference={result.attempt_id} compact/>
+              </div>
 
               <div className="pdf-footnote"><b>Catatan interpretasi:</b> Estimasi IQ Battle dan analisis kognitif menggambarkan performa pada sistem ALZAVA Battle IQ. Ini bukan diagnosis psikologis, tes IQ klinis terstandarisasi, penilaian kepribadian, atau pengganti asesmen oleh psikolog berwenang.</div>
             </div>
