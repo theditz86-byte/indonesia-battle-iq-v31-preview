@@ -21,6 +21,8 @@ type Attempt = {
   started_at?: string
   deadline_at: string
   resumed?: boolean
+  high_range_unlocked?: boolean
+  core_answers?: Array<number | null> | null
   questions: Question[]
 }
 
@@ -69,6 +71,8 @@ export default function BattleTestPage() {
   const [remainingMs, setRemainingMs] = useState(15 * 60 * 1000)
   const [integrity, setIntegrity] = useState(false)
   const autoSubmitRef = useRef(false)
+  const answersRef = useRef<Array<number | null>>([])
+  const [stageNotice,setStageNotice] = useState("")
 
   const token = typeof window === "undefined" ? "" : getParticipantToken()
 
@@ -94,13 +98,17 @@ export default function BattleTestPage() {
   }, [])
 
   useEffect(() => {
+    answersRef.current = answers
+  }, [answers])
+
+  useEffect(() => {
     if (!attempt || phase !== "test") return
     const update = () => {
       const left = new Date(attempt.deadline_at).getTime() - Date.now()
       setRemainingMs(Math.max(0, left))
       if (left <= 0 && !autoSubmitRef.current) {
         autoSubmitRef.current = true
-        void submit(true)
+        void finishStage(true)
       }
     }
     update()
@@ -148,8 +156,12 @@ export default function BattleTestPage() {
       const started = data as Attempt
       if (!Array.isArray(started.questions) || !started.questions.length) throw new Error("Paket soal belum tersedia.")
       setAttempt(started)
-      setAnswers(Array(started.questions.length).fill(null))
-      setIndex(0)
+      const restored = Array.isArray(started.core_answers) && started.high_range_unlocked
+        ? [...started.core_answers, ...Array(Math.max(0, started.questions.length - started.core_answers.length)).fill(null)]
+        : Array(started.questions.length).fill(null)
+      setAnswers(restored)
+      answersRef.current = restored
+      setIndex(started.high_range_unlocked && started.questions.length > 30 ? 30 : 0)
       autoSubmitRef.current = false
       setRemainingMs(Math.max(0, new Date(started.deadline_at).getTime() - Date.now()))
       setPhase("test")
@@ -167,9 +179,8 @@ export default function BattleTestPage() {
     })
   }
 
-  async function submit(force = false) {
-    if (!attempt || phase === "submitting") return
-    if (!force && unanswered > 0 && !window.confirm(`Masih ada ${unanswered} soal belum dijawab. Tetap kirim?`)) return
+  async function sendSubmit(payload: Array<number | null>) {
+    if (!attempt) return
     const rawToken = getParticipantToken()
     if (!rawToken) {
       window.location.href = "/account"
@@ -181,7 +192,7 @@ export default function BattleTestPage() {
       const { response, data } = await callBattle({
         action: "submit",
         attempt_id: attempt.attempt_id,
-        answers,
+        answers: payload,
       }, rawToken)
       if (!response.ok) throw new Error(data?.error || "Hasil belum berhasil dikirim.")
       try {
@@ -193,6 +204,64 @@ export default function BattleTestPage() {
       setPhase("test")
       autoSubmitRef.current = false
     }
+  }
+
+  async function finishStage(force = false) {
+    if (!attempt || phase === "submitting") return
+    const payload = answersRef.current
+    const missing = payload.filter((a) => a === null).length
+
+    if (!force && missing > 0 && !window.confirm(`Masih ada ${missing} soal belum dijawab. Tetap lanjut?`)) return
+
+    // Core stage: evaluate eligibility before final submission.
+    if (attempt.questions.length === 30 && !attempt.high_range_unlocked) {
+      const rawToken = getParticipantToken()
+      if (!rawToken) {
+        window.location.href = "/account"
+        return
+      }
+      setPhase("submitting")
+      setError("")
+      try {
+        const { response, data } = await callBattle({
+          action: "qualify",
+          attempt_id: attempt.attempt_id,
+          answers: payload.slice(0,30),
+        }, rawToken)
+        if (!response.ok) throw new Error(data?.error || "Tahap inti belum dapat diperiksa.")
+
+        const result = data.result || {}
+        if (result.qualified && Array.isArray(result.questions) && result.questions.length) {
+          const extra = result.questions as Question[]
+          const nextAnswers = [...payload.slice(0,30), ...Array(extra.length).fill(null)]
+          setAttempt({
+            ...attempt,
+            questions:[...attempt.questions,...extra],
+            deadline_at:result.deadline_at,
+            high_range_unlocked:true,
+            core_answers:payload.slice(0,30),
+          })
+          setAnswers(nextAnswers)
+          answersRef.current = nextAnswers
+          setIndex(30)
+          setRemainingMs(Math.max(0,new Date(result.deadline_at).getTime()-Date.now()))
+          setStageNotice(`High Range terbuka — skor inti ${result.core_score ?? "tinggi"}. Anda mendapat 10 soal tambahan dan 8 menit untuk mengonfirmasi rentang skor atas.`)
+          autoSubmitRef.current=false
+          setPhase("test")
+          return
+        }
+
+        await sendSubmit(payload.slice(0,30))
+        return
+      } catch(e) {
+        setError(e instanceof Error ? e.message : "Tahap inti belum dapat diperiksa.")
+        setPhase("test")
+        autoSubmitRef.current=false
+        return
+      }
+    }
+
+    await sendSubmit(payload)
   }
 
   if (phase === "loading") {
@@ -220,6 +289,7 @@ export default function BattleTestPage() {
             <p className="text-xs font-black uppercase tracking-[.2em] text-cyan-300">Tes Nalar Nasional</p>
             <h1 className="mt-4 text-5xl font-black leading-[.95] tracking-[-.055em] sm:text-7xl">30 soal.<br/><span className="text-indigo-300">15 menit.</span></h1>
             <p className="mt-6 max-w-2xl text-base leading-7 text-slate-300">Numerik, logika, verbal, dan spasial dalam satu tes. Dua percobaan pertama setiap season adalah <b className="text-white">Ranked Attempt gratis</b> dan dapat masuk leaderboard resmi.</p>
+            <div className="mt-5 max-w-2xl rounded-2xl border border-violet-300/20 bg-violet-400/10 p-4 text-sm leading-6 text-violet-100"><b>High Range adaptif:</b> bila Battle Score inti mencapai 850+, sistem membuka 10 soal yang lebih sulit dengan tambahan waktu 8 menit. Skor sangat tinggi harus dikonfirmasi pada tahap ini.</div>
             <div className="mt-7 grid max-w-2xl gap-3 sm:grid-cols-3">
               <div className="rounded-2xl border border-white/10 bg-white/5 p-4"><span className="text-xs text-slate-400">Gratis tersisa</span><strong className="mt-1 block text-3xl font-black">{freeRemaining}x</strong></div>
               <div className="rounded-2xl border border-white/10 bg-white/5 p-4"><span className="text-xs text-slate-400">Practice kredit</span><strong className="mt-1 block text-3xl font-black">{paidCredits}x</strong></div>
@@ -253,14 +323,16 @@ export default function BattleTestPage() {
     <main className="min-h-screen bg-[radial-gradient(circle_at_20%_0%,rgba(55,115,255,.16),transparent_28rem),linear-gradient(180deg,#020817,#06132b)] text-white">
       <header className="sticky top-0 z-30 border-b border-white/10 bg-[#020817]/90 backdrop-blur-xl">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
-          <div><p className="text-xs font-black text-cyan-300">{isPractice ? "PRACTICE ATTEMPT" : "RANKED ATTEMPT"}</p><p className="text-sm font-bold text-white">Percobaan #{attempt.attempt_number}</p></div>
+          <div><p className="text-xs font-black text-cyan-300">{attempt.high_range_unlocked ? "HIGH RANGE · VERIFIED PATH" : isPractice ? "PRACTICE ATTEMPT" : "RANKED ATTEMPT"}</p><p className="text-sm font-bold text-white">Percobaan #{attempt.attempt_number}{attempt.high_range_unlocked ? " · Tahap 2/2" : " · Tahap 1/2"}</p></div>
           <div className={`flex items-center gap-2 rounded-xl border px-4 py-2 font-mono text-lg font-black ${remainingMs < 5*60*1000 ? "border-rose-400/30 bg-rose-500/10 text-rose-200" : "border-white/10 bg-white/5"}`}><Clock3 className="h-4 w-4"/>{timeText(remainingMs)}</div>
         </div>
         <div className="h-1 bg-slate-900"><div className="h-full bg-gradient-to-r from-cyan-400 to-indigo-500 transition-all" style={{width: `${progress}%`}}/></div>
       </header>
 
       <section className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
-        {isPractice && <div className="mb-5 rounded-2xl border border-amber-300/20 bg-amber-300/10 px-4 py-3 text-sm text-amber-100">Mode Practice — hasil tes ini tidak akan menaikkan atau menurunkan leaderboard resmi.</div>}\n        <div className="mb-5 rounded-2xl border border-cyan-300/15 bg-cyan-400/[.06] px-4 py-3 text-xs font-semibold leading-5 text-cyan-100">Fair Play: 30 soal · 15 menit · kerjakan tanpa ChatGPT/AI, mesin pencari, kalkulator, atau bantuan orang lain.</div>
+        {isPractice && <div className="mb-5 rounded-2xl border border-amber-300/20 bg-amber-300/10 px-4 py-3 text-sm text-amber-100">Mode Practice — hasil tes ini tidak akan menaikkan atau menurunkan leaderboard resmi.</div>}
+        {stageNotice && <div className="mb-5 rounded-2xl border border-violet-300/30 bg-violet-500/15 px-4 py-3 text-sm font-semibold leading-6 text-violet-100">{stageNotice}</div>}
+        <div className="mb-5 rounded-2xl border border-cyan-300/15 bg-cyan-400/[.06] px-4 py-3 text-xs font-semibold leading-5 text-cyan-100">{attempt.high_range_unlocked ? "High Range: 10 soal tambahan · 8 menit · skor rentang atas sedang diverifikasi." : "Fair Play: 30 soal · 15 menit · kerjakan tanpa ChatGPT/AI, mesin pencari, kalkulator, atau bantuan orang lain."}</div>
         {error && <div className="mb-5 rounded-2xl border border-rose-400/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-100">{error}</div>}
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_280px]">
           <article className="rounded-3xl border border-white/10 bg-[#0a1a37]/90 p-5 shadow-2xl sm:p-8">
@@ -286,7 +358,7 @@ export default function BattleTestPage() {
               {index < attempt.questions.length - 1 ? (
                 <button onClick={()=>setIndex((i)=>Math.min(attempt.questions.length-1,i+1))} className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-5 py-3 font-black">Berikutnya<ChevronRight className="h-4 w-4"/></button>
               ) : (
-                <button onClick={()=>submit(false)} disabled={phase==="submitting"} className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-3 font-black disabled:opacity-60">{phase==="submitting"?<Loader2 className="h-4 w-4 animate-spin"/>:<CheckCircle2 className="h-4 w-4"/>}Kirim Hasil</button>
+                <button onClick={()=>finishStage(false)} disabled={phase==="submitting"} className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-3 font-black disabled:opacity-60">{phase==="submitting"?<Loader2 className="h-4 w-4 animate-spin"/>:<CheckCircle2 className="h-4 w-4"/>}{attempt.questions.length===30 ? "Periksa High Range" : "Kirim Hasil Final"}</button>
               )}
             </div>
           </article>
@@ -294,10 +366,10 @@ export default function BattleTestPage() {
           <aside className="h-fit rounded-3xl border border-white/10 bg-white/5 p-5 lg:sticky lg:top-24">
             <div className="flex items-center justify-between"><h2 className="font-black">Navigasi Soal</h2><span className="text-xs text-slate-400">{attempt.questions.length-unanswered}/{attempt.questions.length} dijawab</span></div>
             <div className="mt-4 grid grid-cols-5 gap-2">
-              {attempt.questions.map((_, i) => <button key={i} onClick={()=>setIndex(i)} className={`h-9 rounded-lg text-xs font-black ${i===index ? "bg-indigo-500 text-white ring-2 ring-indigo-300/40" : answers[i]!==null ? "bg-emerald-500/20 text-emerald-200" : "bg-slate-900 text-slate-500"}`}>{i+1}</button>)}
+              {attempt.questions.map((_, i) => <button key={i} onClick={()=>setIndex(i)} className={`h-9 rounded-lg text-xs font-black ${i===index ? (i>=30 ? "bg-violet-500 text-white ring-2 ring-violet-300/40" : "bg-indigo-500 text-white ring-2 ring-indigo-300/40") : answers[i]!==null ? "bg-emerald-500/20 text-emerald-200" : i>=30 ? "bg-violet-950/70 text-violet-300" : "bg-slate-900 text-slate-500"}`}>{i+1}</button>)}
             </div>
             <div className="mt-5 rounded-2xl bg-slate-950/40 p-4 text-sm text-slate-400">Belum dijawab: <b className="text-white">{unanswered}</b></div>
-            <button onClick={()=>submit(false)} disabled={phase==="submitting"} className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-emerald-400/30 bg-emerald-500/10 px-4 py-3 font-black text-emerald-200 disabled:opacity-60"><CheckCircle2 className="h-4 w-4"/>Selesai & Kirim</button>
+            <button onClick={()=>finishStage(false)} disabled={phase==="submitting"} className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-emerald-400/30 bg-emerald-500/10 px-4 py-3 font-black text-emerald-200 disabled:opacity-60"><CheckCircle2 className="h-4 w-4"/>{attempt.questions.length===30 ? "Selesai Inti" : "Selesai High Range"}</button>
           </aside>
         </div>
       </section>
