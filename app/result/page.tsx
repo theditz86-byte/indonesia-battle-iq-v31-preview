@@ -319,11 +319,11 @@ export default function ResultPage() {
   async function share() {
     if(!data?.participant_public_id || !result) return
     const url=window.location.origin + "/challenge?id=" + encodeURIComponent(data.participant_public_id)
-    const text=(data.nickname || "Saya") + " meraih Estimasi IQ Battle " + (result.iq_estimate ?? "—") + " dan peringkat nasional #" + (result.national_rank ?? "—") + " di Indonesia Battle IQ. Berani mengalahkan skor ini?"
+    const text=(data.nickname || "Saya") + " meraih Estimasi IQ Battle " + (result.iq_estimate ?? "—") + " dan peringkat nasional #" + (result.national_rank ?? "—") + " di ALZAVA Battle IQ. Berani mengalahkan skor ini?"
     void track("share_clicked",{attempt_id:result.attempt_id,national_rank:result.national_rank})
     try{
       if(navigator.share){
-        await navigator.share({title:"Tantangan Indonesia Battle IQ",text,url})
+        await navigator.share({title:"Tantangan ALZAVA Battle IQ",text,url})
       }else{
         await navigator.clipboard.writeText(text+" "+url)
         setCopied(true)
@@ -366,7 +366,7 @@ export default function ResultPage() {
             <div className="relative grid gap-8 lg:grid-cols-[1fr_360px] lg:items-center">
               <div>
                 <div className="mb-5 flex flex-wrap items-center gap-2">
-                  <span className="rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1.5 text-[11px] font-black uppercase tracking-[.18em] text-cyan-200">Indonesia Battle IQ</span>
+                  <span className="rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1.5 text-[11px] font-black uppercase tracking-[.18em] text-cyan-200">ALZAVA Battle IQ</span>
                   {result.high_range_attempted ? <span className="inline-flex items-center gap-1.5 rounded-full border border-violet-300/25 bg-violet-400/10 px-3 py-1.5 text-[11px] font-black uppercase tracking-[.12em] text-violet-200"><ShieldCheck className="h-3.5 w-3.5"/>High Range Verified</span> : <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[11px] font-black uppercase tracking-[.12em] text-slate-300">Core Result</span>}
                 </div>
                 <p className="text-sm font-bold uppercase tracking-[.22em] text-slate-500">Cognitive Performance Report</p>
@@ -528,7 +528,7 @@ export default function ResultPage() {
           )}
 
           <div className="border-t border-white/10 bg-slate-950/30 px-6 py-6 text-xs leading-6 text-slate-500 sm:px-9">
-            <b className="text-slate-400">Catatan interpretasi:</b> Estimasi IQ Battle dan analisis kognitif di atas menggambarkan performa pada sistem Indonesia Battle IQ. Ini bukan diagnosis psikologis, tes IQ klinis terstandarisasi, penilaian kepribadian, atau pengganti asesmen oleh psikolog berwenang. Pernyataan mengenai “karakter kognitif” berarti pola pemecahan masalah yang tampak pada tes ini, bukan sifat pribadi yang permanen.
+            <b className="text-slate-400">Catatan interpretasi:</b> Estimasi IQ Battle dan analisis kognitif di atas menggambarkan performa pada sistem ALZAVA Battle IQ. Ini bukan diagnosis psikologis, tes IQ klinis terstandarisasi, penilaian kepribadian, atau pengganti asesmen oleh psikolog berwenang. Pernyataan mengenai “karakter kognitif” berarti pola pemecahan masalah yang tampak pada tes ini, bukan sifat pribadi yang permanen.
           </div>
         </section>
       </div>
