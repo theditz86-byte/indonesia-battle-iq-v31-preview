@@ -23,7 +23,7 @@ export function PathToTop() {
 export function PromoBanner() {
   return (
     <section className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 backdrop-blur-lg">
-      <img src="/images/trophy-banner-cf.webp?v=cf4" alt="" loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover opacity-55" />
+      <img src="/images/trophy-banner.png?v=cf5" alt="" loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover opacity-55" />
       <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/70 to-transparent" />
       <div className="relative p-6">
         <p className="text-lg font-extrabold leading-tight text-white">Bukan sekadar tes,<br />tapi perjalanan menjadi<br />diri yang lebih hebat.</p>
