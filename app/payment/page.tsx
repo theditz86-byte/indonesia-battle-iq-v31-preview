@@ -32,7 +32,7 @@ const products = {
     icon:Trophy,
   },
   premium_report: {
-    title:"Laporan Premium",
+    title:"Laporan Premium Hasil Ini",
     eyebrow:"Analisis Hasil",
     amount:5000,
     description:"Buka analisis kemampuan lengkap dari hasil Battle IQ season ini.",
@@ -204,7 +204,7 @@ export default function PaymentPage() {
             <h2 className="text-xl font-extrabold">Konfirmasi pembayaran</h2>
             <p className="mt-1 text-sm text-slate-400">Tahap awal masih menggunakan verifikasi admin. Kredit/fitur hanya aktif setelah bukti disetujui.</p>
 
-            {alreadyUnlocked ? <div className="mt-6 rounded-2xl border border-emerald-400/25 bg-emerald-500/10 p-5"><CheckCircle2 className="h-6 w-6 text-emerald-300"/><p className="mt-3 font-black">Laporan Premium season ini sudah aktif.</p><a href="/result" className="mt-4 inline-flex rounded-xl bg-emerald-600 px-4 py-2.5 font-black">Buka laporan</a></div> :
+            {alreadyUnlocked ? <div className="mt-6 rounded-2xl border border-emerald-400/25 bg-emerald-500/10 p-5"><CheckCircle2 className="h-6 w-6 text-emerald-300"/><p className="mt-3 font-black">Laporan Premium untuk hasil terbaru ini sudah aktif.</p><a href="/result" className="mt-4 inline-flex rounded-xl bg-emerald-600 px-4 py-2.5 font-black">Buka laporan</a></div> :
             <form onSubmit={submit} className="mt-6 grid gap-4">
               <label className="grid gap-2 text-sm font-semibold">Nama Arena
                 <input value={nickname} onChange={(e)=>setNickname(e.target.value)} required maxLength={24} className="rounded-xl border border-white/10 bg-slate-950/70 px-4 py-3 outline-none focus:border-cyan-400/60" placeholder="Nama peserta Battle IQ" />
@@ -227,7 +227,7 @@ export default function PaymentPage() {
             </form>}
 
             {state && !alreadyUnlocked && <div className="mt-6 rounded-2xl border border-white/10 bg-slate-950/50 p-4">
-              <div className="flex flex-wrap items-center justify-between gap-3"><div><p className="text-xs uppercase tracking-wider text-slate-500">Status terakhir</p><p className="font-extrabold">{statusText}</p></div>{product==="attempt_credit"?<div className="text-right"><p className="text-xs text-slate-500">Kredit Ranked tersedia</p><p className="text-2xl font-black text-cyan-300">{Number(state.available_credits || 0)}</p></div>:<div className="text-right"><p className="text-xs text-slate-500">Laporan Premium</p><p className="font-black text-cyan-300">{state.premium_unlocked?"Aktif":"Belum aktif"}</p></div>}</div>
+              <div className="flex flex-wrap items-center justify-between gap-3"><div><p className="text-xs uppercase tracking-wider text-slate-500">Status terakhir</p><p className="font-extrabold">{statusText}</p></div>{product==="attempt_credit"?<div className="text-right"><p className="text-xs text-slate-500">Kredit Ranked tersedia</p><p className="text-2xl font-black text-cyan-300">{Number(state.available_credits || 0)}</p></div>:<div className="text-right"><p className="text-xs text-slate-500">Laporan Premium</p><p className="font-black text-cyan-300">{state.premium_unlocked?"Aktif untuk hasil ini":"Belum dibuka"}</p></div>}</div>
               {state.latest_payment?.admin_note && <p className="mt-3 text-sm text-slate-300">Catatan admin: {state.latest_payment.admin_note}</p>}
               {(status === "approved" || state.premium_unlocked) && <a href={successHref} className="mt-4 inline-flex rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-extrabold">{successLabel}</a>}
             </div>}
