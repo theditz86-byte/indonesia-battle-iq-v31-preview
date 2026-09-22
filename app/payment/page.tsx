@@ -24,17 +24,17 @@ type PaymentState = {
 
 const products = {
   attempt_credit: {
-    title:"Practice Attempt",
+    title:"Ranked Attempt Tambahan",
     eyebrow:"Percobaan Tambahan",
     amount:5000,
-    description:"1 percobaan latihan tambahan setelah 2 Ranked Attempt gratis habis.",
-    detail:"Hasil Practice tetap memberi skor dan analisis pribadi, tetapi tidak mengubah leaderboard resmi.",
+    description:"1 percobaan kompetitif tambahan setelah 2 Ranked Attempt gratis habis.",
+    detail:"Hasil percobaan berbayar tetap kompetitif dan dapat memperbaiki skor terbaik serta posisi leaderboard resmi.",
     icon:Trophy,
   },
   premium_report: {
     title:"Laporan Premium",
     eyebrow:"Analisis Hasil",
-    amount:9900,
+    amount:5000,
     description:"Buka analisis kemampuan lengkap dari hasil Battle IQ season ini.",
     detail:"Profil domain, kekuatan, area pengembangan, rekomendasi latihan, dan laporan yang dapat disimpan sebagai PDF.",
     icon:FileText,
@@ -156,7 +156,7 @@ export default function PaymentPage() {
         proof_mime: proof.type,
         proof_base64: base64,
       })
-      setMessage(`Bukti pembayaran ${data.payment?.product_type==="premium_report"?"Laporan Premium":"Practice Attempt"} untuk ${data.payment?.nickname || nickname} sudah terkirim. Admin akan memverifikasinya.`)
+      setMessage(`Bukti pembayaran ${data.payment?.product_type==="premium_report"?"Laporan Premium":"Ranked Attempt Tambahan"} untuk ${data.payment?.nickname || nickname} sudah terkirim. Admin akan memverifikasinya.`)
       setProof(null)
       const input = document.getElementById("proof") as HTMLInputElement | null
       if (input) input.value = ""
@@ -172,7 +172,7 @@ export default function PaymentPage() {
   const statusText = status === "approved" ? "Disetujui" : status === "rejected" ? "Ditolak" : status === "pending" ? "Menunggu verifikasi" : "Belum ada pembayaran"
   const alreadyUnlocked=product==="premium_report" && state?.premium_unlocked
   const successHref=product==="premium_report"?"/result":"/battle-test"
-  const successLabel=product==="premium_report"?"Buka Laporan Premium":"Mulai Practice Attempt"
+  const successLabel=product==="premium_report"?"Buka Laporan Premium":"Mulai Ranked Attempt"
 
   return (
     <main className="min-h-screen bg-[radial-gradient(circle_at_20%_0%,rgba(56,189,248,.16),transparent_32rem),linear-gradient(180deg,#020817,#07142f_52%,#040b1c)] px-4 py-8 text-white sm:px-6">
@@ -227,7 +227,7 @@ export default function PaymentPage() {
             </form>}
 
             {state && !alreadyUnlocked && <div className="mt-6 rounded-2xl border border-white/10 bg-slate-950/50 p-4">
-              <div className="flex flex-wrap items-center justify-between gap-3"><div><p className="text-xs uppercase tracking-wider text-slate-500">Status terakhir</p><p className="font-extrabold">{statusText}</p></div>{product==="attempt_credit"?<div className="text-right"><p className="text-xs text-slate-500">Practice kredit tersedia</p><p className="text-2xl font-black text-cyan-300">{Number(state.available_credits || 0)}</p></div>:<div className="text-right"><p className="text-xs text-slate-500">Laporan Premium</p><p className="font-black text-cyan-300">{state.premium_unlocked?"Aktif":"Belum aktif"}</p></div>}</div>
+              <div className="flex flex-wrap items-center justify-between gap-3"><div><p className="text-xs uppercase tracking-wider text-slate-500">Status terakhir</p><p className="font-extrabold">{statusText}</p></div>{product==="attempt_credit"?<div className="text-right"><p className="text-xs text-slate-500">Kredit Ranked tersedia</p><p className="text-2xl font-black text-cyan-300">{Number(state.available_credits || 0)}</p></div>:<div className="text-right"><p className="text-xs text-slate-500">Laporan Premium</p><p className="font-black text-cyan-300">{state.premium_unlocked?"Aktif":"Belum aktif"}</p></div>}</div>
               {state.latest_payment?.admin_note && <p className="mt-3 text-sm text-slate-300">Catatan admin: {state.latest_payment.admin_note}</p>}
               {(status === "approved" || state.premium_unlocked) && <a href={successHref} className="mt-4 inline-flex rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-extrabold">{successLabel}</a>}
             </div>}
