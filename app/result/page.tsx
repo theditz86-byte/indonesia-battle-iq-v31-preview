@@ -396,13 +396,13 @@ export default function ResultPage() {
           </div>
 
           <div className="grid gap-3 p-6 sm:grid-cols-2 sm:p-9 lg:grid-cols-5">
-            {[
+            {([
               ["Battle Score",Number(result.battle_score||0).toLocaleString("id-ID"),Zap],
               ["Ketepatan",accuracy+"%",Target],
               ["Peringkat",rankText,Trophy],
               ["Waktu",formatDuration(result.duration_ms),Timer],
               ["Rata-rata",avgSec.toFixed(1)+" dtk/soal",Gauge],
-            ].map(([label,value,Icon])=><div key={String(label)} className="rounded-2xl border border-white/10 bg-slate-950/35 p-5"><Icon className="h-5 w-5 text-cyan-300"/><span className="mt-4 block text-xs font-bold uppercase tracking-wider text-slate-500">{String(label)}</span><strong className="mt-1 block text-2xl font-black">{String(value)}</strong></div>)}
+            ] as const).map(([label,value,Icon])=><div key={String(label)} className="rounded-2xl border border-white/10 bg-slate-950/35 p-5"><Icon className="h-5 w-5 text-cyan-300"/><span className="mt-4 block text-xs font-bold uppercase tracking-wider text-slate-500">{String(label)}</span><strong className="mt-1 block text-2xl font-black">{String(value)}</strong></div>)}
           </div>
 
           <div className="mx-6 mb-8 grid gap-4 sm:mx-9 lg:grid-cols-[1.2fr_.8fr]">
