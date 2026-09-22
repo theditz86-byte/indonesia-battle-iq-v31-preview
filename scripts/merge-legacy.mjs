@@ -1,7 +1,7 @@
 import { mkdir, writeFile } from "node:fs/promises"
 import { join } from "node:path"
 
-const out = join(process.cwd(), "out")
+const out = join(process.cwd(), "public")
 await mkdir(out, { recursive: true })
 await mkdir(join(out, "assets"), { recursive: true })
 
