@@ -1,6 +1,11 @@
-import { Brain, Camera, Music2, Play, Send } from "lucide-react"
+import { Brain } from "lucide-react"
 
-const footerLinks = ["Tentang", "Syarat & Ketentuan", "Kebijakan Privasi", "Bantuan"]
+const footerLinks = [
+  {label:"Syarat & Ketentuan",href:"/terms"},
+  {label:"Kebijakan Privasi",href:"/privacy"},
+  {label:"Pengembalian Dana",href:"/refund"},
+  {label:"Bantuan",href:"/help"},
+]
 
 export function SiteFooter() {
   return (
@@ -19,26 +24,14 @@ export function SiteFooter() {
 
           <nav className="flex flex-wrap gap-x-6 gap-y-2">
             {footerLinks.map((link) => (
-              <a
-                key={link}
-                href="#tentang"
-                className="text-sm text-slate-400 transition-colors hover:text-white"
-              >
-                {link}
+              <a key={link.href} href={link.href} className="text-sm text-slate-400 transition-colors hover:text-white">
+                {link.label}
               </a>
             ))}
           </nav>
 
-          <div className="flex items-center gap-3">
-            {[Send, Camera, Play, Music2].map((Icon, i) => (
-              <a
-                key={i}
-                href="#"
-                className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/5 text-slate-300 transition-colors hover:text-white"
-              >
-                <Icon className="h-4 w-4" />
-              </a>
-            ))}
+          <div className="max-w-sm text-sm leading-6 text-slate-400">
+            2 Ranked Attempt gratis per season. Practice berbayar tidak mengubah leaderboard resmi.
           </div>
         </div>
 

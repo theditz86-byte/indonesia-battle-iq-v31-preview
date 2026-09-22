@@ -1,4 +1,4 @@
-import { Target } from "lucide-react"
+import { FileText, Target } from "lucide-react"
 import { paths } from "@/lib/data"
 
 export function PathToTop() {
@@ -22,12 +22,14 @@ export function PathToTop() {
 
 export function PromoBanner() {
   return (
-    <section className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 backdrop-blur-lg">
-      <img src="/images/trophy-banner.png?v=cf5" alt="" loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover opacity-55" />
-      <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/70 to-transparent" />
+    <section className="relative overflow-hidden rounded-3xl border border-violet-300/20 bg-white/5 backdrop-blur-lg">
+      <img src="/images/trophy-banner.png?v=cf5" alt="" loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover opacity-35" />
+      <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/85 to-indigo-950/55" />
       <div className="relative p-6">
-        <p className="text-lg font-extrabold leading-tight text-white">Bukan sekadar tes,<br />tapi perjalanan menjadi<br />diri yang lebih hebat.</p>
-        <p className="mt-8 text-sm font-medium text-cyan-300">Indonesia Battle IQ</p>
+        <FileText className="h-6 w-6 text-violet-300"/>
+        <p className="mt-4 text-lg font-extrabold leading-tight text-white">Skor hanyalah awal.<br/>Kenali pola kemampuanmu.</p>
+        <p className="mt-2 text-sm leading-6 text-slate-300">Laporan Premium membuka analisis domain, kekuatan, area pengembangan, dan PDF hasil.</p>
+        <a href="/result" className="mt-5 inline-flex rounded-xl bg-gradient-to-r from-violet-500 to-fuchsia-500 px-4 py-2.5 text-sm font-black text-white">Lihat hasil saya</a>
       </div>
     </section>
   )
