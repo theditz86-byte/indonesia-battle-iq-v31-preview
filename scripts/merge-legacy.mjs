@@ -82,8 +82,6 @@ const testPolish = String.raw`
 
 const textFiles = [
   "account.html", "account.js",
-  "payment.html", "payment.js",
-  "admin.html", "admin.js",
   "battle-test.html", "battle-test.js",
   "battle.css", "battle-test.css",
 ]
@@ -123,10 +121,10 @@ await writeFile(join(out, "_redirects"), String.raw`
 /battle/       /battle/index.html  200
 /account       /account.html       200
 /account/      /account.html       200
-/payment       /payment.html       200
-/payment/      /payment.html       200
-/admin         /admin.html         200
-/admin/        /admin.html         200
+/payment       /payment/index.html  200
+/payment/      /payment/index.html  200
+/admin         /admin/index.html    200
+/admin/        /admin/index.html    200
 /battle-test   /battle-test.html   200
 /battle-test/  /battle-test.html   200
 `.trimStart())
