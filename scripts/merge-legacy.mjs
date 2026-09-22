@@ -105,6 +105,14 @@ for (const file of textFiles) {
   text = text.replaceAll("location.replace('https://indonesia-battle-iq.netlify.app/battle-test')", "location.replace('/battle-test')")
   text = text.replaceAll("https://indonesia-battle-iq.netlify.app/battle-test", "/battle-test")
 
+  if (file === "battle-test.html" || file === "battle-test.js") {
+    text = text
+      .replaceAll("1x percobaan gratis", "2x percobaan gratis")
+      .replaceAll("1 percobaan gratis", "2 percobaan gratis")
+      .replaceAll("1 kali percobaan gratis", "2 kali percobaan gratis")
+      .replaceAll("satu percobaan gratis", "dua percobaan gratis")
+  }
+
   if (file === "battle-test.css") text += "\n" + testDark + "\n" + testPolish
   await writeFile(join(out, file), text)
 }
@@ -117,14 +125,7 @@ await writeFile(join(out, "service-worker.js"),
 )
 
 await writeFile(join(out, "_redirects"), String.raw`
-/battle        /battle/index.html  200
-/battle/       /battle/index.html  200
-/account       /account.html       200
-/account/      /account.html       200
-/payment       /payment/index.html  200
-/payment/      /payment/index.html  200
-/admin         /admin/index.html    200
-/admin/        /admin/index.html    200
+# Native Next.js routes are served directly by Cloudflare Pages.
 /battle-test   /battle-test.html   200
 /battle-test/  /battle-test.html   200
 `.trimStart())
