@@ -256,6 +256,7 @@ export default function ResultPage() {
   const [loading,setLoading]=useState(true)
   const [error,setError]=useState("")
   const [copied,setCopied]=useState(false)
+  const [printMode,setPrintMode]=useState(false)
 
   useEffect(()=>{
     if(!getParticipantToken()){
@@ -332,6 +333,16 @@ export default function ResultPage() {
     }catch{}
   }
 
+  function printPremium() {
+    setPrintMode(true)
+    const restore = () => setPrintMode(false)
+    window.addEventListener("afterprint", restore, { once:true })
+    window.setTimeout(() => window.print(), 120)
+    window.setTimeout(() => {
+      if (document.visibilityState === "visible") restore()
+    }, 3000)
+  }
+
   function openPremium() {
     if(result) void track("premium_checkout_opened",{attempt_id:result.attempt_id})
     window.location.href="/payment?product=premium_report"
@@ -355,11 +366,11 @@ export default function ResultPage() {
           <a href="/battle" className="inline-flex items-center gap-2 text-sm font-bold text-slate-300 hover:text-white"><ArrowLeft className="h-4 w-4"/>Kembali ke Battle</a>
           <div className="flex gap-2">
             <button onClick={share} className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-black backdrop-blur-lg hover:bg-white/10"><Share2 className="h-4 w-4"/>{copied?"Tautan disalin":"Tantang Teman"}</button>
-            {data.premium_unlocked && <button onClick={()=>window.print()} className="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-black text-slate-950 shadow-xl"><Download className="h-4 w-4"/>Simpan PDF Premium</button>}
+            {data.premium_unlocked && <button onClick={printPremium} className="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-black text-slate-950 shadow-xl"><Download className="h-4 w-4"/>Simpan PDF Premium</button>}
           </div>
         </div>
 
-        <section className="screen-report overflow-hidden rounded-[2.25rem] border border-white/10 bg-[#07162f]/95 shadow-[0_35px_120px_rgba(0,0,0,.45)]">
+        <section style={{display:printMode?"none":"block"}} className="screen-report overflow-hidden rounded-[2.25rem] border border-white/10 bg-[#07162f]/95 shadow-[0_35px_120px_rgba(0,0,0,.45)]">
           <div className="relative overflow-hidden border-b border-white/10 p-6 sm:p-9 lg:p-11">
             <div className="absolute -right-24 -top-24 h-80 w-80 rounded-full bg-indigo-500/20 blur-3xl"/>
             <div className="absolute right-32 top-16 h-56 w-56 rounded-full bg-cyan-400/10 blur-3xl"/>
@@ -533,8 +544,8 @@ export default function ResultPage() {
         </section>
 
         {data.premium_unlocked && (
-          <section className="pdf-report" aria-label="Laporan Premium PDF">
-            <div className="pdf-page">
+          <section style={{display:printMode?"block":"none"}} className="pdf-report" aria-label="Laporan Premium PDF">
+            <div className="pdf-page" style={{breakAfter:"page",pageBreakAfter:"always"}}>
               <div className="pdf-brand-row">
                 <div>
                   <p className="pdf-brand">ALZAVA BATTLE IQ</p>
@@ -589,7 +600,7 @@ export default function ResultPage() {
               </div>
             </div>
 
-            <div className="pdf-page">
+            <div className="pdf-page" style={{breakAfter:"page",pageBreakAfter:"always"}}>
               <div className="pdf-page-title">
                 <div><p className="pdf-section-label">DEEP DIVE</p><h2>Apa arti profil kemampuan Anda?</h2></div>
                 <span>{domains.length} domain terukur</span>
@@ -623,7 +634,7 @@ export default function ResultPage() {
               </div>
             </div>
 
-            <div className="pdf-page">
+            <div className="pdf-page" style={{breakAfter:"auto",pageBreakAfter:"auto"}}>
               <div className="pdf-page-title">
                 <div><p className="pdf-section-label">ACTIONABLE INSIGHT</p><h2>Kekuatan, blind spot & rencana peningkatan</h2></div>
                 <span>Rencana personal</span>
