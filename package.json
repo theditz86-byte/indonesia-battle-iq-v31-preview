@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "node scripts/optimize-assets.mjs && node scripts/merge-legacy.mjs && next build && node scripts/prune-assets.mjs",
+    "build": "node scripts/merge-legacy.mjs && next build && node scripts/finalize-cloudflare-assets.mjs",
     "start": "next start"
   },
   "dependencies": {
