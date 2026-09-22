@@ -96,7 +96,16 @@ for (const file of textFiles) {
   text = text.replaceAll("./account.css?v=2", "./account.css?v=5")
   text = text.replaceAll("./battle.css?v=3", "./battle.css?v=5")
   text = text.replaceAll("./battle-test.css?v=3", "./battle-test.css?v=5")
-  text = text.replaceAll("./battle-test.js?v=3", "./battle-test.js?v=5")
+  text = text.replaceAll("./battle-test.js?v=3", "./battle-test.js?v=6")
+
+  /* Cloudflare route hygiene */
+  text = text.replaceAll('href="./battle"', 'href="/battle"')
+  text = text.replaceAll('href="./account"', 'href="/account"')
+  text = text.replaceAll('href="./payment"', 'href="/payment"')
+  text = text.replaceAll('href="./battle-test"', 'href="/battle-test"')
+  text = text.replaceAll('location.replace("https://indonesia-battle-iq.netlify.app/battle-test")', 'location.replace("/battle-test")')
+  text = text.replaceAll("location.replace('https://indonesia-battle-iq.netlify.app/battle-test')", "location.replace('/battle-test')")
+  text = text.replaceAll("https://indonesia-battle-iq.netlify.app/battle-test", "/battle-test")
 
   if (file === "battle-test.css") text += "\n" + testDark + "\n" + testPolish
   await writeFile(join(out, file), text)
@@ -115,8 +124,11 @@ await writeFile(join(out, "_redirects"), String.raw`
 /account       /account.html       200
 /account/      /account.html       200
 /payment       /payment.html       200
+/payment/      /payment.html       200
 /admin         /admin.html         200
+/admin/        /admin.html         200
 /battle-test   /battle-test.html   200
+/battle-test/  /battle-test.html   200
 `.trimStart())
 
 console.log("Merged stable Battle IQ functionality with v31 dark premium UI.")
