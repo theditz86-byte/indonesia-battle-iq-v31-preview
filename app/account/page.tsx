@@ -252,7 +252,7 @@ export default function AccountPage() {
       <header className="sticky top-0 z-20 border-b border-white/10 bg-[#030b1f]/85 backdrop-blur-xl">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-4">
           <a href="/battle" className="flex items-center gap-3 font-black tracking-tight">
-            <img src="/alzava-emblem-v2.png" alt="" className="h-10 w-10 rounded-xl" />
+            <img src="/alzava-emblem-v3.svg" alt="" className="h-10 w-10 rounded-xl" />
             <span>ALZAVA <span className="text-cyan-300">Battle IQ</span></span>
           </a>
           <a href="/battle" className="rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-sm font-bold text-slate-200 hover:bg-white/10">← Kembali ke Battle</a>

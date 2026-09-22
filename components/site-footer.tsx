@@ -11,7 +11,7 @@ export function SiteFooter() {
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
         <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex items-center gap-3">
-            <img src="/alzava-emblem-v2.png" alt="ALZAVA Battle IQ" className="h-11 w-11 object-contain drop-shadow-[0_0_14px_rgba(212,175,55,.32)]" />
+            <img src="/alzava-emblem-v3.svg" alt="ALZAVA Battle IQ" className="h-11 w-11 object-contain drop-shadow-[0_0_14px_rgba(212,175,55,.32)]" />
             <div className="leading-tight">
               <p className="text-sm font-extrabold text-white">ALZAVA <span className="text-[#D4AF37]">Battle IQ</span></p>
               <p className="text-[10px] font-medium uppercase tracking-[.13em] text-slate-400">Asah Pikiran. Raih Puncak.</p>

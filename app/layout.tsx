@@ -36,9 +36,9 @@ export const metadata: Metadata = {
     images: ["/images/hero-bg.png"],
   },
   icons: {
-    icon: [{ url: "/alzava-emblem-v2.png", type: "image/png" }],
-    shortcut: "/alzava-emblem-v2.png",
-    apple: "/alzava-emblem-v2.png",
+    icon: [{ url: "/alzava-emblem-v3.svg", type: "image/png" }],
+    shortcut: "/alzava-emblem-v3.svg",
+    apple: "/alzava-emblem-v3.svg",
   },
   robots: { index: true, follow: true },
 }
