@@ -30,7 +30,7 @@
 
 
 @media print {
-  @page { size: A4 portrait; margin: 6mm; }
+  @page { size: A4 portrait; margin: 5mm; }
 
   html, body {
     margin: 0 !important;
@@ -59,8 +59,8 @@
     display: block !important;
     width: 100% !important;
     color: #e5eefc !important;
-    font-size: 7.6px !important;
-    line-height: 1.24 !important;
+    font-size: 9px !important;
+    line-height: 1.32 !important;
   }
 
   .pdf-report * {
@@ -71,9 +71,9 @@
 
   .pdf-page {
     width: 100% !important;
-    min-height: 0 !important;
-    padding: 4.5mm !important;
-    overflow: visible !important;
+    min-height: 287mm !important;
+    padding: 6mm !important;
+    overflow: hidden !important;
     break-inside: avoid-page !important;
     page-break-inside: avoid !important;
     background:
@@ -86,6 +86,36 @@
   .pdf-page:last-child {
     page-break-after: auto !important;
     break-after: auto !important;
+  }
+
+  .pdf-page-one,
+  .pdf-page-two {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  .pdf-logo-lockup {
+    display: flex !important;
+    align-items: center !important;
+    gap: 9px !important;
+  }
+
+  .pdf-logo-lockup img {
+    width: 42px !important;
+    height: 42px !important;
+    object-fit: contain !important;
+    filter: drop-shadow(0 0 7px rgba(212,175,55,.26)) !important;
+  }
+
+  .pdf-page-mini-brand {
+    margin-bottom: 8px !important;
+    padding-bottom: 7px !important;
+    border-bottom: 1px solid rgba(148,163,184,.18) !important;
+  }
+
+  .pdf-page-mini-brand .pdf-logo-lockup img {
+    width: 34px !important;
+    height: 34px !important;
   }
 
   .pdf-brand-row,
@@ -107,16 +137,18 @@
   .pdf-brand {
     margin: 0 !important;
     color: #67e8f9 !important;
-    font-size: 9px !important;
-    font-weight: 900 !important;
-    letter-spacing: .16em !important;
+    font-size: 10.5px !important;
+    font-weight: 950 !important;
+    letter-spacing: .11em !important;
   }
+
+  .pdf-brand span { color: #d4af37 !important; }
 
   .pdf-kicker,
   .pdf-section-label {
     margin: 2px 0 0 !important;
     color: #818cf8 !important;
-    font-size: 6.8px !important;
+    font-size: 7.4px !important;
     font-weight: 900 !important;
     letter-spacing: .16em !important;
   }
@@ -127,13 +159,13 @@
     background: rgba(139,92,246,.12) !important;
     color: #ddd6fe !important;
     padding: 4px 8px !important;
-    font-size: 6.6px !important;
+    font-size: 7.4px !important;
     font-weight: 900 !important;
     letter-spacing: .09em !important;
   }
 
   .pdf-hero {
-    margin-top: 6px !important;
+    margin-top: 9px !important;
     align-items: stretch !important;
   }
 
@@ -145,7 +177,7 @@
   .pdf-hero h1 {
     margin: 2px 0 3px !important;
     color: #fff !important;
-    font-size: 25px !important;
+    font-size: 29px !important;
     line-height: 1 !important;
     font-weight: 950 !important;
     letter-spacing: -.03em !important;
@@ -154,7 +186,7 @@
   .pdf-hero p {
     margin: 0 !important;
     color: #94a3b8 !important;
-    font-size: 8px !important;
+    font-size: 9px !important;
   }
 
   .pdf-tags {
@@ -170,13 +202,13 @@
     background: rgba(255,255,255,.04) !important;
     padding: 3px 6px !important;
     color: #cbd5e1 !important;
-    font-size: 6.5px !important;
+    font-size: 7.3px !important;
     font-weight: 800 !important;
   }
 
   .pdf-iq {
-    width: 104px !important;
-    min-width: 104px !important;
+    width: 116px !important;
+    min-width: 116px !important;
     border: 1.5px solid #22d3ee !important;
     border-radius: 18px !important;
     background: rgba(2,6,23,.55) !important;
@@ -187,7 +219,7 @@
   .pdf-iq small {
     display: block !important;
     color: #67e8f9 !important;
-    font-size: 6px !important;
+    font-size: 6.8px !important;
     font-weight: 900 !important;
     letter-spacing: .12em !important;
   }
@@ -196,7 +228,7 @@
     display: block !important;
     margin: 2px 0 !important;
     color: #fff !important;
-    font-size: 28px !important;
+    font-size: 32px !important;
     line-height: 1 !important;
     font-weight: 950 !important;
   }
@@ -204,21 +236,21 @@
   .pdf-iq b {
     display: block !important;
     color: #e2e8f0 !important;
-    font-size: 8px !important;
+    font-size: 8.8px !important;
   }
 
   .pdf-iq span {
     display: block !important;
     margin-top: 2px !important;
     color: #64748b !important;
-    font-size: 6.5px !important;
+    font-size: 7.2px !important;
   }
 
   .pdf-stats {
     display: grid !important;
     grid-template-columns: repeat(5,1fr) !important;
     gap: 5px !important;
-    margin-top: 10px !important;
+    margin-top: 8px !important;
   }
 
   .pdf-stats > div,
@@ -231,7 +263,7 @@
   }
 
   .pdf-stats > div {
-    padding: 7px !important;
+    padding: 6px !important;
   }
 
   .pdf-stats small {
@@ -246,32 +278,32 @@
     display: block !important;
     margin-top: 2px !important;
     color: #fff !important;
-    font-size: 13px !important;
+    font-size: 12.5px !important;
     line-height: 1.1 !important;
   }
 
   .pdf-grid-2 {
     display: grid !important;
     grid-template-columns: repeat(2,minmax(0,1fr)) !important;
-    gap: 5px !important;
+    gap: 7px !important;
   }
 
   .pdf-grid-3 {
     display: grid !important;
     grid-template-columns: repeat(3,minmax(0,1fr)) !important;
-    gap: 6px !important;
+    gap: 7px !important;
   }
 
   .pdf-summary-grid {
-    margin-top: 6px !important;
-    grid-template-columns: 1.15fr .85fr !important;
+    margin-top: 7px !important;
+    grid-template-columns: 1.12fr .88fr !important;
   }
 
   .pdf-card {
     border: 1px solid rgba(148,163,184,.17) !important;
     border-radius: 10px !important;
     background: rgba(15,23,42,.46) !important;
-    padding: 7px !important;
+    padding: 8px !important;
     break-inside: avoid !important;
   }
 
@@ -280,7 +312,7 @@
   .pdf-growth h2 {
     margin: 2px 0 5px !important;
     color: #fff !important;
-    font-size: 15px !important;
+    font-size: 16px !important;
     line-height: 1.15 !important;
     font-weight: 900 !important;
   }
@@ -288,6 +320,8 @@
   .pdf-card p {
     margin: 4px 0 !important;
     color: #cbd5e1 !important;
+    font-size: 8.6px !important;
+    line-height: 1.34 !important;
   }
 
   .pdf-inline-note {
@@ -301,14 +335,14 @@
   .pdf-radar-card { padding-bottom: 7px !important; }
 
   .pdf-radar {
-    height: 108px !important;
+    height: 142px !important;
     overflow: hidden !important;
   }
 
   .pdf-radar svg {
     display: block !important;
-    width: 130px !important;
-    height: 122px !important;
+    width: 160px !important;
+    height: 154px !important;
     margin: -8px auto 0 !important;
   }
 
@@ -342,7 +376,7 @@
   .pdf-bottom-strip b,
   .pdf-method b {
     display: block !important;
-    margin-bottom: 3px !important;
+    margin-bottom: 5px !important;
     color: #e2e8f0 !important;
     font-size: 7px !important;
     text-transform: uppercase !important;
@@ -352,7 +386,7 @@
   .pdf-bottom-strip span,
   .pdf-method span {
     color: #94a3b8 !important;
-    font-size: 7.4px !important;
+    font-size: 8px !important;
   }
 
   .pdf-page-title {
@@ -572,7 +606,7 @@
     background:
       radial-gradient(circle at 92% 12%, rgba(34,211,238,.10), transparent 30%),
       linear-gradient(135deg, rgba(79,70,229,.14), rgba(15,23,42,.45)) !important;
-    padding: 7px !important;
+    padding: 9px !important;
     break-inside: avoid !important;
   }
 
@@ -586,7 +620,7 @@
   .pdf-next-head h2 {
     margin: 2px 0 0 !important;
     color: #fff !important;
-    font-size: 12px !important;
+    font-size: 14px !important;
     line-height: 1.16 !important;
     font-weight: 900 !important;
   }
@@ -605,8 +639,8 @@
   .pdf-next-copy {
     margin: 4px 0 5px !important;
     color: #cbd5e1 !important;
-    font-size: 6.8px !important;
-    line-height: 1.24 !important;
+    font-size: 8px !important;
+    line-height: 1.32 !important;
   }
 
   .pdf-next-grid > div {
@@ -626,13 +660,13 @@
     display: block !important;
     margin: 2px 0 !important;
     color: #fff !important;
-    font-size: 10px !important;
+    font-size: 12px !important;
   }
 
   .pdf-next-grid span {
     color: #94a3b8 !important;
-    font-size: 6.2px !important;
-    line-height: 1.2 !important;
+    font-size: 7.4px !important;
+    line-height: 1.28 !important;
   }
 
   .pdf-motivation-line {
@@ -640,7 +674,7 @@
     border-left: 2px solid #22d3ee !important;
     padding: 4px 6px !important;
     color: #c7d2fe !important;
-    font-size: 6.5px !important;
+    font-size: 7.6px !important;
     font-style: italic !important;
     line-height: 1.22 !important;
   }
@@ -675,37 +709,44 @@
   .pdf-deep-title h2 { font-size: 13px !important; margin: 1px 0 0 !important; }
 
   .pdf-page-one .pdf-domain-list {
-    gap: 4px !important;
-    margin-top: 4px !important;
+    flex: 1 1 auto !important;
+    display: grid !important;
+    grid-template-rows: repeat(3,minmax(0,1fr)) !important;
+    gap: 6px !important;
+    margin-top: 6px !important;
   }
   .pdf-page-one .pdf-domain-card {
-    grid-template-columns: 58px 1fr !important;
-    gap: 6px !important;
-    padding: 5px !important;
-    border-radius: 8px !important;
+    grid-template-columns: 68px 1fr !important;
+    gap: 7px !important;
+    padding: 7px !important;
+    border-radius: 9px !important;
+    min-height: 0 !important;
   }
   .pdf-page-one .pdf-domain-score {
-    min-height: 49px !important;
+    min-height: 62px !important;
     border-radius: 7px !important;
   }
-  .pdf-page-one .pdf-domain-score strong { font-size: 18px !important; }
-  .pdf-page-one .pdf-domain-head h3 { font-size: 9.5px !important; }
-  .pdf-page-one .pdf-bar { height: 3px !important; margin: 3px 0 4px !important; }
+  .pdf-page-one .pdf-domain-score strong { font-size: 21px !important; }
+  .pdf-page-one .pdf-domain-head h3 { font-size: 11px !important; }
+  .pdf-page-one .pdf-bar { height: 4px !important; margin: 4px 0 5px !important; }
   .pdf-page-one .pdf-domain-cols { gap: 4px !important; }
-  .pdf-page-one .pdf-domain-cols > div { padding: 4px !important; border-radius: 6px !important; }
-  .pdf-page-one .pdf-domain-cols b { font-size: 5.2px !important; }
-  .pdf-page-one .pdf-domain-cols p { font-size: 6.25px !important; line-height: 1.18 !important; margin-top: 1px !important; }
-  .pdf-page-one .pdf-interpret-box { margin-top: 4px !important; padding: 5px !important; }
-  .pdf-page-one .pdf-interpret-box p { font-size: 6.5px !important; line-height: 1.2 !important; }
+  .pdf-page-one .pdf-domain-cols > div { padding: 5px !important; border-radius: 7px !important; }
+  .pdf-page-one .pdf-domain-cols b { font-size: 6.2px !important; }
+  .pdf-page-one .pdf-domain-cols p { font-size: 7.5px !important; line-height: 1.26 !important; margin-top: 2px !important; }
+  .pdf-page-one .pdf-interpret-box { margin-top: 6px !important; padding: 7px !important; }
+  .pdf-page-one .pdf-interpret-box p { font-size: 7.6px !important; line-height: 1.28 !important; }
 
   /* Page 2 keeps all actionable guidance together without oversized empty areas. */
-  .pdf-page-two .pdf-page-title { padding-bottom: 5px !important; }
-  .pdf-page-two .pdf-insight-grid { margin-top: 5px !important; }
-  .pdf-page-two .pdf-card { padding: 7px !important; }
+  .pdf-page-two .pdf-page-title { padding-bottom: 7px !important; }
+  .pdf-page-two .pdf-insight-grid { margin-top: 7px !important; }
+  .pdf-page-two .pdf-card { padding: 9px !important; }
+  .pdf-page-two .pdf-card p,
+  .pdf-page-two .pdf-number-list,
+  .pdf-page-two .pdf-bullet-list { font-size: 8.6px !important; line-height: 1.32 !important; }
   .pdf-page-two .pdf-number-list li,
   .pdf-page-two .pdf-bullet-list li { margin-bottom: 3px !important; }
-  .pdf-page-two .pdf-growth { margin-top: 5px !important; }
-  .pdf-page-two .pdf-method { margin-top: 5px !important; }
+  .pdf-page-two .pdf-growth { margin-top: 7px !important; }
+  .pdf-page-two .pdf-method { margin-top: 7px !important; }
 
   svg {
     -webkit-print-color-adjust: exact !important;
