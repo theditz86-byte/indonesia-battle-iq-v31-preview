@@ -32,10 +32,27 @@ type LatestResult = {
   district_name?: string
   premium_unlocked?: boolean
   leaderboard_total?: number
+  selected_attempt_id?: string | null
+  attempts?: Array<{
+    attempt_id?: string
+    attempt_number?: number
+    battle_score?: number
+    correct_count?: number
+    question_count?: number
+    duration_ms?: number
+    iq_estimate?: number
+    iq_low?: number
+    iq_high?: number
+    submitted_at?: string
+    is_personal_best?: boolean
+    premium_unlocked?: boolean
+  }>
   result?: {
     attempt_id?: string
     attempt_number?: number
     ranked_attempt?: boolean
+    paid_attempt?: boolean
+    is_personal_best?: boolean
     battle_score?: number
     correct_count?: number
     question_count?: number
@@ -275,21 +292,38 @@ export default function ResultPage() {
   const [loading,setLoading]=useState(true)
   const [error,setError]=useState("")
   const [copied,setCopied]=useState(false)
+  const [switchingResult,setSwitchingResult]=useState(false)
 
-  useEffect(()=>{
+  async function loadResult(attemptId?:string|null,initial=false) {
     if(!getParticipantToken()){
       window.location.replace("/account")
       return
     }
-    post({action:"latest_result"})
-      .then((r)=>{
-        const payload=r.data as LatestResult
-        setData(payload)
-        void track("result_viewed",{has_result:Boolean(payload?.result)})
-        if(payload?.result && !payload?.premium_unlocked) void track("premium_offer_viewed",{attempt_id:payload.result.attempt_id})
-      })
-      .catch((e)=>setError(e instanceof Error?e.message:"Hasil belum dapat dimuat."))
-      .finally(()=>setLoading(false))
+    if(initial) setLoading(true)
+    else setSwitchingResult(true)
+    setError("")
+    try{
+      const r=await post({action:"latest_result",...(attemptId?{attempt_id:attemptId}:{})})
+      const payload=r.data as LatestResult
+      setData(payload)
+      const selected=payload?.result?.attempt_id
+      if(selected){
+        const url="/result?attempt="+encodeURIComponent(selected)
+        window.history.replaceState(null,"",url)
+      }
+      void track("result_viewed",{has_result:Boolean(payload?.result),attempt_id:selected})
+      if(payload?.result && !payload?.premium_unlocked) void track("premium_offer_viewed",{attempt_id:payload.result.attempt_id})
+    }catch(e){
+      setError(e instanceof Error?e.message:"Hasil belum dapat dimuat.")
+    }finally{
+      if(initial) setLoading(false)
+      setSwitchingResult(false)
+    }
+  }
+
+  useEffect(()=>{
+    const requested=new URLSearchParams(window.location.search).get("attempt")
+    void loadResult(requested,true)
   },[])
 
   const result=data?.result
@@ -357,7 +391,8 @@ export default function ResultPage() {
 
   function openPremium() {
     if(result) void track("premium_checkout_opened",{attempt_id:result.attempt_id})
-    window.location.href="/payment?product=premium_report"
+    const suffix=result?.attempt_id ? "&attempt="+encodeURIComponent(result.attempt_id) : ""
+    window.location.href="/payment?product=premium_report"+suffix
   }
 
   if(loading) return <main className="grid min-h-screen place-items-center bg-[#020817] text-slate-300">Memuat hasil Battle IQ…</main>
@@ -368,7 +403,7 @@ export default function ResultPage() {
 
   const iq=Number(result.iq_estimate||0)
   const iqProgress=clamp(((iq-55)/100)*100)
-  const rankText=result.national_rank && data.leaderboard_total ? "#" + result.national_rank + " dari " + data.leaderboard_total : "#" + (result.national_rank ?? "—")
+  const rankText=result.is_personal_best===false ? "Bukan PB" : result.national_rank && data.leaderboard_total ? "#" + result.national_rank + " dari " + data.leaderboard_total : "#" + (result.national_rank ?? "—")
   const reportDate=result.submitted_at ? new Date(result.submitted_at) : new Date()
   const reportDateCode=[
     reportDate.getFullYear(),
@@ -391,6 +426,48 @@ export default function ResultPage() {
             {data.premium_unlocked && <button onClick={printPremium} className="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-black text-slate-950 shadow-xl"><Download className="h-4 w-4"/>Simpan PDF Premium</button>}
           </div>
         </div>
+
+        {Array.isArray(data.attempts) && data.attempts.length > 1 && (
+          <section className="no-print mb-6 rounded-[1.75rem] border border-white/10 bg-slate-950/45 p-4 shadow-xl backdrop-blur-xl sm:p-5">
+            <div className="flex flex-wrap items-end justify-between gap-3">
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[.2em] text-cyan-300">Riwayat Hasil Season Ini</p>
+                <h2 className="mt-1 text-xl font-black text-white">Pilih percobaan yang ingin dilihat</h2>
+                <p className="mt-1 text-sm text-slate-400">Setiap percobaan menyimpan hasilnya sendiri. Laporan Premium juga melekat pada hasil yang dipilih.</p>
+              </div>
+              {switchingResult && <span className="rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1.5 text-xs font-bold text-cyan-200">Memuat hasil…</span>}
+            </div>
+            <div className="mt-4 grid gap-3 md:grid-cols-3">
+              {data.attempts
+                .slice()
+                .sort((a,b)=>Number(a.attempt_number||0)-Number(b.attempt_number||0))
+                .map((item)=>{
+                  const active=item.attempt_id===data.selected_attempt_id || item.attempt_id===result?.attempt_id
+                  const paid=Number(item.attempt_number||0)>2
+                  return <button
+                    key={item.attempt_id || String(item.attempt_number)}
+                    type="button"
+                    disabled={switchingResult || !item.attempt_id}
+                    onClick={()=>item.attempt_id && void loadResult(item.attempt_id)}
+                    className={`relative overflow-hidden rounded-2xl border p-4 text-left transition-all disabled:opacity-60 ${active?"border-cyan-300/45 bg-gradient-to-br from-cyan-400/12 via-indigo-500/12 to-violet-500/10 shadow-[0_0_0_1px_rgba(103,232,249,.08),0_18px_50px_rgba(0,0,0,.22)]":"border-white/10 bg-white/[.035] hover:border-white/20 hover:bg-white/[.06]"}`}
+                  >
+                    {active && <span className="absolute right-3 top-3 rounded-full bg-cyan-300/15 px-2 py-1 text-[9px] font-black uppercase tracking-wider text-cyan-200">Sedang dilihat</span>}
+                    <p className="text-[10px] font-black uppercase tracking-[.14em] text-slate-500">Percobaan #{item.attempt_number ?? "—"} {paid?"· Berbayar":"· Gratis"}</p>
+                    <div className="mt-3 flex items-end justify-between gap-3">
+                      <div><span className="block text-xs text-slate-500">IQ Battle</span><strong className="text-2xl font-black text-white">{item.iq_estimate ?? "—"}</strong></div>
+                      <div className="text-right"><span className="block text-xs text-slate-500">Battle Score</span><strong className="text-xl font-black text-cyan-300">{Number(item.battle_score||0).toLocaleString("id-ID")}</strong></div>
+                    </div>
+                    <div className="mt-3 flex flex-wrap gap-1.5">
+                      {item.is_personal_best && <span className="rounded-full border border-amber-300/20 bg-amber-300/10 px-2 py-1 text-[9px] font-black uppercase tracking-wide text-amber-200">Personal Best</span>}
+                      {item.premium_unlocked && <span className="rounded-full border border-emerald-300/20 bg-emerald-300/10 px-2 py-1 text-[9px] font-black uppercase tracking-wide text-emerald-200">Premium Aktif</span>}
+                      <span className="rounded-full border border-white/10 bg-white/5 px-2 py-1 text-[9px] font-bold text-slate-400">{item.correct_count ?? 0}/{item.question_count ?? 0} benar</span>
+                    </div>
+                    <p className="mt-3 text-xs text-slate-500">{item.submitted_at ? new Date(item.submitted_at).toLocaleString("id-ID",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"}) : ""}</p>
+                  </button>
+                })}
+            </div>
+          </section>
+        )}
 
         <section className="screen-report overflow-hidden rounded-[2.25rem] border border-white/10 bg-[#07162f]/95 shadow-[0_35px_120px_rgba(0,0,0,.45)]">
           <div className="relative overflow-hidden border-b border-white/10 p-6 sm:p-9 lg:p-11">
