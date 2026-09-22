@@ -102,6 +102,17 @@ const descriptions: Record<string,string> = {
   speed: "Menjaga ketepatan ketika keputusan harus dibuat dalam waktu terbatas.",
 }
 
+const iqReferenceBands = [
+  {min:-Infinity,max:69,range:"≤69",label:"Extremely Low",id:"Sangat rendah"},
+  {min:70,max:79,range:"70–79",label:"Very Low",id:"Rendah"},
+  {min:80,max:89,range:"80–89",label:"Low Average",id:"Rata-rata bawah"},
+  {min:90,max:109,range:"90–109",label:"Average",id:"Rata-rata"},
+  {min:110,max:119,range:"110–119",label:"High Average",id:"Rata-rata atas"},
+  {min:120,max:129,range:"120–129",label:"Very High",id:"Sangat tinggi"},
+  {min:130,max:149,range:"130–149",label:"Extremely High",id:"Ekstrem tinggi"},
+  {min:150,max:Infinity,range:"150+",label:"Extremely High",id:"Ekstrem tinggi · 3,3 SD+"},
+] as const
+
 const domainMeaning: Record<string,{strength:string;application:string;growth:string}> = {
   fluid: {
     strength: "Anda relatif cepat menemukan struktur tersembunyi, hubungan angka, dan aturan yang tidak dinyatakan secara langsung.",
@@ -711,6 +722,59 @@ export default function ResultPage() {
                 <div><b>Distribusi kemampuan</b><span>{spread<=10 ? "Relatif merata lintas-domain." : spread<=20 ? "Ada satu kekuatan utama dengan dukungan domain lain yang cukup dekat." : "Cukup terspesialisasi; kekuatan utama terlihat jelas."}</span></div>
                 <div><b>Verifikasi atas</b><span>{result.high_range_attempted ? "High Range selesai; rentang atas mendapat pengujian tambahan." : "Hasil berasal dari tahap inti."}</span></div>
               </div>
+
+              <div className="pdf-page1-reference-grid">
+                <article className="pdf-certificate-explainer">
+                  <div className="pdf-cert-title-row">
+                    <div>
+                      <p className="pdf-section-label pdf-gold">SERTIFIKAT HASIL DIGITAL</p>
+                      <h2>Dokumen hasil & analisis ALZAVA Battle IQ</h2>
+                    </div>
+                    <span>Attempt #{result.attempt_number ?? "—"}</span>
+                  </div>
+                  <p>Halaman ini dapat diperlakukan sebagai <b>sertifikat hasil internal ALZAVA Battle IQ</b>: mencatat identitas peserta, nomor laporan unik, skor, estimasi IQ Battle, profil kemampuan, waktu, dan status hasil pada satu percobaan tertentu.</p>
+                  <div className="pdf-cert-meta">
+                    <span><small>NO. LAPORAN</small><b>{reportNumber}</b></span>
+                    <span><small>DITERBITKAN</small><b>{reportIssued}</b></span>
+                    <span><small>STATUS</small><b>{data.premium_unlocked ? "Premium Verified" : "Result Record"}</b></span>
+                  </div>
+                  <p className="pdf-cert-disclaimer">Sertifikat hasil ini adalah dokumen capaian dalam ekosistem ALZAVA, bukan sertifikasi psikologis, diagnosis klinis, atau pengganti asesmen inteligensi yang diadministrasikan profesional.</p>
+                </article>
+
+                <article className="pdf-radar-explainer">
+                  <p className="pdf-section-label">CARA MEMBACA PETA KOGNITIF</p>
+                  <h2>Lima sumbu, satu gambaran performa.</h2>
+                  <div className="pdf-radar-legend">
+                    <div><b>Logika & Numerik</b><span>Pola angka, relasi, aturan, dan pemecahan masalah baru.</span></div>
+                    <div><b>Penalaran Verbal</b><span>Makna, konsep, argumen, implikasi, dan konsistensi informasi.</span></div>
+                    <div><b>Spasial & Visual</b><span>Orientasi, rotasi, posisi, transformasi, dan hubungan ruang.</span></div>
+                    <div><b>Akurasi</b><span>Persentase jawaban benar; menunjukkan kontrol kesalahan.</span></div>
+                    <div><b>Tempo</b><span>Indeks efisiensi berdasarkan rata-rata waktu pengerjaan per soal.</span></div>
+                  </div>
+                  <p className="pdf-radar-note">Semakin jauh titik dari pusat, semakin tinggi indeks relatif pada hasil tes ini. Bentuk radar digunakan untuk melihat <b>keseimbangan profil</b>, bukan hanya satu angka IQ.</p>
+                </article>
+              </div>
+
+              <article className="pdf-iq-reference">
+                <div className="pdf-iq-reference-head">
+                  <div>
+                    <p className="pdf-section-label">REFERENSI RENTANG IQ · SKALA 100/15</p>
+                    <h2>Di mana posisi estimasi IQ Battle {iq || "—"}?</h2>
+                  </div>
+                  <span>Mean 100 · SD 15</span>
+                </div>
+                <div className="pdf-iq-band-grid">
+                  {iqReferenceBands.map((band)=>{
+                    const active=iq>=band.min && iq<=band.max
+                    return <div key={band.range} className={active?"pdf-iq-band pdf-iq-band-active":"pdf-iq-band"}>
+                      <b>{band.range}</b>
+                      <strong>{band.id}</strong>
+                      <span>{band.label}</span>
+                    </div>
+                  })}
+                </div>
+                <p className="pdf-iq-reference-note">Acuan interpretasi menggunakan kerangka deviation-IQ umum dengan rata-rata 100 dan simpangan baku sekitar 15. Nama kategori bersifat deskriptif; Pearson menegaskan label kualitatif hanyalah bantuan komunikasi dan bukan kategori diagnosis yang universal. Skor di tes berbeda juga tidak selalu ekuivalen langsung—misalnya Mensa menggunakan kriteria persentil 98, bukan satu angka IQ tunggal untuk semua tes.</p>
+              </article>
 
               <div className="pdf-executive-footer">
                 <div><span>KEKUATAN UTAMA</span><b>{strength?.label || "Profil kognitif"}</b><small>Indeks {strength?.index ?? "—"}</small></div>
