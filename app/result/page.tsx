@@ -359,7 +359,7 @@ export default function ResultPage() {
           </div>
         </div>
 
-        <section className="print-report overflow-hidden rounded-[2.25rem] border border-white/10 bg-[#07162f]/95 shadow-[0_35px_120px_rgba(0,0,0,.45)]">
+        <section className="screen-report overflow-hidden rounded-[2.25rem] border border-white/10 bg-[#07162f]/95 shadow-[0_35px_120px_rgba(0,0,0,.45)]">
           <div className="relative overflow-hidden border-b border-white/10 p-6 sm:p-9 lg:p-11">
             <div className="absolute -right-24 -top-24 h-80 w-80 rounded-full bg-indigo-500/20 blur-3xl"/>
             <div className="absolute right-32 top-16 h-56 w-56 rounded-full bg-cyan-400/10 blur-3xl"/>
@@ -531,6 +531,142 @@ export default function ResultPage() {
             <b className="text-slate-400">Catatan interpretasi:</b> Estimasi IQ Battle dan analisis kognitif di atas menggambarkan performa pada sistem ALZAVA Battle IQ. Ini bukan diagnosis psikologis, tes IQ klinis terstandarisasi, penilaian kepribadian, atau pengganti asesmen oleh psikolog berwenang. Pernyataan mengenai “karakter kognitif” berarti pola pemecahan masalah yang tampak pada tes ini, bukan sifat pribadi yang permanen.
           </div>
         </section>
+
+        {data.premium_unlocked && (
+          <section className="pdf-report" aria-label="Laporan Premium PDF">
+            <div className="pdf-page">
+              <div className="pdf-brand-row">
+                <div>
+                  <p className="pdf-brand">ALZAVA BATTLE IQ</p>
+                  <p className="pdf-kicker">LAPORAN PREMIUM · COGNITIVE PERFORMANCE REPORT</p>
+                </div>
+                <div className="pdf-badge">{result.high_range_attempted ? "HIGH RANGE VERIFIED" : "CORE RESULT"}</div>
+              </div>
+
+              <div className="pdf-hero">
+                <div>
+                  <h1>{data.nickname || "Peserta"}</h1>
+                  <p>{[data.district_name,data.regency_name,data.province_name].filter(Boolean).join(" · ")}</p>
+                  <div className="pdf-tags">
+                    <span>{signature.title}</span><span>{pace.title}</span><span>Ranked Result</span>
+                  </div>
+                </div>
+                <div className="pdf-iq">
+                  <small>ESTIMASI IQ BATTLE</small>
+                  <strong>{iq || "—"}</strong>
+                  <b>{iqTier(iq)}</b>
+                  <span>Rentang {result.iq_low ?? "—"}–{result.iq_high ?? "—"}</span>
+                </div>
+              </div>
+
+              <div className="pdf-stats">
+                <div><small>BATTLE SCORE</small><b>{Number(result.battle_score||0).toLocaleString("id-ID")}</b></div>
+                <div><small>KETEPATAN</small><b>{accuracy}%</b></div>
+                <div><small>PERINGKAT</small><b>{rankText}</b></div>
+                <div><small>WAKTU</small><b>{formatDuration(result.duration_ms)}</b></div>
+                <div><small>RATA-RATA</small><b>{avgSec.toFixed(1)} dtk/soal</b></div>
+              </div>
+
+              <div className="pdf-grid-2 pdf-summary-grid">
+                <article className="pdf-card">
+                  <p className="pdf-section-label">RINGKASAN UTAMA</p>
+                  <h2>{signature.title}</h2>
+                  <p>{signature.text}</p>
+                  <p>{pace.text} {strength ? "Kekuatan relatif paling menonjol terlihat pada "+strength.label+"." : ""}</p>
+                  <div className="pdf-inline-note"><b>Benchmark:</b> {result.national_rank ? "peringkat #"+result.national_rank : "peringkat belum tersedia"}{data.leaderboard_total ? " dari "+data.leaderboard_total+" peserta terverifikasi" : ""}{topPercent ? " · Top "+topPercent+"%" : ""}.</div>
+                </article>
+                <article className="pdf-card pdf-radar-card">
+                  <p className="pdf-section-label">PETA KOGNITIF · 5 DIMENSI</p>
+                  <div className="pdf-radar"><RadarChart domains={domains} accuracy={accuracy} pace={paceIndex}/></div>
+                  <div className="pdf-mini-stats"><span>Akurasi <b>{accuracy}%</b></span><span>Indeks tempo <b>{paceIndex}</b></span></div>
+                </article>
+              </div>
+
+              <div className="pdf-grid-3 pdf-bottom-strip">
+                <div><b>Cara keputusan</b><span>{pace.text}</span></div>
+                <div><b>Distribusi kemampuan</b><span>{spread<=10 ? "Relatif merata lintas-domain." : spread<=20 ? "Ada satu kekuatan utama dengan dukungan domain lain yang cukup dekat." : "Cukup terspesialisasi; kekuatan utama terlihat jelas."}</span></div>
+                <div><b>Verifikasi atas</b><span>{result.high_range_attempted ? "High Range selesai; rentang atas mendapat pengujian tambahan." : "Hasil berasal dari tahap inti."}</span></div>
+              </div>
+            </div>
+
+            <div className="pdf-page">
+              <div className="pdf-page-title">
+                <div><p className="pdf-section-label">DEEP DIVE</p><h2>Apa arti profil kemampuan Anda?</h2></div>
+                <span>{domains.length} domain terukur</span>
+              </div>
+
+              <div className="pdf-domain-list">
+                {domains.map((domain,index)=>{
+                  const meaning=domainMeaning[domain.key] || domainMeaning.fluid
+                  return <article key={domain.key} className="pdf-domain-card">
+                    <div className="pdf-domain-score">
+                      <small>INDEKS</small>
+                      <strong>{domain.index}</strong>
+                      <span>{levelLabel(domain.index)}</span>
+                    </div>
+                    <div className="pdf-domain-body">
+                      <div className="pdf-domain-head"><h3>{index+1}. {domain.label}</h3><span>{domain.correct ?? 0}/{domain.total ?? 0} benar</span></div>
+                      <div className="pdf-bar"><i style={{width:clamp(domain.index)+"%"}}/></div>
+                      <div className="pdf-domain-cols">
+                        <div><b>YANG TERLIHAT</b><p>{meaning.strength}</p></div>
+                        <div><b>KAPAN BERGUNA</b><p>{meaning.application}</p></div>
+                        <div><b>NAIK LEVEL</b><p>{meaning.growth}</p></div>
+                      </div>
+                    </div>
+                  </article>
+                })}
+              </div>
+
+              <div className="pdf-interpret-box">
+                <b>Interpretasi ringkas</b>
+                <p>{strength ? strength.label+" adalah kekuatan paling menonjol dengan indeks "+strength.index+". " : ""}{development ? development.label+" menjadi prioritas pengembangan paling efisien dengan indeks "+development.index+". " : ""}{spread<=10 ? "Profil keseluruhan relatif seimbang." : spread<=20 ? "Perbedaan antardomain moderat dan masih mendukung fleksibilitas." : "Jarak antardomain cukup lebar sehingga jenis soal dapat memengaruhi tempo dan akurasi secara nyata."}</p>
+              </div>
+            </div>
+
+            <div className="pdf-page">
+              <div className="pdf-page-title">
+                <div><p className="pdf-section-label">ACTIONABLE INSIGHT</p><h2>Kekuatan, blind spot & rencana peningkatan</h2></div>
+                <span>Rencana personal</span>
+              </div>
+
+              <div className="pdf-grid-2 pdf-insight-grid">
+                <article className="pdf-card">
+                  <p className="pdf-section-label pdf-green">5 KEKUATAN UTAMA</p>
+                  <ol className="pdf-number-list">
+                    {strengths.map((item,i)=><li key={i}><b>{i+1}</b><span>{item}</span></li>)}
+                  </ol>
+                </article>
+                <article className="pdf-card">
+                  <p className="pdf-section-label pdf-gold">BLIND SPOT & TRADE-OFF</p>
+                  <ul className="pdf-bullet-list">
+                    {blindSpots.map((item,i)=><li key={i}>{item}</li>)}
+                  </ul>
+                  <p className="pdf-disclaimer-mini">Bagian ini menggambarkan pola performa pada tes, bukan label kepribadian permanen.</p>
+                </article>
+              </div>
+
+              <article className="pdf-card pdf-growth">
+                <div className="pdf-growth-head">
+                  <div><p className="pdf-section-label">PERSONAL GROWTH PLAN</p><h2>Naikkan ceiling, bukan hanya mengulang soal.</h2></div>
+                  <p>Prioritas: <b>{development?.label || "area terendah"}</b></p>
+                </div>
+                <div className="pdf-grid-3">
+                  <div><b>7 HARI PERTAMA</b><p>{plan.week}</p><span>Target: pahami pola kesalahan dominan.</span></div>
+                  <div><b>30 HARI</b><p>{plan.month}</p><span>Target: naikkan indeks domain terendah 8–12 poin.</span></div>
+                  <div><b>STRATEGI SAAT TES</b><p>Jawab cepat item yang langsung terbaca, tandai mental item dua langkah, lalu sisakan waktu akhir untuk verifikasi.</p><span>Tempo saat ini: {avgSec.toFixed(1)} detik/soal.</span></div>
+                </div>
+              </article>
+
+              <div className="pdf-grid-3 pdf-method">
+                <div><b>Reliabilitas</b><span>{result.high_range_attempted ? "High Range tambahan telah diselesaikan." : "Hasil berasal dari tahap inti."}</span></div>
+                <div><b>Format tes</b><span>{result.core_question_count || result.question_count} soal inti{result.high_range_attempted ? " + "+(result.high_range_question_count || 10)+" High Range" : ""}; total {result.question_count} jawaban.</span></div>
+                <div><b>Benchmark</b><span>Peringkat dinamis mengikuti season aktif dan bukan norma populasi Indonesia.</span></div>
+              </div>
+
+              <div className="pdf-footnote"><b>Catatan interpretasi:</b> Estimasi IQ Battle dan analisis kognitif menggambarkan performa pada sistem ALZAVA Battle IQ. Ini bukan diagnosis psikologis, tes IQ klinis terstandarisasi, penilaian kepribadian, atau pengganti asesmen oleh psikolog berwenang.</div>
+            </div>
+          </section>
+        )}
       </div>
     </main>
   )
