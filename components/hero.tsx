@@ -13,7 +13,11 @@ export function Hero({ season, entries }: { season: BattleSeason | null; entries
   return (
     <section className="relative overflow-hidden">
       <div className="absolute inset-0">
-        <img src="/images/hero-bg.webp" alt="" className="h-full w-full object-cover" fetchPriority="high" decoding="async" />
+        <picture>
+          <source srcSet="/images/hero-bg.avif" type="image/avif" />
+          <source srcSet="/images/hero-bg.webp" type="image/webp" />
+          <img src="/images/hero-bg.webp" alt="" className="h-full w-full object-cover" fetchPriority="high" decoding="async" />
+        </picture>
         <div className="absolute inset-0 bg-gradient-to-b from-slate-950/55 via-slate-950/45 to-slate-950" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_30%,rgba(250,204,21,0.14),transparent_55%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_12%_25%,rgba(56,189,248,0.14),transparent_45%)]" />
