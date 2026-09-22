@@ -5,44 +5,58 @@ import { join } from "node:path"
 const root = process.cwd()
 const imageDir = join(root, "public", "images")
 
-const jobs = [
-  { input: "hero-bg.png", output: "hero-bg.webp", quality: 82 },
-  { input: "trophy-banner.png", output: "trophy-banner.webp", quality: 78 },
-  { input: "crown-gold.png", output: "crown-gold.webp", quality: 88, width: 512 },
-  { input: "crown-silver.png", output: "crown-silver.webp", quality: 88, width: 512 },
-  { input: "crown-bronze.png", output: "crown-bronze.webp", quality: 88, width: 512 },
-  { input: "laurel-gold.png", output: "laurel-gold.webp", quality: 88, width: 512 },
-  { input: "laurel-silver.png", output: "laurel-silver.webp", quality: 88, width: 512 },
-  { input: "laurel-bronze.png", output: "laurel-bronze.webp", quality: 88, width: 512 },
+const exists = async (name) => {
+  try {
+    await access(join(imageDir, name))
+  } catch {
+    throw new Error(`Missing source asset: ${name}`)
+  }
+}
+
+// Hero: keep the exact original PNG as the visual source, but publish modern,
+// bandwidth-friendly AVIF + WebP variants.
+await exists("hero-bg.png")
+await sharp(join(imageDir, "hero-bg.png"), { failOn: "warning" })
+  .avif({ quality: 52, effort: 8, chromaSubsampling: "4:2:0" })
+  .toFile(join(imageDir, "hero-bg.avif"))
+await sharp(join(imageDir, "hero-bg.png"), { failOn: "warning" })
+  .webp({ quality: 76, effort: 6, smartSubsample: true })
+  .toFile(join(imageDir, "hero-bg.webp"))
+console.log("optimized hero-bg.png -> hero-bg.avif + hero-bg.webp")
+
+// Decorative podium assets: preserve the exact original proportions and alpha.
+// Resize only to a sensible display density instead of forcing every file to
+// the same 512px box. This avoids distorted/odd crowns while keeping transfer low.
+const transparentJobs = [
+  { input: "crown-gold.png", output: "crown-gold.webp", width: 192 },
+  { input: "crown-silver.png", output: "crown-silver.webp", width: 192 },
+  { input: "crown-bronze.png", output: "crown-bronze.webp", width: 192 },
+  { input: "laurel-gold.png", output: "laurel-gold.webp", width: 384 },
+  { input: "laurel-silver.png", output: "laurel-silver.webp", width: 384 },
+  { input: "laurel-bronze.png", output: "laurel-bronze.webp", width: 384 },
 ]
 
-for (const job of jobs) {
-  const input = join(imageDir, job.input)
-  const output = join(imageDir, job.output)
-  try {
-    await access(input)
-  } catch {
-    throw new Error(`Missing source asset: ${job.input}`)
-  }
-
-  let pipeline = sharp(input, { failOn: "warning" })
-  if (job.width) {
-    pipeline = pipeline.resize({
+for (const job of transparentJobs) {
+  await exists(job.input)
+  await sharp(join(imageDir, job.input), { failOn: "warning" })
+    .resize({
       width: job.width,
-      height: job.width,
       fit: "inside",
       withoutEnlargement: true,
+      kernel: sharp.kernel.lanczos3,
     })
-  }
-
-  await pipeline
     .webp({
-      quality: job.quality,
+      quality: 92,
       alphaQuality: 100,
       effort: 6,
-      smartSubsample: true,
+      smartSubsample: false,
     })
-    .toFile(output)
-
+    .toFile(join(imageDir, job.output))
   console.log(`optimized ${job.input} -> ${job.output}`)
 }
+
+await exists("trophy-banner.png")
+await sharp(join(imageDir, "trophy-banner.png"), { failOn: "warning" })
+  .webp({ quality: 78, alphaQuality: 100, effort: 6, smartSubsample: true })
+  .toFile(join(imageDir, "trophy-banner.webp"))
+console.log("optimized trophy-banner.png -> trophy-banner.webp")
