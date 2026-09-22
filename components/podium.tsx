@@ -44,8 +44,8 @@ const spots: Record<number, PodiumSpot> = {
     laurelSize: "h-44 w-44",
     crownSize: "h-14 w-14",
     crownOffset: "-top-9",
-    crown: "/images/crown-gold.png",
-    laurel: "/images/laurel-gold.png",
+    crown: "/images/crown-gold.webp",
+    laurel: "/images/laurel-gold.webp",
     metal: "from-yellow-300 via-amber-500 to-amber-700",
     bodyGradient: "from-amber-300 via-amber-500 to-amber-600",
     bodyRing: "ring-amber-200/70",
@@ -61,8 +61,8 @@ const spots: Record<number, PodiumSpot> = {
     laurelSize: "h-40 w-40",
     crownSize: "h-11 w-11",
     crownOffset: "-top-6",
-    crown: "/images/crown-silver.png",
-    laurel: "/images/laurel-silver.png",
+    crown: "/images/crown-silver.webp",
+    laurel: "/images/laurel-silver.webp",
     metal: "from-slate-200 via-slate-400 to-slate-600",
     bodyGradient: "from-slate-300 via-slate-400 to-slate-500",
     bodyRing: "ring-slate-200/70",
@@ -78,8 +78,8 @@ const spots: Record<number, PodiumSpot> = {
     laurelSize: "h-40 w-40",
     crownSize: "h-11 w-11",
     crownOffset: "-top-6",
-    crown: "/images/crown-bronze.png",
-    laurel: "/images/laurel-bronze.png",
+    crown: "/images/crown-bronze.webp",
+    laurel: "/images/laurel-bronze.webp",
     metal: "from-orange-300 via-orange-600 to-amber-800",
     bodyGradient: "from-orange-400 via-orange-500 to-orange-700",
     bodyRing: "ring-orange-200/70",
@@ -114,8 +114,8 @@ function PodiumColumn({ place, player, className = "" }: { place: 1 | 2 | 3; pla
           </>
         )}
         <div className={`relative flex ${s.laurelSize} items-center justify-center`}>
-          <img src={s.crown} alt="" aria-hidden="true" className={`absolute ${s.crownOffset} left-1/2 ${s.crownSize} -translate-x-1/2 object-contain ${isChampion ? "drop-shadow-[0_0_18px_rgba(250,204,21,0.8)]" : "drop-shadow-[0_4px_10px_rgba(0,0,0,0.5)]"}`} />
-          <img src={s.laurel} alt="" aria-hidden="true" className={`absolute inset-0 ${s.laurelSize} object-contain ${isChampion ? "drop-shadow-[0_0_16px_rgba(250,204,21,0.5)]" : "drop-shadow-[0_4px_12px_rgba(0,0,0,0.45)]"}`} />
+          <img src={s.crown} alt="" aria-hidden="true" decoding="async" className={`absolute ${s.crownOffset} left-1/2 ${s.crownSize} -translate-x-1/2 object-contain ${isChampion ? "drop-shadow-[0_0_18px_rgba(250,204,21,0.8)]" : "drop-shadow-[0_4px_10px_rgba(0,0,0,0.5)]"}`} />
+          <img src={s.laurel} alt="" aria-hidden="true" decoding="async" className={`absolute inset-0 ${s.laurelSize} object-contain ${isChampion ? "drop-shadow-[0_0_16px_rgba(250,204,21,0.5)]" : "drop-shadow-[0_4px_12px_rgba(0,0,0,0.45)]"}`} />
           <div className="relative">
             <div className={`rounded-full bg-gradient-to-br ${s.metal} p-[3px] ${s.glow}`}>
               <div className="rounded-full bg-slate-950 p-[2px]">
