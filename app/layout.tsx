@@ -4,14 +4,14 @@ import "./globals.css"
 export const metadata: Metadata = {
   metadataBase: new URL("https://alzava-battle-iq.pages.dev"),
   title: {
-    default: "ALZAVA Battle IQ — Higher Thinking Wins",
+    default: "ALZAVA Battle IQ — Asah Pikiran. Raih Puncak.",
     template: "%s | ALZAVA Battle IQ",
   },
   description:
-    "Tes nalar online Indonesia dengan leaderboard nasional, provinsi, kabupaten/kota, dan kecamatan. Dapatkan 2 Ranked Attempt gratis setiap season, lalu analisis hasil Battle IQ.",
+    "Tes kemampuan online Indonesia dengan leaderboard nasional, provinsi, kabupaten/kota, dan kecamatan. Dapatkan 2 Ranked Attempt gratis setiap season, lalu analisis hasil Battle IQ.",
   keywords: [
     "tes IQ online",
-    "tes nalar",
+    "tes kemampuan",
     "tes logika",
     "latihan TIU",
     "Battle IQ Indonesia",
@@ -24,21 +24,21 @@ export const metadata: Metadata = {
     locale: "id_ID",
     url: "https://alzava-battle-iq.pages.dev",
     siteName: "ALZAVA Battle IQ",
-    title: "ALZAVA Battle IQ — Higher Thinking Wins",
+    title: "ALZAVA Battle IQ — Asah Pikiran. Raih Puncak.",
     description:
-      "Ikuti tes nalar nasional, bandingkan skor, tantang teman, dan lihat posisi Anda di leaderboard Indonesia.",
+      "Ikuti tes kemampuan nasional, bandingkan skor, tantang teman, dan lihat posisi Anda di leaderboard Indonesia.",
     images: [{ url: "/images/hero-bg.png", width: 1200, height: 630, alt: "ALZAVA Battle IQ" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "ALZAVA Battle IQ",
-    description: "Higher Thinking Wins — uji nalar, lihat peringkat, dan tantang teman.",
+    description: "Asah Pikiran. Raih Puncak. — uji nalar, lihat peringkat, dan tantang teman.",
     images: ["/images/hero-bg.png"],
   },
   icons: {
-    icon: [{ url: "/alzava-icon.png", type: "image/png" }],
-    shortcut: "/alzava-icon.png",
-    apple: "/alzava-icon.png",
+    icon: [{ url: "/alzava-emblem-v2.png", type: "image/png" }],
+    shortcut: "/alzava-emblem-v2.png",
+    apple: "/alzava-emblem-v2.png",
   },
   robots: { index: true, follow: true },
 }
