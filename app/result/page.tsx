@@ -337,10 +337,7 @@ export default function ResultPage() {
     setPrintMode(true)
     const restore = () => setPrintMode(false)
     window.addEventListener("afterprint", restore, { once:true })
-    window.setTimeout(() => window.print(), 120)
-    window.setTimeout(() => {
-      if (document.visibilityState === "visible") restore()
-    }, 3000)
+    window.setTimeout(() => window.print(), 150)
   }
 
   function openPremium() {
