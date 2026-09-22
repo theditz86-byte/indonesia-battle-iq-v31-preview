@@ -665,6 +665,35 @@ export default function ResultPage() {
                 <div><b>Benchmark</b><span>Peringkat dinamis mengikuti season aktif dan bukan norma populasi Indonesia.</span></div>
               </div>
 
+              <section className="pdf-next-mission">
+                <div className="pdf-next-head">
+                  <div>
+                    <p className="pdf-section-label">NEXT MISSION</p>
+                    <h2>Satu hasil memberi gambaran. Hasil berikutnya menunjukkan perkembangan.</h2>
+                  </div>
+                  <span>PERSONAL BEST</span>
+                </div>
+                <p className="pdf-next-copy">Jangan sekadar mengejar angka IQ. Gunakan percobaan berikutnya untuk melihat apakah strategi Anda membaik: lebih akurat, lebih cepat, dan lebih stabil pada domain yang masih tertinggal.</p>
+                <div className="pdf-grid-3 pdf-next-grid">
+                  <div>
+                    <b>01 · PERKUAT DOMAIN</b>
+                    <strong>{development?.label || "Area prioritas"}</strong>
+                    <span>Targetkan peningkatan 5–8 poin indeks melalui latihan yang spesifik.</span>
+                  </div>
+                  <div>
+                    <b>02 · JAGA KETEPATAN</b>
+                    <strong>{Math.min(100,Math.max(accuracy,85))}%+</strong>
+                    <span>Pertahankan akurasi sambil memangkas waktu pada soal yang sudah Anda kuasai.</span>
+                  </div>
+                  <div>
+                    <b>03 · KEJAR PERSONAL BEST</b>
+                    <strong>{Number(result.battle_score||0)+20}+</strong>
+                    <span>{result.national_rank===1 ? "Pertahankan posisi puncak sambil pecahkan Battle Score terbaik Anda." : "Naikkan Battle Score sedikit demi sedikit dan lihat apakah posisi season ikut bergerak."}</span>
+                  </div>
+                </div>
+                <div className="pdf-motivation-line">“Kemajuan terbaik bukan selalu lompatan besar — tetapi bukti bahwa cara berpikir Anda semakin tajam dari percobaan ke percobaan.”</div>
+              </section>
+
               <div className="pdf-footnote"><b>Catatan interpretasi:</b> Estimasi IQ Battle dan analisis kognitif menggambarkan performa pada sistem ALZAVA Battle IQ. Ini bukan diagnosis psikologis, tes IQ klinis terstandarisasi, penilaian kepribadian, atau pengganti asesmen oleh psikolog berwenang.</div>
             </div>
           </section>
