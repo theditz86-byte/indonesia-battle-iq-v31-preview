@@ -1,0 +1,69 @@
+name: Sync One Free Attempt Policy
+
+on:
+  push:
+    paths:
+      - ".github/workflows/enforce-one-free.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  sync-copy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Update participant-facing copy and fallbacks
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          roots=[Path('app'),Path('components'),Path('lib'),Path('scripts')]
+          replacements={
+            '2x percobaan gratis per season':'1x percobaan gratis per season',
+            '2x percobaan gratis':'1x percobaan gratis',
+            '2 Ranked Attempt gratis setiap season':'1 Ranked Attempt gratis setiap season',
+            '2 Ranked Attempt gratis tiap season':'1 Ranked Attempt gratis tiap season',
+            '2 Ranked Attempt gratis':'1 Ranked Attempt gratis',
+            'Dua Ranked Attempt gratis':'Satu Ranked Attempt gratis',
+            'Dua percobaan pertama setiap season adalah Ranked Attempt gratis':'Percobaan pertama setiap season adalah Ranked Attempt gratis',
+            'dua percobaan pertama setiap season adalah Ranked Attempt gratis':'percobaan pertama setiap season adalah Ranked Attempt gratis',
+            'Setelah 2x Ranked Attempt gratis habis':'Setelah 1x Ranked Attempt gratis habis',
+            'Setelah 2 Ranked Attempt gratis habis':'Setelah 1 Ranked Attempt gratis habis',
+            '2 - used':'1 - used',
+            '2-used':'1-used',
+            'Math.min(2, used)':'Math.min(1, used)',
+            'Math.min(2,used)':'Math.min(1,used)',
+            '}/2 digunakan':'}/1 digunakan',
+            '>2x<':'>1x<',
+          }
+          changed=[]
+          for root in roots:
+            if not root.exists(): continue
+            for p in root.rglob('*'):
+              if p.suffix not in {'.ts','.tsx','.js','.mjs','.html','.md'}: continue
+              old=p.read_text(encoding='utf-8')
+              new=old
+              for a,b in replacements.items(): new=new.replace(a,b)
+              if new!=old:
+                p.write_text(new,encoding='utf-8')
+                changed.append(str(p))
+          print('Updated files:')
+          print('\n'.join(changed) if changed else '(none)')
+          PY
+
+      - name: Commit policy copy
+        run: |
+          if git diff --quiet; then
+            echo "No copy changes needed"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app components lib scripts
+          git commit -m "Apply one free Ranked Attempt policy across participant UI"
+          git push origin HEAD:main
