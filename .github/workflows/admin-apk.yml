@@ -45,14 +45,18 @@ jobs:
         working-directory: admin-mobile
         run: npx expo prebuild --platform android --clean --no-install
 
-      - name: Build installable APK
+      - name: Build standalone installable APK
         working-directory: admin-mobile/android
         run: |
           chmod +x gradlew
-          ./gradlew assembleDebug --no-daemon
+          ./gradlew assembleRelease --no-daemon
 
       - name: Prepare APK
-        run: cp admin-mobile/android/app/build/outputs/apk/debug/app-debug.apk ALZAVA-Battle-IQ-Admin-v1.apk
+        shell: bash
+        run: |
+          APK=$(find admin-mobile/android/app/build/outputs/apk/release -name "*.apk" | head -n 1)
+          test -n "$APK"
+          cp "$APK" ALZAVA-Battle-IQ-Admin-v1.apk
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
