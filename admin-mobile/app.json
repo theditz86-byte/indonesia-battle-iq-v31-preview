@@ -1,0 +1,25 @@
+{
+  "expo": {
+    "name": "ALZAVA Admin",
+    "slug": "alzava-battle-iq-admin",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "android": {
+      "package": "com.alzava.battleiq.admin",
+      "versionCode": 1,
+      "permissions": ["INTERNET", "VIBRATE"],
+      "adaptiveIcon": {
+        "backgroundColor": "#020817"
+      }
+    },
+    "plugins": [
+      [
+        "expo-secure-store",
+        {
+          "configureAndroidBackup": true
+        }
+      ]
+    ]
+  }
+}
