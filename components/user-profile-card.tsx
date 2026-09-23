@@ -1,4 +1,4 @@
-import { LogIn, MapPin, Unlock } from "lucide-react"
+import { History, LogIn, MapPin, Unlock } from "lucide-react"
 import type { BattleEntry, BattleParticipant, Scope } from "@/lib/battle"
 import { entryRank, formatScore } from "@/lib/battle"
 
@@ -43,8 +43,11 @@ export function UserProfileCard({ participant, ownEntry, scope }: { participant:
             <p className="text-[11px] font-semibold uppercase tracking-widest text-slate-400">Posisi Anda</p>
             <p className="truncate text-xl font-extrabold text-white">{participant.nickname}</p>
             <p className="mt-0.5 flex items-center gap-1 text-xs text-slate-300"><MapPin className="h-3.5 w-3.5 text-cyan-400" /><span className="truncate">{participant.district_name || ""}{participant.district_name ? " · " : ""}{participant.regency_name || ""}{participant.regency_name ? " · " : ""}{participant.province_name || ""}</span></p>
+            <div className="mt-2 hidden flex-wrap gap-2 sm:flex">
+              <a href="/account/results#riwayat-hasil" className="inline-flex items-center gap-1.5 rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1.5 text-xs font-bold text-cyan-100 transition-colors hover:bg-cyan-300/15"><History className="h-3.5 w-3.5"/>Hasil & Attempt</a>
+              <a href="/account" className="rounded-full border border-white/20 bg-white/5 px-3 py-1.5 text-xs font-medium text-slate-200 transition-colors hover:bg-white/10">Edit Profil</a>
+            </div>
           </div>
-          <a href="/account" className="ml-2 hidden rounded-full border border-white/20 bg-white/5 px-4 py-1.5 text-xs font-medium text-slate-200 transition-colors hover:bg-white/10 sm:block">Edit Profil</a>
         </div>
         <div className="flex items-center gap-8">
           <div className="hidden border-l border-white/10 pl-8 sm:block">
