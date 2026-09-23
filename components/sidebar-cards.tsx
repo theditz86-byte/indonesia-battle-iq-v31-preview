@@ -27,9 +27,9 @@ export function PromoBanner() {
       <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/85 to-indigo-950/55" />
       <div className="relative p-6">
         <FileText className="h-6 w-6 text-violet-300"/>
-        <p className="mt-4 text-lg font-extrabold leading-tight text-white">Skor hanyalah awal.<br/>Kenali pola kemampuanmu.</p>
-        <p className="mt-2 text-sm leading-6 text-slate-300">Laporan Premium membuka analisis domain, kekuatan, area pengembangan, dan PDF hasil.</p>
-        <a href="/result" className="mt-5 inline-flex rounded-xl bg-gradient-to-r from-violet-500 to-fuchsia-500 px-4 py-2.5 text-sm font-black text-white">Lihat hasil saya</a>
+        <p className="mt-4 text-lg font-extrabold leading-tight text-white">Skor hanyalah awal.<br/>Kenali perkembanganmu.</p>
+        <p className="mt-2 text-sm leading-6 text-slate-300">Semua hasil tes, riwayat attempt, Personal Best, dan status Premium kini tersimpan di menu Akun.</p>
+        <a href="/account/results#riwayat-hasil" className="mt-5 inline-flex rounded-xl bg-gradient-to-r from-violet-500 to-fuchsia-500 px-4 py-2.5 text-sm font-black text-white">Hasil & Attempt Saya</a>
       </div>
     </section>
   )
