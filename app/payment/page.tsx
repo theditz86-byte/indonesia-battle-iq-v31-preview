@@ -28,7 +28,7 @@ const products = {
     title:"Ranked Attempt Tambahan",
     eyebrow:"Percobaan Tambahan",
     amount:5000,
-    description:"1 percobaan kompetitif tambahan setelah 2 Ranked Attempt gratis habis.",
+    description:"1 percobaan kompetitif tambahan setelah 1 Ranked Attempt gratis habis.",
     detail:"Hasil percobaan berbayar tetap kompetitif dan dapat memperbaiki skor terbaik serta posisi leaderboard resmi.",
     icon:Trophy,
   },

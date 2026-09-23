@@ -274,7 +274,7 @@ export default function BattleTestPage() {
 
   if (phase === "lobby") {
     const used = Math.max(0, Number(participant?.attempts_used) || 0)
-    const freeRemaining = Math.max(0, Number(participant?.free_attempts_remaining ?? 2 - used) || 0)
+    const freeRemaining = Math.max(0, Number(participant?.free_attempts_remaining ?? 1 - used) || 0)
     const paidCredits = Math.max(0, Number(participant?.paid_credits) || 0)
     return (
       <main className="min-h-screen bg-[radial-gradient(circle_at_18%_0%,rgba(65,105,225,.22),transparent_30rem),linear-gradient(180deg,#020817,#07142f_55%,#040b1c)] text-white">
@@ -299,7 +299,7 @@ export default function BattleTestPage() {
           <div className="rounded-3xl border border-cyan-300/20 bg-[#0a1c3b]/90 p-6 shadow-2xl">
             <div className="flex items-start gap-3"><ShieldCheck className="mt-1 h-6 w-6 text-cyan-300"/><div><h2 className="text-xl font-black">Aturan Fair Play</h2><p className="mt-1 text-sm leading-6 text-slate-400">Kerjakan sendiri. Dilarang menggunakan ChatGPT/AI lain, kalkulator, mesin pencari, catatan jawaban, atau bantuan orang lain.</p></div></div>
             <div className="mt-5 rounded-2xl border border-amber-300/20 bg-amber-300/10 p-4 text-sm leading-6 text-amber-100">
-              Setelah 2 Ranked Attempt gratis habis, setiap kredit Rp5.000 membuka <b>Ranked Attempt tambahan</b>. Hasilnya tetap dapat memperbaiki skor terbaik dan <b>mempengaruhi leaderboard resmi</b>.
+              Setelah 1 Ranked Attempt gratis habis, setiap kredit Rp5.000 membuka <b>Ranked Attempt tambahan</b>. Hasilnya tetap dapat memperbaiki skor terbaik dan <b>mempengaruhi leaderboard resmi</b>.
             </div>
             <label className="mt-5 flex cursor-pointer items-start gap-3 rounded-2xl border border-white/10 bg-slate-950/40 p-4 text-sm leading-6 text-slate-200">
               <input type="checkbox" checked={integrity} onChange={(e)=>setIntegrity(e.target.checked)} className="mt-1 h-5 w-5 accent-indigo-500"/>

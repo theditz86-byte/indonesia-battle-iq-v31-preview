@@ -27,7 +27,7 @@ export function SiteFooter() {
           </nav>
 
           <div className="max-w-sm text-sm leading-6 text-slate-400">
-            2 Ranked Attempt gratis per season. Practice berbayar tidak mengubah leaderboard resmi.
+            1 Ranked Attempt gratis per season. Practice berbayar tidak mengubah leaderboard resmi.
           </div>
         </div>
 

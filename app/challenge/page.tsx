@@ -83,7 +83,7 @@ export default function ChallengePage(){
           <div className="rounded-2xl border border-white/10 bg-slate-950/40 p-5 text-center"><span className="text-xs text-slate-400">Peringkat Nasional</span><strong className="mt-1 block text-4xl font-black">#{entry.national_rank ?? "—"}</strong></div>
         </div>}
         <div className="border-t border-white/10 p-6 text-center sm:p-8">
-          <p className="text-sm leading-6 text-slate-400">Anda mendapat 2 Ranked Attempt gratis per season. Setelah itu, practice tambahan tidak mengubah leaderboard resmi.</p>
+          <p className="text-sm leading-6 text-slate-400">Anda mendapat 1 Ranked Attempt gratis per season. Setelah itu, practice tambahan tidak mengubah leaderboard resmi.</p>
           <button onClick={accept} className="mt-5 inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-7 py-3.5 font-black shadow-[0_0_28px_rgba(99,102,241,.3)]">{entry?<><Trophy className="h-5 w-5"/>Terima Tantangan</>:<>Mulai Battle IQ</>}<ArrowRight className="h-4 w-4"/></button>
           <div className="mt-4"><a href="/battle" className="text-sm font-bold text-slate-400 hover:text-white">Lihat leaderboard nasional</a></div>
         </div>

@@ -76,7 +76,7 @@ export default function AccountPage() {
   const [claimPassword, setClaimPassword] = useState("")
 
   const used = Math.max(0, Number(participant?.attempts_used) || 0)
-  const freeRemaining = Math.max(0, Number(participant?.free_attempts_remaining ?? 2 - used) || 0)
+  const freeRemaining = Math.max(0, Number(participant?.free_attempts_remaining ?? 1 - used) || 0)
   const paidCredits = Math.max(0, Number(participant?.paid_credits) || 0)
   const totalRemaining = Math.max(0, Number(participant?.attempts_remaining ?? freeRemaining + paidCredits) || 0)
 
@@ -151,7 +151,7 @@ export default function AccountPage() {
       setToken(data.token)
       setParticipant(data.participant || null)
       setEditNickname(data.participant?.nickname || "")
-      setNotice("Pendaftaran berhasil. Anda mendapat kuota 2x percobaan gratis pada season ini.")
+      setNotice("Pendaftaran berhasil. Anda mendapat kuota 1x percobaan gratis pada season ini.")
     } catch (e) {
       setError(messageText(e))
     } finally {
@@ -263,7 +263,7 @@ export default function AccountPage() {
         <div className="mb-7">
           <p className="text-xs font-black uppercase tracking-[.18em] text-cyan-300">AKUN PESERTA</p>
           <h1 className="mt-3 text-4xl font-black tracking-tight sm:text-6xl">Identitas Battle Anda</h1>
-          <p className="mt-4 max-w-3xl leading-7 text-slate-300">Kelola akun, Nama Arena, foto profil, dan kuota percobaan. Setiap peserta mendapat <strong className="text-white">2x percobaan gratis per season</strong>. Setelah itu, Ranked Attempt tambahan Rp5.000 tetap dapat mempengaruhi leaderboard resmi.</p>
+          <p className="mt-4 max-w-3xl leading-7 text-slate-300">Kelola akun, Nama Arena, foto profil, dan kuota percobaan. Setiap peserta mendapat <strong className="text-white">1x percobaan gratis per season</strong>. Setelah itu, Ranked Attempt tambahan Rp5.000 tetap dapat mempengaruhi leaderboard resmi.</p>
         </div>
 
         {notice && <div className="mb-5 rounded-2xl border border-emerald-400/30 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-100">{notice}</div>}
@@ -294,7 +294,7 @@ export default function AccountPage() {
               <form onSubmit={handleRegister} className="grid gap-5 p-6 sm:p-8">
                 <div>
                   <h2 className="text-2xl font-black">Buat akun peserta</h2>
-                  <p className="mt-1 text-sm text-slate-400">Pendaftaran baru langsung mendapat <strong className="text-cyan-200">2x percobaan gratis</strong> untuk season aktif.</p>
+                  <p className="mt-1 text-sm text-slate-400">Pendaftaran baru langsung mendapat <strong className="text-cyan-200">1x percobaan gratis</strong> untuk season aktif.</p>
                 </div>
                 <div className="grid gap-4 sm:grid-cols-2">
                   <label className="grid gap-2 text-sm font-bold">Username
@@ -347,12 +347,12 @@ export default function AccountPage() {
               </div>
 
               <div className="mt-7 grid gap-3 sm:grid-cols-4">
-                <div className="rounded-2xl border border-cyan-300/25 bg-cyan-300/10 p-4"><span className="text-xs text-cyan-100">Kuota gratis / season</span><strong className="mt-1 block text-3xl font-black">2x</strong></div>
-                <div className="rounded-2xl border border-white/10 bg-white/5 p-4"><span className="text-xs text-slate-400">Gratis digunakan</span><strong className="mt-1 block text-3xl font-black">{Math.min(2, used)}/2</strong></div>
+                <div className="rounded-2xl border border-cyan-300/25 bg-cyan-300/10 p-4"><span className="text-xs text-cyan-100">Kuota gratis / season</span><strong className="mt-1 block text-3xl font-black">1x</strong></div>
+                <div className="rounded-2xl border border-white/10 bg-white/5 p-4"><span className="text-xs text-slate-400">Gratis digunakan</span><strong className="mt-1 block text-3xl font-black">{Math.min(1, used)}/2</strong></div>
                 <div className="rounded-2xl border border-white/10 bg-white/5 p-4"><span className="text-xs text-slate-400">Sisa gratis</span><strong className="mt-1 block text-3xl font-black">{freeRemaining}x</strong></div>
                 <div className="rounded-2xl border border-white/10 bg-white/5 p-4"><span className="text-xs text-slate-400">Kredit Ranked</span><strong className="mt-1 block text-3xl font-black">{paidCredits}x</strong></div>
               </div>
-              <p className="mt-4 text-sm text-slate-400">Total percobaan yang masih dapat dipakai sekarang: <strong className="text-white">{totalRemaining}x</strong>. Setelah 2x Ranked Attempt gratis habis, setiap Rp5.000 yang disetujui admin membuka 1 Ranked Attempt tambahan yang dapat memperbaiki posisi leaderboard.</p>
+              <p className="mt-4 text-sm text-slate-400">Total percobaan yang masih dapat dipakai sekarang: <strong className="text-white">{totalRemaining}x</strong>. Setelah 1x Ranked Attempt gratis habis, setiap Rp5.000 yang disetujui admin membuka 1 Ranked Attempt tambahan yang dapat memperbaiki posisi leaderboard.</p>
             </section>
 
             {!participant.account_ready && (

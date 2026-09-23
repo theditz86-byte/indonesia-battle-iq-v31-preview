@@ -85,7 +85,7 @@ export default function AccountResultsPage(){
   const attempts=useMemo(()=>[...(history?.attempts || [])].sort((a,b)=>Number(b.attempt_number||0)-Number(a.attempt_number||0)),[history?.attempts])
   const personalBest=attempts.find((item)=>item.is_personal_best) || attempts.slice().sort((a,b)=>Number(b.battle_score||0)-Number(a.battle_score||0))[0]
   const used=Math.max(0,Number(participant?.attempts_used)||attempts.length)
-  const freeRemaining=Math.max(0,Number(participant?.free_attempts_remaining ?? 2-used)||0)
+  const freeRemaining=Math.max(0,Number(participant?.free_attempts_remaining ?? 1-used)||0)
   const paidCredits=Math.max(0,Number(participant?.paid_credits)||0)
   const active=Boolean(participant?.active_attempt_id)
   const testHref=active || freeRemaining>0 || paidCredits>0 ? "/battle-test" : "/payment?product=attempt_credit"
