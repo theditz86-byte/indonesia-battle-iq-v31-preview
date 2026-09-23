@@ -33,12 +33,13 @@ jobs:
           yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null || true
           "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-36" "build-tools;36.0.0"
 
-      - name: Install JavaScript dependencies
+      - name: Install base dependencies
         working-directory: admin-mobile
-        run: |
-          npm install
-          npx expo install expo-secure-store
-          npx expo-doctor
+        run: npm install
+
+      - name: Install SecureStore for current Expo SDK
+        working-directory: admin-mobile
+        run: npx expo install expo-secure-store
 
       - name: Generate native Android project
         working-directory: admin-mobile
