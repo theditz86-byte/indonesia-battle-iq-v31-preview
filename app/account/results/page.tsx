@@ -145,7 +145,7 @@ export default function AccountResultsPage(){
           {attempts.length ? (
             <div className="mt-5 flex snap-x snap-mandatory gap-4 overflow-x-auto pb-3 [scrollbar-color:rgba(148,163,184,.35)_transparent] [scrollbar-width:thin]">
               {attempts.map((item)=>{
-                const paid=Number(item.attempt_number||0)>2
+                const paid=Number(item.attempt_number||0)>1
                 return <article key={item.attempt_id || item.attempt_number} className="min-w-[280px] max-w-[320px] flex-[0_0_82vw] snap-start overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/[.055] to-white/[.025] p-5 sm:flex-basis-[310px]">
                   <div className="flex items-start justify-between gap-3">
                     <div><p className="text-[10px] font-black uppercase tracking-[.14em] text-slate-500">Percobaan #{item.attempt_number ?? "—"}</p><p className="mt-1 text-xs font-bold text-slate-400">{paid?"Ranked berbayar":"Ranked gratis"}</p></div>

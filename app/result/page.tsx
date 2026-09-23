@@ -454,7 +454,7 @@ export default function ResultPage() {
                 .sort((a,b)=>Number(a.attempt_number||0)-Number(b.attempt_number||0))
                 .map((item)=>{
                   const active=item.attempt_id===data.selected_attempt_id || item.attempt_id===result?.attempt_id
-                  const paid=Number(item.attempt_number||0)>2
+                  const paid=Number(item.attempt_number||0)>1
                   return <button
                     key={item.attempt_id || String(item.attempt_number)}
                     type="button"

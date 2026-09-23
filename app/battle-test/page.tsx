@@ -129,7 +129,7 @@ export default function BattleTestPage() {
   const unanswered = useMemo(() => answers.filter((a) => a === null).length, [answers])
   const current = attempt?.questions[index]
   const progress = attempt?.questions.length ? Math.round(((index + 1) / attempt.questions.length) * 100) : 0
-  const isPaidRanked = Boolean(attempt && attempt.attempt_number > 2)
+  const isPaidRanked = Boolean(attempt && attempt.attempt_number > 1)
 
   async function start() {
     const rawToken = getParticipantToken()
