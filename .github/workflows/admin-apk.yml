@@ -5,12 +5,13 @@ on:
   push:
     paths:
       - "admin-mobile/**"
+      - "public/alzava-emblem-v3.svg"
       - ".github/workflows/admin-apk.yml"
 
 jobs:
   build-apk:
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 40
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -32,6 +33,18 @@ jobs:
           echo "ANDROID_HOME=$ANDROID_HOME"
           yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null || true
           "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-36" "build-tools;36.0.0"
+
+      - name: Generate ALZAVA app icons
+        shell: bash
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y librsvg2-bin imagemagick
+          mkdir -p admin-mobile/assets /tmp/alzava-icon
+          rsvg-convert -w 680 -h 680 public/alzava-emblem-v3.svg -o /tmp/alzava-icon/logo-680.png
+          convert -size 1024x1024 xc:none /tmp/alzava-icon/logo-680.png -gravity center -composite admin-mobile/assets/adaptive-foreground.png
+          convert -size 1024x1024 xc:'#020817' /tmp/alzava-icon/logo-680.png -gravity center -composite admin-mobile/assets/app-icon.png
+          cp admin-mobile/assets/adaptive-foreground.png admin-mobile/assets/alzava-logo.png
+          identify admin-mobile/assets/app-icon.png admin-mobile/assets/adaptive-foreground.png admin-mobile/assets/alzava-logo.png
 
       - name: Install base dependencies
         working-directory: admin-mobile
@@ -56,12 +69,12 @@ jobs:
         run: |
           APK=$(find admin-mobile/android/app/build/outputs/apk/release -name "*.apk" | head -n 1)
           test -n "$APK"
-          cp "$APK" ALZAVA-Battle-IQ-Admin-v1.apk
+          cp "$APK" ALZAVA-Battle-IQ-Admin-v1.1.apk
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: ALZAVA-Battle-IQ-Admin-v1
-          path: ALZAVA-Battle-IQ-Admin-v1.apk
+          name: ALZAVA-Battle-IQ-Admin-v1.1
+          path: ALZAVA-Battle-IQ-Admin-v1.1.apk
           if-no-files-found: error
           retention-days: 30
