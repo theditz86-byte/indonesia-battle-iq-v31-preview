@@ -2,14 +2,14 @@
   "expo": {
     "name": "ALZAVA Battle IQ Admin",
     "slug": "alzava-battle-iq-admin",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "orientation": "default",
     "userInterfaceStyle": "dark",
     "icon": "./assets/app-icon.png",
     "android": {
       "package": "com.alzava.battleiq.admin",
-      "versionCode": 2,
-      "permissions": ["INTERNET", "VIBRATE"],
+      "versionCode": 3,
+      "permissions": ["INTERNET", "VIBRATE", "POST_NOTIFICATIONS"],
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-foreground.png",
         "backgroundColor": "#020817"
@@ -20,6 +20,15 @@
         "expo-secure-store",
         {
           "configureAndroidBackup": true
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#D4AF37",
+          "defaultChannel": "alzava-payments-v1",
+          "sounds": ["./assets/alzava_payment.wav"]
         }
       ]
     ]
