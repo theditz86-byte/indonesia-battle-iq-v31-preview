@@ -40,6 +40,10 @@ jobs:
             'Math.min(2,used)':'Math.min(1,used)',
             '}/2 digunakan':'}/1 digunakan',
             '>2x<':'>1x<',
+            'Number(item.attempt_number||0)>2':'Number(item.attempt_number||0)>1',
+            'Number(item.attempt_number || 0) > 2':'Number(item.attempt_number || 0) > 1',
+            'attempt_number>2':'attempt_number>1',
+            'attempt_number > 2':'attempt_number > 1',
           }
           changed=[]
           for root in roots:
