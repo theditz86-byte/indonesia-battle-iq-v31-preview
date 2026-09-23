@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     template: "%s | ALZAVA Battle IQ",
   },
   description:
-    "Tes kemampuan online Indonesia dengan leaderboard nasional, provinsi, kabupaten/kota, dan kecamatan. Dapatkan 2 Ranked Attempt gratis setiap season, lalu analisis hasil Battle IQ.",
+    "Tes kemampuan online Indonesia dengan leaderboard nasional, provinsi, kabupaten/kota, dan kecamatan. Dapatkan 1 Ranked Attempt gratis setiap season, lalu analisis hasil Battle IQ.",
   keywords: [
     "tes IQ online",
     "tes kemampuan",
