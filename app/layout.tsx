@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next"
 import "./globals.css"
+import "./attempt-history.css"
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://alzava-battle-iq.pages.dev"),
