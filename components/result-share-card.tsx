@@ -167,11 +167,6 @@ function smallPanel(ctx:CanvasRenderingContext2D,x:number,y:number,w:number,titl
   ctx.fillStyle="#fff";ctx.font=`900 ${valueSize}px Arial,sans-serif`;ctx.fillText(value,x+w/2,y+94)
   ctx.fillStyle=accent;ctx.fillRect(x+38,y+122,w-76,3)
 }
-function pill(ctx:CanvasRenderingContext2D,x:number,y:number,w:number,text:string,accent="#a78bfa"){
-  fillRound(ctx,x,y,w,54,27,"rgba(2,8,23,.78)")
-  strokeRound(ctx,x,y,w,54,27,accent+"aa",2)
-  ctx.fillStyle=accent;ctx.textAlign="center";ctx.font="900 20px Arial,sans-serif";ctx.fillText(text,x+w/2,y+34)
-}
 
 async function buildCard(props:Props):Promise<{canvas:HTMLCanvasElement;qa:QaReport}>{
   const profile=await getProfile(props.demoProfile)
@@ -241,8 +236,6 @@ async function buildCard(props:Props):Promise<{canvas:HTMLCanvasElement;qa:QaRep
   const nameSize=fit(ctx,props.nickname,650,50,30)
   ctx.fillStyle="#fff";ctx.font=`900 ${nameSize}px Arial,sans-serif`;ctx.fillText(props.nickname,540,846)
   ctx.fillStyle="#94a3b8";ctx.font="700 23px Arial,sans-serif";ctx.fillText(place,540,884)
-
-  if(!official){pill(ctx,385,916,310,"REMATCH · PRACTICE","#a78bfa")}
 
   // Score.
   const scoreGrad=ctx.createLinearGradient(330,930,750,1080)
