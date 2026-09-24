@@ -14,25 +14,26 @@ jobs:
         with:
           ref: main
           fetch-depth: 0
-      - name: Patch visual QA findings
+      - name: Remove overlapping rematch badge
         shell: bash
         run: |
           python - <<'PY'
           from pathlib import Path
           p=Path('components/result-share-card.tsx')
           s=p.read_text(encoding='utf-8')
-          old='''function seasonLabel(value?: string) {\n  const parsed = value ? new Date(value) : new Date()\n  const d = Number.isNaN(parsed.getTime()) ? new Date() : parsed\n  return `${d.getFullYear()}.${String(weekNumber(d)).padStart(2, "0")}`\n}'''
-          new='''function seasonLabel(value?: string) {\n  const parsed = value ? new Date(value) : new Date()\n  const source = Number.isNaN(parsed.getTime()) ? new Date() : parsed\n  const parts = new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Jakarta",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(source)\n  const v=Object.fromEntries(parts.filter(x=>x.type!=="literal").map(x=>[x.type,x.value]))\n  const d=new Date(Date.UTC(Number(v.year),Number(v.month)-1,Number(v.day)))\n  return `${v.year}.${String(weekNumber(d)).padStart(2, "0")}`\n}'''
-          if old not in s: raise SystemExit('seasonLabel pattern missing')
-          s=s.replace(old,new)
-          old='''  if(official){\n    const w=296,gap=18,start=78,y=1240\n    smallPanel(ctx,start,y,w,localLabel,localRank?`#${localRank}`:"#—","#fbbf24")\n    smallPanel(ctx,start+w+gap,y,w,"Indonesia",props.nationalRank?`#${props.nationalRank}`:(topPercent?`Top ${topPercent}%`:"#—"),"#a78bfa")\n    smallPanel(ctx,start+(w+gap)*2,y,w,"Season",seasonLabel(props.submittedAt),"#22d3ee")\n  }else{'''
-          new='''  if(official){\n    const w=296,gap=18,start=78,y=1240\n    if(localRank)smallPanel(ctx,start,y,w,localLabel,`#${localRank}`,"#fbbf24")\n    else smallPanel(ctx,start,y,w,"Ketepatan",`${accuracy}%`,"#fbbf24")\n    smallPanel(ctx,start+w+gap,y,w,"Indonesia",props.nationalRank?`#${props.nationalRank}`:(topPercent?`Top ${topPercent}%`:"Top —"),"#a78bfa")\n    smallPanel(ctx,start+(w+gap)*2,y,w,"Season",seasonLabel(props.submittedAt),"#22d3ee")\n  }else{'''
-          if old not in s: raise SystemExit('rank panel pattern missing')
-          s=s.replace(old,new)
-          old='''  ctx.fillStyle="#fff";ctx.font="italic 900 50px Arial,sans-serif";ctx.fillText("BISA",392,1505)\n  ctx.fillStyle="#fbbf24";ctx.fillText("LEWATI SKORKU?",650,1505)'''
-          new='''  ctx.font="italic 900 50px Arial,sans-serif"\n  const ctaA="BISA ",ctaB="LEWATI SKORKU?"\n  const totalCta=ctx.measureText(ctaA).width+ctx.measureText(ctaB).width\n  const ctaStart=540-totalCta/2\n  ctx.textAlign="left";ctx.fillStyle="#fff";ctx.fillText(ctaA,ctaStart,1505)\n  ctx.fillStyle="#fbbf24";ctx.fillText(ctaB,ctaStart+ctx.measureText(ctaA).width,1505)\n  ctx.textAlign="center"'''
-          if old not in s: raise SystemExit('cta pattern missing')
-          s=s.replace(old,new)
+          block='''function pill(ctx:CanvasRenderingContext2D,x:number,y:number,w:number,text:string,accent="#a78bfa"){
+  fillRound(ctx,x,y,w,54,27,"rgba(2,8,23,.78)")
+  strokeRound(ctx,x,y,w,54,27,accent+"aa",2)
+  ctx.fillStyle=accent;ctx.textAlign="center";ctx.font="900 20px Arial,sans-serif";ctx.fillText(text,x+w/2,y+34)
+}
+'''
+          if block not in s: raise SystemExit('pill helper missing')
+          s=s.replace(block,'')
+          call='''  if(!official){pill(ctx,385,916,310,"REMATCH · PRACTICE","#a78bfa")}
+
+'''
+          if call not in s: raise SystemExit('pill call missing')
+          s=s.replace(call,'')
           p.write_text(s,encoding='utf-8')
           PY
       - uses: actions/setup-node@v4
@@ -46,6 +47,6 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add components/result-share-card.tsx
-          git commit -m "Polish share card after visual QA"
+          git commit -m "Remove overlapping rematch badge"
           git pull --rebase origin main
           git push origin HEAD:main
