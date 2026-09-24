@@ -1,0 +1,64 @@
+name: Apply Android admin Battle Point source update
+
+on:
+  push:
+    paths:
+      - '.github/workflows/apply-admin-battle-point-source.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  update-source:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Rebrand admin mobile source
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json
+
+          app = Path('admin-mobile/App.tsx')
+          text = app.read_text(encoding='utf-8')
+          text = text.replace('ALZAVA Battle IQ', 'ALZAVA Battle Point')
+
+          old_podium = '''      <View style={styles.podiumStats}>\n        <View><Text style={styles.podiumStatLabel}>IQ</Text><Text style={styles.podiumStatValue}>{entry.iq_estimate ?? "—"}</Text></View>\n        <View><Text style={styles.podiumStatLabel}>SKOR</Text><Text style={styles.podiumStatValueCyan}>{Number(entry.battle_score || 0).toLocaleString("id-ID")}</Text></View>\n      </View>'''
+          new_podium = '''      <View style={styles.podiumStats}>\n        <View><Text style={styles.podiumStatLabel}>BATTLE POINT</Text><Text style={styles.podiumStatValueCyan}>{Number(entry.battle_score || 0).toLocaleString("id-ID")} poin</Text></View>\n      </View>'''
+          if old_podium not in text:
+              raise SystemExit('Expected podium block not found')
+          text = text.replace(old_podium, new_podium)
+
+          old_row = '''      <View style={styles.rankIQ}><Text style={styles.rankMiniLabel}>IQ</Text><Text style={styles.rankIQValue}>{entry.iq_estimate ?? "—"}</Text></View>\n      <View style={styles.rankScore}><Text style={styles.rankMiniLabel}>SKOR</Text><Text style={styles.rankScoreValue}>{Number(entry.battle_score || 0).toLocaleString("id-ID")}</Text><Text style={styles.rankMeta}>{entry.correct_count ?? 0}/{entry.question_count ?? 0} · {durationLabel(entry.duration_ms)}</Text></View>'''
+          new_row = '''      <View style={styles.rankScore}><Text style={styles.rankMiniLabel}>POIN</Text><Text style={styles.rankScoreValue}>{Number(entry.battle_score || 0).toLocaleString("id-ID")}</Text><Text style={styles.rankMeta}>{entry.correct_count ?? 0}/{entry.question_count ?? 0} · {durationLabel(entry.duration_ms)}</Text></View>'''
+          if old_row not in text:
+              raise SystemExit('Expected leaderboard row block not found')
+          text = text.replace(old_row, new_row)
+          text = text.replace('rankScore: { width: 66, alignItems: "flex-end" }', 'rankScore: { width: 78, alignItems: "flex-end" }')
+          text = text.replace('rankScoreValue: { color: "#67e8f9", fontSize: 13, fontWeight: "900" }', 'rankScoreValue: { color: "#67e8f9", fontSize: 15, fontWeight: "900" }')
+          app.write_text(text, encoding='utf-8')
+
+          cfg_path = Path('admin-mobile/app.json')
+          cfg = json.loads(cfg_path.read_text(encoding='utf-8'))
+          expo = cfg['expo']
+          expo['name'] = 'ALZAVA Battle Point Admin'
+          expo['slug'] = 'alzava-battle-point-admin'
+          expo['version'] = '1.3.0'
+          expo['android']['versionCode'] = 4
+          # Deliberately preserve com.alzava.battleiq.admin so this installs as an update.
+          cfg_path.write_text(json.dumps(cfg, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+          PY
+
+      - name: Commit source changes
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add admin-mobile/App.tsx admin-mobile/app.json
+          git commit -m "Rebrand Android admin UI to ALZAVA Battle Point"
+          git push
