@@ -5,4 +5,4 @@ Disallow: /payment
 Disallow: /account
 Disallow: /result
 
-Sitemap: https://alzava-battle-iq.pages.dev/sitemap.xml
+Sitemap: https://alzava-battle-point.pages.dev/sitemap.xml
