@@ -19,7 +19,7 @@ function RankBadge({ rank }: { rank: number }) {
 }
 
 function initials(name?: string) {
-  return (name || "IQ").split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]).join("").toUpperCase() || "IQ"
+  return (name || "BP").split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]).join("").toUpperCase() || "BP"
 }
 
 export function Leaderboard({ entries, participant, scope, loading, error, updatedAt, onScopeChange, onRefresh }: {
@@ -43,8 +43,8 @@ export function Leaderboard({ entries, participant, scope, loading, error, updat
       </div>
       {error ? <div className="rounded-xl border border-rose-400/20 bg-rose-400/10 p-5 text-center text-sm text-rose-200">{error}</div> : loading && !entries.length ? <div className="flex min-h-56 items-center justify-center text-sm text-slate-400"><RefreshCw className="mr-2 h-4 w-4 animate-spin" />Memuat peringkat…</div> : (
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[640px] border-collapse">
-            <thead><tr className="text-left text-[11px] uppercase tracking-wider text-slate-500"><th className="px-3 py-3 font-semibold">#</th><th className="px-3 py-3 font-semibold">Peserta</th><th className="px-3 py-3 font-semibold">Wilayah</th><th className="px-3 py-3 font-semibold">IQ Battle</th><th className="px-3 py-3 font-semibold">Poin</th><th className="px-3 py-3 font-semibold">Ketepatan</th><th className="px-3 py-3 font-semibold">Waktu</th></tr></thead>
+          <table className="w-full min-w-[560px] border-collapse">
+            <thead><tr className="text-left text-[11px] uppercase tracking-wider text-slate-500"><th className="px-3 py-3 font-semibold">#</th><th className="px-3 py-3 font-semibold">Peserta</th><th className="px-3 py-3 font-semibold">Wilayah</th><th className="px-3 py-3 font-semibold">Battle Point</th><th className="px-3 py-3 font-semibold">Ketepatan</th><th className="px-3 py-3 font-semibold">Waktu</th></tr></thead>
             <tbody>
               {entries.map((p, index) => {
                 const rank = entryRank(p, scope) || index + 1
@@ -54,8 +54,7 @@ export function Leaderboard({ entries, participant, scope, loading, error, updat
                     <td className="px-3 py-4"><RankBadge rank={rank} /></td>
                     <td className="px-3 py-4"><div className="flex items-center gap-3">{p.avatar_url ? <img src={p.avatar_url} alt={p.nickname || "Peserta"} className="h-9 w-9 rounded-full object-cover ring-1 ring-white/20" /> : <div className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-800 text-[10px] font-black text-white ring-1 ring-white/20">{initials(p.nickname)}</div>}<div className="leading-tight"><span className="flex items-center gap-2 text-sm font-semibold text-white">{p.nickname || "Peserta"}{isYou && <span className="rounded-full bg-cyan-400/20 px-2 py-0.5 text-[10px] font-bold text-cyan-300">Anda</span>}</span></div></div></td>
                     <td className="px-3 py-4 text-sm text-slate-300">{p.regency_name || "—"}{p.province_name && <><br /><span className="text-slate-400">{p.province_name}</span></>}</td>
-                    <td className="px-3 py-4"><span className="text-sm font-bold text-white"><span className="text-slate-500">IQ</span> {p.iq_estimate ?? "—"}</span></td>
-                    <td className="px-3 py-4 text-sm font-bold text-cyan-300">{formatScore(p.battle_score)}</td>
+                    <td className="px-3 py-4 text-sm font-black text-cyan-300">{formatScore(p.battle_score)} poin</td>
                     <td className="px-3 py-4 text-sm text-slate-300">{p.correct_count ?? 0}/{p.question_count ?? 0}</td>
                     <td className="px-3 py-4 text-sm text-slate-300 tabular-nums">{formatDuration(p.duration_ms)}</td>
                   </tr>
