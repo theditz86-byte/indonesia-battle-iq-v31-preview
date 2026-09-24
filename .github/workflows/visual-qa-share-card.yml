@@ -37,6 +37,13 @@ jobs:
           "$CHROME" --headless=new --no-sandbox --disable-gpu --hide-scrollbars --window-size=500,1450 --virtual-time-budget=9000 --screenshot=qa/share-card-ranked.png 'http://127.0.0.1:3000/share-card-lab/?mode=ranked'
           "$CHROME" --headless=new --no-sandbox --disable-gpu --hide-scrollbars --window-size=500,1450 --virtual-time-budget=9000 --screenshot=qa/share-card-rematch.png 'http://127.0.0.1:3000/share-card-lab/?mode=rematch'
           ls -lh qa/*.png
+      - uses: actions/upload-artifact@v4
+        with:
+          name: share-card-qa
+          path: |
+            qa/share-card-ranked.png
+            qa/share-card-rematch.png
+          retention-days: 1
       - name: Commit QA screenshots
         shell: bash
         run: |
