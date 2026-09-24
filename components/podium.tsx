@@ -56,7 +56,7 @@ const spots: Record<number, PodiumSpot> = {
   },
   2: {
     place: 2,
-    bodyHeight: "h-36",
+    bodyHeight: "h-40",
     avatarSize: "h-20 w-20",
     laurelSize: "h-40 w-40",
     crownSize: "h-14 w-14",
@@ -73,7 +73,7 @@ const spots: Record<number, PodiumSpot> = {
   },
   3: {
     place: 3,
-    bodyHeight: "h-28",
+    bodyHeight: "h-36",
     avatarSize: "h-20 w-20",
     laurelSize: "h-40 w-40",
     crownSize: "h-14 w-14",
@@ -131,11 +131,11 @@ function PodiumColumn({ place, player, className = "" }: { place: 1 | 2 | 3; pla
         </div>
       </div>
       <div className={`relative z-10 -mt-6 flex w-full ${s.bodyHeight} flex-col items-center rounded-t-2xl bg-gradient-to-b ${s.bodyGradient} px-3 pb-4 pt-9 text-center ring-1 ${s.bodyRing} ${s.glow}`}>
-        <div className="absolute inset-x-0 top-0 h-1/3 rounded-t-2xl bg-gradient-to-b from-white/45 to-transparent" />
-        <p className={`relative max-w-full truncate font-bold text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.45)] ${isChampion ? "text-base" : "text-sm"}`}>{name}</p>
-        <p className="relative max-w-full truncate text-xs font-medium text-white/85 [text-shadow:0_1px_2px_rgba(0,0,0,0.4)]">{region}</p>
-        <p className={`relative mt-1 font-black text-white [text-shadow:0_2px_6px_rgba(0,0,0,0.45)] ${isChampion ? "text-3xl" : "text-2xl"}`}>IQ <span className="tabular-nums">{player?.iq_estimate ?? "—"}</span></p>
-        <p className="relative text-xs font-medium text-white/85 [text-shadow:0_1px_2px_rgba(0,0,0,0.4)]">{formatScore(player?.battle_score)} poin</p>
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-1/3 rounded-t-2xl bg-gradient-to-b from-white/45 to-transparent" />
+        <p className={`relative z-20 shrink-0 max-w-full truncate font-bold leading-tight text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.45)] ${isChampion ? "text-base" : "text-sm"}`}>{name}</p>
+        <p className="relative z-20 shrink-0 max-w-full truncate text-xs font-medium leading-tight text-white/85 [text-shadow:0_1px_2px_rgba(0,0,0,0.4)]">{region}</p>
+        <p className={`relative z-20 mt-1 shrink-0 font-black leading-tight text-white [text-shadow:0_2px_6px_rgba(0,0,0,0.45)] ${isChampion ? "text-3xl" : "text-2xl"}`}>IQ <span className="tabular-nums">{player?.iq_estimate ?? "—"}</span></p>
+        <p className="relative z-20 shrink-0 text-xs font-medium leading-tight text-white/85 [text-shadow:0_1px_2px_rgba(0,0,0,0.4)]">{formatScore(player?.battle_score)} poin</p>
       </div>
       <div className="relative w-full">
         <div className="pointer-events-none absolute -bottom-3 left-1/2 h-7 w-[92%] -translate-x-1/2 blur-[6px]" style={{ background: "radial-gradient(closest-side, rgba(0,0,0,0.5), rgba(0,0,0,0.28) 55%, rgba(0,0,0,0) 78%)" }} />
