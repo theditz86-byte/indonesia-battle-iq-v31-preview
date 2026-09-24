@@ -12,6 +12,12 @@ def replace_once(old: str, new: str, label: str) -> None:
 
 
 replace_once(
+    'const POLL_MS = 12000;\n',
+    'const POLL_MS = 3000;\n',
+    'fast payment polling',
+)
+
+replace_once(
     '  Image,\n  Modal,',
     '  Image,\n  Linking,\n  Modal,',
     'Linking import',
@@ -26,7 +32,7 @@ replace_once(
 replace_once(
     'const LOGO = require("./assets/alzava-logo.png");\n',
     '''const LOGO = require("./assets/alzava-logo.png");
-const PAYMENT_CHANNEL_ID = "alzava-payments-v1";
+const PAYMENT_CHANNEL_ID = "alzava-payments-v2";
 const PAYMENT_SOUND = "alzava_payment.wav";
 
 Notifications.setNotificationHandler({
@@ -40,11 +46,11 @@ Notifications.setNotificationHandler({
 
 async function prepareNotificationChannel() {
   await Notifications.setNotificationChannelAsync(PAYMENT_CHANNEL_ID, {
-    name: "Pembayaran Baru ALZAVA",
-    description: "Peringatan prioritas tinggi saat peserta mengirim pembayaran untuk diverifikasi.",
+    name: "Bukti Bayar Masuk",
+    description: "Peringatan prioritas tinggi saat peserta mengunggah bukti pembayaran untuk diverifikasi.",
     importance: Notifications.AndroidImportance.MAX,
     sound: PAYMENT_SOUND,
-    vibrationPattern: [0, 220, 100, 220, 100, 420],
+    vibrationPattern: [0, 140, 80, 180, 80, 320],
     lightColor: "#D4AF37",
     lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
     bypassDnd: false,
@@ -63,7 +69,7 @@ async function notificationPermission(requestIfNeeded = false) {
 }
 
 async function sendPaymentAlert(payment: Payment | undefined, newCount: number, totalPending: number) {
-  const title = newCount > 1 ? `💳 ${newCount} Pembayaran Baru ALZAVA` : "💳 Pembayaran Baru ALZAVA";
+  const title = newCount > 1 ? `💳 ${newCount} Bukti Bayar Masuk` : "💳 Bukti Bayar Masuk";
   const who = payment?.nickname || payment?.payer_name || "Peserta";
   const body = newCount > 1
     ? `${who} dan ${newCount - 1} pembayaran lain menunggu verifikasi. Total antrean: ${totalPending}.`
@@ -129,8 +135,8 @@ replace_once(
     '''        if (previousPending.current !== null && count > previousPending.current) {
           const newCount = count - previousPending.current;
           const newest = pendingList[0] as Payment | undefined;
-          Vibration.vibrate([0, 180, 100, 260, 100, 360]);
-          setMessage(`Ada ${newCount} pembayaran baru menunggu verifikasi.`);
+          Vibration.vibrate([0, 140, 80, 180, 80, 320]);
+          setMessage(`Ada ${newCount} bukti pembayaran baru menunggu verifikasi.`);
           void sendPaymentAlert(newest, newCount, count).catch(() => undefined);
         }
 ''',
@@ -149,12 +155,12 @@ replace_once(
     const granted = await notificationPermission(true).catch(() => false);
     setNotificationGranted(granted);
     if (granted) {
-      setMessage("Notifikasi pembayaran aktif. Bunyi khas ALZAVA siap digunakan.");
+      setMessage("Notifikasi bukti bayar aktif. Suara futuristik ALZAVA siap digunakan.");
       return;
     }
     Alert.alert(
       "Aktifkan notifikasi ALZAVA",
-      "Izin notifikasi masih nonaktif. Buka Pengaturan Android, lalu izinkan notifikasi dan suara untuk ALZAVA Battle IQ Admin.",
+      "Izin notifikasi masih nonaktif. Buka Pengaturan Android, lalu izinkan notifikasi dan suara untuk ALZAVA Battle Point Admin.",
       [
         { text: "Nanti", style: "cancel" },
         { text: "Buka Pengaturan", onPress: () => void Linking.openSettings() },
@@ -175,7 +181,7 @@ replace_once(
       product_type: "attempt_credit",
       amount: 5000,
     }, 1, Math.max(1, pending));
-    setMessage("Tes notifikasi dikirim. Dengarkan bunyi khas ALZAVA.");
+    setMessage('Tes notifikasi dikirim. Seharusnya terdengar "Bukti bayar masuk".');
   }
 
   async function logout() {
@@ -216,8 +222,8 @@ replace_once(
       <View style={[styles.notificationCard, notificationGranted ? styles.notificationCardActive : styles.notificationCardWarning]}>
         <View style={styles.notificationBell}><Text style={styles.notificationBellText}>🔔</Text></View>
         <View style={styles.notificationCopy}>
-          <Text style={styles.notificationTitle}>{notificationGranted ? "Notifikasi Pembayaran Aktif" : "Aktifkan Notifikasi Pembayaran"}</Text>
-          <Text style={styles.notificationText}>{notificationGranted ? "Pembayaran baru akan memicu bunyi khas ALZAVA + getar prioritas tinggi saat terdeteksi." : "Izinkan notifikasi Android agar permintaan pembayaran tidak terlewat."}</Text>
+          <Text style={styles.notificationTitle}>{notificationGranted ? "Notifikasi Bukti Bayar Aktif" : "Aktifkan Notifikasi Bukti Bayar"}</Text>
+          <Text style={styles.notificationText}>{notificationGranted ? 'Cek dipercepat menjadi sekitar 3 detik dan memakai suara futuristik "Bukti bayar masuk".' : "Izinkan notifikasi Android agar bukti pembayaran baru tidak terlewat."}</Text>
         </View>
         <Pressable onPress={notificationGranted ? onTestNotification : onEnableNotifications} style={[styles.notificationButton, notificationGranted && styles.notificationButtonActive]}>
           <Text style={[styles.notificationButtonText, notificationGranted && styles.notificationButtonTextActive]}>{notificationGranted ? "Tes Bunyi" : "Aktifkan"}</Text>
@@ -249,9 +255,9 @@ replace_once(
 
 replace_once(
     '      <Text style={styles.pollText}>Aplikasi mengecek pembayaran baru otomatis setiap 12 detik selama terbuka.</Text>',
-    '      <Text style={styles.pollText}>Aplikasi mengecek pembayaran baru otomatis setiap 12 detik. Selama proses aplikasi masih hidup, pembayaran baru memicu notifikasi + bunyi khas ALZAVA.</Text>',
+    '      <Text style={styles.pollText}>Aplikasi mengecek bukti pembayaran baru otomatis sekitar setiap 3 detik. Saat pembayaran baru terdeteksi, notifikasi prioritas tinggi langsung dibunyikan.</Text>',
     'polling copy',
 )
 
 path.write_text(text, encoding="utf-8")
-print("Applied ALZAVA payment notification patch to admin-mobile/App.tsx")
+print("Applied fast ALZAVA payment notification patch to admin-mobile/App.tsx")
