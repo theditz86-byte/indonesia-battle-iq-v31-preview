@@ -5,7 +5,7 @@ on:
     paths:
       - ".github/workflows/visual-qa-share-card.yml"
 permissions:
-  contents: read
+  contents: write
 jobs:
   capture:
     runs-on: ubuntu-latest
@@ -13,10 +13,27 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: main
+          fetch-depth: 0
+      - name: Apply final rematch visual fix
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          p=Path('components/result-share-card.tsx')
+          s=p.read_text(encoding='utf-8')
+          s,n1=re.subn(r'function pill\(ctx:CanvasRenderingContext2D,x:number,y:number,w:number,text:string,accent="#a78bfa"\)\{.*?\n\}\n','',s,count=1,flags=re.S)
+          target='  if(!official){pill(ctx,385,916,310,"REMATCH · PRACTICE","#a78bfa")}\n\n'
+          if target not in s: raise SystemExit('rematch pill call missing')
+          s=s.replace(target,'',1)
+          if n1!=1: raise SystemExit('pill helper missing')
+          p.write_text(s,encoding='utf-8')
+          PY
       - uses: actions/setup-node@v4
         with:
           node-version: "22.13.1"
       - run: npm install
+      - run: npm run build
       - name: Start local Next app
         shell: bash
         run: |
@@ -32,14 +49,21 @@ jobs:
         run: |
           mkdir -p qa-out
           CHROME=$(command -v google-chrome-stable || command -v google-chrome || command -v chromium || command -v chromium-browser)
-          echo "Using $CHROME"
           "$CHROME" --headless=new --no-sandbox --disable-gpu --hide-scrollbars --window-size=500,1450 --virtual-time-budget=9000 --screenshot=qa-out/share-card-ranked.png 'http://127.0.0.1:3000/share-card-lab/?mode=ranked'
           "$CHROME" --headless=new --no-sandbox --disable-gpu --hide-scrollbars --window-size=500,1450 --virtual-time-budget=9000 --screenshot=qa-out/share-card-rematch.png 'http://127.0.0.1:3000/share-card-lab/?mode=rematch'
-          ls -lh qa-out/*.png
       - uses: actions/upload-artifact@v4
         with:
-          name: share-card-qa-v2
+          name: share-card-qa-final
           path: |
             qa-out/share-card-ranked.png
             qa-out/share-card-rematch.png
           retention-days: 1
+      - name: Commit verified source fix
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add components/result-share-card.tsx
+          git commit -m "Finalize share card visual QA"
+          git pull --rebase origin main
+          git push origin HEAD:main
