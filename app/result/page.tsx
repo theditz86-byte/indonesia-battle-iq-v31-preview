@@ -447,6 +447,7 @@ export default function ResultPage() {
               regencyName={data.regency_name}
               districtName={data.district_name}
               submittedAt={result.submitted_at}
+              rankedAttempt={result.ranked_attempt !== false}
             />
             {data.premium_unlocked && <button onClick={printPremium} className="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-black text-slate-950 shadow-xl"><Download className="h-4 w-4"/>Simpan PDF Premium</button>}
           </div>
