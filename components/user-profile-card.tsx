@@ -3,7 +3,7 @@ import type { BattleEntry, BattleParticipant, Scope } from "@/lib/battle"
 import { entryRank, formatScore } from "@/lib/battle"
 
 function initials(name?: string) {
-  return (name || "IQ").split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]).join("").toUpperCase() || "IQ"
+  return (name || "BP").split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]).join("").toUpperCase() || "BP"
 }
 
 export function UserProfileCard({ participant, ownEntry, scope }: { participant: BattleParticipant | null; ownEntry?: BattleEntry; scope: Scope }) {
@@ -53,7 +53,7 @@ export function UserProfileCard({ participant, ownEntry, scope }: { participant:
           <div className="hidden border-l border-white/10 pl-8 sm:block">
             <p className="text-xs text-slate-400">Peringkat {scope === "country" ? "Nasional" : "Aktif"}</p>
             <p className="text-3xl font-black text-white">{ownEntry ? `#${entryRank(ownEntry, scope) || "—"}` : "—"}</p>
-            <p className="text-xs text-slate-400">{ownEntry ? `IQ ${ownEntry.iq_estimate ?? "—"} · ${formatScore(ownEntry.battle_score)} poin` : "Skor resmi belum tercatat"}</p>
+            <p className="text-xs font-bold text-cyan-300">{ownEntry ? `${formatScore(ownEntry.battle_score)} poin` : "Skor resmi belum tercatat"}</p>
           </div>
           <div className="flex flex-col items-start gap-2 sm:items-end">
             <p className="text-xs text-slate-400">Kuota gratis <span className="font-bold text-white">1x/season</span> · {Math.min(1, used)}/1 digunakan</p>
