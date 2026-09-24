@@ -144,7 +144,7 @@ export default function BattleTestPage() {
       const { response, data } = await callBattle({ action: "start" }, rawToken)
       if (response.status === 402) {
         setPaywall(true)
-        setError(data?.error || "Ranked Attempt gratis season ini sudah digunakan.")
+        setError("Ranked Attempt resmi season ini sudah digunakan. Gunakan Rematch / Practice Credit untuk latihan dan analisis tambahan tanpa mengubah leaderboard.")
         setPhase("lobby")
         return
       }
@@ -265,7 +265,7 @@ export default function BattleTestPage() {
   }
 
   if (phase === "loading") {
-    return <main className="grid min-h-screen place-items-center bg-[#020817] text-white"><div className="flex items-center gap-3 text-slate-300"><Loader2 className="h-5 w-5 animate-spin"/>Menyiapkan Battle IQ…</div></main>
+    return <main className="grid min-h-screen place-items-center bg-[#020817] text-white"><div className="flex items-center gap-3 text-slate-300"><Loader2 className="h-5 w-5 animate-spin"/>Menyiapkan Battle Point…</div></main>
   }
 
   if (phase === "error") {
@@ -288,18 +288,18 @@ export default function BattleTestPage() {
           <div>
             <p className="text-xs font-black uppercase tracking-[.2em] text-cyan-300">Tes Kemampuan</p>
             <h1 className="mt-4 text-5xl font-black leading-[.95] tracking-[-.055em] sm:text-7xl">30 soal.<br/><span className="text-indigo-300">15 menit.</span></h1>
-            <p className="mt-6 max-w-2xl text-base leading-7 text-slate-300">Numerik, logika, verbal, dan spasial dalam satu tes. Setiap season menyediakan <b className="text-white">1 Ranked Attempt gratis</b> yang dapat masuk leaderboard resmi.</p>
+            <p className="mt-6 max-w-2xl text-base leading-7 text-slate-300">Numerik, logika, verbal, dan spasial dalam satu tes. Setiap season menyediakan <b className="text-white">1 Ranked Attempt resmi gratis</b> yang menentukan leaderboard season.</p>
             <div className="mt-5 max-w-2xl rounded-2xl border border-violet-300/20 bg-violet-400/10 p-4 text-sm leading-6 text-violet-100"><b>High Range adaptif:</b> bila Battle Point inti mencapai 850+, sistem membuka 10 soal yang lebih sulit dengan tambahan waktu 8 menit. Skor sangat tinggi harus dikonfirmasi pada tahap ini.</div>
             <div className="mt-7 grid max-w-2xl gap-3 sm:grid-cols-3">
               <div className="rounded-2xl border border-white/10 bg-white/5 p-4"><span className="text-xs text-slate-400">Gratis tersisa</span><strong className="mt-1 block text-3xl font-black">{freeRemaining}x</strong></div>
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-4"><span className="text-xs text-slate-400">Kredit Ranked</span><strong className="mt-1 block text-3xl font-black">{paidCredits}x</strong></div>
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-4"><span className="text-xs text-slate-400">Kredit Rematch</span><strong className="mt-1 block text-3xl font-black">{paidCredits}x</strong></div>
               <div className="rounded-2xl border border-white/10 bg-white/5 p-4"><span className="text-xs text-slate-400">Sudah digunakan</span><strong className="mt-1 block text-3xl font-black">{used}x</strong></div>
             </div>
           </div>
           <div className="rounded-3xl border border-cyan-300/20 bg-[#0a1c3b]/90 p-6 shadow-2xl">
             <div className="flex items-start gap-3"><ShieldCheck className="mt-1 h-6 w-6 text-cyan-300"/><div><h2 className="text-xl font-black">Aturan Fair Play</h2><p className="mt-1 text-sm leading-6 text-slate-400">Kerjakan sendiri. Dilarang menggunakan AI generatif, kalkulator, mesin pencari, catatan jawaban, atau bantuan orang lain.</p></div></div>
             <div className="mt-5 rounded-2xl border border-amber-300/20 bg-amber-300/10 p-4 text-sm leading-6 text-amber-100">
-              Setelah 1 Ranked Attempt gratis habis, setiap kredit Rp5.000 membuka <b>Ranked Attempt tambahan</b>. Hasilnya tetap dapat memperbaiki skor terbaik dan <b>mempengaruhi leaderboard resmi</b>.
+              Setelah Ranked Attempt resmi digunakan, kredit Rp5.000 membuka <b>Rematch / Practice</b>. Hasilnya tetap mendapat Battle Point dan analisis pribadi, tetapi <b>tidak mengubah leaderboard resmi</b>.
             </div>
             <label className="mt-5 flex cursor-pointer items-start gap-3 rounded-2xl border border-white/10 bg-slate-950/40 p-4 text-sm leading-6 text-slate-200">
               <input type="checkbox" checked={integrity} onChange={(e)=>setIntegrity(e.target.checked)} className="mt-1 h-5 w-5 accent-indigo-500"/>
@@ -307,7 +307,7 @@ export default function BattleTestPage() {
             </label>
             {error && <div className="mt-4 rounded-xl border border-rose-400/20 bg-rose-500/10 p-3 text-sm text-rose-100">{error}</div>}
             {paywall ? (
-              <a href="/payment?product=attempt_credit" className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 px-5 py-3.5 font-black text-slate-950"><CreditCard className="h-5 w-5"/>Beli Ranked Attempt · Rp5.000</a>
+              <a href="/payment?product=attempt_credit" className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 px-5 py-3.5 font-black text-slate-950"><CreditCard className="h-5 w-5"/>Buka Rematch · Rp5.000</a>
             ) : (
               <button onClick={start} disabled={!integrity} className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-5 py-3.5 font-black disabled:cursor-not-allowed disabled:opacity-50"><Flag className="h-5 w-5"/>Mulai / Lanjutkan Tes</button>
             )}
@@ -323,14 +323,14 @@ export default function BattleTestPage() {
     <main className="min-h-screen bg-[radial-gradient(circle_at_20%_0%,rgba(55,115,255,.16),transparent_28rem),linear-gradient(180deg,#020817,#06132b)] text-white">
       <header className="sticky top-0 z-30 border-b border-white/10 bg-[#020817]/90 backdrop-blur-xl">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
-          <div><p className="text-xs font-black text-cyan-300">{attempt.high_range_unlocked ? "HIGH RANGE · VERIFIED PATH" : isPaidRanked ? "PAID RANKED ATTEMPT" : "RANKED ATTEMPT"}</p><p className="text-sm font-bold text-white">Percobaan #{attempt.attempt_number}{attempt.high_range_unlocked ? " · Tahap 2/2" : " · Tahap 1/2"}</p></div>
+          <div><p className="text-xs font-black text-cyan-300">{attempt.high_range_unlocked ? "HIGH RANGE · VERIFIED PATH" : isPaidRanked ? "REMATCH / PRACTICE" : "RANKED ATTEMPT"}</p><p className="text-sm font-bold text-white">Percobaan #{attempt.attempt_number}{attempt.high_range_unlocked ? " · Tahap 2/2" : " · Tahap 1/2"}</p></div>
           <div className={`flex items-center gap-2 rounded-xl border px-4 py-2 font-mono text-lg font-black ${remainingMs < 5*60*1000 ? "border-rose-400/30 bg-rose-500/10 text-rose-200" : "border-white/10 bg-white/5"}`}><Clock3 className="h-4 w-4"/>{timeText(remainingMs)}</div>
         </div>
         <div className="h-1 bg-slate-900"><div className="h-full bg-gradient-to-r from-cyan-400 to-indigo-500 transition-all" style={{width: `${progress}%`}}/></div>
       </header>
 
       <section className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
-        {isPaidRanked && <div className="mb-5 rounded-2xl border border-amber-300/20 bg-amber-300/10 px-4 py-3 text-sm text-amber-100">Ranked Attempt berbayar — hasil tes ini dapat memperbaiki skor terbaik dan posisi leaderboard resmi.</div>}
+        {isPaidRanked && <div className="mb-5 rounded-2xl border border-amber-300/20 bg-amber-300/10 px-4 py-3 text-sm text-amber-100">Rematch / Practice — hasil tes ini tersimpan untuk analisis dan perkembangan pribadi, tetapi tidak mengubah leaderboard resmi.</div>}
         {stageNotice && <div className="mb-5 rounded-2xl border border-violet-300/30 bg-violet-500/15 px-4 py-3 text-sm font-semibold leading-6 text-violet-100">{stageNotice}</div>}
         <div className="mb-5 rounded-2xl border border-cyan-300/15 bg-cyan-400/[.06] px-4 py-3 text-xs font-semibold leading-5 text-cyan-100">{attempt.high_range_unlocked ? "High Range: 10 soal tambahan · 8 menit · skor rentang atas sedang diverifikasi." : "Fair Play: 30 soal · 15 menit · kerjakan tanpa AI generatif, mesin pencari, kalkulator, atau bantuan orang lain."}</div>
         {error && <div className="mb-5 rounded-2xl border border-rose-400/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-100">{error}</div>}

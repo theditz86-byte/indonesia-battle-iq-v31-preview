@@ -49,7 +49,7 @@ async function getProfile():Promise<Profile>{
   try{const r=await fetch(ACCOUNT_API,{method:"POST",headers:{"Content-Type":"application/json","X-Battle-Token":token},body:JSON.stringify({action:"me"})});const d=await r.json();return r.ok?(d.participant||{}):{}}catch{return {}}
 }
 async function getRanks(props:Props,profile:Profile):Promise<Ranks>{
-  const token=getParticipantToken(), headers=token?{"X-Battle-Token":token}:{}
+  const token=getParticipantToken(); const headers:Record<string,string>=token?{"X-Battle-Token":token}:{}
   const province=profile.province_code||"", regency=profile.regency_name||props.regencyName||"", district=profile.district_name||props.districtName||""
   const calls:Array<[keyof Ranks,string]> = []
   if(province) calls.push(["province",`province_code=${encodeURIComponent(province)}`])

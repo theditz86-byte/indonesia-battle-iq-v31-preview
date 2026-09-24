@@ -83,8 +83,8 @@ export default function AccountPage() {
   const action = useMemo(() => {
     if (participant?.active_attempt_id) return { href: "/battle-test", label: "Lanjutkan tes yang aktif" }
     if (freeRemaining > 0) return { href: "/battle-test", label: `Mulai tes · sisa gratis ${freeRemaining}x` }
-    if (paidCredits > 0) return { href: "/battle-test", label: `Mulai Ranked · kredit ${paidCredits}x` }
-    return { href: "/payment?product=attempt_credit", label: "Buka Ranked · Rp5.000" }
+    if (paidCredits > 0) return { href: "/battle-test", label: `Mulai Rematch · kredit ${paidCredits}x` }
+    return { href: "/payment?product=attempt_credit", label: "Buka Rematch · Rp5.000" }
   }, [participant?.active_attempt_id, freeRemaining, paidCredits])
 
   async function loadMe(rawToken: string) {
@@ -126,7 +126,7 @@ export default function AccountPage() {
       setToken(data.token)
       setParticipant(data.participant || null)
       setEditNickname(data.participant?.nickname || "")
-      setNotice("Berhasil masuk. Akun Battle IQ Anda sudah aktif.")
+      setNotice("Berhasil masuk. Akun Battle Point Anda sudah aktif.")
     } catch (e) {
       setError(messageText(e))
     } finally {
@@ -151,7 +151,7 @@ export default function AccountPage() {
       setToken(data.token)
       setParticipant(data.participant || null)
       setEditNickname(data.participant?.nickname || "")
-      setNotice("Pendaftaran berhasil. Anda mendapat kuota 1x percobaan gratis pada season ini.")
+      setNotice("Pendaftaran berhasil. Anda mendapat 1 Ranked Attempt resmi gratis pada season ini.")
     } catch (e) {
       setError(messageText(e))
     } finally {
@@ -350,7 +350,7 @@ export default function AccountPage() {
                 <div className="rounded-2xl border border-cyan-300/25 bg-cyan-300/10 p-4"><span className="text-xs text-cyan-100">Kuota gratis / season</span><strong className="mt-1 block text-3xl font-black">1x</strong></div>
                 <div className="rounded-2xl border border-white/10 bg-white/5 p-4"><span className="text-xs text-slate-400">Gratis digunakan</span><strong className="mt-1 block text-3xl font-black">{Math.min(1, used)}/1</strong></div>
                 <div className="rounded-2xl border border-white/10 bg-white/5 p-4"><span className="text-xs text-slate-400">Sisa gratis</span><strong className="mt-1 block text-3xl font-black">{freeRemaining}x</strong></div>
-                <div className="rounded-2xl border border-white/10 bg-white/5 p-4"><span className="text-xs text-slate-400">Kredit Ranked</span><strong className="mt-1 block text-3xl font-black">{paidCredits}x</strong></div>
+                <div className="rounded-2xl border border-white/10 bg-white/5 p-4"><span className="text-xs text-slate-400">Kredit Rematch</span><strong className="mt-1 block text-3xl font-black">{paidCredits}x</strong></div>
               </div>
               <p className="mt-4 text-sm text-slate-400">Total percobaan yang masih dapat dipakai sekarang: <strong className="text-white">{totalRemaining}x</strong>. Setelah 1x Ranked Attempt gratis habis, setiap Rp5.000 yang disetujui admin membuka 1 Ranked Attempt tambahan yang dapat memperbaiki posisi leaderboard.</p>
             </section>
