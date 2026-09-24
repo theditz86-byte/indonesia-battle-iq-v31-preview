@@ -77,7 +77,7 @@ const spots: Record<number, PodiumSpot> = {
   3: {
     place: 3,
     bodyHeight: "h-32",
-    bodyOverlap: "mt-1",
+    bodyOverlap: "-mt-1",
     avatarSize: "h-20 w-20",
     laurelSize: "h-40 w-40",
     crownSize: "h-14 w-14",
@@ -138,23 +138,12 @@ function PodiumColumn({ place, player, className = "" }: { place: 1 | 2 | 3; pla
         </div>
       </div>
 
-      {isBronze && (
-        <div className="relative z-40 -mt-4 mb-2 w-[92%] rounded-xl border border-orange-200/35 bg-slate-950/90 px-3 py-2 text-center shadow-[0_8px_22px_rgba(0,0,0,.35)] backdrop-blur-sm">
-          <p className="truncate text-sm font-black leading-tight text-white">{name}</p>
-          <p className="mt-0.5 truncate text-[11px] font-medium leading-tight text-orange-100/80">{region}</p>
-        </div>
-      )}
-
-      <div className={`relative z-10 ${s.bodyOverlap} flex w-full ${s.bodyHeight} flex-col items-center rounded-t-2xl bg-gradient-to-b ${s.bodyGradient} px-3 pb-4 ${isBronze ? "pt-5" : "pt-9"} text-center ring-1 ${s.bodyRing} ${s.glow}`}>
+      <div className={`relative z-10 ${s.bodyOverlap} flex w-full ${s.bodyHeight} flex-col items-center rounded-t-2xl bg-gradient-to-b ${s.bodyGradient} px-3 ${isBronze ? "pb-3 pt-4" : "pb-4 pt-9"} text-center ring-1 ${s.bodyRing} ${s.glow}`}>
         <div className="pointer-events-none absolute inset-x-0 top-0 h-1/3 rounded-t-2xl bg-gradient-to-b from-white/45 to-transparent" />
-        {!isBronze && (
-          <>
-            <p className={`relative z-20 max-w-full shrink-0 truncate font-bold leading-tight text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.45)] ${isChampion ? "text-base" : "text-sm"}`}>{name}</p>
-            <p className="relative z-20 max-w-full shrink-0 truncate text-xs font-medium leading-tight text-white/85 [text-shadow:0_1px_2px_rgba(0,0,0,0.4)]">{region}</p>
-          </>
-        )}
-        <p className={`relative z-20 ${isBronze ? "mt-2" : "mt-1"} shrink-0 font-black leading-tight text-white [text-shadow:0_2px_6px_rgba(0,0,0,0.45)] ${isChampion ? "text-3xl" : "text-2xl"}`}>IQ <span className="tabular-nums">{player?.iq_estimate ?? "—"}</span></p>
-        <p className="relative z-20 shrink-0 text-xs font-medium leading-tight text-white/85 [text-shadow:0_1px_2px_rgba(0,0,0,0.4)]">{formatScore(player?.battle_score)} poin</p>
+        <p className={`relative z-20 max-w-full shrink-0 truncate font-bold leading-tight text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.45)] ${isChampion ? "text-base" : isBronze ? "text-[13px]" : "text-sm"}`}>{name}</p>
+        <p className={`relative z-20 max-w-full shrink-0 truncate font-medium leading-tight text-white/85 [text-shadow:0_1px_2px_rgba(0,0,0,0.4)] ${isBronze ? "text-[10px]" : "text-xs"}`}>{region}</p>
+        <p className={`relative z-20 ${isBronze ? "mt-3" : "mt-1"} shrink-0 font-black leading-tight text-white [text-shadow:0_2px_6px_rgba(0,0,0,0.45)] ${isChampion ? "text-3xl" : "text-2xl"}`}>IQ <span className="tabular-nums">{player?.iq_estimate ?? "—"}</span></p>
+        <p className={`relative z-20 shrink-0 font-medium leading-tight text-white/85 [text-shadow:0_1px_2px_rgba(0,0,0,0.4)] ${isBronze ? "text-[11px]" : "text-xs"}`}>{formatScore(player?.battle_score)} poin</p>
       </div>
 
       <div className="relative w-full">
