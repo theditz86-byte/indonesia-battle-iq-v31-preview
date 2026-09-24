@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="ALZAVA Battle IQ">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="ALZAVA Battle Point">
   <defs>
     <linearGradient id="g" x1="22" y1="18" x2="103" y2="108" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="#FFF3B0"/>
@@ -14,36 +14,18 @@
     </linearGradient>
   </defs>
 
-  <!-- intelligence spark -->
   <path d="M64 5 L68 17 L80 21 L68 25 L64 38 L60 25 L48 21 L60 17 Z" fill="url(#g)"/>
-
-  <!-- strategic arc -->
-  <path d="M25 70 C29 39 44 25 64 25 C84 25 99 39 103 70"
-        fill="none" stroke="url(#g)" stroke-width="6" stroke-linecap="round"/>
-
-  <!-- left crown wing -->
-  <path d="M17 69 L35 84 L45 59 L61 89 L47 101 L28 91 Z"
-        fill="url(#g)" stroke="#F8DF8A" stroke-width="1.2" stroke-linejoin="round"/>
+  <path d="M25 70 C29 39 44 25 64 25 C84 25 99 39 103 70" fill="none" stroke="url(#g)" stroke-width="6" stroke-linecap="round"/>
+  <path d="M17 69 L35 84 L45 59 L61 89 L47 101 L28 91 Z" fill="url(#g)" stroke="#F8DF8A" stroke-width="1.2" stroke-linejoin="round"/>
   <path d="M17 69 L35 84 L45 59" fill="none" stroke="#FFF1B4" stroke-width="2.2" stroke-linecap="round"/>
-
-  <!-- right crown wing -->
-  <path d="M111 69 L93 84 L83 59 L67 89 L81 101 L100 91 Z"
-        fill="url(#g)" stroke="#F8DF8A" stroke-width="1.2" stroke-linejoin="round"/>
+  <path d="M111 69 L93 84 L83 59 L67 89 L81 101 L100 91 Z" fill="url(#g)" stroke="#F8DF8A" stroke-width="1.2" stroke-linejoin="round"/>
   <path d="M111 69 L93 84 L83 59" fill="none" stroke="#FFF1B4" stroke-width="2.2" stroke-linecap="round"/>
-
-  <!-- central chess king -->
-  <path d="M64 37 L64 44 M58 41 H70"
-        stroke="#FFEFA8" stroke-width="4.5" stroke-linecap="round"/>
+  <path d="M64 37 L64 44 M58 41 H70" stroke="#FFEFA8" stroke-width="4.5" stroke-linecap="round"/>
   <path d="M57 47 C59 43 69 43 71 47 L68 53 H60 Z" fill="url(#g2)"/>
-  <path d="M59 54 H69 L68 63 C68 69 73 77 80 84 H48 C55 77 60 69 60 63 Z"
-        fill="url(#g2)" stroke="#F7D66C" stroke-width="1"/>
+  <path d="M59 54 H69 L68 63 C68 69 73 77 80 84 H48 C55 77 60 69 60 63 Z" fill="url(#g2)" stroke="#F7D66C" stroke-width="1"/>
   <path d="M47 84 H81 L76 92 H52 Z" fill="url(#g)"/>
   <path d="M43 94 H85 L79 101 H49 Z" fill="url(#g2)"/>
-
-  <!-- central upward point / progress -->
   <path d="M64 88 L71 101 L64 117 L57 101 Z" fill="url(#g)" stroke="#FBE59A" stroke-width="1"/>
-
-  <!-- side sparks -->
   <path d="M16 81 L18 87 L24 89 L18 91 L16 97 L14 91 L8 89 L14 87 Z" fill="#E7C252"/>
   <path d="M112 81 L114 87 L120 89 L114 91 L112 97 L110 91 L104 89 L110 87 Z" fill="#E7C252"/>
 </svg>
