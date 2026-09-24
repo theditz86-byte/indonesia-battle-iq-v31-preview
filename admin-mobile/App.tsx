@@ -367,7 +367,7 @@ export default function App() {
             <View style={styles.logoHalo}>
               <Image source={LOGO} style={styles.loginLogo} resizeMode="contain" />
             </View>
-            <Text style={styles.loginTitle}>ALZAVA Battle IQ</Text>
+            <Text style={styles.loginTitle}>ALZAVA Battle Point</Text>
             <Text style={styles.loginAdmin}>ADMIN CONTROL</Text>
             <Text style={styles.loginSubtitle}>Konfirmasi pembayaran dan pantau peringkat nasional langsung dari HP.</Text>
             <View style={styles.loginCard}>
@@ -402,7 +402,7 @@ export default function App() {
             <View style={styles.headerBrand}>
               <Image source={LOGO} style={styles.headerLogo} resizeMode="contain" />
               <View style={{ flexShrink: 1 }}>
-                <Text style={styles.headerTitle}>ALZAVA Battle IQ</Text>
+                <Text style={styles.headerTitle}>ALZAVA Battle Point</Text>
                 <Text style={styles.headerSub}>Admin Control Center</Text>
               </View>
             </View>
@@ -582,7 +582,7 @@ function RankingView({
       <View style={styles.rankingHero}>
         <View style={{ flex: 1 }}>
           <Text style={styles.eyebrowGold}>NATIONAL LEADERBOARD</Text>
-          <Text style={styles.rankingHeroTitle}>Peringkat ALZAVA Battle IQ</Text>
+          <Text style={styles.rankingHeroTitle}>Peringkat ALZAVA Battle Point</Text>
           <Text style={styles.rankingHeroSub}>{season?.label || `Season ${season?.season_number || "Aktif"}`} · Top 50 peserta terverifikasi</Text>
         </View>
         <Pressable onPress={onRefresh} style={styles.refreshButton}><Text style={styles.refreshText}>{loading ? "Memuat…" : "↻ Segarkan"}</Text></Pressable>
@@ -627,8 +627,7 @@ function PodiumCard({ entry, rank, champion = false }: { entry: LeaderboardEntry
       <Text numberOfLines={1} style={[styles.podiumName, champion && styles.podiumNameChampion]}>{entry.nickname || "Peserta"}</Text>
       <Text numberOfLines={1} style={styles.podiumLocation}>{entry.regency_name || entry.province_name || "Indonesia"}</Text>
       <View style={styles.podiumStats}>
-        <View><Text style={styles.podiumStatLabel}>IQ</Text><Text style={styles.podiumStatValue}>{entry.iq_estimate ?? "—"}</Text></View>
-        <View><Text style={styles.podiumStatLabel}>SKOR</Text><Text style={styles.podiumStatValueCyan}>{Number(entry.battle_score || 0).toLocaleString("id-ID")}</Text></View>
+        <View><Text style={styles.podiumStatLabel}>BATTLE POINT</Text><Text style={styles.podiumStatValueCyan}>{Number(entry.battle_score || 0).toLocaleString("id-ID")} poin</Text></View>
       </View>
     </View>
   );
@@ -647,8 +646,7 @@ function RankRow({ entry, rank }: { entry: LeaderboardEntry; rank: number }) {
         <Text numberOfLines={1} style={styles.rankName}>{entry.nickname || "Peserta"}</Text>
         <Text numberOfLines={1} style={styles.rankLocation}>{[entry.regency_name, entry.province_name].filter(Boolean).join(" · ") || "Indonesia"}</Text>
       </View>
-      <View style={styles.rankIQ}><Text style={styles.rankMiniLabel}>IQ</Text><Text style={styles.rankIQValue}>{entry.iq_estimate ?? "—"}</Text></View>
-      <View style={styles.rankScore}><Text style={styles.rankMiniLabel}>SKOR</Text><Text style={styles.rankScoreValue}>{Number(entry.battle_score || 0).toLocaleString("id-ID")}</Text><Text style={styles.rankMeta}>{entry.correct_count ?? 0}/{entry.question_count ?? 0} · {durationLabel(entry.duration_ms)}</Text></View>
+      <View style={styles.rankScore}><Text style={styles.rankMiniLabel}>POIN</Text><Text style={styles.rankScoreValue}>{Number(entry.battle_score || 0).toLocaleString("id-ID")}</Text><Text style={styles.rankMeta}>{entry.correct_count ?? 0}/{entry.question_count ?? 0} · {durationLabel(entry.duration_ms)}</Text></View>
     </View>
   );
 }
@@ -787,10 +785,10 @@ const styles = StyleSheet.create({
   rankName: { color: "#f8fafc", fontSize: 13, fontWeight: "900" },
   rankLocation: { color: "#64748b", fontSize: 9, marginTop: 2 },
   rankIQ: { width: 40, alignItems: "center" },
-  rankScore: { width: 66, alignItems: "flex-end" },
+  rankScore: { width: 78, alignItems: "flex-end" },
   rankMiniLabel: { color: "#475569", fontSize: 7, fontWeight: "900" },
   rankIQValue: { color: "#f8fafc", fontSize: 14, fontWeight: "900" },
-  rankScoreValue: { color: "#67e8f9", fontSize: 13, fontWeight: "900" },
+  rankScoreValue: { color: "#67e8f9", fontSize: 15, fontWeight: "900" },
   rankMeta: { color: "#475569", fontSize: 7.5, marginTop: 1 },
   modalBackdrop: { flex: 1, backgroundColor: "#000000dd", padding: 18, justifyContent: "center" },
   proofModal: { maxHeight: "92%", borderRadius: 24, padding: 16, backgroundColor: "#08162f", borderWidth: 1, borderColor: "#ffffff20" },
