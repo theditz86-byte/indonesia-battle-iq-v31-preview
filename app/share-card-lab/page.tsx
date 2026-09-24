@@ -6,8 +6,9 @@ import ResultShareCard from "@/components/result-share-card"
 const avatar="https://efndozplpwyemzgqfnep.supabase.co/storage/v1/object/public/battle-avatars/3cd238c2-234d-4a3c-a1b0-747ebddb839b/profile.png?v=1790252164030"
 
 export default function ShareCardLab(){
-  const [mode,setMode]=useState<"ranked"|"rematch">("ranked")
+  const [mode,setMode]=useState<"ranked"|"rematch"|null>(null)
   useEffect(()=>{setMode(new URLSearchParams(window.location.search).get("mode")==="rematch"?"rematch":"ranked")},[])
+  if(!mode)return <main className="grid min-h-screen place-items-center bg-slate-950 text-slate-400">Menyiapkan QA…</main>
   const ranked=mode==="ranked"
   return <main className="min-h-screen bg-slate-950 p-6 text-white">
     <div className="mx-auto max-w-xl">
