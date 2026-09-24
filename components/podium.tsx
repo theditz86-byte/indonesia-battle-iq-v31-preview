@@ -21,6 +21,7 @@ function LaurelBranch({ className = "" }: { className?: string }) {
 type PodiumSpot = {
   place: 1 | 2 | 3
   bodyHeight: string
+  bodyOverlap: string
   avatarSize: string
   laurelSize: string
   crownSize: string
@@ -40,6 +41,7 @@ const spots: Record<number, PodiumSpot> = {
   1: {
     place: 1,
     bodyHeight: "h-48",
+    bodyOverlap: "-mt-6",
     avatarSize: "h-24 w-24",
     laurelSize: "h-44 w-44",
     crownSize: "h-[72px] w-[72px]",
@@ -57,6 +59,7 @@ const spots: Record<number, PodiumSpot> = {
   2: {
     place: 2,
     bodyHeight: "h-40",
+    bodyOverlap: "-mt-6",
     avatarSize: "h-20 w-20",
     laurelSize: "h-40 w-40",
     crownSize: "h-14 w-14",
@@ -74,6 +77,7 @@ const spots: Record<number, PodiumSpot> = {
   3: {
     place: 3,
     bodyHeight: "h-36",
+    bodyOverlap: "-mt-1",
     avatarSize: "h-20 w-20",
     laurelSize: "h-40 w-40",
     crownSize: "h-14 w-14",
@@ -130,7 +134,7 @@ function PodiumColumn({ place, player, className = "" }: { place: 1 | 2 | 3; pla
           </div>
         </div>
       </div>
-      <div className={`relative z-10 -mt-6 flex w-full ${s.bodyHeight} flex-col items-center rounded-t-2xl bg-gradient-to-b ${s.bodyGradient} px-3 pb-4 pt-9 text-center ring-1 ${s.bodyRing} ${s.glow}`}>
+      <div className={`relative z-10 ${s.bodyOverlap} flex w-full ${s.bodyHeight} flex-col items-center rounded-t-2xl bg-gradient-to-b ${s.bodyGradient} px-3 pb-4 pt-9 text-center ring-1 ${s.bodyRing} ${s.glow}`}>
         <div className="pointer-events-none absolute inset-x-0 top-0 h-1/3 rounded-t-2xl bg-gradient-to-b from-white/45 to-transparent" />
         <p className={`relative z-20 shrink-0 max-w-full truncate font-bold leading-tight text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.45)] ${isChampion ? "text-base" : "text-sm"}`}>{name}</p>
         <p className="relative z-20 shrink-0 max-w-full truncate text-xs font-medium leading-tight text-white/85 [text-shadow:0_1px_2px_rgba(0,0,0,0.4)]">{region}</p>
