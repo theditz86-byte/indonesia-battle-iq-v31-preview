@@ -1,0 +1,56 @@
+name: Finalize Battle Point policy copy
+
+on:
+  push:
+    paths:
+      - '.github/workflows/finalize-battle-point-policy.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Align public copy
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          battle_test = Path('app/battle-test/page.tsx')
+          text = battle_test.read_text(encoding='utf-8')
+          text = text.replace(
+              'Dua percobaan pertama setiap season adalah <b className="text-white">Ranked Attempt gratis</b> dan dapat masuk leaderboard resmi.',
+              'Setiap season menyediakan <b className="text-white">1 Ranked Attempt gratis</b> yang dapat masuk leaderboard resmi.'
+          )
+          text = text.replace('Dua Ranked Attempt gratis', '1 Ranked Attempt gratis')
+          text = text.replace('dua Ranked Attempt gratis', '1 Ranked Attempt gratis')
+          battle_test.write_text(text, encoding='utf-8')
+
+          result = Path('app/result/page.tsx')
+          text = result.read_text(encoding='utf-8')
+          old = 'const text=(data.nickname || "Saya") + " meraih Estimasi IQ Battle " + (result.iq_estimate ?? "—") + " dan peringkat nasional #" + (result.national_rank ?? "—") + " di ALZAVA Battle Point. Berani mengalahkan skor ini?"'
+          new = 'const text=(data.nickname || "Saya") + " meraih " + Number(result.battle_score||0).toLocaleString("id-ID") + " Battle Point dan peringkat nasional #" + (result.national_rank ?? "—") + " di ALZAVA Battle Point. Berani mengalahkan poin ini?"'
+          text = text.replace(old, new)
+          result.write_text(text, encoding='utf-8')
+
+          workflow = Path('.github/workflows/finalize-battle-point-policy.yml')
+          if workflow.exists():
+              workflow.unlink()
+          PY
+      - name: Commit final copy
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git commit -m "Align Battle Point privacy and one-free policy"
+          git push
