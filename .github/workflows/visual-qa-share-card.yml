@@ -1,0 +1,48 @@
+name: Visual QA share cards
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/visual-qa-share-card.yml"
+permissions:
+  contents: write
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22.13.1"
+      - run: npm install
+      - name: Start local Next app
+        shell: bash
+        run: |
+          (npx next dev -H 127.0.0.1 -p 3000 > /tmp/alzava-next.log 2>&1 & echo $! > /tmp/alzava-next.pid)
+          for i in {1..60}; do
+            if curl -fsS http://127.0.0.1:3000/share-card-lab/ >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/alzava-next.log
+          exit 1
+      - name: Capture ranked and rematch previews
+        shell: bash
+        run: |
+          mkdir -p qa
+          CHROME=$(command -v google-chrome-stable || command -v google-chrome || command -v chromium || command -v chromium-browser)
+          echo "Using $CHROME"
+          "$CHROME" --headless=new --no-sandbox --disable-gpu --hide-scrollbars --window-size=500,1450 --virtual-time-budget=9000 --screenshot=qa/share-card-ranked.png 'http://127.0.0.1:3000/share-card-lab/?mode=ranked'
+          "$CHROME" --headless=new --no-sandbox --disable-gpu --hide-scrollbars --window-size=500,1450 --virtual-time-budget=9000 --screenshot=qa/share-card-rematch.png 'http://127.0.0.1:3000/share-card-lab/?mode=rematch'
+          ls -lh qa/*.png
+      - name: Commit QA screenshots
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add qa/share-card-ranked.png qa/share-card-rematch.png
+          git commit -m "Capture share card visual QA previews"
+          git pull --rebase origin main
+          git push origin HEAD:main
