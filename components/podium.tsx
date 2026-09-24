@@ -142,8 +142,8 @@ function PodiumColumn({ place, player, className = "" }: { place: 1 | 2 | 3; pla
         <div className="pointer-events-none absolute inset-x-0 top-0 h-1/3 rounded-t-2xl bg-gradient-to-b from-white/45 to-transparent" />
         <p className={`relative z-20 max-w-full shrink-0 truncate font-bold leading-tight text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.45)] ${isChampion ? "text-base" : isBronze ? "text-[13px]" : "text-sm"}`}>{name}</p>
         <p className={`relative z-20 max-w-full shrink-0 truncate font-medium leading-tight text-white/85 [text-shadow:0_1px_2px_rgba(0,0,0,0.4)] ${isBronze ? "text-[10px]" : "text-xs"}`}>{region}</p>
-        <p className={`relative z-20 ${isBronze ? "mt-3" : "mt-1"} shrink-0 font-black leading-tight text-white [text-shadow:0_2px_6px_rgba(0,0,0,0.45)] ${isChampion ? "text-3xl" : "text-2xl"}`}>IQ <span className="tabular-nums">{player?.iq_estimate ?? "—"}</span></p>
-        <p className={`relative z-20 shrink-0 font-medium leading-tight text-white/85 [text-shadow:0_1px_2px_rgba(0,0,0,0.4)] ${isBronze ? "text-[11px]" : "text-xs"}`}>{formatScore(player?.battle_score)} poin</p>
+        <p className={`relative z-20 ${isBronze ? "mt-3" : "mt-1"} shrink-0 font-black leading-tight text-white [text-shadow:0_2px_6px_rgba(0,0,0,0.45)] ${isChampion ? "text-3xl" : "text-2xl"}`}><span className="tabular-nums">{formatScore(player?.battle_score)}</span> poin</p>
+        <p className={`relative z-20 shrink-0 font-semibold leading-tight text-white/85 [text-shadow:0_1px_2px_rgba(0,0,0,0.4)] ${isBronze ? "text-[11px]" : "text-xs"}`}>IQ <span className="tabular-nums">{player?.iq_estimate ?? "—"}</span></p>
       </div>
 
       <div className="relative w-full">
