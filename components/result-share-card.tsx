@@ -52,8 +52,11 @@ function weekNumber(date: Date) {
 }
 function seasonLabel(value?: string) {
   const parsed = value ? new Date(value) : new Date()
-  const d = Number.isNaN(parsed.getTime()) ? new Date() : parsed
-  return `${d.getFullYear()}.${String(weekNumber(d)).padStart(2, "0")}`
+  const source = Number.isNaN(parsed.getTime()) ? new Date() : parsed
+  const parts = new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Jakarta",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(source)
+  const v=Object.fromEntries(parts.filter(x=>x.type!=="literal").map(x=>[x.type,x.value]))
+  const d=new Date(Date.UTC(Number(v.year),Number(v.month)-1,Number(v.day)))
+  return `${v.year}.${String(weekNumber(d)).padStart(2, "0")}`
 }
 function durationLabel(ms:number){
   const t=Math.max(0,Math.round(ms/1000))
@@ -256,8 +259,9 @@ async function buildCard(props:Props):Promise<{canvas:HTMLCanvasElement;qa:QaRep
   // Information strip: Ranked and Rematch intentionally use different hierarchy.
   if(official){
     const w=296,gap=18,start=78,y=1240
-    smallPanel(ctx,start,y,w,localLabel,localRank?`#${localRank}`:"#—","#fbbf24")
-    smallPanel(ctx,start+w+gap,y,w,"Indonesia",props.nationalRank?`#${props.nationalRank}`:(topPercent?`Top ${topPercent}%`:"#—"),"#a78bfa")
+    if(localRank)smallPanel(ctx,start,y,w,localLabel,`#${localRank}`,"#fbbf24")
+    else smallPanel(ctx,start,y,w,"Ketepatan",`${accuracy}%`,"#fbbf24")
+    smallPanel(ctx,start+w+gap,y,w,"Indonesia",props.nationalRank?`#${props.nationalRank}`:(topPercent?`Top ${topPercent}%`:"Top —"),"#a78bfa")
     smallPanel(ctx,start+(w+gap)*2,y,w,"Season",seasonLabel(props.submittedAt),"#22d3ee")
   }else{
     const w=296,gap=18,start=78,y=1240
@@ -267,8 +271,13 @@ async function buildCard(props:Props):Promise<{canvas:HTMLCanvasElement;qa:QaRep
   }
 
   // CTA with more breathing room and a protected footer safe-zone.
-  ctx.fillStyle="#fff";ctx.font="italic 900 50px Arial,sans-serif";ctx.fillText("BISA",392,1505)
-  ctx.fillStyle="#fbbf24";ctx.fillText("LEWATI SKORKU?",650,1505)
+  ctx.font="italic 900 50px Arial,sans-serif"
+  const ctaA="BISA ",ctaB="LEWATI SKORKU?"
+  const totalCta=ctx.measureText(ctaA).width+ctx.measureText(ctaB).width
+  const ctaStart=540-totalCta/2
+  ctx.textAlign="left";ctx.fillStyle="#fff";ctx.fillText(ctaA,ctaStart,1505)
+  ctx.fillStyle="#fbbf24";ctx.fillText(ctaB,ctaStart+ctx.measureText(ctaA).width,1505)
+  ctx.textAlign="center"
   const cta=ctx.createLinearGradient(175,0,905,0);cta.addColorStop(0,"#6d28d9");cta.addColorStop(.52,"#4f46e5");cta.addColorStop(1,"#0284c7")
   fillRound(ctx,175,1550,730,108,54,cta);strokeRound(ctx,175,1550,730,108,54,"#67e8f9",4)
   ctx.fillStyle="#fff";ctx.font="900 36px Arial,sans-serif";ctx.fillText("⚔  AYO BATTLE SEKARANG  ›",540,1617)
