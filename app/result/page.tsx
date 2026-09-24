@@ -21,6 +21,7 @@ import {
   Zap,
 } from "lucide-react"
 import { BATTLE_API_URL, getParticipantToken } from "@/lib/battle"
+import ResultShareCard from "@/components/result-share-card"
 
 type DomainDetail = { index?: number; correct?: number; total?: number }
 
@@ -433,7 +434,20 @@ export default function ResultPage() {
         <div className="no-print mb-6 flex flex-wrap items-center justify-between gap-3">
           <a href="/battle" className="inline-flex items-center gap-2 text-sm font-bold text-slate-300 hover:text-white"><ArrowLeft className="h-4 w-4"/>Kembali ke Battle</a>
           <div className="flex gap-2">
-            <button onClick={share} className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-black backdrop-blur-lg hover:bg-white/10"><Share2 className="h-4 w-4"/>{copied?"Tautan disalin":"Tantang Teman"}</button>
+            <ResultShareCard
+              nickname={data.nickname || "Pemain ALZAVA"}
+              participantPublicId={data.participant_public_id}
+              battlePoint={Number(result.battle_score || 0)}
+              correctCount={Number(result.correct_count || 0)}
+              questionCount={Number(result.question_count || 0)}
+              durationMs={Number(result.duration_ms || 0)}
+              nationalRank={result.national_rank}
+              leaderboardTotal={data.leaderboard_total}
+              provinceName={data.province_name}
+              regencyName={data.regency_name}
+              districtName={data.district_name}
+              submittedAt={result.submitted_at}
+            />
             {data.premium_unlocked && <button onClick={printPremium} className="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-black text-slate-950 shadow-xl"><Download className="h-4 w-4"/>Simpan PDF Premium</button>}
           </div>
         </div>
