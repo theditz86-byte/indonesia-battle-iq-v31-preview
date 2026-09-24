@@ -3,37 +3,37 @@ import "./globals.css"
 import "./attempt-history.css"
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://alzava-battle-iq.pages.dev"),
+  metadataBase: new URL("https://alzava-battle-point.pages.dev"),
   title: {
-    default: "ALZAVA Battle IQ — Asah Pikiran. Raih Puncak.",
-    template: "%s | ALZAVA Battle IQ",
+    default: "ALZAVA Battle Point — Raih Poin. Taklukkan Peringkat.",
+    template: "%s | ALZAVA Battle Point",
   },
   description:
-    "Tes kemampuan online Indonesia dengan leaderboard nasional, provinsi, kabupaten/kota, dan kecamatan. Dapatkan 1 Ranked Attempt gratis setiap season, lalu analisis hasil Battle IQ.",
+    "Tes kemampuan online Indonesia dengan leaderboard nasional, provinsi, kabupaten/kota, dan kecamatan. Kumpulkan Battle Point, raih peringkat, dan dapatkan 1 Ranked Attempt gratis setiap season.",
   keywords: [
-    "tes IQ online",
-    "tes kemampuan",
+    "tes kemampuan online",
     "tes logika",
     "latihan TIU",
-    "Battle IQ Indonesia",
-    "peringkat IQ Indonesia",
+    "Battle Point Indonesia",
+    "peringkat poin Indonesia",
+    "kompetisi kemampuan nasional",
   ],
-  applicationName: "ALZAVA Battle IQ",
-  generator: "ALZAVA Battle IQ",
+  applicationName: "ALZAVA Battle Point",
+  generator: "ALZAVA Battle Point",
   openGraph: {
     type: "website",
     locale: "id_ID",
-    url: "https://alzava-battle-iq.pages.dev",
-    siteName: "ALZAVA Battle IQ",
-    title: "ALZAVA Battle IQ — Asah Pikiran. Raih Puncak.",
+    url: "https://alzava-battle-point.pages.dev",
+    siteName: "ALZAVA Battle Point",
+    title: "ALZAVA Battle Point — Raih Poin. Taklukkan Peringkat.",
     description:
-      "Ikuti tes kemampuan nasional, bandingkan skor, tantang teman, dan lihat posisi Anda di leaderboard Indonesia.",
-    images: [{ url: "/images/hero-bg.png", width: 1200, height: 630, alt: "ALZAVA Battle IQ" }],
+      "Ikuti tes kemampuan nasional, kumpulkan poin, tantang teman, dan lihat posisi Anda di leaderboard Indonesia.",
+    images: [{ url: "/images/hero-bg.png", width: 1200, height: 630, alt: "ALZAVA Battle Point" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "ALZAVA Battle IQ",
-    description: "Asah Pikiran. Raih Puncak. — uji nalar, lihat peringkat, dan tantang teman.",
+    title: "ALZAVA Battle Point",
+    description: "Raih Poin. Taklukkan Peringkat. — uji kemampuan, kumpulkan poin, dan tantang teman.",
     images: ["/images/hero-bg.png"],
   },
   icons: {
