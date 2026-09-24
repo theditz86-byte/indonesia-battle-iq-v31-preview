@@ -16,6 +16,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: main
+          fetch-depth: 0
       - name: Patch private result labels
         shell: bash
         run: |
@@ -49,4 +50,5 @@ jobs:
           git add app/account/results/page.tsx app/result/page.tsx
           if git diff --cached --quiet; then exit 0; fi
           git commit -m "Label paid attempts as private rematches"
+          git pull --rebase origin main
           git push origin HEAD:main
