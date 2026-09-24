@@ -89,7 +89,7 @@ export default function AccountResultsPage(){
   const paidCredits=Math.max(0,Number(participant?.paid_credits)||0)
   const active=Boolean(participant?.active_attempt_id)
   const testHref=active || freeRemaining>0 || paidCredits>0 ? "/battle-test" : "/payment?product=attempt_credit"
-  const testLabel=active ? "Lanjutkan tes" : freeRemaining>0 ? `Mulai tes · gratis ${freeRemaining}x` : paidCredits>0 ? `Mulai Ranked · kredit ${paidCredits}x` : "Tambah Ranked · Rp5.000"
+  const testLabel=active ? "Lanjutkan tes" : freeRemaining>0 ? `Mulai tes · gratis ${freeRemaining}x` : paidCredits>0 ? `Mulai Rematch · kredit ${paidCredits}x` : "Buka Rematch · Rp5.000"
 
   if(loading) return <main className="grid min-h-screen place-items-center bg-[#020817] text-slate-300">Memuat akun & riwayat hasil…</main>
 
@@ -111,7 +111,7 @@ export default function AccountResultsPage(){
         <section className="overflow-hidden rounded-[2rem] border border-white/10 bg-[#07162f]/90 shadow-2xl">
           <div className="grid gap-6 p-6 sm:p-8 lg:grid-cols-[1fr_auto] lg:items-center">
             <div className="flex items-center gap-4">
-              {participant?.avatar_url ? <img src={participant.avatar_url} alt="" className="h-20 w-20 rounded-2xl object-cover ring-2 ring-cyan-400/50"/> : <div className="grid h-20 w-20 place-items-center rounded-2xl bg-gradient-to-br from-cyan-500 to-indigo-700 text-xl font-black">{(participant?.nickname||"IQ").slice(0,2).toUpperCase()}</div>}
+              {participant?.avatar_url ? <img src={participant.avatar_url} alt="" className="h-20 w-20 rounded-2xl object-cover ring-2 ring-cyan-400/50"/> : <div className="grid h-20 w-20 place-items-center rounded-2xl bg-gradient-to-br from-cyan-500 to-indigo-700 text-xl font-black">{(participant?.nickname||"BP").slice(0,2).toUpperCase()}</div>}
               <div>
                 <p className="text-[10px] font-black uppercase tracking-[.18em] text-cyan-300">Akun Peserta</p>
                 <h1 className="mt-1 text-3xl font-black sm:text-4xl">{participant?.nickname || "Peserta"}</h1>
@@ -128,7 +128,7 @@ export default function AccountResultsPage(){
             <div className="rounded-2xl border border-white/10 bg-white/[.04] p-4"><span className="text-xs text-slate-500">Total percobaan</span><strong className="mt-1 block text-3xl font-black">{attempts.length}x</strong></div>
             <div className="rounded-2xl border border-amber-300/15 bg-amber-300/[.06] p-4"><span className="text-xs text-amber-100/70">Personal Best</span><strong className="mt-1 block text-3xl font-black text-amber-200">{personalBest?.battle_score ? Number(personalBest.battle_score).toLocaleString("id-ID") : "—"}</strong><small className="text-slate-500">IQ {personalBest?.iq_estimate ?? "—"}</small></div>
             <div className="rounded-2xl border border-cyan-300/15 bg-cyan-300/[.06] p-4"><span className="text-xs text-cyan-100/70">Sisa gratis</span><strong className="mt-1 block text-3xl font-black">{freeRemaining}x</strong></div>
-            <div className="rounded-2xl border border-violet-300/15 bg-violet-300/[.06] p-4"><span className="text-xs text-violet-100/70">Kredit Ranked</span><strong className="mt-1 block text-3xl font-black">{paidCredits}x</strong></div>
+            <div className="rounded-2xl border border-violet-300/15 bg-violet-300/[.06] p-4"><span className="text-xs text-violet-100/70">Kredit Rematch</span><strong className="mt-1 block text-3xl font-black">{paidCredits}x</strong></div>
           </div>
         </section>
 
@@ -148,7 +148,7 @@ export default function AccountResultsPage(){
                 const paid=Number(item.attempt_number||0)>1
                 return <article key={item.attempt_id || item.attempt_number} className="min-w-[280px] max-w-[320px] flex-[0_0_82vw] snap-start overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/[.055] to-white/[.025] p-5 sm:flex-basis-[310px]">
                   <div className="flex items-start justify-between gap-3">
-                    <div><p className="text-[10px] font-black uppercase tracking-[.14em] text-slate-500">Percobaan #{item.attempt_number ?? "—"}</p><p className="mt-1 text-xs font-bold text-slate-400">{paid?"Ranked berbayar":"Ranked gratis"}</p></div>
+                    <div><p className="text-[10px] font-black uppercase tracking-[.14em] text-slate-500">Percobaan #{item.attempt_number ?? "—"}</p><p className="mt-1 text-xs font-bold text-slate-400">{paid?"Rematch / Practice":"Ranked resmi"}</p></div>
                     {item.is_personal_best ? <span className="inline-flex items-center gap-1 rounded-full border border-amber-300/20 bg-amber-300/10 px-2 py-1 text-[9px] font-black uppercase text-amber-200"><Trophy className="h-3 w-3"/>PB</span> : null}
                   </div>
                   <div className="mt-5 grid grid-cols-2 gap-3">
@@ -177,7 +177,7 @@ export default function AccountResultsPage(){
 
         <section className="mt-7 grid gap-4 sm:grid-cols-3">
           <a href="/account" className="rounded-2xl border border-white/10 bg-white/[.035] p-5 hover:bg-white/[.06]"><Settings className="h-5 w-5 text-cyan-300"/><p className="mt-3 font-black">Profil & Keamanan</p><p className="mt-1 text-sm text-slate-500">Nama Arena, avatar, password, dan identitas akun.</p></a>
-          <a href="/payment?product=attempt_credit" className="rounded-2xl border border-white/10 bg-white/[.035] p-5 hover:bg-white/[.06]"><WalletCards className="h-5 w-5 text-violet-300"/><p className="mt-3 font-black">Kredit Ranked</p><p className="mt-1 text-sm text-slate-500">Tambah percobaan kompetitif setelah kuota gratis habis.</p></a>
+          <a href="/payment?product=attempt_credit" className="rounded-2xl border border-white/10 bg-white/[.035] p-5 hover:bg-white/[.06]"><WalletCards className="h-5 w-5 text-violet-300"/><p className="mt-3 font-black">Kredit Rematch</p><p className="mt-1 text-sm text-slate-500">Tambah Rematch / Practice untuk latihan dan analisis tanpa mengubah leaderboard resmi.</p></a>
           <a href="/battle-test" className="rounded-2xl border border-white/10 bg-white/[.035] p-5 hover:bg-white/[.06]"><Play className="h-5 w-5 text-emerald-300"/><p className="mt-3 font-black">Tes Kemampuan</p><p className="mt-1 text-sm text-slate-500">Mulai atau lanjutkan attempt yang tersedia.</p></a>
         </section>
       </div>

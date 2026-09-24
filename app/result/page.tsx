@@ -477,7 +477,7 @@ export default function ResultPage() {
                     className={`relative overflow-hidden rounded-2xl border p-4 text-left transition-all disabled:opacity-60 ${active?"border-cyan-300/45 bg-gradient-to-br from-cyan-400/12 via-indigo-500/12 to-violet-500/10 shadow-[0_0_0_1px_rgba(103,232,249,.08),0_18px_50px_rgba(0,0,0,.22)]":"border-white/10 bg-white/[.035] hover:border-white/20 hover:bg-white/[.06]"}`}
                   >
                     {active && <span className="absolute right-3 top-3 rounded-full bg-cyan-300/15 px-2 py-1 text-[9px] font-black uppercase tracking-wider text-cyan-200">Sedang dilihat</span>}
-                    <p className="text-[10px] font-black uppercase tracking-[.14em] text-slate-500">Percobaan #{item.attempt_number ?? "—"} {paid?"· Berbayar":"· Gratis"}</p>
+                    <p className="text-[10px] font-black uppercase tracking-[.14em] text-slate-500">Percobaan #{item.attempt_number ?? "—"} {paid?"· Rematch / Practice":"· Ranked Resmi"}</p>
                     <div className="mt-3 flex items-end justify-between gap-3">
                       <div><span className="block text-xs text-slate-500">IQ Battle</span><strong className="text-2xl font-black text-white">{item.iq_estimate ?? "—"}</strong></div>
                       <div className="text-right"><span className="block text-xs text-slate-500">Battle Point</span><strong className="text-xl font-black text-cyan-300">{Number(item.battle_score||0).toLocaleString("id-ID")}</strong></div>
@@ -510,7 +510,7 @@ export default function ResultPage() {
                 <div className="mt-7 flex flex-wrap gap-2">
                   <span className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-bold text-slate-300">{signature.tag}</span>
                   <span className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-bold text-slate-300">{pace.title}</span>
-                  <span className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-bold text-slate-300">{"Ranked Result"}</span>
+                  <span className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-bold text-slate-300">{result.ranked_attempt ? "Ranked Resmi" : "Rematch / Practice"}</span>
                 </div>
               </div>
 
