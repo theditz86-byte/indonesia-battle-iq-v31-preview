@@ -144,7 +144,7 @@ export default function BattleTestPage() {
       const { response, data } = await callBattle({ action: "start" }, rawToken)
       if (response.status === 402) {
         setPaywall(true)
-        setError(data?.error || "Dua percobaan ranked gratis sudah digunakan.")
+        setError(data?.error || "Ranked Attempt gratis season ini sudah digunakan.")
         setPhase("lobby")
         return
       }
@@ -297,13 +297,13 @@ export default function BattleTestPage() {
             </div>
           </div>
           <div className="rounded-3xl border border-cyan-300/20 bg-[#0a1c3b]/90 p-6 shadow-2xl">
-            <div className="flex items-start gap-3"><ShieldCheck className="mt-1 h-6 w-6 text-cyan-300"/><div><h2 className="text-xl font-black">Aturan Fair Play</h2><p className="mt-1 text-sm leading-6 text-slate-400">Kerjakan sendiri. Dilarang menggunakan ChatGPT/AI lain, kalkulator, mesin pencari, catatan jawaban, atau bantuan orang lain.</p></div></div>
+            <div className="flex items-start gap-3"><ShieldCheck className="mt-1 h-6 w-6 text-cyan-300"/><div><h2 className="text-xl font-black">Aturan Fair Play</h2><p className="mt-1 text-sm leading-6 text-slate-400">Kerjakan sendiri. Dilarang menggunakan AI generatif, kalkulator, mesin pencari, catatan jawaban, atau bantuan orang lain.</p></div></div>
             <div className="mt-5 rounded-2xl border border-amber-300/20 bg-amber-300/10 p-4 text-sm leading-6 text-amber-100">
               Setelah 1 Ranked Attempt gratis habis, setiap kredit Rp5.000 membuka <b>Ranked Attempt tambahan</b>. Hasilnya tetap dapat memperbaiki skor terbaik dan <b>mempengaruhi leaderboard resmi</b>.
             </div>
             <label className="mt-5 flex cursor-pointer items-start gap-3 rounded-2xl border border-white/10 bg-slate-950/40 p-4 text-sm leading-6 text-slate-200">
               <input type="checkbox" checked={integrity} onChange={(e)=>setIntegrity(e.target.checked)} className="mt-1 h-5 w-5 accent-indigo-500"/>
-              Saya akan mengerjakan sendiri tanpa ChatGPT/AI, kalkulator, pencarian web, atau bantuan lain.
+              Saya akan mengerjakan sendiri tanpa AI generatif, kalkulator, pencarian web, atau bantuan lain.
             </label>
             {error && <div className="mt-4 rounded-xl border border-rose-400/20 bg-rose-500/10 p-3 text-sm text-rose-100">{error}</div>}
             {paywall ? (
@@ -332,7 +332,7 @@ export default function BattleTestPage() {
       <section className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
         {isPaidRanked && <div className="mb-5 rounded-2xl border border-amber-300/20 bg-amber-300/10 px-4 py-3 text-sm text-amber-100">Ranked Attempt berbayar — hasil tes ini dapat memperbaiki skor terbaik dan posisi leaderboard resmi.</div>}
         {stageNotice && <div className="mb-5 rounded-2xl border border-violet-300/30 bg-violet-500/15 px-4 py-3 text-sm font-semibold leading-6 text-violet-100">{stageNotice}</div>}
-        <div className="mb-5 rounded-2xl border border-cyan-300/15 bg-cyan-400/[.06] px-4 py-3 text-xs font-semibold leading-5 text-cyan-100">{attempt.high_range_unlocked ? "High Range: 10 soal tambahan · 8 menit · skor rentang atas sedang diverifikasi." : "Fair Play: 30 soal · 15 menit · kerjakan tanpa ChatGPT/AI, mesin pencari, kalkulator, atau bantuan orang lain."}</div>
+        <div className="mb-5 rounded-2xl border border-cyan-300/15 bg-cyan-400/[.06] px-4 py-3 text-xs font-semibold leading-5 text-cyan-100">{attempt.high_range_unlocked ? "High Range: 10 soal tambahan · 8 menit · skor rentang atas sedang diverifikasi." : "Fair Play: 30 soal · 15 menit · kerjakan tanpa AI generatif, mesin pencari, kalkulator, atau bantuan orang lain."}</div>
         {error && <div className="mb-5 rounded-2xl border border-rose-400/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-100">{error}</div>}
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_280px]">
           <article className="rounded-3xl border border-white/10 bg-[#0a1a37]/90 p-5 shadow-2xl sm:p-8">
