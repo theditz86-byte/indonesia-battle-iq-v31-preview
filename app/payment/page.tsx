@@ -214,7 +214,7 @@ export default function PaymentPage() {
             {alreadyUnlocked ? <div className="mt-6 rounded-2xl border border-emerald-400/25 bg-emerald-500/10 p-5"><CheckCircle2 className="h-6 w-6 text-emerald-300"/><p className="mt-3 font-black">Laporan Premium untuk hasil terbaru ini sudah aktif.</p><a href="/result" className="mt-4 inline-flex rounded-xl bg-emerald-600 px-4 py-2.5 font-black">Buka laporan</a></div> :
             <form onSubmit={submit} className="mt-6 grid gap-4">
               <label className="grid gap-2 text-sm font-semibold">Nama Arena
-                <input value={nickname} onChange={(e)=>setNickname(e.target.value)} required maxLength={24} className="rounded-xl border border-white/10 bg-slate-950/70 px-4 py-3 outline-none focus:border-cyan-400/60" placeholder="Nama peserta Battle IQ" />
+                <input value={nickname} onChange={(e)=>setNickname(e.target.value)} required maxLength={24} className="rounded-xl border border-white/10 bg-slate-950/70 px-4 py-3 outline-none focus:border-cyan-400/60" placeholder="Nama peserta Battle Point" />
               </label>
               <label className="grid gap-2 text-sm font-semibold">Nama pembayar
                 <input value={payerName} onChange={(e)=>setPayerName(e.target.value)} maxLength={80} className="rounded-xl border border-white/10 bg-slate-950/70 px-4 py-3 outline-none focus:border-cyan-400/60" placeholder="Opsional" />

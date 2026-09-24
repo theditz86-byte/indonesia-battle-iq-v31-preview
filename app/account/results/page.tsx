@@ -98,8 +98,8 @@ export default function AccountResultsPage(){
       <header className="sticky top-0 z-30 border-b border-white/10 bg-[#020817]/85 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4">
           <a href="/battle" className="flex items-center gap-3">
-            <img src="/alzava-emblem-v3.svg" alt="ALZAVA Battle IQ" className="h-10 w-10 object-contain"/>
-            <div><p className="font-black">ALZAVA <span className="text-[#D4AF37]">Battle IQ</span></p><p className="text-[10px] uppercase tracking-[.14em] text-slate-500">Akun & Hasil</p></div>
+            <img src="/alzava-emblem-v3.svg" alt="ALZAVA Battle Point" className="h-10 w-10 object-contain"/>
+            <div><p className="font-black">ALZAVA <span className="text-[#D4AF37]">Battle Point</span></p><p className="text-[10px] uppercase tracking-[.14em] text-slate-500">Akun & Hasil</p></div>
           </a>
           <a href="/battle" className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-bold text-slate-300 hover:bg-white/10"><ArrowLeft className="h-4 w-4"/>Beranda</a>
         </div>
@@ -153,7 +153,7 @@ export default function AccountResultsPage(){
                   </div>
                   <div className="mt-5 grid grid-cols-2 gap-3">
                     <div><span className="text-xs text-slate-500">IQ Battle</span><strong className="block text-3xl font-black">{item.iq_estimate ?? "—"}</strong></div>
-                    <div><span className="text-xs text-slate-500">Battle Score</span><strong className="block text-3xl font-black text-cyan-300">{Number(item.battle_score||0).toLocaleString("id-ID")}</strong></div>
+                    <div><span className="text-xs text-slate-500">Battle Point</span><strong className="block text-3xl font-black text-cyan-300">{Number(item.battle_score||0).toLocaleString("id-ID")}</strong></div>
                   </div>
                   <div className="mt-4 grid grid-cols-2 gap-2 text-xs">
                     <span className="rounded-lg bg-white/5 px-3 py-2 text-slate-400">{item.correct_count ?? 0}/{item.question_count ?? 0} benar</span>

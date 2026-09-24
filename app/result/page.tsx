@@ -383,11 +383,11 @@ export default function ResultPage() {
   async function share() {
     if(!data?.participant_public_id || !result) return
     const url=window.location.origin + "/challenge?id=" + encodeURIComponent(data.participant_public_id)
-    const text=(data.nickname || "Saya") + " meraih Estimasi IQ Battle " + (result.iq_estimate ?? "—") + " dan peringkat nasional #" + (result.national_rank ?? "—") + " di ALZAVA Battle IQ. Berani mengalahkan skor ini?"
+    const text=(data.nickname || "Saya") + " meraih Estimasi IQ Battle " + (result.iq_estimate ?? "—") + " dan peringkat nasional #" + (result.national_rank ?? "—") + " di ALZAVA Battle Point. Berani mengalahkan skor ini?"
     void track("share_clicked",{attempt_id:result.attempt_id,national_rank:result.national_rank})
     try{
       if(navigator.share){
-        await navigator.share({title:"Tantangan ALZAVA Battle IQ",text,url})
+        await navigator.share({title:"Tantangan ALZAVA Battle Point",text,url})
       }else{
         await navigator.clipboard.writeText(text+" "+url)
         setCopied(true)
@@ -406,7 +406,7 @@ export default function ResultPage() {
     window.location.href="/payment?product=premium_report"+suffix
   }
 
-  if(loading) return <main className="grid min-h-screen place-items-center bg-[#020817] text-slate-300">Memuat hasil Battle IQ…</main>
+  if(loading) return <main className="grid min-h-screen place-items-center bg-[#020817] text-slate-300">Memuat hasil…</main>
 
   if(error || !data) return <main className="grid min-h-screen place-items-center bg-[#020817] px-5 text-white"><div className="max-w-xl rounded-3xl border border-rose-400/20 bg-rose-500/10 p-7 text-center"><p>{error || "Hasil belum tersedia."}</p><a href="/battle" className="mt-5 inline-flex rounded-xl bg-indigo-600 px-5 py-3 font-black">Kembali ke Battle</a></div></main>
 
@@ -422,7 +422,7 @@ export default function ResultPage() {
     String(reportDate.getDate()).padStart(2,"0"),
   ].join("")
   const reportRef=(result.attempt_id || "ALZAVA").replace(/[^a-z0-9]/gi,"").slice(0,8).toUpperCase()
-  const reportNumber=`ALZ-BIQ-${reportDateCode}-${reportRef}`
+  const reportNumber=`ALZ-BP-${reportDateCode}-${reportRef}`
   const reportIssued=reportDate.toLocaleDateString("id-ID",{day:"2-digit",month:"long",year:"numeric"})
 
 
@@ -466,7 +466,7 @@ export default function ResultPage() {
                     <p className="text-[10px] font-black uppercase tracking-[.14em] text-slate-500">Percobaan #{item.attempt_number ?? "—"} {paid?"· Berbayar":"· Gratis"}</p>
                     <div className="mt-3 flex items-end justify-between gap-3">
                       <div><span className="block text-xs text-slate-500">IQ Battle</span><strong className="text-2xl font-black text-white">{item.iq_estimate ?? "—"}</strong></div>
-                      <div className="text-right"><span className="block text-xs text-slate-500">Battle Score</span><strong className="text-xl font-black text-cyan-300">{Number(item.battle_score||0).toLocaleString("id-ID")}</strong></div>
+                      <div className="text-right"><span className="block text-xs text-slate-500">Battle Point</span><strong className="text-xl font-black text-cyan-300">{Number(item.battle_score||0).toLocaleString("id-ID")}</strong></div>
                     </div>
                     <div className="mt-3 flex flex-wrap gap-1.5">
                       {item.is_personal_best && <span className="rounded-full border border-amber-300/20 bg-amber-300/10 px-2 py-1 text-[9px] font-black uppercase tracking-wide text-amber-200">Personal Best</span>}
@@ -487,7 +487,7 @@ export default function ResultPage() {
             <div className="relative grid gap-5 md:grid-cols-[minmax(0,1fr)_250px] md:items-center lg:grid-cols-[minmax(0,1fr)_310px] lg:gap-8">
               <div>
                 <div className="mb-5 flex flex-wrap items-center gap-2">
-                  <span className="rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1.5 text-[11px] font-black uppercase tracking-[.18em] text-cyan-200">ALZAVA Battle IQ</span>
+                  <span className="rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1.5 text-[11px] font-black uppercase tracking-[.18em] text-cyan-200">ALZAVA Battle Point</span>
                   {result.high_range_attempted ? <span className="inline-flex items-center gap-1.5 rounded-full border border-violet-300/25 bg-violet-400/10 px-3 py-1.5 text-[11px] font-black uppercase tracking-[.12em] text-violet-200"><ShieldCheck className="h-3.5 w-3.5"/>High Range Verified</span> : <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[11px] font-black uppercase tracking-[.12em] text-slate-300">Core Result</span>}
                 </div>
                 <p className="text-sm font-bold uppercase tracking-[.22em] text-slate-500">Cognitive Performance Report</p>
@@ -518,7 +518,7 @@ export default function ResultPage() {
 
           <div className="grid gap-3 p-6 sm:grid-cols-2 sm:p-9 lg:grid-cols-5">
             {([
-              ["Battle Score",Number(result.battle_score||0).toLocaleString("id-ID"),Zap],
+              ["Battle Point",Number(result.battle_score||0).toLocaleString("id-ID"),Zap],
               ["Ketepatan",accuracy+"%",Target],
               ["Peringkat",rankText,Trophy],
               ["Waktu",formatDuration(result.duration_ms),Timer],
@@ -660,7 +660,7 @@ export default function ResultPage() {
           )}
 
           <div className="border-t border-white/10 bg-slate-950/30 px-6 py-6 text-xs leading-6 text-slate-500 sm:px-9">
-            <b className="text-slate-400">Catatan interpretasi:</b> Estimasi IQ Battle dan analisis kognitif di atas menggambarkan performa pada sistem ALZAVA Battle IQ. Ini bukan diagnosis psikologis, tes IQ klinis terstandarisasi, penilaian kepribadian, atau pengganti asesmen oleh psikolog berwenang. Pernyataan mengenai “karakter kognitif” berarti pola pemecahan masalah yang tampak pada tes ini, bukan sifat pribadi yang permanen.
+            <b className="text-slate-400">Catatan interpretasi:</b> Estimasi IQ Battle dan analisis kognitif di atas menggambarkan performa pada sistem ALZAVA Battle Point. Ini bukan diagnosis psikologis, tes IQ klinis terstandarisasi, penilaian kepribadian, atau pengganti asesmen oleh psikolog berwenang. Pernyataan mengenai “karakter kognitif” berarti pola pemecahan masalah yang tampak pada tes ini, bukan sifat pribadi yang permanen.
           </div>
         </section>
 
@@ -669,7 +669,7 @@ export default function ResultPage() {
             <div className="pdf-page pdf-page-one" style={{breakAfter:"page",pageBreakAfter:"always"}}>
               <div className="pdf-brand-row">
                 <div className="pdf-logo-lockup">
-                  <img src="/alzava-emblem-v3.svg" alt="ALZAVA Battle IQ" />
+                  <img src="/alzava-emblem-v3.svg" alt="ALZAVA Battle Point" />
                   <div>
                     <p className="pdf-brand">ALZAVA <span>BATTLE IQ</span></p>
                     <p className="pdf-kicker">ASAH PIKIRAN. RAIH PUNCAK. · LAPORAN PREMIUM</p>
@@ -728,11 +728,11 @@ export default function ResultPage() {
                   <div className="pdf-cert-title-row">
                     <div>
                       <p className="pdf-section-label pdf-gold">SERTIFIKAT HASIL DIGITAL</p>
-                      <h2>Dokumen hasil & analisis ALZAVA Battle IQ</h2>
+                      <h2>Dokumen hasil & analisis ALZAVA Battle Point</h2>
                     </div>
                     <span>Attempt #{result.attempt_number ?? "—"}</span>
                   </div>
-                  <p>Halaman ini dapat diperlakukan sebagai <b>sertifikat hasil internal ALZAVA Battle IQ</b>: mencatat identitas peserta, nomor laporan unik, skor, estimasi IQ Battle, profil kemampuan, waktu, dan status hasil pada satu percobaan tertentu.</p>
+                  <p>Halaman ini dapat diperlakukan sebagai <b>sertifikat hasil internal ALZAVA Battle Point</b>: mencatat identitas peserta, nomor laporan unik, skor, estimasi IQ Battle, profil kemampuan, waktu, dan status hasil pada satu percobaan tertentu.</p>
                   <div className="pdf-cert-meta">
                     <span><small>NO. LAPORAN</small><b>{reportNumber}</b></span>
                     <span><small>DITERBITKAN</small><b>{reportIssued}</b></span>
@@ -786,7 +786,7 @@ export default function ResultPage() {
             <div className="pdf-page pdf-page-two" style={{breakAfter:"page",pageBreakAfter:"always"}}>
               <div className="pdf-page-mini-brand">
                 <div className="pdf-logo-lockup">
-                  <img src="/alzava-emblem-v3.svg" alt="ALZAVA Battle IQ" />
+                  <img src="/alzava-emblem-v3.svg" alt="ALZAVA Battle Point" />
                   <div>
                     <p className="pdf-brand">ALZAVA <span>BATTLE IQ</span></p>
                     <p className="pdf-kicker">COGNITIVE PROFILE · DEEP DIVE</p>
@@ -843,7 +843,7 @@ export default function ResultPage() {
             <div className="pdf-page pdf-page-three" style={{breakAfter:"auto",pageBreakAfter:"auto"}}>
               <div className="pdf-page-mini-brand">
                 <div className="pdf-logo-lockup">
-                  <img src="/alzava-emblem-v3.svg" alt="ALZAVA Battle IQ" />
+                  <img src="/alzava-emblem-v3.svg" alt="ALZAVA Battle Point" />
                   <div>
                     <p className="pdf-brand">ALZAVA <span>BATTLE IQ</span></p>
                     <p className="pdf-kicker">ACTION PLAN · DEVELOPMENT REPORT</p>
@@ -912,7 +912,7 @@ export default function ResultPage() {
                   <div>
                     <b>03 · KEJAR PERSONAL BEST</b>
                     <strong>{Number(result.battle_score||0)+20}+</strong>
-                    <span>{result.national_rank===1 ? "Pertahankan posisi puncak sambil pecahkan Battle Score terbaik Anda." : "Naikkan Battle Score sedikit demi sedikit dan lihat apakah posisi season ikut bergerak."}</span>
+                    <span>{result.national_rank===1 ? "Pertahankan posisi puncak sambil pecahkan Battle Point terbaik Anda." : "Naikkan Battle Point sedikit demi sedikit dan lihat apakah posisi season ikut bergerak."}</span>
                   </div>
                 </div>
                 <div className="pdf-motivation-line">“Kemajuan terbaik bukan selalu lompatan besar — tetapi bukti bahwa cara berpikir Anda semakin tajam dari percobaan ke percobaan.”</div>
@@ -928,12 +928,12 @@ export default function ResultPage() {
                     <span><small>PEMILIK HASIL</small>{data.nickname || "Peserta"}</span>
                     <span><small>STATUS</small>Original Digital Report</span>
                   </div>
-                  <p>Nomor ini mengidentifikasi dokumen hasil spesifik ini di sistem ALZAVA Battle IQ. Ini adalah nomor laporan, bukan sertifikasi profesi atau kredensial psikologis.</p>
+                  <p>Nomor ini mengidentifikasi dokumen hasil spesifik ini di sistem ALZAVA Battle Point. Ini adalah nomor laporan, bukan sertifikasi profesi atau kredensial psikologis.</p>
                 </div>
                 <PremiumSeal reference={result.attempt_id} serial={reportNumber} compact/>
               </div>
 
-              <div className="pdf-footnote"><b>Catatan interpretasi:</b> Estimasi IQ Battle dan analisis kognitif menggambarkan performa pada sistem ALZAVA Battle IQ. Ini bukan diagnosis psikologis, tes IQ klinis terstandarisasi, penilaian kepribadian, atau pengganti asesmen oleh psikolog berwenang.</div>
+              <div className="pdf-footnote"><b>Catatan interpretasi:</b> Estimasi IQ Battle dan analisis kognitif menggambarkan performa pada sistem ALZAVA Battle Point. Ini bukan diagnosis psikologis, tes IQ klinis terstandarisasi, penilaian kepribadian, atau pengganti asesmen oleh psikolog berwenang.</div>
             </div>
           </section>
         )}

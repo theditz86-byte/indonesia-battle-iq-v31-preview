@@ -253,7 +253,7 @@ export default function AccountPage() {
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-4">
           <a href="/battle" className="flex items-center gap-3 font-black tracking-tight">
             <img src="/alzava-emblem-v3.svg" alt="" className="h-10 w-10 rounded-xl" />
-            <span>ALZAVA <span className="text-cyan-300">Battle IQ</span></span>
+            <span>ALZAVA <span className="text-cyan-300">Battle Point</span></span>
           </a>
           <a href="/battle" className="rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-sm font-bold text-slate-200 hover:bg-white/10">← Kembali ke Battle</a>
         </div>
@@ -280,7 +280,7 @@ export default function AccountPage() {
               <form onSubmit={handleLogin} className="grid gap-5 p-6 sm:p-8">
                 <div>
                   <h2 className="text-2xl font-black">Masuk ke arena</h2>
-                  <p className="mt-1 text-sm text-slate-400">Gunakan username dan password akun Battle IQ Anda.</p>
+                  <p className="mt-1 text-sm text-slate-400">Gunakan username dan password akun Battle Point Anda.</p>
                 </div>
                 <label className="grid gap-2 text-sm font-bold">Username
                   <input value={loginUsername} onChange={(e) => setLoginUsername(e.target.value)} required autoComplete="username" className="rounded-xl border border-white/15 bg-[#06142d] px-4 py-3 font-normal outline-none focus:border-cyan-400" />
@@ -332,7 +332,7 @@ export default function AccountPage() {
                   {participant.avatar_url ? (
                     <img src={participant.avatar_url} alt="" className="h-20 w-20 rounded-2xl object-cover ring-2 ring-cyan-400/50" />
                   ) : (
-                    <div className="grid h-20 w-20 place-items-center rounded-2xl bg-gradient-to-br from-cyan-500 to-indigo-700 text-2xl font-black">{(participant.nickname || "IQ").slice(0,2).toUpperCase()}</div>
+                    <div className="grid h-20 w-20 place-items-center rounded-2xl bg-gradient-to-br from-cyan-500 to-indigo-700 text-2xl font-black">{(participant.nickname || "BP").slice(0,2).toUpperCase()}</div>
                   )}
                   <div>
                     <p className="text-xs font-black uppercase tracking-widest text-cyan-300">Peserta aktif</p>
@@ -348,7 +348,7 @@ export default function AccountPage() {
 
               <div className="mt-7 grid gap-3 sm:grid-cols-4">
                 <div className="rounded-2xl border border-cyan-300/25 bg-cyan-300/10 p-4"><span className="text-xs text-cyan-100">Kuota gratis / season</span><strong className="mt-1 block text-3xl font-black">1x</strong></div>
-                <div className="rounded-2xl border border-white/10 bg-white/5 p-4"><span className="text-xs text-slate-400">Gratis digunakan</span><strong className="mt-1 block text-3xl font-black">{Math.min(1, used)}/2</strong></div>
+                <div className="rounded-2xl border border-white/10 bg-white/5 p-4"><span className="text-xs text-slate-400">Gratis digunakan</span><strong className="mt-1 block text-3xl font-black">{Math.min(1, used)}/1</strong></div>
                 <div className="rounded-2xl border border-white/10 bg-white/5 p-4"><span className="text-xs text-slate-400">Sisa gratis</span><strong className="mt-1 block text-3xl font-black">{freeRemaining}x</strong></div>
                 <div className="rounded-2xl border border-white/10 bg-white/5 p-4"><span className="text-xs text-slate-400">Kredit Ranked</span><strong className="mt-1 block text-3xl font-black">{paidCredits}x</strong></div>
               </div>
