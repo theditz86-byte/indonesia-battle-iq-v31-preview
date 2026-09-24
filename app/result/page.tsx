@@ -383,7 +383,7 @@ export default function ResultPage() {
   async function share() {
     if(!data?.participant_public_id || !result) return
     const url=window.location.origin + "/challenge?id=" + encodeURIComponent(data.participant_public_id)
-    const text=(data.nickname || "Saya") + " meraih Estimasi IQ Battle " + (result.iq_estimate ?? "—") + " dan peringkat nasional #" + (result.national_rank ?? "—") + " di ALZAVA Battle Point. Berani mengalahkan skor ini?"
+    const text=(data.nickname || "Saya") + " meraih " + Number(result.battle_score||0).toLocaleString("id-ID") + " Battle Point dan peringkat nasional #" + (result.national_rank ?? "—") + " di ALZAVA Battle Point. Berani mengalahkan poin ini?"
     void track("share_clicked",{attempt_id:result.attempt_id,national_rank:result.national_rank})
     try{
       if(navigator.share){
