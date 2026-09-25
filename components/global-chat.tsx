@@ -1,9 +1,10 @@
 "use client"
 
 import { FormEvent, useCallback, useEffect, useRef, useState } from "react"
-import { MessageCircle, Send, ShieldCheck, Users } from "lucide-react"
+import { Ban, Flag, MessageCircle, Send, ShieldCheck, Trash2, Users } from "lucide-react"
 import { getParticipantToken } from "@/lib/battle"
 import type { BattleParticipant } from "@/lib/battle"
+import { moderationCall } from "@/lib/social"
 
 const CHAT_API = "https://efndozplpwyemzgqfnep.supabase.co/functions/v1/battle-chat"
 
@@ -55,21 +56,28 @@ export function GlobalChat({ participant }: { participant: BattleParticipant | n
   const [draft, setDraft] = useState("")
   const [loading, setLoading] = useState(true)
   const [sending, setSending] = useState(false)
+  const [moderatingId, setModeratingId] = useState<number | null>(null)
   const [error, setError] = useState("")
+  const [notice, setNotice] = useState("")
   const endRef = useRef<HTMLDivElement | null>(null)
 
-  const callChat = useCallback(async (action: "sync" | "send", message?: string) => {
+  const callChat = useCallback(async (action: "sync" | "send" | "delete", message?: string, messageId?: number) => {
     const token = getParticipantToken()
     if (!token) throw new Error("participant_required")
     const response = await fetch(CHAT_API, {
       method: "POST",
       headers: { "Content-Type": "application/json", "X-Battle-Token": token },
-      body: JSON.stringify({ action, message }),
+      body: JSON.stringify({ action, message, message_id: messageId }),
       cache: "no-store",
     })
     const data = await response.json().catch(() => ({}))
     if (!response.ok) throw new Error(data?.error || "Chat Global belum dapat dimuat.")
     return data as ChatResponse
+  }, [])
+
+  const applyChatResponse = useCallback((data: ChatResponse) => {
+    setMessages(Array.isArray(data.messages) ? data.messages : [])
+    setOnlineCount(Number(data.online_count) || 0)
   }, [])
 
   const sync = useCallback(async (background = false) => {
@@ -80,15 +88,14 @@ export function GlobalChat({ participant }: { participant: BattleParticipant | n
     if (!background) setLoading(true)
     try {
       const data = await callChat("sync")
-      setMessages(Array.isArray(data.messages) ? data.messages : [])
-      setOnlineCount(Number(data.online_count) || 0)
+      applyChatResponse(data)
       setError("")
     } catch (err) {
       setError(err instanceof Error ? err.message : "Chat Global belum dapat dimuat.")
     } finally {
       if (!background) setLoading(false)
     }
-  }, [callChat, participant])
+  }, [applyChatResponse, callChat, participant])
 
   useEffect(() => {
     void sync()
@@ -108,16 +115,69 @@ export function GlobalChat({ participant }: { participant: BattleParticipant | n
     const text = draft.trim()
     if (!text || sending) return
     setSending(true)
+    setNotice("")
     try {
       const data = await callChat("send", text)
-      setMessages(Array.isArray(data.messages) ? data.messages : [])
-      setOnlineCount(Number(data.online_count) || 0)
+      applyChatResponse(data)
       setDraft("")
       setError("")
     } catch (err) {
       setError(err instanceof Error ? err.message : "Pesan belum dapat dikirim.")
     } finally {
       setSending(false)
+    }
+  }
+
+  async function deleteMessage(item: ChatMessage) {
+    if (!item.is_own || moderatingId !== null) return
+    if (!window.confirm("Hapus pesan ini dari Chat Global?")) return
+    setModeratingId(item.id)
+    setNotice("")
+    try {
+      const data = await callChat("delete", undefined, item.id)
+      applyChatResponse(data)
+      setError("")
+      setNotice("Pesan sudah dihapus.")
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Pesan belum dapat dihapus.")
+    } finally {
+      setModeratingId(null)
+    }
+  }
+
+  async function reportMessage(item: ChatMessage) {
+    if (!item.participant_public_id || item.is_own || moderatingId !== null) return
+    const reason = window.prompt("Alasan laporan: spam, pelecehan, penipuan, konten tidak pantas, atau lainnya.", "spam")?.trim()
+    if (!reason) return
+    const extra = window.prompt("Keterangan tambahan (opsional).", "")?.trim() || ""
+    setModeratingId(item.id)
+    setNotice("")
+    try {
+      const context = `Chat Global #${item.id}: ${(item.message || "").slice(0, 320)}${extra ? ` | ${extra}` : ""}`.slice(0, 500)
+      await moderationCall("report", { target_public_id: item.participant_public_id, reason, details: context })
+      setError("")
+      setNotice("Laporan sudah dikirim ke pengelola.")
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Laporan belum dapat dikirim.")
+    } finally {
+      setModeratingId(null)
+    }
+  }
+
+  async function blockPlayer(item: ChatMessage) {
+    if (!item.participant_public_id || item.is_own || moderatingId !== null) return
+    if (!window.confirm(`Blokir ${item.nickname || "pemain ini"}? Pesannya tidak akan tampil lagi untuk Anda dan pesan pribadi akan dinonaktifkan.`)) return
+    setModeratingId(item.id)
+    setNotice("")
+    try {
+      await moderationCall("block", { target_public_id: item.participant_public_id })
+      await sync(true)
+      setError("")
+      setNotice(`${item.nickname || "Pemain"} telah diblokir.`)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Pemain belum dapat diblokir.")
+    } finally {
+      setModeratingId(null)
     }
   }
 
@@ -170,6 +230,16 @@ export function GlobalChat({ participant }: { participant: BattleParticipant | n
                   <div className={`inline-block rounded-2xl px-4 py-3 text-left text-sm leading-6 shadow-lg ${item.is_own ? "rounded-tr-md bg-gradient-to-br from-indigo-600 to-violet-600 text-white" : "rounded-tl-md border border-white/10 bg-white/[.07] text-slate-100"}`}>
                     <p className="whitespace-pre-wrap break-words">{item.message}</p>
                   </div>
+                  <div className={`mt-1.5 flex items-center gap-2 text-[10px] ${item.is_own ? "justify-end" : "justify-start"}`}>
+                    {item.is_own ? (
+                      <button disabled={moderatingId !== null} onClick={() => void deleteMessage(item)} className="inline-flex items-center gap-1 text-slate-600 transition-colors hover:text-rose-300 disabled:opacity-40"><Trash2 className="h-3 w-3" /> Hapus</button>
+                    ) : item.participant_public_id ? (
+                      <>
+                        <button disabled={moderatingId !== null} onClick={() => void reportMessage(item)} className="inline-flex items-center gap-1 text-slate-600 transition-colors hover:text-amber-300 disabled:opacity-40"><Flag className="h-3 w-3" /> Laporkan</button>
+                        <button disabled={moderatingId !== null} onClick={() => void blockPlayer(item)} className="inline-flex items-center gap-1 text-slate-600 transition-colors hover:text-rose-300 disabled:opacity-40"><Ban className="h-3 w-3" /> Blokir</button>
+                      </>
+                    ) : null}
+                  </div>
                 </div>
                 {item.is_own && <ChatAvatar item={item} own />}
               </div>
@@ -180,6 +250,7 @@ export function GlobalChat({ participant }: { participant: BattleParticipant | n
       </div>
 
       <form onSubmit={submit} className="border-t border-white/10 bg-slate-950/45 p-4 sm:p-5">
+        {notice && <p className="mb-3 rounded-xl border border-emerald-400/20 bg-emerald-400/10 px-3 py-2 text-xs font-semibold text-emerald-200">{notice}</p>}
         {error && <p className="mb-3 rounded-xl border border-rose-400/20 bg-rose-400/10 px-3 py-2 text-xs font-semibold text-rose-200">{error}</p>}
         <div className="flex items-stretch gap-3">
           <textarea
