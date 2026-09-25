@@ -1,6 +1,6 @@
 "use client"
 
-import { ChevronDown, CircleUserRound, History, LogOut, Play, Settings, WalletCards } from "lucide-react"
+import { ChevronDown, CircleUserRound, History, LogOut, MessageCircle, Play, Settings, WalletCards } from "lucide-react"
 import { useState } from "react"
 import { removeParticipantToken } from "@/lib/battle"
 import type { BattleParticipant } from "@/lib/battle"
@@ -10,7 +10,7 @@ const links = [
   { label: "Peringkat", href: "#peringkat" },
   { label: "History Ranking", href: "/history-ranking" },
   { label: "Tes Kemampuan", href: "/battle-test" },
-  { label: "Panduan", href: "#panduan" },
+  { label: "Chat Global", href: "/global-chat" },
   { label: "Bantuan", href: "/help" },
 ]
 
@@ -65,6 +65,7 @@ export function SiteNavbar({ participant }: { participant: BattleParticipant | n
                 <a href="/account/results" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-200 hover:bg-white/5"><CircleUserRound className="h-4 w-4 text-cyan-300"/>Akun & Hasil</a>
                 <a href="/account/results#riwayat-hasil" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-200 hover:bg-white/5"><History className="h-4 w-4 text-violet-300"/>Riwayat Attempt</a>
                 <a href="/battle-test" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-200 hover:bg-white/5"><Play className="h-4 w-4 text-emerald-300"/>Tes Kemampuan</a>
+                <a href="/global-chat" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-200 hover:bg-white/5"><MessageCircle className="h-4 w-4 text-cyan-300"/>Chat Global</a>
                 <a href="/payment?product=attempt_credit" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-200 hover:bg-white/5"><WalletCards className="h-4 w-4 text-amber-300"/>Kredit Ranked</a>
                 <a href="/account" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-200 hover:bg-white/5"><Settings className="h-4 w-4 text-slate-400"/>Pengaturan Profil</a>
                 <div className="my-1 border-t border-white/10" />
