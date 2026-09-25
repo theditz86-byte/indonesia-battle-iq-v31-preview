@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next"
 import "./globals.css"
 import "./attempt-history.css"
 import { AccountLoginRedirect } from "@/components/account-login-redirect"
+import { ReferralConversionTracker } from "@/components/referral-conversion-tracker"
 
 const BRAND_ICON = "/brand/alvaza-logo-new.svg?v=20260925-2"
 
@@ -58,6 +59,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="id">
       <body className="antialiased">
         <AccountLoginRedirect />
+        <ReferralConversionTracker />
         {children}
       </body>
     </html>
