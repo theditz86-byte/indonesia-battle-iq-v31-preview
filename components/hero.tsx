@@ -21,9 +21,9 @@ export function Hero({ season, entries }: { season: BattleSeason | null; entries
       <div className="relative mx-auto max-w-7xl px-4 pb-36 pt-12 sm:px-6">
         <div className="grid items-center gap-5 lg:grid-cols-[minmax(0,340px)_minmax(0,1fr)_minmax(0,300px)]">
           <div className="flex flex-col items-start text-left">
-            <span className="inline-flex items-center rounded-full border border-cyan-400/30 bg-cyan-400/10 px-4 py-1.5 text-[11px] font-bold uppercase tracking-widest text-cyan-300">Competitive Brain Game Indonesia</span>
+            <span className="inline-flex items-center rounded-full border border-cyan-400/30 bg-cyan-400/10 px-4 py-1.5 text-[11px] font-bold uppercase tracking-widest text-cyan-300">Battle Point Indonesia</span>
             <h1 className="mt-6 text-5xl font-black leading-[0.95] tracking-tight text-white sm:text-6xl">
-              Adu Nalar.<br />
+              Competitive<br />Brain Game.<br />
               <span className="bg-gradient-to-r from-cyan-400 via-sky-400 to-indigo-400 bg-clip-text text-transparent">Raih Poin.</span><br />
               <span className="bg-gradient-to-r from-amber-300 via-yellow-300 to-orange-400 bg-clip-text text-transparent">Naik Peringkat.</span>
             </h1>
