@@ -3,6 +3,7 @@ on:
   push:
     paths:
       - ".github/workflows/apply-20q-no-iq.yml"
+      - "scripts/patch-20q-no-iq.py"
   workflow_dispatch:
 permissions:
   contents: write
@@ -27,6 +28,8 @@ jobs:
           ! grep -n "30 soal" app/battle-test/page.tsx
           ! grep -n "15 menit" app/battle-test/page.tsx
           ! grep -n "Estimasi IQ Battle" app/result/page.tsx
+          ! grep -n "ESTIMASI IQ BATTLE" app/result/page.tsx
+          ! grep -n "IQ Battle" app/result/page.tsx
           ! grep -n "IQ Battle" app/account/results/page.tsx
       - name: Commit frontend update
         shell: bash
