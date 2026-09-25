@@ -137,8 +137,9 @@ async function getProfile(demo?:Profile):Promise<Profile>{
 async function getRanks(props:Props,profile:Profile):Promise<Ranks>{
   const token=getParticipantToken(); const headers:Record<string,string>=token?{"X-Battle-Token":token}:{}
   const province=profile.province_code||""
-  const regency=normalizeRegency(profile.regency_name||props.regencyName)
-  const district=normalizeDistrict(profile.district_name||props.districtName)
+  // Scope queries must use the exact region strings stored on the participant, just like buildScopeQuery().
+  const regency=profile.regency_name||props.regencyName||""
+  const district=profile.district_name||props.districtName||""
   const calls:Array<[keyof Ranks,string]> = []
   if(province) calls.push(["province",`province_code=${encodeURIComponent(province)}`])
   if(province&&regency) calls.push(["regency",`province_code=${encodeURIComponent(province)}&regency_name=${encodeURIComponent(regency)}`])
@@ -199,16 +200,27 @@ async function buildCard(props:Props):Promise<{canvas:HTMLCanvasElement;qa:QaRep
   ctx.fillStyle="#fff";ctx.font="900 52px Arial,sans-serif";ctx.fillText("ALZAVA",540,196)
   ctx.fillStyle="#fbbf24";ctx.font="800 30px Arial,sans-serif";ctx.fillText("Battle Point",540,235)
 
-  // Headline.
-  ctx.save();ctx.shadowColor=official?"rgba(245,158,11,.38)":"rgba(124,58,237,.35)";ctx.shadowBlur=24
-  ctx.fillStyle="#f8fafc";ctx.font="italic 900 66px Arial,sans-serif";ctx.fillText(official?"SKOR INI":"REMATCH",540,334)
-  const accent=ctx.createLinearGradient(220,0,860,0)
-  accent.addColorStop(0,official?"#f59e0b":"#22d3ee");accent.addColorStop(.5,"#fff4b8");accent.addColorStop(1,official?"#f59e0b":"#a855f7")
-  ctx.fillStyle=accent;ctx.font="italic 900 86px Arial,sans-serif";ctx.fillText(official?"SULIT DIKEJAR!":"HIGH SCORE!",540,415)
+  // Headline: dynamic text only, styled to sit on top of the approved arena art.
+  const line1=official?"SKOR INI":"REMATCH"
+  const line2=official?"SULIT DIKEJAR!":"HIGH SCORE!"
+  ctx.save()
+  ctx.font="italic 900 72px Arial,sans-serif"
+  ctx.lineJoin="round"
+  ctx.strokeStyle="rgba(0,0,0,.75)";ctx.lineWidth=18;ctx.strokeText(line1,540,326)
+  ctx.strokeStyle=official?"rgba(180,83,9,.95)":"rgba(30,64,175,.95)";ctx.lineWidth=7;ctx.strokeText(line1,540,326)
+  ctx.fillStyle="#f8fafc";ctx.shadowColor="rgba(255,255,255,.35)";ctx.shadowBlur=14;ctx.fillText(line1,540,326)
+  ctx.shadowBlur=0
+  ctx.font="italic 900 104px Arial,sans-serif"
+  for(let off=12;off>=3;off-=3){ctx.fillStyle=official?`rgba(120,53,15,${.18+off/70})`:`rgba(49,46,129,${.18+off/70})`;ctx.fillText(line2,540+off*.28,416+off)}
+  const accent=ctx.createLinearGradient(190,0,890,0)
+  accent.addColorStop(0,official?"#f59e0b":"#22d3ee");accent.addColorStop(.48,"#fff7bf");accent.addColorStop(1,official?"#f59e0b":"#a855f7")
+  ctx.strokeStyle="rgba(0,0,0,.8)";ctx.lineWidth=20;ctx.strokeText(line2,540,416)
+  ctx.strokeStyle=official?"#fbbf24":"#67e8f9";ctx.lineWidth=6;ctx.strokeText(line2,540,416)
+  ctx.fillStyle=accent;ctx.shadowColor=official?"#f59e0b":"#22d3ee";ctx.shadowBlur=26;ctx.fillText(line2,540,416)
   ctx.restore()
 
   // Existing trophy artwork supplies the stage/border feel from the approved concept.
-  try{const trophy=await loadImage("/images/trophy-banner.png?v=cf5");ctx.save();ctx.globalAlpha=official?.78:.60;cover(ctx,trophy,70,455,940,760);ctx.restore()}catch{}
+  try{const trophy=await loadImage("/images/trophy-banner.png?v=cf5");ctx.save();ctx.globalAlpha=official?1:.72;cover(ctx,trophy,35,445,1010,790);ctx.restore()}catch{}
 
   // Hero score plate stays dark so the dynamic values remain readable.
   const shield=ctx.createLinearGradient(150,530,930,1180)
@@ -232,6 +244,11 @@ async function buildCard(props:Props):Promise<{canvas:HTMLCanvasElement;qa:QaRep
   ctx.restore()
   ctx.save();ctx.strokeStyle=official?"#fde68a":"#cbd5e1";ctx.lineWidth=7;ctx.shadowColor=official?"#f59e0b":"#67e8f9";ctx.shadowBlur=20;ctx.beginPath();ctx.arc(ax,ay,r+4,0,Math.PI*2);ctx.stroke();ctx.restore()
   if(crownAsset){ctx.save();ctx.shadowColor=official?"#f59e0b":"#cbd5e1";ctx.shadowBlur=22;ctx.drawImage(crownAsset,470,455,140,140);ctx.restore()}
+  if(official&&props.nationalRank){
+    const badgeY=790
+    const med=ctx.createLinearGradient(500,badgeY-36,580,badgeY+36);med.addColorStop(0,"#fff7bf");med.addColorStop(.45,"#fbbf24");med.addColorStop(1,"#b45309")
+    ctx.save();ctx.shadowColor="#f59e0b";ctx.shadowBlur=18;ctx.fillStyle=med;ctx.beginPath();ctx.arc(540,badgeY,38,0,Math.PI*2);ctx.fill();ctx.strokeStyle="#fff1a8";ctx.lineWidth=4;ctx.stroke();ctx.fillStyle="#7c2d12";ctx.font="900 31px Arial,sans-serif";ctx.fillText(String(props.nationalRank),540,badgeY+11);ctx.restore()
+  }
 
   const nameSize=fit(ctx,props.nickname,650,50,30)
   ctx.fillStyle="#fff";ctx.font=`900 ${nameSize}px Arial,sans-serif`;ctx.fillText(props.nickname,540,846)
