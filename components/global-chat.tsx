@@ -181,15 +181,26 @@ export function GlobalChat({ participant }: { participant: BattleParticipant | n
 
       <form onSubmit={submit} className="border-t border-white/10 bg-slate-950/45 p-4 sm:p-5">
         {error && <p className="mb-3 rounded-xl border border-rose-400/20 bg-rose-400/10 px-3 py-2 text-xs font-semibold text-rose-200">{error}</p>}
-        <div className="flex items-end gap-3">
-          <div className="min-w-0 flex-1">
-            <textarea value={draft} onChange={(event) => setDraft(event.target.value.slice(0, 300))} rows={2} maxLength={300} placeholder={`Tulis pesan sebagai ${participant.nickname || "peserta"}…`} className="w-full resize-none rounded-2xl border border-white/10 bg-white/[.06] px-4 py-3 text-sm text-white outline-none placeholder:text-slate-600 focus:border-cyan-400/50 focus:bg-white/[.08]" />
-            <div className="mt-1.5 flex items-center justify-between gap-3 text-[10px] text-slate-600">
-              <span className="flex items-center gap-1.5"><ShieldCheck className="h-3.5 w-3.5" /> Saling menghormati · jangan spam · hindari data pribadi</span>
-              <span>{draft.length}/300</span>
-            </div>
-          </div>
-          <button type="submit" disabled={sending || !draft.trim()} className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-cyan-500 to-indigo-600 text-white shadow-[0_0_24px_rgba(34,211,238,.25)] transition-transform hover:scale-105 disabled:cursor-not-allowed disabled:opacity-40"><Send className="h-5 w-5" /></button>
+        <div className="flex items-stretch gap-3">
+          <textarea
+            value={draft}
+            onChange={(event) => setDraft(event.target.value.slice(0, 300))}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" && !event.altKey) {
+                event.preventDefault()
+                if (!sending && draft.trim()) event.currentTarget.form?.requestSubmit()
+              }
+            }}
+            rows={1}
+            maxLength={300}
+            placeholder={`Tulis pesan sebagai ${participant.nickname || "peserta"}…`}
+            className="min-h-12 max-h-28 min-w-0 flex-1 resize-y rounded-2xl border border-white/10 bg-white/[.06] px-4 py-3 text-sm leading-6 text-white outline-none placeholder:text-slate-600 focus:border-cyan-400/50 focus:bg-white/[.08]"
+          />
+          <button type="submit" disabled={sending || !draft.trim()} aria-label="Kirim pesan" className="grid h-12 w-12 shrink-0 place-items-center self-start rounded-2xl bg-gradient-to-br from-cyan-500 to-indigo-600 text-white shadow-[0_0_24px_rgba(34,211,238,.25)] transition-transform hover:scale-105 disabled:cursor-not-allowed disabled:opacity-40"><Send className="h-5 w-5" /></button>
+        </div>
+        <div className="mt-1.5 flex flex-wrap items-center justify-between gap-2 text-[10px] text-slate-600">
+          <span className="flex items-center gap-1.5"><ShieldCheck className="h-3.5 w-3.5" /> Saling menghormati · jangan spam · hindari data pribadi</span>
+          <span>Enter kirim · Alt+Enter baris baru · {draft.length}/300</span>
         </div>
       </form>
     </section>
