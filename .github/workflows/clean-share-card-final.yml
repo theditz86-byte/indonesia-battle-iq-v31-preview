@@ -1,0 +1,65 @@
+name: Final share card cleanup
+on:
+  push:
+    paths:
+      - ".github/workflows/clean-share-card-final.yml"
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  clean:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Clean final share card composition
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('components/result-share-card.tsx')
+          s=p.read_text()
+
+          # Remove extra trophy/background layer: keep hero-bg as the single scene background.
+          old='''  // Existing trophy artwork supplies the stage/border feel from the approved concept.\n  try{const trophy=await loadImage("/images/trophy-banner.png?v=cf5");ctx.save();ctx.globalAlpha=official?1:.72;cover(ctx,trophy,35,445,1010,790);ctx.restore()}catch{}\n\n'''
+          if old in s:
+              s=s.replace(old,'  // Single-scene background: avoid stacking a second full artwork layer behind the score plate.\n\n')
+
+          # Remove the small statistics line and domain footer from the image itself.
+          old='''  ctx.fillStyle="#94a3b8";ctx.font="700 20px Arial,sans-serif";ctx.fillText(`${props.correctCount}/${props.questionCount} benar  ·  ${accuracy}% akurasi  ·  ${durationLabel(props.durationMs)}`,540,1702)\n  ctx.fillStyle="#64748b";ctx.font="700 20px Arial,sans-serif";ctx.fillText(SITE_URL.replace("https://",""),540,1770)\n\n  // Subtle crowd starts below the footer safe zone, never over text.\n  ctx.save();ctx.globalAlpha=.92;ctx.fillStyle="#01030a"\n  for(let i=0;i<12;i++){\n    const x=25+i*98,y0=1900-(i%3)*14\n    ctx.beginPath();ctx.arc(x,y0-36,19+(i%2)*4,0,Math.PI*2);ctx.fill()\n    ctx.beginPath();ctx.moveTo(x-42,y0+40);ctx.quadraticCurveTo(x,y0-18,x+42,y0+40);ctx.closePath();ctx.fill()\n  }\n  ctx.restore()\n\n'''
+          if old in s:
+              s=s.replace(old,'  // Footer intentionally left clean for WhatsApp / Instagram safe area.\n\n')
+
+          # Remove the debug QA panel from the participant-facing modal.
+          import re
+          s=re.sub(r'\n\s*\{props\.debugQa&&qa&&<div className="mt-3 rounded-xl border border-white/10 bg-black/20 p-3 text-xs text-slate-300">.*?</div>\}', '', s, flags=re.S)
+
+          # Keep QA state internal but do not show it to end users. This comment documents intent.
+          s=s.replace('const [qa,setQa]=useState<QaReport|null>(null)', 'const [,setQa]=useState<QaReport|null>(null)')
+
+          # Remove obsolete footer warning tied to the removed domain line.
+          s=s.replace('  if(1770>HEIGHT-120)qa.warnings.push("footer_safe_zone")\n','')
+
+          p.write_text(s)
+          PY
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm install
+      - run: npm run build
+      - name: Commit component
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add components/result-share-card.tsx
+          if git diff --cached --quiet; then
+            echo "No changes"
+            exit 0
+          fi
+          git commit -m "Clean final Battle Point share card"
+          git pull --rebase origin main
+          git push origin HEAD:main
