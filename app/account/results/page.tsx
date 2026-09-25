@@ -57,7 +57,7 @@ async function resultApi(token:string) {
     body:JSON.stringify({action:"latest_result"}),
   })
   const data=await response.json().catch(()=>({}))
-  if(!response.ok) throw new Error(data?.error || "Riwayat hasil belum dapat dimuat.")
+  if(!response.ok) throw new Error(data?.error || "Riwayat tes belum dapat dimuat.")
   return data?.data as ResultHistory
 }
 
@@ -78,7 +78,7 @@ export default function AccountResultsPage(){
         setParticipant(account?.participant || null)
         setHistory(result || null)
       })
-      .catch((e)=>setError(e instanceof Error?e.message:"Data akun belum dapat dimuat."))
+      .catch((e)=>setError(e instanceof Error?e.message:"Riwayat tes belum dapat dimuat."))
       .finally(()=>setLoading(false))
   },[])
 
@@ -91,15 +91,15 @@ export default function AccountResultsPage(){
   const testHref=active || freeRemaining>0 || paidCredits>0 ? "/battle-test" : "/payment?product=attempt_credit"
   const testLabel=active ? "Lanjutkan tes" : freeRemaining>0 ? `Mulai tes · gratis ${freeRemaining}x` : paidCredits>0 ? `Mulai Rematch · kredit ${paidCredits}x` : "Buka Rematch · Rp5.000"
 
-  if(loading) return <main className="grid min-h-screen place-items-center bg-[#020817] text-slate-300">Memuat akun & riwayat hasil…</main>
+  if(loading) return <main className="grid min-h-screen place-items-center bg-[#020817] text-slate-300">Memuat riwayat tes…</main>
 
   return (
     <main className="min-h-screen bg-[radial-gradient(circle_at_10%_0%,rgba(79,70,229,.24),transparent_34rem),radial-gradient(circle_at_90%_8%,rgba(6,182,212,.14),transparent_30rem),linear-gradient(180deg,#020617_0%,#07142e_48%,#020617_100%)] text-white">
       <header className="sticky top-0 z-30 border-b border-white/10 bg-[#020817]/85 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4">
           <a href="/battle" className="flex items-center gap-3">
-            <img src="/alzava-emblem-v3.svg" alt="ALZAVA Battle Point" className="h-10 w-10 object-contain"/>
-            <div><p className="font-black">ALZAVA <span className="text-[#D4AF37]">Battle Point</span></p><p className="text-[10px] uppercase tracking-[.14em] text-slate-500">Akun & Hasil</p></div>
+            <img src="/brand/alvaza-logo-new.svg" alt="ALZAVA Battle Point" className="h-10 w-10 object-contain"/>
+            <div><p className="font-black">ALZAVA <span className="text-[#D4AF37]">Battle Point</span></p><p className="text-[10px] uppercase tracking-[.14em] text-slate-500">Riwayat Tes</p></div>
           </a>
           <a href="/battle" className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-bold text-slate-300 hover:bg-white/10"><ArrowLeft className="h-4 w-4"/>Beranda</a>
         </div>
@@ -135,9 +135,9 @@ export default function AccountResultsPage(){
         <section id="riwayat-hasil" className="mt-7 rounded-[2rem] border border-white/10 bg-slate-950/40 p-5 shadow-xl sm:p-6">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
-              <div className="flex items-center gap-2 text-cyan-300"><History className="h-5 w-5"/><p className="text-[10px] font-black uppercase tracking-[.18em]">Hasil Tes & Riwayat Attempt</p></div>
+              <div className="flex items-center gap-2 text-cyan-300"><History className="h-5 w-5"/><p className="text-[10px] font-black uppercase tracking-[.18em]">Hasil & Riwayat Tes</p></div>
               <h2 className="mt-2 text-2xl font-black">Semua percobaan tersimpan di akun Anda</h2>
-              <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-400">Walaupun attempt nantinya banyak, tampilannya tidak akan memanjang ke bawah. Kartu dibuat sebagai carousel horizontal: geser untuk melihat attempt lama, sedangkan yang terbaru selalu muncul paling depan.</p>
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-400">Walaupun riwayat tes nantinya banyak, tampilannya tidak akan memanjang ke bawah. Kartu dibuat sebagai carousel horizontal: geser untuk melihat tes lama, sedangkan hasil terbaru selalu muncul paling depan.</p>
             </div>
             <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-bold text-slate-300">{attempts.length} hasil tersimpan</span>
           </div>
@@ -176,9 +176,9 @@ export default function AccountResultsPage(){
         </section>
 
         <section className="mt-7 grid gap-4 sm:grid-cols-3">
-          <a href="/account" className="rounded-2xl border border-white/10 bg-white/[.035] p-5 hover:bg-white/[.06]"><Settings className="h-5 w-5 text-cyan-300"/><p className="mt-3 font-black">Profil & Keamanan</p><p className="mt-1 text-sm text-slate-500">Nama Arena, avatar, password, dan identitas akun.</p></a>
+          <a href="/account" className="rounded-2xl border border-white/10 bg-white/[.035] p-5 hover:bg-white/[.06]"><Settings className="h-5 w-5 text-cyan-300"/><p className="mt-3 font-black">Profil & Keamanan</p><p className="mt-1 text-sm text-slate-500">Nama panggilan, avatar, password, dan identitas akun.</p></a>
           <a href="/payment?product=attempt_credit" className="rounded-2xl border border-white/10 bg-white/[.035] p-5 hover:bg-white/[.06]"><WalletCards className="h-5 w-5 text-violet-300"/><p className="mt-3 font-black">Kredit Rematch</p><p className="mt-1 text-sm text-slate-500">Tambah Rematch / Practice untuk latihan dan analisis tanpa mengubah leaderboard resmi.</p></a>
-          <a href="/battle-test" className="rounded-2xl border border-white/10 bg-white/[.035] p-5 hover:bg-white/[.06]"><Play className="h-5 w-5 text-emerald-300"/><p className="mt-3 font-black">Tes Kemampuan</p><p className="mt-1 text-sm text-slate-500">Mulai atau lanjutkan attempt yang tersedia.</p></a>
+          <a href="/battle-test" className="rounded-2xl border border-white/10 bg-white/[.035] p-5 hover:bg-white/[.06]"><Play className="h-5 w-5 text-emerald-300"/><p className="mt-3 font-black">Tes Kemampuan</p><p className="mt-1 text-sm text-slate-500">Mulai atau lanjutkan tes yang tersedia.</p></a>
         </section>
       </div>
     </main>
