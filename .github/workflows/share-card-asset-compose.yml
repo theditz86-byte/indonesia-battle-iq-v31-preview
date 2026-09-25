@@ -14,7 +14,7 @@ jobs:
         with:
           ref: main
           fetch-depth: 0
-      - name: Patch share card to use repo assets
+      - name: Polish dynamic layers on repository artwork
         shell: bash
         run: |
           python - <<'PY'
@@ -22,24 +22,21 @@ jobs:
           p=Path('components/result-share-card.tsx')
           s=p.read_text(encoding='utf-8')
 
-          old='''  // Background: dark arena with controlled neon. Keep the center clean for readability.\n  const bg=ctx.createLinearGradient(0,0,0,HEIGHT)\n  bg.addColorStop(0,"#020817");bg.addColorStop(.52,"#07142e");bg.addColorStop(1,"#02040c")\n  ctx.fillStyle=bg;ctx.fillRect(0,0,WIDTH,HEIGHT)\n  const glow=ctx.createRadialGradient(540,820,70,540,820,650)\n  glow.addColorStop(0,official?"rgba(245,158,11,.22)":"rgba(124,58,237,.20)")\n  glow.addColorStop(.45,"rgba(14,165,233,.08)");glow.addColorStop(1,"rgba(2,8,23,0)")\n  ctx.fillStyle=glow;ctx.fillRect(0,220,1080,1280)\n  ctx.save();ctx.globalAlpha=.42\n  for(let i=0;i<10;i++){\n    const left=i<5, idx=i%5\n    ctx.strokeStyle=idx%3===0?"#a855f7":idx%3===1?"#22d3ee":"#2563eb"\n    ctx.lineWidth=6;ctx.shadowColor=ctx.strokeStyle;ctx.shadowBlur=18\n    ctx.beginPath();ctx.moveTo(left?0:1080,150+idx*112);ctx.lineTo(left?250:830,430+idx*68);ctx.stroke()\n  }\n  ctx.restore()'''
-          new='''  // Use the approved repository artwork as the real visual foundation.\n  try{\n    const arena=await loadImage("/images/hero-bg.png?v=cf5")\n    cover(ctx,arena,0,0,WIDTH,HEIGHT)\n  }catch{\n    const bg=ctx.createLinearGradient(0,0,0,HEIGHT);bg.addColorStop(0,"#020817");bg.addColorStop(1,"#02040c");ctx.fillStyle=bg;ctx.fillRect(0,0,WIDTH,HEIGHT)\n  }\n  const shade=ctx.createLinearGradient(0,0,0,HEIGHT);shade.addColorStop(0,"rgba(1,5,18,.14)");shade.addColorStop(.55,"rgba(1,5,18,.24)");shade.addColorStop(1,"rgba(1,5,18,.72)");ctx.fillStyle=shade;ctx.fillRect(0,0,WIDTH,HEIGHT)\n  const heroGlow=ctx.createRadialGradient(540,820,60,540,820,620);heroGlow.addColorStop(0,official?"rgba(245,158,11,.30)":"rgba(34,211,238,.22)");heroGlow.addColorStop(1,"rgba(2,8,23,0)");ctx.fillStyle=heroGlow;ctx.fillRect(0,260,1080,1180)'''
-          if old not in s: raise SystemExit('background block not found')
+          old='''  const province=profile.province_code||""\n  const regency=normalizeRegency(profile.regency_name||props.regencyName)\n  const district=normalizeDistrict(profile.district_name||props.districtName)'''
+          new='''  const province=profile.province_code||""\n  // Scope queries must use the exact region strings stored on the participant, just like buildScopeQuery().\n  const regency=profile.regency_name||props.regencyName||""\n  const district=profile.district_name||props.districtName||""'''
+          if old not in s: raise SystemExit('rank query block missing')
           s=s.replace(old,new)
 
-          old='''  // Hero shield/card.\n  const shield=ctx.createLinearGradient(150,530,930,1180)'''
-          new='''  // Existing trophy artwork supplies the stage/border feel from the approved concept.\n  try{const trophy=await loadImage("/images/trophy-banner.png?v=cf5");ctx.save();ctx.globalAlpha=official?.78:.60;cover(ctx,trophy,70,455,940,760);ctx.restore()}catch{}\n\n  // Hero score plate stays dark so the dynamic values remain readable.\n  const shield=ctx.createLinearGradient(150,530,930,1180)'''
-          if old not in s: raise SystemExit('shield marker not found')
+          old='''  // Headline.\n  ctx.save();ctx.shadowColor=official?"rgba(245,158,11,.38)":"rgba(124,58,237,.35)";ctx.shadowBlur=24\n  ctx.fillStyle="#f8fafc";ctx.font="italic 900 66px Arial,sans-serif";ctx.fillText(official?"SKOR INI":"REMATCH",540,334)\n  const accent=ctx.createLinearGradient(220,0,860,0)\n  accent.addColorStop(0,official?"#f59e0b":"#22d3ee");accent.addColorStop(.5,"#fff4b8");accent.addColorStop(1,official?"#f59e0b":"#a855f7")\n  ctx.fillStyle=accent;ctx.font="italic 900 86px Arial,sans-serif";ctx.fillText(official?"SULIT DIKEJAR!":"HIGH SCORE!",540,415)\n  ctx.restore()'''
+          new='''  // Headline: dynamic text only, styled to sit on top of the approved arena art.\n  const line1=official?"SKOR INI":"REMATCH"\n  const line2=official?"SULIT DIKEJAR!":"HIGH SCORE!"\n  ctx.save()\n  ctx.font="italic 900 72px Arial,sans-serif"\n  ctx.lineJoin="round"\n  ctx.strokeStyle="rgba(0,0,0,.75)";ctx.lineWidth=18;ctx.strokeText(line1,540,326)\n  ctx.strokeStyle=official?"rgba(180,83,9,.95)":"rgba(30,64,175,.95)";ctx.lineWidth=7;ctx.strokeText(line1,540,326)\n  ctx.fillStyle="#f8fafc";ctx.shadowColor="rgba(255,255,255,.35)";ctx.shadowBlur=14;ctx.fillText(line1,540,326)\n  ctx.shadowBlur=0\n  ctx.font="italic 900 104px Arial,sans-serif"\n  for(let off=12;off>=3;off-=3){ctx.fillStyle=official?`rgba(120,53,15,${.18+off/70})`:`rgba(49,46,129,${.18+off/70})`;ctx.fillText(line2,540+off*.28,416+off)}\n  const accent=ctx.createLinearGradient(190,0,890,0)\n  accent.addColorStop(0,official?"#f59e0b":"#22d3ee");accent.addColorStop(.48,"#fff7bf");accent.addColorStop(1,official?"#f59e0b":"#a855f7")\n  ctx.strokeStyle="rgba(0,0,0,.8)";ctx.lineWidth=20;ctx.strokeText(line2,540,416)\n  ctx.strokeStyle=official?"#fbbf24":"#67e8f9";ctx.lineWidth=6;ctx.strokeText(line2,540,416)\n  ctx.fillStyle=accent;ctx.shadowColor=official?"#f59e0b":"#22d3ee";ctx.shadowBlur=26;ctx.fillText(line2,540,416)\n  ctx.restore()'''
+          if old not in s: raise SystemExit('headline block missing')
           s=s.replace(old,new)
 
-          old='''  // Avatar + guaranteed fallback.\n  const ax=540,ay=665,r=116\n  ctx.save();ctx.strokeStyle=official?"#fbbf24":"#67e8f9";ctx.lineWidth=10;ctx.shadowColor=ctx.strokeStyle;ctx.shadowBlur=22;ctx.beginPath();ctx.arc(ax,ay,r+10,0,Math.PI*2);ctx.stroke();ctx.restore()\n  ctx.save();ctx.beginPath();ctx.arc(ax,ay,r,0,Math.PI*2);ctx.clip()\n  if(profile.avatar_url){\n    try{const av=await loadImage(profile.avatar_url);cover(ctx,av,ax-r,ay-r,r*2,r*2);qa.avatar="photo"}\n    catch{drawFallbackAvatar(ctx,props.nickname,ax,ay,r);qa.warnings.push("avatar_fallback")}\n  }else{drawFallbackAvatar(ctx,props.nickname,ax,ay,r);qa.warnings.push("avatar_missing")}\n  ctx.restore()\n  ctx.fillStyle=official?"#fbbf24":"#67e8f9";ctx.font="900 64px Arial,sans-serif";ctx.fillText(official?"♛":"✦",ax,520)'''
-          new='''  // Avatar uses the same crown + laurel assets as the podium, not a canvas imitation.\n  const ax=540,ay=665,r=105\n  let crownAsset:null|HTMLImageElement=null,laurelAsset:null|HTMLImageElement=null\n  try{crownAsset=await loadImage(official?"/images/crown-gold.png?v=cf5":"/images/crown-silver.png?v=cf5")}catch{}\n  try{laurelAsset=await loadImage(official?"/images/laurel-gold.png?v=cf5":"/images/laurel-silver.png?v=cf5")}catch{}\n  if(laurelAsset){ctx.save();ctx.shadowColor=official?"#fbbf24":"#67e8f9";ctx.shadowBlur=22;ctx.drawImage(laurelAsset,365,490,350,350);ctx.restore()}\n  ctx.save();ctx.beginPath();ctx.arc(ax,ay,r,0,Math.PI*2);ctx.clip()\n  if(profile.avatar_url){\n    try{const av=await loadImage(profile.avatar_url);cover(ctx,av,ax-r,ay-r,r*2,r*2);qa.avatar="photo"}\n    catch{drawFallbackAvatar(ctx,props.nickname,ax,ay,r);qa.warnings.push("avatar_fallback")}\n  }else{drawFallbackAvatar(ctx,props.nickname,ax,ay,r);qa.warnings.push("avatar_missing")}\n  ctx.restore()\n  ctx.save();ctx.strokeStyle=official?"#fde68a":"#cbd5e1";ctx.lineWidth=7;ctx.shadowColor=official?"#f59e0b":"#67e8f9";ctx.shadowBlur=20;ctx.beginPath();ctx.arc(ax,ay,r+4,0,Math.PI*2);ctx.stroke();ctx.restore()\n  if(crownAsset){ctx.save();ctx.shadowColor=official?"#f59e0b":"#cbd5e1";ctx.shadowBlur=22;ctx.drawImage(crownAsset,470,455,140,140);ctx.restore()}'''
-          if old not in s: raise SystemExit('avatar block not found')
-          s=s.replace(old,new)
+          s=s.replace('ctx.globalAlpha=official?.78:.60;cover(ctx,trophy,70,455,940,760)','ctx.globalAlpha=official?1:.72;cover(ctx,trophy,35,445,1010,790)')
 
-          old='''  // Information strip: Ranked and Rematch intentionally use different hierarchy.\n  if(official){\n    const w=296,gap=18,start=78,y=1240\n    if(localRank)smallPanel(ctx,start,y,w,localLabel,`#${localRank}`,"#fbbf24")\n    else smallPanel(ctx,start,y,w,"Ketepatan",`${accuracy}%`,"#fbbf24")\n    smallPanel(ctx,start+w+gap,y,w,"Indonesia",props.nationalRank?`#${props.nationalRank}`:(topPercent?`Top ${topPercent}%`:"Top —"),"#a78bfa")\n    smallPanel(ctx,start+(w+gap)*2,y,w,"Season",seasonLabel(props.submittedAt),"#22d3ee")\n  }else{\n    const w=296,gap=18,start=78,y=1240\n    smallPanel(ctx,start,y,w,"Ketepatan",`${accuracy}%`,"#22d3ee")\n    smallPanel(ctx,start+w+gap,y,w,"Mode","REMATCH","#a78bfa")\n    smallPanel(ctx,start+(w+gap)*2,y,w,"Season",seasonLabel(props.submittedAt),"#fbbf24")\n  }'''
-          new='''  // Four data tiles mirror the approved reference; only their values are dynamic.\n  {\n    const w=230,gap=18,start=53,y=1240\n    const displayName=props.nickname.length>12?props.nickname.slice(0,11)+"…":props.nickname\n    smallPanel(ctx,start,y,w,"Pemain",displayName,"#22d3ee")\n    if(official){\n      smallPanel(ctx,start+w+gap,y,w,localRank?localLabel:"Ketepatan",localRank?`#${localRank}`:`${accuracy}%`,"#fbbf24")\n      const provinceRank=ranks.province\n      smallPanel(ctx,start+(w+gap)*2,y,w,provinceRank?(province||"Provinsi"):"Indonesia",provinceRank?`#${provinceRank}`:(props.nationalRank?`#${props.nationalRank}`:(topPercent?`Top ${topPercent}%`:"Top —")),"#a78bfa")\n    }else{\n      smallPanel(ctx,start+w+gap,y,w,"Ketepatan",`${accuracy}%`,"#22d3ee")\n      smallPanel(ctx,start+(w+gap)*2,y,w,"Mode","REMATCH","#a78bfa")\n    }\n    smallPanel(ctx,start+(w+gap)*3,y,w,"Musim",seasonLabel(props.submittedAt),"#22d3ee")\n  }'''
-          if old not in s: raise SystemExit('panel block not found')
+          old='''  if(crownAsset){ctx.save();ctx.shadowColor=official?"#f59e0b":"#cbd5e1";ctx.shadowBlur=22;ctx.drawImage(crownAsset,470,455,140,140);ctx.restore()}\n\n  const nameSize=fit(ctx,props.nickname,650,50,30)'''
+          new='''  if(crownAsset){ctx.save();ctx.shadowColor=official?"#f59e0b":"#cbd5e1";ctx.shadowBlur=22;ctx.drawImage(crownAsset,470,455,140,140);ctx.restore()}\n  if(official&&props.nationalRank){\n    const badgeY=790\n    const med=ctx.createLinearGradient(500,badgeY-36,580,badgeY+36);med.addColorStop(0,"#fff7bf");med.addColorStop(.45,"#fbbf24");med.addColorStop(1,"#b45309")\n    ctx.save();ctx.shadowColor="#f59e0b";ctx.shadowBlur=18;ctx.fillStyle=med;ctx.beginPath();ctx.arc(540,badgeY,38,0,Math.PI*2);ctx.fill();ctx.strokeStyle="#fff1a8";ctx.lineWidth=4;ctx.stroke();ctx.fillStyle="#7c2d12";ctx.font="900 31px Arial,sans-serif";ctx.fillText(String(props.nationalRank),540,badgeY+11);ctx.restore()\n  }\n\n  const nameSize=fit(ctx,props.nickname,650,50,30)'''
+          if old not in s: raise SystemExit('crown insertion point missing')
           s=s.replace(old,new)
 
           p.write_text(s,encoding='utf-8')
@@ -67,11 +64,11 @@ jobs:
           for i in {1..60}; do curl -fsS http://127.0.0.1:3000/share-card-lab/ >/dev/null && break; sleep 1; done
           mkdir -p qa-out
           CHROME=$(command -v google-chrome-stable || command -v google-chrome || command -v chromium || command -v chromium-browser)
-          "$CHROME" --headless=new --no-sandbox --disable-gpu --hide-scrollbars --window-size=500,1450 --virtual-time-budget=10000 --screenshot=qa-out/share-card-asset-ranked.png http://127.0.0.1:3000/share-card-lab/
+          "$CHROME" --headless=new --no-sandbox --disable-gpu --hide-scrollbars --window-size=500,1450 --virtual-time-budget=10000 --screenshot=qa-out/share-card-asset-ranked-v2.png http://127.0.0.1:3000/share-card-lab/
       - uses: actions/upload-artifact@v4
         with:
-          name: share-card-asset-ranked
-          path: qa-out/share-card-asset-ranked.png
+          name: share-card-asset-ranked-v2
+          path: qa-out/share-card-asset-ranked-v2.png
           retention-days: 1
       - name: Commit component only
         shell: bash
@@ -79,6 +76,6 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add components/result-share-card.tsx
-          git commit -m "Compose share card from approved repository assets"
+          git commit -m "Polish dynamic layers on approved share card artwork"
           git pull --rebase origin main
           git push origin HEAD:main
