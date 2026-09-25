@@ -84,16 +84,9 @@ function fitFont(ctx:CanvasRenderingContext2D,text:string,maxWidth:number,start:
   return size
 }
 
-function seasonNow(){
-  const now=new Date()
-  const parts=new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Jakarta",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(now)
-  const v=Object.fromEntries(parts.filter(p=>p.type!=="literal").map(p=>[p.type,p.value]))
-  const d=new Date(Date.UTC(Number(v.year),Number(v.month)-1,Number(v.day)))
-  const day=d.getUTCDay()||7
-  d.setUTCDate(d.getUTCDate()+4-day)
-  const start=new Date(Date.UTC(d.getUTCFullYear(),0,1))
-  const week=Math.ceil((((d.getTime()-start.getTime())/86400000)+1)/7)
-  return `${v.year}.${String(week).padStart(2,"0")}`
+function roundRectPath(ctx:CanvasRenderingContext2D,x:number,y:number,w:number,h:number,r:number){
+  ctx.beginPath()
+  ctx.roundRect(x,y,w,h,r)
 }
 
 async function buildShareCard(participant:Participant,entry:ChallengeEntry){
@@ -113,7 +106,7 @@ async function buildShareCard(participant:Participant,entry:ChallengeEntry){
   const avatar=participant.avatar_url||entry.avatar_url||""
 
   try{
-    const arena=await loadCanvasImage("/images/hero-bg.png?v=challenge-v2")
+    const arena=await loadCanvasImage("/images/hero-bg.png?v=challenge-v3")
     cover(ctx,arena,0,0,WIDTH,HEIGHT)
   }catch{
     const bg=ctx.createLinearGradient(0,0,0,HEIGHT)
@@ -125,9 +118,9 @@ async function buildShareCard(participant:Participant,entry:ChallengeEntry){
   }
 
   const shade=ctx.createLinearGradient(0,0,0,HEIGHT)
-  shade.addColorStop(0,"rgba(1,5,18,.20)")
-  shade.addColorStop(.48,"rgba(1,6,19,.28)")
-  shade.addColorStop(1,"rgba(1,5,18,.82)")
+  shade.addColorStop(0,"rgba(1,5,18,.18)")
+  shade.addColorStop(.48,"rgba(1,6,19,.24)")
+  shade.addColorStop(1,"rgba(1,5,18,.78)")
   ctx.fillStyle=shade
   ctx.fillRect(0,0,WIDTH,HEIGHT)
 
@@ -184,19 +177,41 @@ async function buildShareCard(participant:Participant,entry:ChallengeEntry){
   ctx.fillText("SULIT DIKEJAR!",540,520)
   ctx.restore()
 
-  const frameGradient=ctx.createLinearGradient(120,590,960,1160)
-  frameGradient.addColorStop(0,"rgba(8,31,64,.88)")
-  frameGradient.addColorStop(.55,"rgba(3,12,32,.95)")
-  frameGradient.addColorStop(1,"rgba(20,11,4,.94)")
+  // Premium hero panel: narrower, more transparent, thicker double border.
+  const heroX=150
+  const heroY=592
+  const heroW=780
+  const heroH=572
+  const frameGradient=ctx.createLinearGradient(heroX,heroY,heroX+heroW,heroY+heroH)
+  frameGradient.addColorStop(0,"rgba(8,31,64,.68)")
+  frameGradient.addColorStop(.52,"rgba(3,12,32,.76)")
+  frameGradient.addColorStop(1,"rgba(20,11,4,.72)")
   ctx.save()
-  ctx.shadowColor="rgba(251,191,36,.42)"
-  ctx.shadowBlur=36
+  ctx.shadowColor="rgba(251,191,36,.72)"
+  ctx.shadowBlur=48
   ctx.fillStyle=frameGradient
   ctx.strokeStyle="#fbbf24"
-  ctx.lineWidth=6
-  ctx.beginPath()
-  ctx.roundRect(118,590,844,590,56)
+  ctx.lineWidth=10
+  roundRectPath(ctx,heroX,heroY,heroW,heroH,58)
   ctx.fill()
+  ctx.stroke()
+  ctx.restore()
+
+  // Inner glass rim and top highlight give the panel a polished premium finish.
+  ctx.save()
+  ctx.strokeStyle="rgba(255,247,194,.62)"
+  ctx.lineWidth=3
+  roundRectPath(ctx,heroX+13,heroY+13,heroW-26,heroH-26,47)
+  ctx.stroke()
+  const heroShine=ctx.createLinearGradient(heroX,heroY,heroX+heroW,heroY)
+  heroShine.addColorStop(0,"rgba(255,255,255,0)")
+  heroShine.addColorStop(.5,"rgba(255,248,203,.95)")
+  heroShine.addColorStop(1,"rgba(255,255,255,0)")
+  ctx.strokeStyle=heroShine
+  ctx.lineWidth=5
+  ctx.beginPath()
+  ctx.moveTo(heroX+150,heroY+18)
+  ctx.lineTo(heroX+heroW-150,heroY+18)
   ctx.stroke()
   ctx.restore()
 
@@ -222,12 +237,17 @@ async function buildShareCard(participant:Participant,entry:ChallengeEntry){
   ctx.restore()
 
   ctx.save()
-  ctx.shadowColor="rgba(251,191,36,.60)"
-  ctx.shadowBlur=26
+  ctx.shadowColor="rgba(251,191,36,.70)"
+  ctx.shadowBlur=30
   ctx.strokeStyle="#fbbf24"
   ctx.lineWidth=10
   ctx.beginPath()
   ctx.arc(540,760,130,0,Math.PI*2)
+  ctx.stroke()
+  ctx.strokeStyle="rgba(255,247,194,.82)"
+  ctx.lineWidth=3
+  ctx.beginPath()
+  ctx.arc(540,760,119,0,Math.PI*2)
   ctx.stroke()
   ctx.restore()
 
@@ -237,91 +257,112 @@ async function buildShareCard(participant:Participant,entry:ChallengeEntry){
     ctx.fillText(initials(nickname),540,784)
   }
 
-  const nameSize=fitFont(ctx,nickname,690,54,34)
+  const nameSize=fitFont(ctx,nickname,650,54,34)
   ctx.fillStyle="#fff"
   ctx.font=`900 ${nameSize}px Arial, sans-serif`
   ctx.fillText(nickname,540,952)
 
-  const regionSize=fitFont(ctx,region,760,26,18)
+  const regionSize=fitFont(ctx,region,690,26,18)
   ctx.fillStyle="#cbd5e1"
   ctx.font=`700 ${regionSize}px Arial, sans-serif`
   ctx.fillText(region,540,995)
 
   ctx.save()
-  ctx.shadowColor="rgba(251,191,36,.45)"
-  ctx.shadowBlur=24
+  ctx.shadowColor="rgba(251,191,36,.55)"
+  ctx.shadowBlur=28
   const scoreGradient=ctx.createLinearGradient(350,0,730,0)
   scoreGradient.addColorStop(0,"#f59e0b")
   scoreGradient.addColorStop(.5,"#fff7c2")
   scoreGradient.addColorStop(1,"#f59e0b")
   ctx.fillStyle=scoreGradient
   ctx.font="900 142px Arial, sans-serif"
-  ctx.fillText(score.toLocaleString("id-ID"),540,1130)
+  ctx.fillText(score.toLocaleString("id-ID"),540,1120)
   ctx.restore()
   ctx.fillStyle="#fff"
   ctx.font="900 28px Arial, sans-serif"
-  ctx.fillText("BATTLE POINT",540,1172)
+  ctx.fillText("BATTLE POINT",540,1158)
 
-  const statY=1235
-  const statW=230
-  const statH=170
-  const statX=[35,290,545,800]
+  // Three premium glass stat cards; Season removed by design.
+  const statY=1238
+  const statW=286
+  const statH=176
+  const statX=[79,397,715]
   const drawStat=(x:number,label:string,value:string,accent:string)=>{
+    const g=ctx.createLinearGradient(x,statY,x+statW,statY+statH)
+    g.addColorStop(0,"rgba(5,20,47,.72)")
+    g.addColorStop(.58,"rgba(3,12,32,.80)")
+    g.addColorStop(1,"rgba(10,10,28,.72)")
     ctx.save()
-    ctx.fillStyle="rgba(3,12,32,.88)"
-    ctx.strokeStyle=accent
-    ctx.lineWidth=3
     ctx.shadowColor=accent
-    ctx.shadowBlur=14
-    ctx.beginPath()
-    ctx.roundRect(x,statY,statW,statH,24)
+    ctx.shadowBlur=24
+    ctx.fillStyle=g
+    ctx.strokeStyle=accent
+    ctx.lineWidth=6
+    roundRectPath(ctx,x,statY,statW,statH,26)
     ctx.fill()
     ctx.stroke()
     ctx.restore()
+
+    ctx.save()
+    ctx.strokeStyle="rgba(255,255,255,.30)"
+    ctx.lineWidth=2
+    roundRectPath(ctx,x+9,statY+9,statW-18,statH-18,19)
+    ctx.stroke()
+    const shine=ctx.createLinearGradient(x+25,0,x+statW-25,0)
+    shine.addColorStop(0,"rgba(255,255,255,0)")
+    shine.addColorStop(.5,"rgba(255,255,255,.82)")
+    shine.addColorStop(1,"rgba(255,255,255,0)")
+    ctx.strokeStyle=shine
+    ctx.lineWidth=3
+    ctx.beginPath()
+    ctx.moveTo(x+48,statY+17)
+    ctx.lineTo(x+statW-48,statY+17)
+    ctx.stroke()
+    ctx.restore()
+
     ctx.fillStyle=accent
     ctx.font="900 17px Arial, sans-serif"
-    ctx.fillText(label.toUpperCase(),x+statW/2,statY+48)
-    const valueSize=fitFont(ctx,value,statW-24,43,26)
+    ctx.fillText(label.toUpperCase(),x+statW/2,statY+50)
+    const valueSize=fitFont(ctx,value,statW-34,44,27)
     ctx.fillStyle="#fff"
     ctx.font=`900 ${valueSize}px Arial, sans-serif`
-    ctx.fillText(value,x+statW/2,statY+111)
+    ctx.fillText(value,x+statW/2,statY+116)
   }
 
   drawStat(statX[0],"Pemain",nickname,"#67e8f9")
   drawStat(statX[1],"Rank Nasional",rank?`#${rank}`:"—","#fbbf24")
   drawStat(statX[2],"Ketepatan",`${accuracy}%`,"#c084fc")
-  drawStat(statX[3],"Musim",seasonNow(),"#22d3ee")
 
   ctx.fillStyle="#fff"
   ctx.font="italic 900 52px Arial, sans-serif"
-  ctx.fillText("BISA LEWATI SKORKU?",540,1515)
+  ctx.fillText("BISA LEWATI SKORKU?",540,1535)
 
   const ctaGradient=ctx.createLinearGradient(135,0,945,0)
   ctaGradient.addColorStop(0,"#7c3aed")
   ctaGradient.addColorStop(.5,"#2563eb")
   ctaGradient.addColorStop(1,"#06b6d4")
   ctx.save()
-  ctx.shadowColor="rgba(34,211,238,.48)"
-  ctx.shadowBlur=30
+  ctx.shadowColor="rgba(34,211,238,.55)"
+  ctx.shadowBlur=34
   ctx.fillStyle=ctaGradient
   ctx.strokeStyle="#67e8f9"
-  ctx.lineWidth=4
+  ctx.lineWidth=5
   ctx.beginPath()
-  ctx.roundRect(135,1585,810,122,61)
+  ctx.roundRect(135,1602,810,122,61)
   ctx.fill()
   ctx.stroke()
   ctx.restore()
 
   ctx.fillStyle="#fff"
   ctx.font="900 35px Arial, sans-serif"
-  ctx.fillText("⚔  AYO BATTLE SEKARANG  ›",540,1662)
+  ctx.fillText("⚔  AYO BATTLE SEKARANG  ›",540,1679)
 
   ctx.fillStyle="#cbd5e1"
   ctx.font="700 22px Arial, sans-serif"
-  ctx.fillText("Buka link yang dibagikan · mulai gratis · buktikan skormu",540,1780)
+  ctx.fillText("Buka link yang dibagikan · mulai gratis · buktikan skormu",540,1792)
   ctx.fillStyle="#64748b"
   ctx.font="700 19px Arial, sans-serif"
-  ctx.fillText("Raih Poin. Taklukkan Peringkat.",540,1830)
+  ctx.fillText("Raih Poin. Taklukkan Peringkat.",540,1842)
 
   return canvas
 }
@@ -413,7 +454,7 @@ export default function ShareChallengePage(){
           <div className="bg-gradient-to-br from-indigo-500/20 via-transparent to-cyan-400/10 p-7 text-center sm:p-9">
             <p className="text-xs font-black uppercase tracking-[.2em] text-cyan-300">Bagikan & Tantang</p>
             <h1 className="mt-3 text-3xl font-black sm:text-5xl">Sebarkan Skormu. Ajak Teman Melewatinya.</h1>
-            <p className="mx-auto mt-3 max-w-2xl text-sm leading-6 text-slate-400">Kartu challenge sekarang memakai visual yang selaras dengan kartu hasil, aman untuk format 9:16, dan tidak lagi menampilkan URL panjang di dalam gambar.</p>
+            <p className="mx-auto mt-3 max-w-2xl text-sm leading-6 text-slate-400">Kartu challenge memakai gaya visual yang sama dengan kartu hasil, dengan panel transparan premium dan format 9:16 yang aman untuk Status maupun Story.</p>
           </div>
 
           <div className="p-6 sm:p-8">
