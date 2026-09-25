@@ -13,3 +13,4 @@ if old2 not in s:
     raise SystemExit('login button anchor not found')
 s=s.replace(old2,new2,1)
 p.write_text(s)
+# trigger workflow after workflow file exists
