@@ -34,6 +34,7 @@ export type BattleParticipant = {
   province_name?: string
   regency_name?: string
   district_name?: string
+  is_qa?: boolean
   attempts_used?: number
   free_attempts_remaining?: number
   paid_credits?: number
