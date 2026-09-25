@@ -16,7 +16,7 @@ export function Hero({ season, entries }: { season: BattleSeason | null; entries
       <div className="relative mx-auto max-w-7xl px-4 pb-5 pt-8 sm:px-6 lg:pb-6 lg:pt-10">
         <div className="grid items-center gap-6 lg:grid-cols-[minmax(0,320px)_minmax(0,1fr)_minmax(0,285px)]">
           <div className="flex flex-col items-start text-left">
-            <span className="inline-flex items-center rounded-full border border-cyan-300/40 bg-cyan-400/12 px-4 py-2 text-xs font-extrabold uppercase tracking-[.13em] text-cyan-200 shadow-[0_0_18px_rgba(34,211,238,.10)]">
+            <span className="inline-flex items-center rounded-full border-2 border-cyan-300/65 bg-cyan-400/15 px-5 py-2.5 text-[13px] font-black uppercase tracking-[.11em] text-cyan-100 shadow-[0_0_30px_rgba(34,211,238,.26)] backdrop-blur-sm">
               Competitive Brain Game Indonesia
             </span>
 
@@ -30,8 +30,8 @@ export function Hero({ season, entries }: { season: BattleSeason | null; entries
             </p>
 
             <div className="mt-6 flex flex-wrap gap-3">
-              <a href="/quick-battle" className="flex min-h-12 items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-5 py-3 text-[15px] font-black text-white shadow-[0_0_28px_rgba(99,102,241,0.55)] transition-transform hover:scale-[1.03]">
-                <Swords className="h-[18px] w-[18px]" /> Quick Battle Gratis <ArrowRight className="h-[18px] w-[18px]" />
+              <a href="/quick-battle" className="flex min-h-14 items-center gap-2.5 rounded-2xl bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-600 px-6 py-3.5 text-base font-black text-white ring-1 ring-indigo-300/30 shadow-[0_0_38px_rgba(124,58,237,.58)] transition-all hover:-translate-y-0.5 hover:scale-[1.025] hover:shadow-[0_0_46px_rgba(124,58,237,.72)]">
+                <Swords className="h-5 w-5" /> Quick Battle Gratis <ArrowRight className="h-5 w-5" />
               </a>
               <a href="#peringkat" className="flex min-h-12 items-center gap-2 rounded-xl border border-cyan-400/45 bg-white/[.07] px-5 py-3 text-[15px] font-extrabold text-white backdrop-blur-lg shadow-[0_0_20px_rgba(34,211,238,0.20)] transition-colors hover:bg-white/10">
                 <BarChart3 className="h-[18px] w-[18px] text-cyan-300" /> Lihat Peringkat
