@@ -1,9 +1,11 @@
 "use client"
 
-import { ChevronDown, CircleUserRound, History, LogOut, MessageCircle, Play, Settings, WalletCards } from "lucide-react"
+import { ChevronDown, CircleUserRound, History, LogOut, Mail, MessageCircle, Play, Settings, WalletCards } from "lucide-react"
 import { useEffect, useState } from "react"
-import { removeParticipantToken } from "@/lib/battle"
+import { getParticipantToken, removeParticipantToken } from "@/lib/battle"
 import type { BattleParticipant } from "@/lib/battle"
+
+const SOCIAL_API = "https://efndozplpwyemzgqfnep.supabase.co/functions/v1/battle-social"
 
 const links = [
   { label: "Beranda", href: "/battle" },
@@ -11,22 +13,49 @@ const links = [
   { label: "History Ranking", href: "/history-ranking" },
   { label: "Tes Kemampuan", href: "/battle-test" },
   { label: "Chat Global", href: "/global-chat" },
+  { label: "Pesan", href: "/messages" },
   { label: "Bantuan", href: "/help" },
 ]
 
 export function SiteNavbar({ participant }: { participant: BattleParticipant | null }) {
   const [active, setActive] = useState("Beranda")
+  const [socialBadge, setSocialBadge] = useState(0)
   const name = participant?.nickname || "Akun Peserta"
 
   useEffect(() => {
     const path = window.location.pathname
     if (path.startsWith("/global-chat")) setActive("Chat Global")
+    else if (path.startsWith("/messages")) setActive("Pesan")
     else if (path.startsWith("/history-ranking")) setActive("History Ranking")
     else if (path.startsWith("/battle-test")) setActive("Tes Kemampuan")
     else if (path.startsWith("/help")) setActive("Bantuan")
     else if (window.location.hash === "#peringkat") setActive("Peringkat")
     else setActive("Beranda")
   }, [])
+
+  useEffect(() => {
+    if (!participant?.public_id) { setSocialBadge(0); return }
+    let cancelled = false
+    async function loadCounts() {
+      const token = getParticipantToken()
+      if (!token) return
+      try {
+        const response = await fetch(SOCIAL_API, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "X-Battle-Token": token },
+          body: JSON.stringify({ action: "counts" }),
+          cache: "no-store",
+        })
+        const data = await response.json().catch(() => ({}))
+        if (!cancelled && response.ok) setSocialBadge(Math.max(0, Number(data.unread_total || 0) + Number(data.incoming_count || 0)))
+      } catch {
+        if (!cancelled) setSocialBadge(0)
+      }
+    }
+    void loadCounts()
+    const timer = window.setInterval(() => { if (document.visibilityState === "visible") void loadCounts() }, 30000)
+    return () => { cancelled = true; window.clearInterval(timer) }
+  }, [participant?.public_id])
 
   function logout() {
     removeParticipantToken()
@@ -46,8 +75,9 @@ export function SiteNavbar({ participant }: { participant: BattleParticipant | n
 
         <nav className="hidden items-center gap-1 rounded-full border border-white/10 bg-white/5 p-1 backdrop-blur-lg lg:flex">
           {links.map((link) => (
-            <a key={link.label} href={link.href} onClick={() => setActive(link.label)} className={`rounded-full px-3 py-2 text-sm font-medium transition-all ${active === link.label ? "bg-white text-slate-900 shadow-[0_0_16px_rgba(255,255,255,0.25)]" : "text-slate-300 hover:text-white"}`}>
+            <a key={link.label} href={link.href} onClick={() => setActive(link.label)} className={`relative rounded-full px-3 py-2 text-sm font-medium transition-all ${active === link.label ? "bg-white text-slate-900 shadow-[0_0_16px_rgba(255,255,255,0.25)]" : "text-slate-300 hover:text-white"}`}>
               {link.label}
+              {link.label === "Pesan" && socialBadge > 0 && <span className="absolute -right-1 -top-1 grid h-4 min-w-4 place-items-center rounded-full bg-rose-500 px-1 text-[9px] font-black text-white ring-2 ring-slate-950">{socialBadge > 99 ? "99+" : socialBadge}</span>}
             </a>
           ))}
         </nav>
@@ -76,6 +106,7 @@ export function SiteNavbar({ participant }: { participant: BattleParticipant | n
                 <a href="/account/results#riwayat-hasil" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-200 hover:bg-white/5"><History className="h-4 w-4 text-violet-300"/>Riwayat Attempt</a>
                 <a href="/battle-test" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-200 hover:bg-white/5"><Play className="h-4 w-4 text-emerald-300"/>Tes Kemampuan</a>
                 <a href="/global-chat" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-200 hover:bg-white/5"><MessageCircle className="h-4 w-4 text-cyan-300"/>Chat Global</a>
+                <a href="/messages" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-200 hover:bg-white/5"><Mail className="h-4 w-4 text-indigo-300"/><span className="flex-1">Pesan & Teman</span>{socialBadge > 0 && <span className="rounded-full bg-rose-500 px-2 py-0.5 text-[10px] font-black text-white">{socialBadge > 99 ? "99+" : socialBadge}</span>}</a>
                 <a href="/payment?product=attempt_credit" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-200 hover:bg-white/5"><WalletCards className="h-4 w-4 text-amber-300"/>Kredit Ranked</a>
                 <a href="/account" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-200 hover:bg-white/5"><Settings className="h-4 w-4 text-slate-400"/>Pengaturan Profil</a>
                 <div className="my-1 border-t border-white/10" />
