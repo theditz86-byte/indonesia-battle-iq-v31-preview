@@ -1,7 +1,8 @@
 "use client"
 
-import { ChevronDown, CircleUserRound, History, Play, Settings, WalletCards } from "lucide-react"
+import { ChevronDown, CircleUserRound, History, LogOut, Play, Settings, WalletCards } from "lucide-react"
 import { useState } from "react"
+import { removeParticipantToken } from "@/lib/battle"
 import type { BattleParticipant } from "@/lib/battle"
 
 const links = [
@@ -16,6 +17,11 @@ const links = [
 export function SiteNavbar({ participant }: { participant: BattleParticipant | null }) {
   const [active, setActive] = useState("Beranda")
   const name = participant?.nickname || "Akun Peserta"
+
+  function logout() {
+    removeParticipantToken()
+    window.location.href = "/battle"
+  }
 
   return (
     <header className="sticky top-0 z-50 border-b border-white/10 bg-slate-950/60 backdrop-blur-xl">
@@ -62,6 +68,8 @@ export function SiteNavbar({ participant }: { participant: BattleParticipant | n
                 <a href="/battle-test" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-200 hover:bg-white/5"><Play className="h-4 w-4 text-emerald-300"/>Tes Kemampuan</a>
                 <a href="/payment?product=attempt_credit" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-200 hover:bg-white/5"><WalletCards className="h-4 w-4 text-amber-300"/>Kredit Ranked</a>
                 <a href="/account" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-200 hover:bg-white/5"><Settings className="h-4 w-4 text-slate-400"/>Pengaturan Profil</a>
+                <div className="my-1 border-t border-white/10" />
+                <button type="button" onClick={logout} className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-bold text-rose-200 transition-colors hover:bg-rose-500/10"><LogOut className="h-4 w-4 text-rose-300"/>Keluar</button>
               </div>
             </div>
           </details>
