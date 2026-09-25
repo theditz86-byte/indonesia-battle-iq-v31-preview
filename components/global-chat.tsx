@@ -33,6 +33,22 @@ function timeLabel(value?: string) {
   return new Intl.DateTimeFormat("id-ID", { hour: "2-digit", minute: "2-digit" }).format(date)
 }
 
+function playerHref(publicId?: string) {
+  return publicId ? `/player/?id=${encodeURIComponent(publicId)}` : ""
+}
+
+function ChatAvatar({ item, own = false }: { item: ChatMessage; own?: boolean }) {
+  const avatar = item.avatar_url ? (
+    <img src={item.avatar_url} alt={item.nickname || "Peserta"} className={`mt-1 h-9 w-9 rounded-full object-cover ring-1 ${own ? "ring-violet-400/40" : "ring-cyan-400/40"}`} />
+  ) : (
+    <div className={`mt-1 grid h-9 w-9 place-items-center rounded-full bg-gradient-to-br ${own ? "from-violet-500 to-indigo-700" : "from-cyan-500 to-indigo-700"} text-[10px] font-black text-white`}>{initials(item.nickname)}</div>
+  )
+
+  const href = playerHref(item.participant_public_id)
+  if (!href) return <div className="shrink-0">{avatar}</div>
+  return <a href={href} title={`Lihat profil ${item.nickname || "peserta"}`} className="shrink-0 rounded-full transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-cyan-300/70">{avatar}</a>
+}
+
 export function GlobalChat({ participant }: { participant: BattleParticipant | null }) {
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [onlineCount, setOnlineCount] = useState(0)
@@ -124,7 +140,7 @@ export function GlobalChat({ participant }: { participant: BattleParticipant | n
             <div className="grid h-11 w-11 place-items-center rounded-2xl bg-cyan-400/10 text-cyan-300"><MessageCircle className="h-6 w-6" /></div>
             <div>
               <h2 className="text-xl font-black text-white sm:text-2xl">Saluran Chat Global</h2>
-              <p className="mt-0.5 text-xs text-slate-400">Ngobrol, sharing pengalaman, dan kenalan dengan peserta lain.</p>
+              <p className="mt-0.5 text-xs text-slate-400">Ngobrol, sharing pengalaman, dan kenalan dengan peserta lain. Klik foto atau nama untuk melihat profil pemain.</p>
             </div>
           </div>
         </div>
@@ -145,17 +161,17 @@ export function GlobalChat({ participant }: { participant: BattleParticipant | n
           <div className="space-y-4">
             {messages.map((item) => (
               <div key={item.id} className={`flex gap-3 ${item.is_own ? "justify-end" : "justify-start"}`}>
-                {!item.is_own && (item.avatar_url ? <img src={item.avatar_url} alt="" className="mt-1 h-9 w-9 shrink-0 rounded-full object-cover ring-1 ring-cyan-400/40" /> : <div className="mt-1 grid h-9 w-9 shrink-0 place-items-center rounded-full bg-gradient-to-br from-cyan-500 to-indigo-700 text-[10px] font-black text-white">{initials(item.nickname)}</div>)}
+                {!item.is_own && <ChatAvatar item={item} />}
                 <div className={`max-w-[82%] sm:max-w-[70%] ${item.is_own ? "text-right" : "text-left"}`}>
                   <div className={`mb-1 flex items-center gap-2 text-[11px] ${item.is_own ? "justify-end" : "justify-start"}`}>
-                    <span className="font-black text-slate-300">{item.is_own ? "Anda" : item.nickname || "Peserta"}</span>
+                    {item.participant_public_id ? <a href={playerHref(item.participant_public_id)} className="font-black text-slate-300 transition-colors hover:text-cyan-300 hover:underline">{item.is_own ? "Anda" : item.nickname || "Peserta"}</a> : <span className="font-black text-slate-300">{item.is_own ? "Anda" : item.nickname || "Peserta"}</span>}
                     <span className="text-slate-600">{timeLabel(item.created_at)}</span>
                   </div>
                   <div className={`inline-block rounded-2xl px-4 py-3 text-left text-sm leading-6 shadow-lg ${item.is_own ? "rounded-tr-md bg-gradient-to-br from-indigo-600 to-violet-600 text-white" : "rounded-tl-md border border-white/10 bg-white/[.07] text-slate-100"}`}>
                     <p className="whitespace-pre-wrap break-words">{item.message}</p>
                   </div>
                 </div>
-                {item.is_own && (item.avatar_url ? <img src={item.avatar_url} alt="" className="mt-1 h-9 w-9 shrink-0 rounded-full object-cover ring-1 ring-violet-400/40" /> : <div className="mt-1 grid h-9 w-9 shrink-0 place-items-center rounded-full bg-gradient-to-br from-violet-500 to-indigo-700 text-[10px] font-black text-white">{initials(item.nickname)}</div>)}
+                {item.is_own && <ChatAvatar item={item} own />}
               </div>
             ))}
             <div ref={endRef} />
