@@ -1,6 +1,7 @@
 import { getParticipantToken } from "@/lib/battle"
 
 export const SOCIAL_API_URL = "https://efndozplpwyemzgqfnep.supabase.co/functions/v1/battle-social"
+export const MODERATION_API_URL = "https://efndozplpwyemzgqfnep.supabase.co/functions/v1/battle-moderation"
 
 export type SocialProfile = {
   public_id?: string
@@ -52,19 +53,27 @@ export type ThreadResponse = {
   messages?: PrivateMessage[]
 }
 
-export async function socialCall<T = any>(action: string, payload: Record<string, unknown> = {}, signal?: AbortSignal): Promise<T> {
+async function authedPost<T>(url: string, body: Record<string, unknown>, signal?: AbortSignal): Promise<T> {
   const token = getParticipantToken()
   if (!token) throw new Error("Silakan masuk sebagai peserta.")
-  const response = await fetch(SOCIAL_API_URL, {
+  const response = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json", "X-Battle-Token": token },
-    body: JSON.stringify({ action, ...payload }),
+    body: JSON.stringify(body),
     cache: "no-store",
     signal,
   })
   const data = await response.json().catch(() => ({}))
-  if (!response.ok) throw new Error(data?.error || "Fitur sosial belum dapat diproses.")
+  if (!response.ok) throw new Error(data?.error || "Permintaan belum dapat diproses.")
   return data as T
+}
+
+export function socialCall<T = any>(action: string, payload: Record<string, unknown> = {}, signal?: AbortSignal): Promise<T> {
+  return authedPost<T>(SOCIAL_API_URL, { action, ...payload }, signal)
+}
+
+export function moderationCall<T = any>(action: "block" | "unblock" | "report", payload: Record<string, unknown> = {}, signal?: AbortSignal): Promise<T> {
+  return authedPost<T>(MODERATION_API_URL, { action, ...payload }, signal)
 }
 
 export function playerProfileHref(publicId?: string) {
