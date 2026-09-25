@@ -25,8 +25,8 @@ jobs:
       - name: Validate public copy
         shell: bash
         run: |
-          ! grep -n "30 soal" app/battle-test/page.tsx
-          ! grep -n "15 menit" app/battle-test/page.tsx
+          grep -n "20 soal · 20 menit" app/battle-test/page.tsx
+          grep -n "Fair Play: 20 soal · 20 menit" app/battle-test/page.tsx
           ! grep -n "Estimasi IQ Battle" app/result/page.tsx
           ! grep -n "ESTIMASI IQ BATTLE" app/result/page.tsx
           ! grep -n "IQ Battle" app/result/page.tsx
@@ -41,6 +41,6 @@ jobs:
             echo "No changes"
             exit 0
           fi
-          git commit -m "Use 20-question Battle Point format and remove visible IQ"
+          git commit -m "Finish 20-question Battle Point test copy"
           git pull --rebase origin main
           git push origin HEAD:main
