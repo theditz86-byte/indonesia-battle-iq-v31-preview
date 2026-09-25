@@ -52,7 +52,6 @@ export function SiteNavbar({ participant }: { participant: BattleParticipant | n
               )}
               <span className="hidden text-left leading-tight sm:block">
                 <span className="block max-w-28 truncate text-sm font-semibold text-white">{name}</span>
-                <span className="block text-[11px] text-slate-400">Akun & hasil</span>
               </span>
               <ChevronDown className="h-4 w-4 text-slate-400 transition-transform group-open:rotate-180" />
             </summary>
