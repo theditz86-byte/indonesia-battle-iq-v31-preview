@@ -16,12 +16,10 @@ export type BattleEntry = {
   province_name?: string
   regency_name?: string
   district_name?: string
-  iq_estimate?: number | null
   battle_score?: number | null
   correct_count?: number | null
   question_count?: number | null
   duration_ms?: number | null
-  high_range_attempted?: boolean | null
   national_rank?: number | null
   scope_rank?: number | null
 }
@@ -71,21 +69,13 @@ export function buildScopeQuery(scope: Scope, participant: BattleParticipant | n
   if (scope === "country" || !participant) return ""
   const query = new URLSearchParams()
   if (participant.province_code) query.set("province_code", participant.province_code)
-  if ((scope === "regency" || scope === "district") && participant.regency_name) {
-    query.set("regency_name", participant.regency_name)
-  }
-  if (scope === "district" && participant.district_name) {
-    query.set("district_name", participant.district_name)
-  }
+  if ((scope === "regency" || scope === "district") && participant.regency_name) query.set("regency_name", participant.regency_name)
+  if (scope === "district" && participant.district_name) query.set("district_name", participant.district_name)
   const serialized = query.toString()
   return serialized ? `?${serialized}` : ""
 }
 
-export async function fetchOverview(
-  scope: Scope,
-  participant: BattleParticipant | null,
-  signal?: AbortSignal,
-): Promise<BattleOverview> {
+export async function fetchOverview(scope: Scope, participant: BattleParticipant | null, signal?: AbortSignal): Promise<BattleOverview> {
   const token = getParticipantToken()
   const headers: Record<string, string> = {}
   if (token) headers["X-Battle-Token"] = token
