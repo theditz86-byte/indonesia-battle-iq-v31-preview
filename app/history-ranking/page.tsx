@@ -4,6 +4,8 @@ import { useEffect, useState } from "react"
 import { CalendarDays, Crown, Loader2, Medal, Trophy } from "lucide-react"
 import { SiteNavbar } from "@/components/site-navbar"
 import { SiteFooter } from "@/components/site-footer"
+import { fetchOverview } from "@/lib/battle"
+import type { BattleParticipant } from "@/lib/battle"
 
 const HISTORY_API = "https://efndozplpwyemzgqfnep.supabase.co/functions/v1/battle-history"
 
@@ -41,8 +43,17 @@ const medalStyle: Record<number,string> = {
 
 export default function HistoryRankingPage(){
   const [history,setHistory]=useState<SeasonHistory[]>([])
+  const [participant,setParticipant]=useState<BattleParticipant|null>(null)
   const [loading,setLoading]=useState(true)
   const [error,setError]=useState("")
+
+  useEffect(()=>{
+    const controller=new AbortController()
+    fetchOverview("country",null,controller.signal)
+      .then(data=>setParticipant(data.participant))
+      .catch(()=>{})
+    return()=>controller.abort()
+  },[])
 
   useEffect(()=>{
     let alive=true
@@ -55,7 +66,7 @@ export default function HistoryRankingPage(){
   },[])
 
   return <div className="min-h-screen bg-[radial-gradient(circle_at_50%_-10%,rgba(99,102,241,.25),transparent_32rem),linear-gradient(180deg,#020617,#07142e_55%,#020617)] text-white">
-    <SiteNavbar participant={null}/>
+    <SiteNavbar participant={participant}/>
     <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14">
       <div className="mx-auto max-w-3xl text-center">
         <span className="inline-flex items-center gap-2 rounded-full border border-amber-300/20 bg-amber-300/10 px-4 py-2 text-xs font-black uppercase tracking-[.18em] text-amber-200"><Trophy className="h-4 w-4"/>Hall of Champions</span>
