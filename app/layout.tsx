@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next"
 import "./globals.css"
 import "./attempt-history.css"
 
+const BRAND_ICON = "/brand/alvaza-logo-new.svg?v=20260925-2"
+
 export const metadata: Metadata = {
   metadataBase: new URL("https://alzava-battle-iq.pages.dev"),
   title: {
@@ -38,9 +40,9 @@ export const metadata: Metadata = {
     images: ["/images/hero-bg.png"],
   },
   icons: {
-    icon: [{ url: "/brand/alvaza-logo-new.svg", type: "image/svg+xml" }],
-    shortcut: "/brand/alvaza-logo-new.svg",
-    apple: "/brand/alvaza-logo-new.svg",
+    icon: [{ url: BRAND_ICON, type: "image/svg+xml" }],
+    shortcut: BRAND_ICON,
+    apple: BRAND_ICON,
   },
   robots: { index: true, follow: true },
 }
