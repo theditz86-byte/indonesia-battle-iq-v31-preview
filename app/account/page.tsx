@@ -134,6 +134,10 @@ export default function AccountPage() {
   async function handleLogin(event: FormEvent) {
     event.preventDefault()
     clearMessages()
+    if (loginUsername.trim().toLowerCase() === "admin") {
+      window.location.href = "/admin"
+      return
+    }
     setBusy(true)
     try {
       const data = await api("login", { username: loginUsername, password: loginPassword })
@@ -336,6 +340,7 @@ export default function AccountPage() {
                   <span className="text-xs text-slate-500">Isi username terlebih dahulu</span>
                 </div>
                 <button disabled={busy} className="rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-5 py-3 font-black disabled:opacity-60">{busy ? "Memproses…" : "Masuk"}</button>
+                <div className="text-center text-xs text-slate-500">Pengelola ALZAVA? <a href="/admin" className="font-bold text-cyan-300 hover:text-cyan-200">Masuk sebagai Admin</a></div>
               </form>
             ) : (
               <form onSubmit={handleRegister} className="grid gap-5 p-6 sm:p-8">
