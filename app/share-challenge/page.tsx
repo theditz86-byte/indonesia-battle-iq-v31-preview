@@ -177,11 +177,10 @@ async function buildShareCard(participant:Participant,entry:ChallengeEntry){
   ctx.fillText("SULIT DIKEJAR!",540,520)
   ctx.restore()
 
-  // Previous premium styling restored; only the panel border is lowered slightly so it does not touch the headline or Battle Point label.
   const heroX=150
   const heroY=620
   const heroW=780
-  const heroH=572
+  const heroH=620
   const frameGradient=ctx.createLinearGradient(heroX,heroY,heroX+heroW,heroY+heroH)
   frameGradient.addColorStop(0,"rgba(8,31,64,.68)")
   frameGradient.addColorStop(.52,"rgba(3,12,32,.76)")
@@ -216,7 +215,7 @@ async function buildShareCard(participant:Participant,entry:ChallengeEntry){
 
   ctx.save()
   ctx.beginPath()
-  ctx.arc(540,760,124,0,Math.PI*2)
+  ctx.arc(540,792,124,0,Math.PI*2)
   ctx.clip()
   if(avatar){
     try{
@@ -224,14 +223,14 @@ async function buildShareCard(participant:Participant,entry:ChallengeEntry){
       const scale=Math.max(248/img.naturalWidth,248/img.naturalHeight)
       const sw=248/scale
       const sh=248/scale
-      ctx.drawImage(img,(img.naturalWidth-sw)/2,(img.naturalHeight-sh)/2,sw,sh,416,636,248,248)
+      ctx.drawImage(img,(img.naturalWidth-sw)/2,(img.naturalHeight-sh)/2,sw,sh,416,668,248,248)
     }catch{
       ctx.fillStyle="#7f1d1d"
-      ctx.fillRect(416,636,248,248)
+      ctx.fillRect(416,668,248,248)
     }
   }else{
     ctx.fillStyle="#4338ca"
-    ctx.fillRect(416,636,248,248)
+    ctx.fillRect(416,668,248,248)
   }
   ctx.restore()
 
@@ -241,30 +240,30 @@ async function buildShareCard(participant:Participant,entry:ChallengeEntry){
   ctx.strokeStyle="#fbbf24"
   ctx.lineWidth=10
   ctx.beginPath()
-  ctx.arc(540,760,130,0,Math.PI*2)
+  ctx.arc(540,792,130,0,Math.PI*2)
   ctx.stroke()
   ctx.strokeStyle="rgba(255,247,194,.82)"
   ctx.lineWidth=3
   ctx.beginPath()
-  ctx.arc(540,760,119,0,Math.PI*2)
+  ctx.arc(540,792,119,0,Math.PI*2)
   ctx.stroke()
   ctx.restore()
 
   if(!avatar){
     ctx.fillStyle="#fff"
     ctx.font="900 72px Arial, sans-serif"
-    ctx.fillText(initials(nickname),540,784)
+    ctx.fillText(initials(nickname),540,816)
   }
 
   const nameSize=fitFont(ctx,nickname,650,54,34)
   ctx.fillStyle="#fff"
   ctx.font=`900 ${nameSize}px Arial, sans-serif`
-  ctx.fillText(nickname,540,952)
+  ctx.fillText(nickname,540,984)
 
   const regionSize=fitFont(ctx,region,690,26,18)
   ctx.fillStyle="#cbd5e1"
   ctx.font=`700 ${regionSize}px Arial, sans-serif`
-  ctx.fillText(region,540,995)
+  ctx.fillText(region,540,1027)
 
   ctx.save()
   ctx.shadowColor="rgba(251,191,36,.55)"
@@ -275,13 +274,13 @@ async function buildShareCard(participant:Participant,entry:ChallengeEntry){
   scoreGradient.addColorStop(1,"#f59e0b")
   ctx.fillStyle=scoreGradient
   ctx.font="900 142px Arial, sans-serif"
-  ctx.fillText(score.toLocaleString("id-ID"),540,1120)
+  ctx.fillText(score.toLocaleString("id-ID"),540,1156)
   ctx.restore()
   ctx.fillStyle="#fff"
   ctx.font="900 28px Arial, sans-serif"
-  ctx.fillText("BATTLE POINT",540,1158)
+  ctx.fillText("BATTLE POINT",540,1196)
 
-  const statY=1238
+  const statY=1280
   const statW=286
   const statH=176
   const statX=[79,397,715]
@@ -333,7 +332,7 @@ async function buildShareCard(participant:Participant,entry:ChallengeEntry){
 
   ctx.fillStyle="#fff"
   ctx.font="italic 900 52px Arial, sans-serif"
-  ctx.fillText("BISA LEWATI SKORKU?",540,1535)
+  ctx.fillText("BISA LEWATI SKORKU?",540,1575)
 
   const ctaGradient=ctx.createLinearGradient(135,0,945,0)
   ctaGradient.addColorStop(0,"#7c3aed")
@@ -346,21 +345,21 @@ async function buildShareCard(participant:Participant,entry:ChallengeEntry){
   ctx.strokeStyle="#67e8f9"
   ctx.lineWidth=5
   ctx.beginPath()
-  ctx.roundRect(135,1602,810,122,61)
+  ctx.roundRect(135,1640,810,122,61)
   ctx.fill()
   ctx.stroke()
   ctx.restore()
 
   ctx.fillStyle="#fff"
   ctx.font="900 35px Arial, sans-serif"
-  ctx.fillText("⚔  AYO BATTLE SEKARANG  ›",540,1679)
+  ctx.fillText("⚔  AYO BATTLE SEKARANG  ›",540,1717)
 
   ctx.fillStyle="#cbd5e1"
   ctx.font="700 22px Arial, sans-serif"
-  ctx.fillText("Buka link yang dibagikan · mulai gratis · buktikan skormu",540,1792)
+  ctx.fillText("Buka link yang dibagikan · mulai gratis · buktikan skormu",540,1825)
   ctx.fillStyle="#64748b"
   ctx.font="700 19px Arial, sans-serif"
-  ctx.fillText("Raih Poin. Taklukkan Peringkat.",540,1842)
+  ctx.fillText("Raih Poin. Taklukkan Peringkat.",540,1870)
 
   return canvas
 }
