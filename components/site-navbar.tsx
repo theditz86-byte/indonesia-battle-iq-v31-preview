@@ -27,7 +27,7 @@ export function SiteNavbar({ participant }: { participant: BattleParticipant | n
     <header className="sticky top-0 z-50 border-b border-white/10 bg-slate-950/60 backdrop-blur-xl">
       <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-4 sm:px-6">
         <a href="/battle" className="flex items-center gap-3">
-          <img src="/alzava-emblem-v3.svg" alt="ALZAVA Battle Point" className="h-12 w-12 object-contain drop-shadow-[0_0_10px_rgba(212,175,55,.28)]" />
+          <img src="/brand/alvaza-logo-new.svg" alt="ALZAVA Battle Point" className="h-12 w-12 object-contain drop-shadow-[0_0_10px_rgba(212,175,55,.28)]" />
           <div className="leading-tight">
             <p className="text-[15px] font-extrabold tracking-[.01em] text-white">ALZAVA <span className="text-[#D4AF37]">Battle Point</span></p>
             <p className="text-[10px] font-medium uppercase tracking-[.13em] text-slate-400">Raih Poin. Taklukkan Peringkat.</p>
