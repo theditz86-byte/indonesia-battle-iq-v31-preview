@@ -96,7 +96,7 @@ export function BattleDashboard() {
       <SiteNavbar participant={participant} />
       <main>
         <Hero season={season} entries={heroEntries} />
-        <div className="relative z-10 mx-auto -mt-10 max-w-7xl px-4 sm:px-6 lg:-mt-12">
+        <div className="relative z-10 mx-auto mt-6 max-w-7xl px-4 sm:px-6 lg:mt-8">
           <UserProfileCard participant={participant} ownEntry={ownEntry} scope={scope} />
         </div>
         <div className="mx-auto mt-10 max-w-7xl px-4 pb-16 sm:px-6">
