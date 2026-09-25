@@ -5,7 +5,7 @@ import "./attempt-history.css"
 export const metadata: Metadata = {
   metadataBase: new URL("https://alzava-battle-iq.pages.dev"),
   title: {
-    default: "ALZAVA Battle Point — Adu Nalar. Raih Poin. Naik Peringkat.",
+    default: "ALZAVA Battle Point — Competitive Brain Game Indonesia",
     template: "%s | ALZAVA Battle Point",
   },
   description:
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     locale: "id_ID",
     url: "https://alzava-battle-iq.pages.dev",
     siteName: "ALZAVA Battle Point",
-    title: "ALZAVA Battle Point — Adu Nalar. Raih Poin. Naik Peringkat.",
+    title: "ALZAVA Battle Point — Competitive Brain Game Indonesia",
     description:
       "Coba Quick Battle gratis, raih Battle Point resmi, bagikan kartu hasilmu, dan tantang teman untuk melewati skor.",
     images: [{ url: "/images/hero-bg.png", width: 1200, height: 630, alt: "ALZAVA Battle Point" }],
@@ -34,13 +34,13 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "ALZAVA Battle Point",
-    description: "Adu Nalar. Raih Poin. Naik Peringkat. — Quick Battle, Ranked Battle, dan challenge teman.",
+    description: "Competitive Brain Game Indonesia — Raih Poin. Naik Peringkat. Tantang temanmu.",
     images: ["/images/hero-bg.png"],
   },
   icons: {
-    icon: [{ url: "/alzava-emblem-v3.svg", type: "image/svg+xml" }],
-    shortcut: "/alzava-emblem-v3.svg",
-    apple: "/alzava-emblem-v3.svg",
+    icon: [{ url: "/brand/alvaza-logo-new.svg", type: "image/svg+xml" }],
+    shortcut: "/brand/alvaza-logo-new.svg",
+    apple: "/brand/alvaza-logo-new.svg",
   },
   robots: { index: true, follow: true },
 }
