@@ -336,7 +336,7 @@ export default function BattleTestPage() {
     <main className="min-h-screen bg-[radial-gradient(circle_at_20%_0%,rgba(55,115,255,.16),transparent_28rem),linear-gradient(180deg,#020817,#06132b)] text-white">
       <header className="sticky top-0 z-30 border-b border-white/10 bg-[#020817]/90 backdrop-blur-xl">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
-          <div><p className="text-xs font-black text-cyan-300">{attempt.high_range_unlocked ? "HIGH RANGE · VERIFIED PATH" : isPaidRanked ? "REMATCH / PRACTICE" : "RANKED ATTEMPT"}</p><p className="text-sm font-bold text-white">Percobaan #{attempt.attempt_number}{attempt.high_range_unlocked ? " · Tahap 2/2" : " · Tahap 1/2"}</p></div>
+          <div><p className="text-xs font-black text-cyan-300">{attempt.high_range_unlocked ? "HIGH RANGE · VERIFIED PATH" : isPaidRanked ? "REMATCH / PRACTICE" : "RANKED ATTEMPT"}</p><p className="text-sm font-bold text-white">Percobaan #{attempt.attempt_number}{attempt.questions.length===20 ? " · 20 soal · 20 menit" : attempt.high_range_unlocked ? " · Tahap 2/2" : " · Tahap 1/2"}</p></div>
           <div className={`flex items-center gap-2 rounded-xl border px-4 py-2 font-mono text-lg font-black ${remainingMs < 5*60*1000 ? "border-rose-400/30 bg-rose-500/10 text-rose-200" : "border-white/10 bg-white/5"}`}><Clock3 className="h-4 w-4"/>{timeText(remainingMs)}</div>
         </div>
         <div className="h-1 bg-slate-900"><div className="h-full bg-gradient-to-r from-cyan-400 to-indigo-500 transition-all" style={{width: `${progress}%`}}/></div>
@@ -345,7 +345,7 @@ export default function BattleTestPage() {
       <section className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
         {isPaidRanked && <div className="mb-5 rounded-2xl border border-amber-300/20 bg-amber-300/10 px-4 py-3 text-sm text-amber-100">Rematch / Practice — hasil tes ini tersimpan untuk analisis dan perkembangan pribadi, tetapi tidak mengubah leaderboard resmi.</div>}
         {stageNotice && <div className="mb-5 rounded-2xl border border-violet-300/30 bg-violet-500/15 px-4 py-3 text-sm font-semibold leading-6 text-violet-100">{stageNotice}</div>}
-        <div className="mb-5 rounded-2xl border border-cyan-300/15 bg-cyan-400/[.06] px-4 py-3 text-xs font-semibold leading-5 text-cyan-100">{attempt.high_range_unlocked ? "High Range: 10 soal tambahan · 8 menit · skor rentang atas sedang diverifikasi." : "Fair Play: 30 soal · 15 menit · kerjakan tanpa AI generatif, mesin pencari, kalkulator, atau bantuan orang lain."}</div>
+        <div className="mb-5 rounded-2xl border border-cyan-300/15 bg-cyan-400/[.06] px-4 py-3 text-xs font-semibold leading-5 text-cyan-100">{attempt.high_range_unlocked ? "High Range: 10 soal tambahan · 8 menit · skor rentang atas sedang diverifikasi." : attempt.questions.length===20 ? "Fair Play: 20 soal · 20 menit · kerjakan tanpa AI generatif, mesin pencari, kalkulator, atau bantuan orang lain." : "Fair Play: 30 soal · 15 menit · kerjakan tanpa AI generatif, mesin pencari, kalkulator, atau bantuan orang lain."}</div>
         {error && <div className="mb-5 rounded-2xl border border-rose-400/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-100">{error}</div>}
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_280px]">
           <article className="rounded-3xl border border-white/10 bg-[#0a1a37]/90 p-5 shadow-2xl sm:p-8">
@@ -382,7 +382,7 @@ export default function BattleTestPage() {
               {attempt.questions.map((_, i) => <button key={i} onClick={()=>setIndex(i)} className={`h-9 rounded-lg text-xs font-black ${i===index ? (i>=30 ? "bg-violet-500 text-white ring-2 ring-violet-300/40" : "bg-indigo-500 text-white ring-2 ring-indigo-300/40") : answers[i]!==null ? "bg-emerald-500/20 text-emerald-200" : i>=30 ? "bg-violet-950/70 text-violet-300" : "bg-slate-900 text-slate-500"}`}>{i+1}</button>)}
             </div>
             <div className="mt-5 rounded-2xl bg-slate-950/40 p-4 text-sm text-slate-400">Belum dijawab: <b className="text-white">{unanswered}</b></div>
-            <button onClick={()=>finishStage(false)} disabled={phase==="submitting"} className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-emerald-400/30 bg-emerald-500/10 px-4 py-3 font-black text-emerald-200 disabled:opacity-60"><CheckCircle2 className="h-4 w-4"/>{attempt.questions.length===30 ? "Selesai Inti" : "Selesai High Range"}</button>
+            <button onClick={()=>finishStage(false)} disabled={phase==="submitting"} className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-emerald-400/30 bg-emerald-500/10 px-4 py-3 font-black text-emerald-200 disabled:opacity-60"><CheckCircle2 className="h-4 w-4"/>{attempt.questions.length===20 ? "Kirim Hasil" : attempt.questions.length===30 ? "Selesai Inti" : "Selesai High Range"}</button>
           </aside>
         </div>
       </section>
