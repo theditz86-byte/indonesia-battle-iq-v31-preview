@@ -219,8 +219,7 @@ async function buildCard(props:Props):Promise<{canvas:HTMLCanvasElement;qa:QaRep
   ctx.fillStyle=accent;ctx.shadowColor=official?"#f59e0b":"#22d3ee";ctx.shadowBlur=26;ctx.fillText(line2,540,416)
   ctx.restore()
 
-  // Existing trophy artwork supplies the stage/border feel from the approved concept.
-  try{const trophy=await loadImage("/images/trophy-banner.png?v=cf5");ctx.save();ctx.globalAlpha=official?1:.72;cover(ctx,trophy,35,445,1010,790);ctx.restore()}catch{}
+  // Single-scene background: avoid stacking a second full artwork layer behind the score plate.
 
   // Hero score plate stays dark so the dynamic values remain readable.
   const shield=ctx.createLinearGradient(150,530,930,1180)
@@ -293,20 +292,9 @@ async function buildCard(props:Props):Promise<{canvas:HTMLCanvasElement;qa:QaRep
   const cta=ctx.createLinearGradient(175,0,905,0);cta.addColorStop(0,"#6d28d9");cta.addColorStop(.52,"#4f46e5");cta.addColorStop(1,"#0284c7")
   fillRound(ctx,175,1550,730,108,54,cta);strokeRound(ctx,175,1550,730,108,54,"#67e8f9",4)
   ctx.fillStyle="#fff";ctx.font="900 36px Arial,sans-serif";ctx.fillText("⚔  AYO BATTLE SEKARANG  ›",540,1617)
-  ctx.fillStyle="#94a3b8";ctx.font="700 20px Arial,sans-serif";ctx.fillText(`${props.correctCount}/${props.questionCount} benar  ·  ${accuracy}% akurasi  ·  ${durationLabel(props.durationMs)}`,540,1702)
-  ctx.fillStyle="#64748b";ctx.font="700 20px Arial,sans-serif";ctx.fillText(SITE_URL.replace("https://",""),540,1770)
-
-  // Subtle crowd starts below the footer safe zone, never over text.
-  ctx.save();ctx.globalAlpha=.92;ctx.fillStyle="#01030a"
-  for(let i=0;i<12;i++){
-    const x=25+i*98,y0=1900-(i%3)*14
-    ctx.beginPath();ctx.arc(x,y0-36,19+(i%2)*4,0,Math.PI*2);ctx.fill()
-    ctx.beginPath();ctx.moveTo(x-42,y0+40);ctx.quadraticCurveTo(x,y0-18,x+42,y0+40);ctx.closePath();ctx.fill()
-  }
-  ctx.restore()
+  // Footer intentionally left clean for WhatsApp / Instagram safe area.
 
   if(ctx.measureText(props.nickname).width>860)qa.warnings.push("name_overflow")
-  if(1770>HEIGHT-120)qa.warnings.push("footer_safe_zone")
   return {canvas,qa}
 }
 
@@ -318,7 +306,7 @@ export default function ResultShareCard(props:Props){
   const [open,setOpen]=useState(false)
   const [preview,setPreview]=useState("")
   const [loading,setLoading]=useState(false)
-  const [qa,setQa]=useState<QaReport|null>(null)
+  const [,setQa]=useState<QaReport|null>(null)
 
   async function prepare(){
     setLoading(true)
@@ -354,7 +342,6 @@ export default function ResultShareCard(props:Props){
       <div className="w-full max-w-sm rounded-[2rem] border border-white/10 bg-[#07162f] p-4 shadow-2xl sm:max-w-md">
         <div className="mb-3 flex items-center justify-between gap-3"><div><p className="text-[10px] font-black uppercase tracking-[.18em] text-cyan-300">Preview Share Card</p><p className="mt-1 text-sm font-bold text-white">{props.rankedAttempt===false?"Rematch · Non-Ranked":"Ranked Resmi"}</p></div><button onClick={()=>setOpen(false)} className="rounded-xl border border-white/10 bg-white/5 p-2 text-slate-300"><X className="h-4 w-4"/></button></div>
         <div className="overflow-hidden rounded-2xl border border-white/10 bg-slate-950/60">{preview?<img src={preview} alt="Preview kartu hasil ALZAVA" className="h-auto w-full"/>:<div className="grid aspect-[9/16] place-items-center text-sm text-slate-400">{loading?"Merender kartu…":"Preview belum tersedia"}</div>}</div>
-        {props.debugQa&&qa&&<div className="mt-3 rounded-xl border border-white/10 bg-black/20 p-3 text-xs text-slate-300"><b className="text-cyan-300">QA:</b> avatar={qa.avatar} · mode={qa.mode} · region={qa.region}{qa.warnings.length?` · warning=${qa.warnings.join(",")}`:" · clean"}</div>}
         <div className="mt-4 grid grid-cols-2 gap-2"><button onClick={save} disabled={loading} className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-black text-white"><Download className="h-4 w-4"/>Simpan PNG</button><button onClick={share} disabled={loading} className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-4 py-3 text-sm font-black text-white"><Share2 className="h-4 w-4"/>Bagikan</button></div>
       </div>
     </div>}
