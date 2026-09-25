@@ -59,7 +59,6 @@ jobs:
           rate = 44100
           samples = []
 
-          # Short digital sweep + confirmation tones before the spoken phrase.
           duration = 0.34
           count = int(rate * duration)
           for i in range(count):
@@ -103,6 +102,10 @@ jobs:
         shell: bash
         run: python admin-mobile/apply-notification-patch.py
 
+      - name: Apply persistent admin session behavior
+        shell: bash
+        run: python admin-mobile/apply-session-reliability-patch.py
+
       - name: Generate native Android project
         working-directory: admin-mobile
         run: npx expo prebuild --platform android --clean --no-install
@@ -118,12 +121,12 @@ jobs:
         run: |
           APK=$(find admin-mobile/android/app/build/outputs/apk/release -name "*.apk" | head -n 1)
           test -n "$APK"
-          cp "$APK" ALZAVA-Battle-Point-Admin-v1.4.apk
+          cp "$APK" ALZAVA-Battle-Point-Admin-v1.5.apk
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: ALZAVA-Battle-Point-Admin-v1.4
-          path: ALZAVA-Battle-Point-Admin-v1.4.apk
+          name: ALZAVA-Battle-Point-Admin-v1.5
+          path: ALZAVA-Battle-Point-Admin-v1.5.apk
           if-no-files-found: error
           retention-days: 30
