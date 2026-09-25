@@ -184,22 +184,15 @@ async function buildCard(props:Props):Promise<{canvas:HTMLCanvasElement;qa:QaRep
   const ctx=canvas.getContext("2d");if(!ctx)throw Error("Canvas tidak tersedia")
   ctx.textAlign="center"
 
-  // Background: dark arena with controlled neon. Keep the center clean for readability.
-  const bg=ctx.createLinearGradient(0,0,0,HEIGHT)
-  bg.addColorStop(0,"#020817");bg.addColorStop(.52,"#07142e");bg.addColorStop(1,"#02040c")
-  ctx.fillStyle=bg;ctx.fillRect(0,0,WIDTH,HEIGHT)
-  const glow=ctx.createRadialGradient(540,820,70,540,820,650)
-  glow.addColorStop(0,official?"rgba(245,158,11,.22)":"rgba(124,58,237,.20)")
-  glow.addColorStop(.45,"rgba(14,165,233,.08)");glow.addColorStop(1,"rgba(2,8,23,0)")
-  ctx.fillStyle=glow;ctx.fillRect(0,220,1080,1280)
-  ctx.save();ctx.globalAlpha=.42
-  for(let i=0;i<10;i++){
-    const left=i<5, idx=i%5
-    ctx.strokeStyle=idx%3===0?"#a855f7":idx%3===1?"#22d3ee":"#2563eb"
-    ctx.lineWidth=6;ctx.shadowColor=ctx.strokeStyle;ctx.shadowBlur=18
-    ctx.beginPath();ctx.moveTo(left?0:1080,150+idx*112);ctx.lineTo(left?250:830,430+idx*68);ctx.stroke()
+  // Use the approved repository artwork as the real visual foundation.
+  try{
+    const arena=await loadImage("/images/hero-bg.png?v=cf5")
+    cover(ctx,arena,0,0,WIDTH,HEIGHT)
+  }catch{
+    const bg=ctx.createLinearGradient(0,0,0,HEIGHT);bg.addColorStop(0,"#020817");bg.addColorStop(1,"#02040c");ctx.fillStyle=bg;ctx.fillRect(0,0,WIDTH,HEIGHT)
   }
-  ctx.restore()
+  const shade=ctx.createLinearGradient(0,0,0,HEIGHT);shade.addColorStop(0,"rgba(1,5,18,.14)");shade.addColorStop(.55,"rgba(1,5,18,.24)");shade.addColorStop(1,"rgba(1,5,18,.72)");ctx.fillStyle=shade;ctx.fillRect(0,0,WIDTH,HEIGHT)
+  const heroGlow=ctx.createRadialGradient(540,820,60,540,820,620);heroGlow.addColorStop(0,official?"rgba(245,158,11,.30)":"rgba(34,211,238,.22)");heroGlow.addColorStop(1,"rgba(2,8,23,0)");ctx.fillStyle=heroGlow;ctx.fillRect(0,260,1080,1180)
 
   // Brand.
   try{const logo=await loadImage("/alzava-emblem-v3.svg");ctx.drawImage(logo,490,52,100,100)}catch{}
@@ -214,7 +207,10 @@ async function buildCard(props:Props):Promise<{canvas:HTMLCanvasElement;qa:QaRep
   ctx.fillStyle=accent;ctx.font="italic 900 86px Arial,sans-serif";ctx.fillText(official?"SULIT DIKEJAR!":"HIGH SCORE!",540,415)
   ctx.restore()
 
-  // Hero shield/card.
+  // Existing trophy artwork supplies the stage/border feel from the approved concept.
+  try{const trophy=await loadImage("/images/trophy-banner.png?v=cf5");ctx.save();ctx.globalAlpha=official?.78:.60;cover(ctx,trophy,70,455,940,760);ctx.restore()}catch{}
+
+  // Hero score plate stays dark so the dynamic values remain readable.
   const shield=ctx.createLinearGradient(150,530,930,1180)
   shield.addColorStop(0,official?"rgba(30,18,8,.97)":"rgba(16,10,36,.97)")
   shield.addColorStop(.5,"rgba(7,15,31,.99)")
@@ -222,16 +218,20 @@ async function buildCard(props:Props):Promise<{canvas:HTMLCanvasElement;qa:QaRep
   ctx.beginPath();ctx.moveTo(190,575);ctx.lineTo(890,575);ctx.lineTo(942,710);ctx.lineTo(890,1112);ctx.lineTo(540,1180);ctx.lineTo(190,1112);ctx.lineTo(138,710);ctx.closePath()
   ctx.fillStyle=shield;ctx.fill();ctx.strokeStyle=official?"#fbbf24":"#67e8f9";ctx.lineWidth=7;ctx.shadowColor=official?"rgba(245,158,11,.55)":"rgba(34,211,238,.48)";ctx.shadowBlur=24;ctx.stroke();ctx.shadowBlur=0
 
-  // Avatar + guaranteed fallback.
-  const ax=540,ay=665,r=116
-  ctx.save();ctx.strokeStyle=official?"#fbbf24":"#67e8f9";ctx.lineWidth=10;ctx.shadowColor=ctx.strokeStyle;ctx.shadowBlur=22;ctx.beginPath();ctx.arc(ax,ay,r+10,0,Math.PI*2);ctx.stroke();ctx.restore()
+  // Avatar uses the same crown + laurel assets as the podium, not a canvas imitation.
+  const ax=540,ay=665,r=105
+  let crownAsset:null|HTMLImageElement=null,laurelAsset:null|HTMLImageElement=null
+  try{crownAsset=await loadImage(official?"/images/crown-gold.png?v=cf5":"/images/crown-silver.png?v=cf5")}catch{}
+  try{laurelAsset=await loadImage(official?"/images/laurel-gold.png?v=cf5":"/images/laurel-silver.png?v=cf5")}catch{}
+  if(laurelAsset){ctx.save();ctx.shadowColor=official?"#fbbf24":"#67e8f9";ctx.shadowBlur=22;ctx.drawImage(laurelAsset,365,490,350,350);ctx.restore()}
   ctx.save();ctx.beginPath();ctx.arc(ax,ay,r,0,Math.PI*2);ctx.clip()
   if(profile.avatar_url){
     try{const av=await loadImage(profile.avatar_url);cover(ctx,av,ax-r,ay-r,r*2,r*2);qa.avatar="photo"}
     catch{drawFallbackAvatar(ctx,props.nickname,ax,ay,r);qa.warnings.push("avatar_fallback")}
   }else{drawFallbackAvatar(ctx,props.nickname,ax,ay,r);qa.warnings.push("avatar_missing")}
   ctx.restore()
-  ctx.fillStyle=official?"#fbbf24":"#67e8f9";ctx.font="900 64px Arial,sans-serif";ctx.fillText(official?"♛":"✦",ax,520)
+  ctx.save();ctx.strokeStyle=official?"#fde68a":"#cbd5e1";ctx.lineWidth=7;ctx.shadowColor=official?"#f59e0b":"#67e8f9";ctx.shadowBlur=20;ctx.beginPath();ctx.arc(ax,ay,r+4,0,Math.PI*2);ctx.stroke();ctx.restore()
+  if(crownAsset){ctx.save();ctx.shadowColor=official?"#f59e0b":"#cbd5e1";ctx.shadowBlur=22;ctx.drawImage(crownAsset,470,455,140,140);ctx.restore()}
 
   const nameSize=fit(ctx,props.nickname,650,50,30)
   ctx.fillStyle="#fff";ctx.font=`900 ${nameSize}px Arial,sans-serif`;ctx.fillText(props.nickname,540,846)
@@ -249,18 +249,20 @@ async function buildCard(props:Props):Promise<{canvas:HTMLCanvasElement;qa:QaRep
   const localRank=official?(ranks.regency||ranks.district||ranks.province):undefined
   const localLabel=ranks.regency?(regency||"Kab/Kota"):ranks.district?(district||"Kecamatan"):ranks.province?(province||"Provinsi"):"Wilayah"
 
-  // Information strip: Ranked and Rematch intentionally use different hierarchy.
-  if(official){
-    const w=296,gap=18,start=78,y=1240
-    if(localRank)smallPanel(ctx,start,y,w,localLabel,`#${localRank}`,"#fbbf24")
-    else smallPanel(ctx,start,y,w,"Ketepatan",`${accuracy}%`,"#fbbf24")
-    smallPanel(ctx,start+w+gap,y,w,"Indonesia",props.nationalRank?`#${props.nationalRank}`:(topPercent?`Top ${topPercent}%`:"Top —"),"#a78bfa")
-    smallPanel(ctx,start+(w+gap)*2,y,w,"Season",seasonLabel(props.submittedAt),"#22d3ee")
-  }else{
-    const w=296,gap=18,start=78,y=1240
-    smallPanel(ctx,start,y,w,"Ketepatan",`${accuracy}%`,"#22d3ee")
-    smallPanel(ctx,start+w+gap,y,w,"Mode","REMATCH","#a78bfa")
-    smallPanel(ctx,start+(w+gap)*2,y,w,"Season",seasonLabel(props.submittedAt),"#fbbf24")
+  // Four data tiles mirror the approved reference; only their values are dynamic.
+  {
+    const w=230,gap=18,start=53,y=1240
+    const displayName=props.nickname.length>12?props.nickname.slice(0,11)+"…":props.nickname
+    smallPanel(ctx,start,y,w,"Pemain",displayName,"#22d3ee")
+    if(official){
+      smallPanel(ctx,start+w+gap,y,w,localRank?localLabel:"Ketepatan",localRank?`#${localRank}`:`${accuracy}%`,"#fbbf24")
+      const provinceRank=ranks.province
+      smallPanel(ctx,start+(w+gap)*2,y,w,provinceRank?(province||"Provinsi"):"Indonesia",provinceRank?`#${provinceRank}`:(props.nationalRank?`#${props.nationalRank}`:(topPercent?`Top ${topPercent}%`:"Top —")),"#a78bfa")
+    }else{
+      smallPanel(ctx,start+w+gap,y,w,"Ketepatan",`${accuracy}%`,"#22d3ee")
+      smallPanel(ctx,start+(w+gap)*2,y,w,"Mode","REMATCH","#a78bfa")
+    }
+    smallPanel(ctx,start+(w+gap)*3,y,w,"Musim",seasonLabel(props.submittedAt),"#22d3ee")
   }
 
   // CTA with more breathing room and a protected footer safe-zone.
