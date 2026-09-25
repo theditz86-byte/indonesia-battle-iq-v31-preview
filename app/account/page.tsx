@@ -199,7 +199,7 @@ export default function AccountPage() {
 
   async function updateNickname(event: FormEvent) {
     event.preventDefault(); clearMessages(); setBusy(true)
-    try { const data = await api("update_profile", { nickname: editNickname }, token); setParticipant(data.participant || participant); setNotice("Nama Arena berhasil diperbarui.") }
+    try { const data = await api("update_profile", { nickname: editNickname }, token); setParticipant(data.participant || participant); setNotice("Nama panggilan berhasil diperbarui.") }
     catch (e) { setError(messageText(e)) } finally { setBusy(false) }
   }
 
@@ -251,7 +251,7 @@ export default function AccountPage() {
         <div className="mb-7">
           <p className="text-xs font-black uppercase tracking-[.18em] text-cyan-300">AKUN PESERTA</p>
           <h1 className="mt-3 text-4xl font-black tracking-tight sm:text-6xl">Identitas Battle Anda</h1>
-          <p className="mt-4 max-w-3xl leading-7 text-slate-300">Kelola akun, Nama Arena, foto profil, dan kuota percobaan. Setiap peserta mendapat <strong className="text-white">1x percobaan gratis per season</strong>.</p>
+          <p className="mt-4 max-w-3xl leading-7 text-slate-300">Kelola akun, nama panggilan, foto profil, dan kuota percobaan. Setiap peserta mendapat <strong className="text-white">1x percobaan gratis per season</strong>.</p>
         </div>
 
         {notice && <div className="mb-5 rounded-2xl border border-emerald-400/30 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-100">{notice}</div>}
@@ -281,7 +281,7 @@ export default function AccountPage() {
                   <label className="grid gap-2 text-sm font-bold">Password<input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} autoComplete="new-password" className={fieldClass} /></label>
                 </div>
                 <label className="grid gap-2 text-sm font-bold">Email <span className="font-normal text-slate-500">untuk pemulihan password</span><input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" placeholder="nama@email.com" className={fieldClass} /></label>
-                <label className="grid gap-2 text-sm font-bold">Nama Arena<input value={nickname} onChange={(e) => setNickname(e.target.value)} required minLength={3} maxLength={24} className={fieldClass} /></label>
+                <label className="grid gap-2 text-sm font-bold">Nama Panggilan <span className="font-normal text-slate-500">nama yang tampil di peringkat</span><input value={nickname} onChange={(e) => setNickname(e.target.value)} required minLength={3} maxLength={24} placeholder="Contoh: Aditakaa" className={fieldClass} /></label>
                 <label className="grid gap-2 text-sm font-bold">Provinsi<select value={provinceCode} onChange={(e) => setProvinceCode(e.target.value)} className={fieldClass}>{provinces.map(([code, name]) => <option key={code} value={code}>{name}</option>)}</select></label>
                 <div className="grid gap-4 sm:grid-cols-2">
                   <label className="grid gap-2 text-sm font-bold">Kabupaten/Kota<select value={regencyCode} onChange={(e) => setRegencyCode(e.target.value)} required disabled={regionsLoading || regencies.length === 0} className={fieldClass}><option value="">{regionsLoading ? "Memuat…" : "Pilih kabupaten/kota"}</option>{regencies.map((item) => <option key={item.code} value={item.code}>{item.name}</option>)}</select></label>
@@ -316,7 +316,7 @@ export default function AccountPage() {
             <section className={`rounded-3xl border p-6 ${participant.email ? "border-emerald-300/20 bg-emerald-300/[.06]" : "border-amber-300/25 bg-amber-300/10"}`}><h3 className="text-xl font-black">Email Pemulihan</h3><p className="mt-1 text-sm text-slate-300">{participant.email ? "Email ini dipakai untuk mengirim tautan reset jika Anda lupa password." : "Tambahkan email agar password bisa dipulihkan tanpa kehilangan skor dan riwayat."}</p><form onSubmit={saveRecoveryEmail} className="mt-5 flex flex-col gap-3 sm:flex-row"><input type="email" value={recoveryEmail} onChange={(e) => setRecoveryEmail(e.target.value)} required autoComplete="email" placeholder="nama@email.com" className={`${fieldClass} min-w-0 flex-1`} /><button disabled={busy} className="rounded-xl bg-emerald-500 px-5 py-3 font-black text-slate-950 disabled:opacity-60">{participant.email ? "Perbarui Email" : "Simpan Email"}</button></form></section>
 
             <div className="grid gap-5 lg:grid-cols-2">
-              <section className="rounded-3xl border border-white/15 bg-[#0a1a37]/90 p-6"><h3 className="text-xl font-black">Profil Arena</h3><form onSubmit={updateNickname} className="mt-5 grid gap-4"><label className="grid gap-2 text-sm font-bold">Nama Arena<input value={editNickname} onChange={(e) => setEditNickname(e.target.value)} required minLength={3} maxLength={24} className={fieldClass} /></label><label className="grid gap-2 text-sm font-bold">Foto profil <span className="font-normal text-slate-500">JPG/PNG/WebP, maks. 2 MB</span><input type="file" accept="image/jpeg,image/png,image/webp" disabled={busy} onChange={(e) => void uploadAvatar(e.target.files?.[0])} className={fieldClass} /></label><button disabled={busy} className="rounded-xl bg-indigo-600 px-5 py-3 font-black disabled:opacity-60">Simpan Profil</button></form></section>
+              <section className="rounded-3xl border border-white/15 bg-[#0a1a37]/90 p-6"><h3 className="text-xl font-black">Profil Arena</h3><form onSubmit={updateNickname} className="mt-5 grid gap-4"><label className="grid gap-2 text-sm font-bold">Nama Panggilan<input value={editNickname} onChange={(e) => setEditNickname(e.target.value)} required minLength={3} maxLength={24} className={fieldClass} /></label><label className="grid gap-2 text-sm font-bold">Foto profil <span className="font-normal text-slate-500">JPG/PNG/WebP, maks. 2 MB</span><input type="file" accept="image/jpeg,image/png,image/webp" disabled={busy} onChange={(e) => void uploadAvatar(e.target.files?.[0])} className={fieldClass} /></label><button disabled={busy} className="rounded-xl bg-indigo-600 px-5 py-3 font-black disabled:opacity-60">Simpan Profil</button></form></section>
               {participant.account_ready !== false && <section className="rounded-3xl border border-white/15 bg-[#0a1a37]/90 p-6"><h3 className="text-xl font-black">Keamanan Akun</h3><p className="mt-1 text-sm text-slate-400">Ganti password tanpa mengubah skor, peringkat, atau kuota.</p><form onSubmit={changePassword} className="mt-5 grid gap-4"><input type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} required placeholder="Password saat ini" className={fieldClass} /><input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required minLength={8} placeholder="Password baru minimal 8 karakter" className={fieldClass} /><button disabled={busy} className="rounded-xl border border-white/15 bg-white/10 px-5 py-3 font-black hover:bg-white/15 disabled:opacity-60">Ganti Password</button></form></section>}
             </div>
           </div>
