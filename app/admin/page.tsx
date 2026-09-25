@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useState } from "react"
 import { ArrowLeft, Check, Eye, FileText, Loader2, LogOut, RefreshCw, ShieldCheck, Trophy, WalletCards, X } from "lucide-react"
+import { AdminSeasonControls } from "@/components/admin-season-controls"
 
 const ADMIN_API_URL = "https://efndozplpwyemzgqfnep.supabase.co/functions/v1/battle-admin"
 const TOKEN_KEY = "battle_admin_token"
@@ -167,6 +168,8 @@ export default function AdminPage() {
         <div className="mb-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
           {metricCards.map(([label,value,Icon])=><div key={label} className="rounded-2xl border border-white/10 bg-white/5 p-4"><Icon className="h-5 w-5 text-cyan-300"/><p className="mt-3 text-xs text-slate-400">{label}</p><p className="mt-1 text-xl font-black">{value}</p></div>)}
         </div>
+
+        <AdminSeasonControls token={token} />
 
         <div className="mb-5 flex flex-wrap gap-2">
           {[["pending","Menunggu"],["approved","Disetujui"],["rejected","Ditolak"],["all","Semua"]].map(([value,label])=><button key={value} onClick={()=>setFilter(value)} className={`rounded-full px-4 py-2 text-sm font-bold ${filter===value?"bg-white text-slate-950":"border border-white/10 bg-white/5 text-slate-300"}`}>{label}</button>)}

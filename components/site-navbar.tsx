@@ -7,6 +7,7 @@ import type { BattleParticipant } from "@/lib/battle"
 const links = [
   { label: "Beranda", href: "/battle" },
   { label: "Peringkat", href: "#peringkat" },
+  { label: "History Ranking", href: "/history-ranking" },
   { label: "Tes Kemampuan", href: "/battle-test" },
   { label: "Panduan", href: "#panduan" },
   { label: "Bantuan", href: "/help" },
@@ -29,7 +30,7 @@ export function SiteNavbar({ participant }: { participant: BattleParticipant | n
 
         <nav className="hidden items-center gap-1 rounded-full border border-white/10 bg-white/5 p-1 backdrop-blur-lg lg:flex">
           {links.map((link) => (
-            <a key={link.label} href={link.href} onClick={() => setActive(link.label)} className={`rounded-full px-4 py-2 text-sm font-medium transition-all ${active === link.label ? "bg-white text-slate-900 shadow-[0_0_16px_rgba(255,255,255,0.25)]" : "text-slate-300 hover:text-white"}`}>
+            <a key={link.label} href={link.href} onClick={() => setActive(link.label)} className={`rounded-full px-3 py-2 text-sm font-medium transition-all ${active === link.label ? "bg-white text-slate-900 shadow-[0_0_16px_rgba(255,255,255,0.25)]" : "text-slate-300 hover:text-white"}`}>
               {link.label}
             </a>
           ))}

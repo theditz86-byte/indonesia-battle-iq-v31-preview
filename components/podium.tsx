@@ -156,7 +156,7 @@ function PodiumColumn({ place, player, className = "" }: { place: 1 | 2 | 3; pla
           <div className="absolute inset-y-0 right-0 w-1/5 rounded-br-[26px] bg-gradient-to-l from-black/25 to-transparent" />
           {isChampion ? (
             <div className="relative flex flex-col items-center leading-none">
-              <div className="flex items-center gap-1.5"><LaurelBranch className="h-6 w-4 text-amber-900/70" /><span className={`text-3xl font-black ${s.numberColor}`}>1</span><LaurelBranch className="h-6 w-4 -scale-x-100 text-amber-900/70" /></div>
+              <div className="flex items-center justify-center"><span className={`text-3xl font-black ${s.numberColor}`}>1</span></div>
               <span className="mt-0.5 text-[9px] font-black uppercase tracking-[0.3em] text-amber-950/70">Champion</span>
             </div>
           ) : <span className={`relative text-3xl font-black ${s.numberColor}`}>{place}</span>}
