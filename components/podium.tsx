@@ -104,10 +104,12 @@ function PodiumColumn({ place, player, className = "" }: { place: 1 | 2 | 3; pla
   const isBronze = place === 3
   const name = player?.nickname || "Posisi terbuka"
   const region = player?.province_name || "Indonesia"
+  const profileHref = player?.participant_public_id ? `/player/?id=${encodeURIComponent(player.participant_public_id)}` : ""
 
   return (
-    <div className={`flex flex-col items-center justify-end ${className}`}>
-      <div className="relative z-20 flex flex-col items-center">
+    <div className={`group relative flex flex-col items-center justify-end ${className}`}>
+      {profileHref ? <a href={profileHref} aria-label={`Lihat profil ${name}`} title={`Lihat profil ${name}`} className="absolute inset-0 z-50 rounded-3xl focus:outline-none focus:ring-2 focus:ring-cyan-300/80" /> : null}
+      <div className="relative z-20 flex flex-col items-center transition-transform duration-200 group-hover:-translate-y-1">
         {isChampion && (
           <>
             <div className="pointer-events-none absolute -top-6 h-32 w-32 rounded-full bg-yellow-400/25 blur-3xl" />
@@ -138,14 +140,14 @@ function PodiumColumn({ place, player, className = "" }: { place: 1 | 2 | 3; pla
         </div>
       </div>
 
-      <div className={`relative z-10 ${s.bodyOverlap} flex w-full ${s.bodyHeight} flex-col items-center rounded-t-2xl bg-gradient-to-b ${s.bodyGradient} px-3 ${isBronze ? "pb-3 pt-4" : "pb-4 pt-9"} text-center ring-1 ${s.bodyRing} ${s.glow}`}>
+      <div className={`relative z-10 ${s.bodyOverlap} flex w-full ${s.bodyHeight} flex-col items-center rounded-t-2xl bg-gradient-to-b ${s.bodyGradient} px-3 ${isBronze ? "pb-3 pt-4" : "pb-4 pt-9"} text-center ring-1 ${s.bodyRing} ${s.glow} transition-[filter] duration-200 group-hover:brightness-110`}>
         <div className="pointer-events-none absolute inset-x-0 top-0 h-1/3 rounded-t-2xl bg-gradient-to-b from-white/45 to-transparent" />
         <p className={`relative z-20 max-w-full shrink-0 truncate font-bold leading-tight text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.45)] ${isChampion ? "text-base" : isBronze ? "text-[13px]" : "text-sm"}`}>{name}</p>
         <p className={`relative z-20 max-w-full shrink-0 truncate font-medium leading-tight text-white/85 [text-shadow:0_1px_2px_rgba(0,0,0,0.4)] ${isBronze ? "text-[10px]" : "text-xs"}`}>{region}</p>
         <p className={`relative z-20 ${isBronze ? "mt-3" : "mt-2"} shrink-0 font-black leading-tight text-white [text-shadow:0_2px_6px_rgba(0,0,0,0.45)] ${isChampion ? "text-4xl" : "text-3xl"}`}><span className="tabular-nums">{formatScore(player?.battle_score)}</span> poin</p>
       </div>
 
-      <div className="relative w-full">
+      <div className="relative w-full transition-[filter] duration-200 group-hover:brightness-110">
         <div className="pointer-events-none absolute -bottom-3 left-1/2 h-7 w-[92%] -translate-x-1/2 blur-[6px]" style={{ background: "radial-gradient(closest-side, rgba(0,0,0,0.5), rgba(0,0,0,0.28) 55%, rgba(0,0,0,0) 78%)" }} />
         <div className={`relative flex ${isChampion ? "h-16" : "h-14"} w-full items-center justify-center overflow-hidden rounded-b-[26px] rounded-t-sm bg-gradient-to-b ${s.metal} ${s.glow}`}>
           <div className="absolute inset-x-3 top-0.5 h-3 rounded-full bg-white/40 blur-[3px]" />
