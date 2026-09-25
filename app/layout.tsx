@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next"
 import "./globals.css"
 import "./attempt-history.css"
+import { AccountLoginRedirect } from "@/components/account-login-redirect"
 
 const BRAND_ICON = "/brand/alvaza-logo-new.svg?v=20260925-2"
 
@@ -55,7 +56,10 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="id">
-      <body className="antialiased">{children}</body>
+      <body className="antialiased">
+        <AccountLoginRedirect />
+        {children}
+      </body>
     </html>
   )
 }
