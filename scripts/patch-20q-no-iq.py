@@ -69,7 +69,7 @@ s = must_replace(
     'account history iq', 1)
 p.write_text(s)
 
-# 3) Main result page: history cards and hero circle show performance, not IQ.
+# 3) Main result page: history cards, hero, and printable report show Battle Point/performance, not IQ.
 p = Path('app/result/page.tsx')
 s = p.read_text()
 
@@ -79,26 +79,41 @@ s = must_replace(
     '<div><span className="block text-xs text-slate-500">Jawaban benar</span><strong className="text-2xl font-black text-white">{item.correct_count ?? 0}/{item.question_count ?? 0}</strong></div>',
     'result history iq', 1)
 
-# Keep legacy IQ fields internal for old records, but never render them.
-s = re.sub(r'\n\s*const iq=Number\(result\.iq_estimate\|\|0\)\n\s*const iqProgress=clamp\(\(\(iq-55\)/100\)\*100\)',
-           '\n  const battlePoint=Number(result.battle_score||0)\n  const battleProgress=clamp(battlePoint/10)', s, count=1)
+# Keep the legacy value available internally for compatibility with old helper code, but do not render it.
+s = re.sub(
+    r'\n\s*const iq=Number\(result\.iq_estimate\|\|0\)\n\s*const iqProgress=clamp\(\(\(iq-55\)/100\)\*100\)',
+    '\n  const iq=Number(result.iq_estimate||0)\n  const battlePoint=Number(result.battle_score||0)\n  const battleProgress=clamp(battlePoint/10)',
+    s,
+    count=1,
+)
 s = s.replace('iqProgress', 'battleProgress')
+
+# Both the on-screen hero and PDF hero may contain the same raw IQ value, so replace every rendering occurrence.
 s = must_replace(s, '>Estimasi IQ Battle</p>', '>Battle Point</p>', 'hero label', 1)
-s = must_replace(s, '>{iq || "—"}</strong>', '>{battlePoint.toLocaleString("id-ID")}</strong>', 'hero score', 1)
-s = re.sub(r'<p className="mt-1 text-sm font-black text-white">\{iqTier\(iq\)\}</p>', '<p className="mt-1 text-sm font-black text-white">Skor performa</p>', s, count=1)
-s = re.sub(r'<p className="mt-1 text-xs text-slate-500">Rentang \{result\.iq_low \?\? "—"\}–\{result\.iq_high \?\? "—"\}</p>', '<p className="mt-1 text-xs text-slate-500">{result.correct_count ?? 0}/{result.question_count ?? 0} benar</p>', s, count=1)
+s = s.replace('ESTIMASI IQ BATTLE', 'BATTLE POINT')
+s = must_replace(s, '>{iq || "—"}</strong>', '>{battlePoint.toLocaleString("id-ID")}</strong>', 'hero score')
+s = re.sub(r'\{iqTier\(iq\)\}', 'Skor performa', s)
+s = re.sub(
+    r'Rentang \{result\.iq_low \?\? "—"\}–\{result\.iq_high \?\? "—"\}',
+    '{result.correct_count ?? 0}/{result.question_count ?? 0} benar',
+    s,
+)
 
 # Remove the explicit IQ reference table from the printable premium report.
 s, n = re.subn(r'\n\s*<article className="pdf-iq-reference">.*?</article>', '', s, count=1, flags=re.S)
 if n == 0:
     print('note: pdf-iq-reference block not found; continuing')
 
+# Public/report copy cleanup.
 s = s.replace('ALZAVA <span>BATTLE IQ</span>', 'ALZAVA <span>BATTLE POINT</span>')
 s = s.replace('skor, estimasi IQ Battle, profil kemampuan, waktu, dan status hasil', 'skor, profil kemampuan, waktu, dan status hasil')
+s = s.replace('skor, estimasi Battle Point, profil kemampuan, waktu, dan status hasil', 'skor, profil kemampuan, waktu, dan status hasil')
 s = s.replace('Jangan sekadar mengejar angka IQ. Gunakan percobaan berikutnya untuk melihat apakah strategi Anda membaik:', 'Jangan sekadar mengejar satu skor. Gunakan percobaan berikutnya untuk melihat apakah strategi Anda membaik:')
 s = s.replace('Catatan interpretasi: Estimasi IQ Battle dan analisis kognitif di atas menggambarkan performa Anda pada sistem ALZAVA Battle Point. Ini bukan diagnosis psikologis atau pengganti tes IQ klinis yang diawasi profesional.', 'Catatan interpretasi: Analisis kognitif di atas menggambarkan performa Anda pada sistem ALZAVA Battle Point. Hasil ini bukan diagnosis psikologis atau pengganti asesmen profesional.')
+s = s.replace('bukan hanya satu angka IQ', 'bukan hanya satu skor')
+s = s.replace('bukan hanya satu satu skor', 'bukan hanya satu skor')
+s = s.replace('pengganti asesmen inteligensi yang diadministrasikan profesional', 'pengganti asesmen profesional')
 
-# Catch the common remaining visible phrases without touching internal field names.
 for old, new in [
     ('Estimasi IQ Battle', 'Battle Point'),
     ('IQ Battle', 'Battle Point'),
@@ -107,6 +122,11 @@ for old, new in [
     ('tes IQ klinis', 'asesmen profesional'),
 ]:
     s = s.replace(old, new)
+
+# Fail loudly if common public IQ labels survive the patch.
+for forbidden in ['Estimasi IQ Battle', 'ESTIMASI IQ BATTLE', 'IQ Battle', 'BATTLE IQ']:
+    if forbidden in s:
+        raise SystemExit(f'visible IQ label still present in result page: {forbidden}')
 
 p.write_text(s)
 
