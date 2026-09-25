@@ -1,13 +1,13 @@
 "use client"
 
 import { ChevronDown, CircleUserRound, History, LogOut, MessageCircle, Play, Settings, WalletCards } from "lucide-react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { removeParticipantToken } from "@/lib/battle"
 import type { BattleParticipant } from "@/lib/battle"
 
 const links = [
   { label: "Beranda", href: "/battle" },
-  { label: "Peringkat", href: "#peringkat" },
+  { label: "Peringkat", href: "/battle#peringkat" },
   { label: "History Ranking", href: "/history-ranking" },
   { label: "Tes Kemampuan", href: "/battle-test" },
   { label: "Chat Global", href: "/global-chat" },
@@ -17,6 +17,16 @@ const links = [
 export function SiteNavbar({ participant }: { participant: BattleParticipant | null }) {
   const [active, setActive] = useState("Beranda")
   const name = participant?.nickname || "Akun Peserta"
+
+  useEffect(() => {
+    const path = window.location.pathname
+    if (path.startsWith("/global-chat")) setActive("Chat Global")
+    else if (path.startsWith("/history-ranking")) setActive("History Ranking")
+    else if (path.startsWith("/battle-test")) setActive("Tes Kemampuan")
+    else if (path.startsWith("/help")) setActive("Bantuan")
+    else if (window.location.hash === "#peringkat") setActive("Peringkat")
+    else setActive("Beranda")
+  }, [])
 
   function logout() {
     removeParticipantToken()
