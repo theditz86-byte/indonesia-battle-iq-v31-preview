@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react"
 import { ArrowLeft, Award, Clock3, MapPin, MessageCircle, ShieldCheck, Swords, Trophy } from "lucide-react"
 import { SiteFooter } from "@/components/site-footer"
 import { SiteNavbar } from "@/components/site-navbar"
+import { SocialActions } from "@/components/social-actions"
 import { fetchOverview, formatDuration, formatScore } from "@/lib/battle"
 import type { BattleParticipant } from "@/lib/battle"
 
@@ -124,6 +125,7 @@ export default function PlayerProfilePage() {
                     <h1 className="mt-3 truncate text-4xl font-black tracking-tight sm:text-5xl">{profile.nickname || "Peserta"}</h1>
                     <p className="mt-3 flex flex-wrap items-center gap-2 text-sm font-medium text-slate-300"><MapPin className="h-4 w-4 text-cyan-300" />{[profile.district_name, profile.regency_name, profile.province_name].filter(Boolean).join(" · ") || "Indonesia"}</p>
                     <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-400">Profil publik Battle Point. Yang tampil hanya identitas permainan, wilayah ranking, dan statistik kompetisi—bukan username, email, atau data akun pribadi.</p>
+                    <div className="mt-5"><SocialActions viewer={viewer} targetPublicId={profile.public_id} targetName={profile.nickname} /></div>
                   </div>
                 </div>
               </div>
