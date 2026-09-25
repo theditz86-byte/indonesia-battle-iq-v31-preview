@@ -13,36 +13,36 @@ export function Hero({ season, entries }: { season: BattleSeason | null; entries
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_12%_25%,rgba(56,189,248,0.14),transparent_45%)]" />
       </div>
 
-      <div className="relative mx-auto max-w-7xl px-4 pb-16 pt-8 sm:px-6 lg:pb-20 lg:pt-10">
-        <div className="grid items-center gap-6 lg:grid-cols-[minmax(0,310px)_minmax(0,1fr)_minmax(0,285px)]">
+      <div className="relative mx-auto max-w-7xl px-4 pb-5 pt-8 sm:px-6 lg:pb-6 lg:pt-10">
+        <div className="grid items-center gap-6 lg:grid-cols-[minmax(0,320px)_minmax(0,1fr)_minmax(0,285px)]">
           <div className="flex flex-col items-start text-left">
-            <span className="inline-flex items-center rounded-full border border-cyan-400/30 bg-cyan-400/10 px-4 py-1.5 text-[10px] font-bold uppercase tracking-[.16em] text-cyan-300">
+            <span className="inline-flex items-center rounded-full border border-cyan-300/40 bg-cyan-400/12 px-4 py-2 text-xs font-extrabold uppercase tracking-[.13em] text-cyan-200 shadow-[0_0_18px_rgba(34,211,238,.10)]">
               Competitive Brain Game Indonesia
             </span>
 
-            <h1 className="mt-5 text-[2.65rem] font-black leading-[0.98] tracking-tight text-white sm:text-5xl">
+            <h1 className="mt-5 text-[2.7rem] font-black leading-[0.98] tracking-tight text-white sm:text-5xl">
               <span className="bg-gradient-to-r from-cyan-400 via-sky-400 to-indigo-400 bg-clip-text text-transparent">Raih Poin.</span><br />
               <span className="bg-gradient-to-r from-amber-300 via-yellow-300 to-orange-400 bg-clip-text text-transparent">Naik Peringkat.</span>
             </h1>
 
-            <p className="mt-5 max-w-[19rem] text-[13px] leading-6 text-slate-300">
+            <p className="mt-5 max-w-[20.5rem] text-sm font-medium leading-6 text-slate-200/95">
               Mulai dari 5 soal singkat, lihat Preview Battle Point-mu, lalu masuk Ranked Battle untuk merebut posisi dari kecamatan hingga Indonesia.
             </p>
 
             <div className="mt-6 flex flex-wrap gap-3">
-              <a href="/quick-battle" className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-5 py-3 text-sm font-black text-white shadow-[0_0_28px_rgba(99,102,241,0.55)] transition-transform hover:scale-[1.03]">
-                <Swords className="h-4 w-4" /> Quick Battle Gratis <ArrowRight className="h-4 w-4" />
+              <a href="/quick-battle" className="flex min-h-12 items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-5 py-3 text-[15px] font-black text-white shadow-[0_0_28px_rgba(99,102,241,0.55)] transition-transform hover:scale-[1.03]">
+                <Swords className="h-[18px] w-[18px]" /> Quick Battle Gratis <ArrowRight className="h-[18px] w-[18px]" />
               </a>
-              <a href="#peringkat" className="flex items-center gap-2 rounded-xl border border-cyan-400/40 bg-white/5 px-5 py-3 text-sm font-bold text-white backdrop-blur-lg shadow-[0_0_20px_rgba(34,211,238,0.25)] transition-colors hover:bg-white/10">
-                <BarChart3 className="h-4 w-4 text-cyan-400" /> Lihat Peringkat
+              <a href="#peringkat" className="flex min-h-12 items-center gap-2 rounded-xl border border-cyan-400/45 bg-white/[.07] px-5 py-3 text-[15px] font-extrabold text-white backdrop-blur-lg shadow-[0_0_20px_rgba(34,211,238,0.20)] transition-colors hover:bg-white/10">
+                <BarChart3 className="h-[18px] w-[18px] text-cyan-300" /> Lihat Peringkat
               </a>
             </div>
 
-            <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] font-semibold text-slate-500">
+            <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] font-bold text-slate-300/80">
               <span>5 soal · tanpa login</span>
-              <span className="text-slate-700">•</span>
+              <span className="text-slate-500">•</span>
               <span>±1–2 menit</span>
-              <span className="text-slate-700">•</span>
+              <span className="text-slate-500">•</span>
               <span>Preview Battle Point</span>
             </div>
           </div>
