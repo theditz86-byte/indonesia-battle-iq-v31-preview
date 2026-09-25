@@ -1,6 +1,6 @@
 "use client"
 
-import { ChevronDown, History, LogOut, Mail, Menu, MessageCircle, Play, Settings, WalletCards, X } from "lucide-react"
+import { ChevronDown, History, LogOut, Mail, Menu, MessageCircle, Play, Settings, Share2, WalletCards, X } from "lucide-react"
 import { useEffect, useState } from "react"
 import { getParticipantToken, removeParticipantToken } from "@/lib/battle"
 import type { BattleParticipant } from "@/lib/battle"
@@ -104,6 +104,7 @@ export function SiteNavbar({ participant }: { participant: BattleParticipant | n
               <div className="absolute right-0 mt-3 w-64 overflow-hidden rounded-2xl border border-white/10 bg-[#061329]/95 p-2 shadow-[0_24px_70px_rgba(0,0,0,.45)] backdrop-blur-xl">
                 <div className="border-b border-white/10 px-3 py-3"><p className="truncate text-sm font-black text-white">{name}</p><p className="mt-0.5 text-[11px] text-slate-500">Profil, riwayat tes, pesan, dan pengaturan</p></div>
                 <div className="grid gap-1 py-2">
+                  <a href="/share-challenge" className="flex items-center gap-3 rounded-xl bg-gradient-to-r from-cyan-400/10 to-indigo-500/10 px-3 py-2.5 text-sm font-black text-cyan-100 hover:from-cyan-400/15 hover:to-indigo-500/15"><Share2 className="h-4 w-4 text-cyan-300"/>Bagikan & Tantang</a>
                   <a href="/account/results#riwayat-hasil" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-200 hover:bg-white/5"><History className="h-4 w-4 text-violet-300"/>Riwayat Tes</a>
                   <a href="/battle-test" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-200 hover:bg-white/5"><Play className="h-4 w-4 text-emerald-300"/>Tes Kemampuan</a>
                   <a href="/global-chat" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-200 hover:bg-white/5"><MessageCircle className="h-4 w-4 text-cyan-300"/>Chat Global</a>
@@ -127,6 +128,7 @@ export function SiteNavbar({ participant }: { participant: BattleParticipant | n
       {mobileOpen && (
         <div className="border-t border-white/10 bg-[#030a19]/95 px-4 py-3 shadow-2xl backdrop-blur-xl lg:hidden">
           <nav className="mx-auto grid max-w-7xl grid-cols-2 gap-2 sm:grid-cols-3">
+            {participant && <a href="/share-challenge" onClick={() => setMobileOpen(false)} className="relative rounded-xl border border-cyan-300/20 bg-cyan-300/10 px-3 py-3 text-center text-sm font-black text-cyan-100">Bagikan & Tantang</a>}
             {links.map((link) => (
               <a key={link.label} href={link.href} onClick={() => selectLink(link.label)} className={`relative rounded-xl border px-3 py-3 text-center text-sm font-bold ${active === link.label ? "border-white/30 bg-white text-slate-950" : "border-white/10 bg-white/[.04] text-slate-200 hover:bg-white/[.08]"}`}>
                 {link.label}
