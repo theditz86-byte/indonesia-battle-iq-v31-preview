@@ -1,5 +1,6 @@
 import { BattleDashboard } from "@/components/battle-dashboard"
+import { RecoveryRedirect } from "@/components/recovery-redirect"
 
 export default function Page() {
-  return <BattleDashboard />
+  return <><RecoveryRedirect /><BattleDashboard /></>
 }

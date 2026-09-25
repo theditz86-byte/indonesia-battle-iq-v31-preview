@@ -3,8 +3,10 @@
 import { FormEvent, useEffect, useState } from "react"
 import { ArrowLeft, Check, Eye, FileText, Loader2, LogOut, RefreshCw, ShieldCheck, Trophy, WalletCards, X } from "lucide-react"
 import { AdminSeasonControls } from "@/components/admin-season-controls"
+import { AdminRecoveryControls } from "@/components/admin-recovery-controls"
 
 const ADMIN_API_URL = "https://efndozplpwyemzgqfnep.supabase.co/functions/v1/battle-admin"
+const RECOVERY_API_URL = "https://efndozplpwyemzgqfnep.supabase.co/functions/v1/battle-recovery"
 const TOKEN_KEY = "battle_admin_token"
 
 type Payment = {
@@ -80,6 +82,17 @@ export default function AdminPage() {
     } finally { setBusy(false) }
   }
 
+  async function forgotPassword() {
+    setBusy(true); setError(""); setMessage("")
+    try {
+      const response = await fetch(RECOVERY_API_URL,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({action:"request",kind:"admin",identifier:username.trim()||"admin"})})
+      const data=await response.json().catch(()=>({}))
+      if(!response.ok) throw new Error(data?.error||"Pemulihan admin belum dapat diproses.")
+      setMessage(data.message||"Jika email pemulihan sudah terdaftar, tautan reset telah dikirim.")
+    } catch(e) { setError(e instanceof Error?e.message:"Pemulihan admin gagal.") }
+    finally { setBusy(false) }
+  }
+
   async function load() {
     if (!token) return
     setBusy(true); setError("")
@@ -141,7 +154,9 @@ export default function AdminPage() {
           <form onSubmit={login} className="grid gap-4">
             <label className="grid gap-2 text-sm font-semibold">Username<input value={username} onChange={(e)=>setUsername(e.target.value)} required autoComplete="username" className="rounded-xl border border-white/10 bg-slate-950/70 px-4 py-3 outline-none focus:border-cyan-400/60" /></label>
             <label className="grid gap-2 text-sm font-semibold">Password<input type="password" value={password} onChange={(e)=>setPassword(e.target.value)} required autoComplete="current-password" className="rounded-xl border border-white/10 bg-slate-950/70 px-4 py-3 outline-none focus:border-cyan-400/60" /></label>
+            <button type="button" onClick={()=>void forgotPassword()} disabled={busy} className="justify-self-start text-sm font-bold text-cyan-300 hover:text-cyan-200 disabled:opacity-50">Lupa Password?</button>
             {error && <div className="rounded-xl border border-rose-400/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">{error}</div>}
+            {message && <div className="rounded-xl border border-emerald-400/20 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-100">{message}</div>}
             <button disabled={busy} className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-5 py-3 font-extrabold disabled:opacity-60">{busy?<Loader2 className="h-4 w-4 animate-spin"/>:<ShieldCheck className="h-4 w-4"/>}{busy?"Memeriksa...":"Masuk Admin"}</button>
           </form>
         </section>
@@ -170,6 +185,7 @@ export default function AdminPage() {
         </div>
 
         <AdminSeasonControls token={token} />
+        <AdminRecoveryControls token={token} />
 
         <div className="mb-5 flex flex-wrap gap-2">
           {[["pending","Menunggu"],["approved","Disetujui"],["rejected","Ditolak"],["all","Semua"]].map(([value,label])=><button key={value} onClick={()=>setFilter(value)} className={`rounded-full px-4 py-2 text-sm font-bold ${filter===value?"bg-white text-slate-950":"border border-white/10 bg-white/5 text-slate-300"}`}>{label}</button>)}

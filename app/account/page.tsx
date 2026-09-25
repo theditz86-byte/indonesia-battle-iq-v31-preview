@@ -4,10 +4,13 @@ import { FormEvent, useEffect, useMemo, useState } from "react"
 import { PARTICIPANT_TOKEN_KEY } from "@/lib/battle"
 
 const ACCOUNT_API = "https://efndozplpwyemzgqfnep.supabase.co/functions/v1/battle-account"
+const RECOVERY_API = "https://efndozplpwyemzgqfnep.supabase.co/functions/v1/battle-recovery"
 
 type Participant = {
   public_id?: string
   username?: string | null
+  email?: string | null
+  email_configured?: boolean
   account_ready?: boolean
   nickname?: string
   avatar_url?: string | null
@@ -32,6 +35,15 @@ const provinces = [
   ["81","Maluku"],["82","Maluku Utara"],["91","Papua Barat"],["92","Papua Barat Daya"],["94","Papua"],
   ["95","Papua Selatan"],["96","Papua Tengah"],["97","Papua Pegunungan"],
 ] as const
+
+async function recoveryApi(body: Record<string, unknown>, token = "") {
+  const headers: Record<string, string> = { "Content-Type": "application/json" }
+  if (token) headers["X-Battle-Token"] = token
+  const response = await fetch(RECOVERY_API, { method: "POST", headers, body: JSON.stringify(body) })
+  const data = await response.json().catch(() => ({}))
+  if (!response.ok) throw new Error(data?.error || "Layanan pemulihan akun belum tersedia.")
+  return data
+}
 
 async function api(action: string, body: Record<string, unknown> = {}, token = "") {
   const headers: Record<string, string> = { "Content-Type": "application/json" }
@@ -64,12 +76,14 @@ export default function AccountPage() {
 
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
+  const [email, setEmail] = useState("")
   const [nickname, setNickname] = useState("")
   const [provinceCode, setProvinceCode] = useState("35")
   const [regencyName, setRegencyName] = useState("Sumenep")
   const [districtName, setDistrictName] = useState("")
 
   const [editNickname, setEditNickname] = useState("")
+  const [recoveryEmail, setRecoveryEmail] = useState("")
   const [currentPassword, setCurrentPassword] = useState("")
   const [newPassword, setNewPassword] = useState("")
   const [claimUsername, setClaimUsername] = useState("")
@@ -92,6 +106,7 @@ export default function AccountPage() {
       const data = await api("me", {}, rawToken)
       setParticipant(data.participant || null)
       setEditNickname(data.participant?.nickname || "")
+      setRecoveryEmail(data.participant?.email || "")
     } catch {
       localStorage.removeItem(PARTICIPANT_TOKEN_KEY)
       setToken("")
@@ -126,6 +141,7 @@ export default function AccountPage() {
       setToken(data.token)
       setParticipant(data.participant || null)
       setEditNickname(data.participant?.nickname || "")
+      setRecoveryEmail(data.participant?.email || "")
       setNotice("Berhasil masuk. Akun Battle Point Anda sudah aktif.")
     } catch (e) {
       setError(messageText(e))
@@ -142,6 +158,7 @@ export default function AccountPage() {
       const data = await api("register", {
         username,
         password,
+        email,
         nickname,
         province_code: provinceCode,
         regency_name: regencyName,
@@ -151,12 +168,38 @@ export default function AccountPage() {
       setToken(data.token)
       setParticipant(data.participant || null)
       setEditNickname(data.participant?.nickname || "")
+      setRecoveryEmail(data.participant?.email || "")
       setNotice("Pendaftaran berhasil. Anda mendapat 1 Ranked Attempt resmi gratis pada season ini.")
     } catch (e) {
       setError(messageText(e))
     } finally {
       setBusy(false)
     }
+  }
+
+  async function requestPasswordReset() {
+    clearMessages()
+    if (!loginUsername.trim()) { setError("Isi username terlebih dahulu, lalu tekan Lupa Password."); return }
+    setBusy(true)
+    try {
+      const data = await recoveryApi({ action: "request", kind: "participant", identifier: loginUsername.trim() })
+      setNotice(data.message || "Jika email pemulihan terdaftar, tautan reset sudah dikirim.")
+    } catch (e) { setError(messageText(e)) }
+    finally { setBusy(false) }
+  }
+
+  async function saveRecoveryEmail(event: FormEvent) {
+    event.preventDefault()
+    clearMessages()
+    setBusy(true)
+    try {
+      const data = await recoveryApi({ action: "set_email", kind: "participant", email: recoveryEmail }, token)
+      const savedEmail = data?.state?.email || recoveryEmail.trim().toLowerCase()
+      setRecoveryEmail(savedEmail)
+      setParticipant((prev) => prev ? { ...prev, email: savedEmail, email_configured: true } : prev)
+      setNotice("Email pemulihan berhasil disimpan. Gunakan email ini jika lupa password.")
+    } catch (e) { setError(messageText(e)) }
+    finally { setBusy(false) }
   }
 
   async function updateNickname(event: FormEvent) {
@@ -288,6 +331,10 @@ export default function AccountPage() {
                 <label className="grid gap-2 text-sm font-bold">Password
                   <input type="password" value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} required autoComplete="current-password" className="rounded-xl border border-white/15 bg-[#06142d] px-4 py-3 font-normal outline-none focus:border-cyan-400" />
                 </label>
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <button type="button" disabled={busy} onClick={() => void requestPasswordReset()} className="text-sm font-bold text-cyan-300 hover:text-cyan-200 disabled:opacity-50">Lupa Password?</button>
+                  <span className="text-xs text-slate-500">Isi username terlebih dahulu</span>
+                </div>
                 <button disabled={busy} className="rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-5 py-3 font-black disabled:opacity-60">{busy ? "Memproses…" : "Masuk"}</button>
               </form>
             ) : (
@@ -304,6 +351,9 @@ export default function AccountPage() {
                     <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} autoComplete="new-password" className="rounded-xl border border-white/15 bg-[#06142d] px-4 py-3 font-normal outline-none focus:border-cyan-400" />
                   </label>
                 </div>
+                <label className="grid gap-2 text-sm font-bold">Email <span className="font-normal text-slate-500">untuk pemulihan password</span>
+                  <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" placeholder="nama@email.com" className="rounded-xl border border-white/15 bg-[#06142d] px-4 py-3 font-normal outline-none focus:border-cyan-400" />
+                </label>
                 <label className="grid gap-2 text-sm font-bold">Nama Arena
                   <input value={nickname} onChange={(e) => setNickname(e.target.value)} required minLength={3} maxLength={24} className="rounded-xl border border-white/15 bg-[#06142d] px-4 py-3 font-normal outline-none focus:border-cyan-400" />
                 </label>
@@ -366,6 +416,15 @@ export default function AccountPage() {
                 </form>
               </section>
             )}
+
+            <section className={`rounded-3xl border p-6 ${participant.email ? "border-emerald-300/20 bg-emerald-300/[.06]" : "border-amber-300/25 bg-amber-300/10"}`}>
+              <h3 className="text-xl font-black">Email Pemulihan</h3>
+              <p className="mt-1 text-sm text-slate-300">{participant.email ? "Email ini dipakai untuk mengirim tautan reset jika Anda lupa password." : "Akun lama ini belum memiliki email. Tambahkan sekarang agar password bisa dipulihkan tanpa kehilangan skor dan riwayat."}</p>
+              <form onSubmit={saveRecoveryEmail} className="mt-5 flex flex-col gap-3 sm:flex-row">
+                <input type="email" value={recoveryEmail} onChange={(e) => setRecoveryEmail(e.target.value)} required autoComplete="email" placeholder="nama@email.com" className="min-w-0 flex-1 rounded-xl border border-white/15 bg-[#06142d] px-4 py-3 outline-none focus:border-cyan-400" />
+                <button disabled={busy} className="rounded-xl bg-emerald-500 px-5 py-3 font-black text-slate-950 disabled:opacity-60">{participant.email ? "Perbarui Email" : "Simpan Email"}</button>
+              </form>
+            </section>
 
             <div className="grid gap-5 lg:grid-cols-2">
               <section className="rounded-3xl border border-white/15 bg-[#0a1a37]/90 p-6">
