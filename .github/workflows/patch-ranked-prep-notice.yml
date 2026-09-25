@@ -1,0 +1,96 @@
+name: Patch Ranked Preparation Notice
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.event.head_commit.message != 'feat: add ranked test preparation notice'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply targeted patch
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('app/battle-test/page.tsx')
+          s = p.read_text()
+
+          def rep(old, new, label):
+              global s
+              if old not in s:
+                  raise SystemExit(f'missing marker: {label}')
+              s = s.replace(old, new, 1)
+
+          rep(
+          '''  const [stageNotice,setStageNotice] = useState("")
+          ''',
+          '''  const [stageNotice,setStageNotice] = useState("")
+            const [showPrepNotice, setShowPrepNotice] = useState(false)
+          ''',
+          'notice state')
+
+          rep(
+          '''  async function start() {
+          ''',
+          '''  function requestStart() {
+            const isFreshRanked = !participant?.active_attempt_id && Math.max(0, Number(participant?.attempts_used) || 0) === 0
+            if (isFreshRanked) {
+              setShowPrepNotice(true)
+              return
+            }
+            void start()
+          }
+
+          async function start() {
+          ''',
+          'request start')
+
+          rep(
+          '''              <button onClick={start} disabled={!integrity} className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-5 py-3.5 font-black disabled:cursor-not-allowed disabled:opacity-50"><Flag className="h-5 w-5"/>Mulai / Lanjutkan Tes</button>
+          ''',
+          '''              <button onClick={requestStart} disabled={!integrity} className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-5 py-3.5 font-black disabled:cursor-not-allowed disabled:opacity-50"><Flag className="h-5 w-5"/>Mulai / Lanjutkan Tes</button>
+          ''',
+          'start button')
+
+          rep(
+          '''        </section>
+              </main>
+            )
+          }
+          ''',
+          '''        </section>
+            {showPrepNotice && (
+              <div className="fixed inset-0 z-50 grid place-items-center bg-slate-950/80 px-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="prep-title">
+                <div className="w-full max-w-md rounded-3xl border border-cyan-300/20 bg-[#08172f] p-6 shadow-[0_28px_90px_rgba(0,0,0,.55)] sm:p-7">
+                  <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl border border-amber-300/20 bg-amber-300/10 text-2xl">✍️</div>
+                  <h2 id="prep-title" className="mt-4 text-center text-2xl font-black text-white">Sebelum Ranked Test dimulai</h2>
+                  <p className="mt-3 text-center text-sm leading-6 text-slate-300">Peserta disarankan menyiapkan <b className="text-white">buku/kertas dan pulpen</b> untuk membantu mencatat atau menghitung selama mengerjakan soal.</p>
+                  <div className="mt-4 rounded-2xl border border-cyan-300/15 bg-cyan-300/[.06] px-4 py-3 text-xs leading-5 text-cyan-100">Tetap patuhi Fair Play: gunakan hanya kertas dan alat tulis. AI generatif, kalkulator, mesin pencari, catatan jawaban, dan bantuan orang lain tidak diperbolehkan.</div>
+                  <div className="mt-6 grid gap-2 sm:grid-cols-2">
+                    <button type="button" onClick={()=>setShowPrepNotice(false)} className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 font-bold text-slate-300 hover:bg-white/10">Belum siap</button>
+                    <button type="button" onClick={()=>{setShowPrepNotice(false); void start()}} className="rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-4 py-3 font-black text-white shadow-[0_0_26px_rgba(99,102,241,.3)]">Saya Siap · Mulai</button>
+                  </div>
+                </div>
+              </div>
+            )}
+              </main>
+            )
+          }
+          ''',
+          'lobby modal')
+
+          p.write_text(s)
+          PY
+      - name: Commit patch
+        run: |
+          git config user.name "theditz86-byte"
+          git config user.email "theditz86@gmail.com"
+          git add app/battle-test/page.tsx
+          git diff --cached --quiet && exit 0
+          git commit -m "feat: add ranked test preparation notice"
+          git push
