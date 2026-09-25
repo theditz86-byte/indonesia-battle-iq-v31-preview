@@ -2,13 +2,13 @@
   "expo": {
     "name": "ALZAVA Battle Point Admin",
     "slug": "alzava-battle-point-admin",
-    "version": "1.4.0",
+    "version": "1.5.0",
     "orientation": "default",
     "userInterfaceStyle": "dark",
     "icon": "./assets/app-icon.png",
     "android": {
       "package": "com.alzava.battleiq.admin",
-      "versionCode": 5,
+      "versionCode": 6,
       "permissions": [
         "INTERNET",
         "VIBRATE",
