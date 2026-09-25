@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react"
 import { ArrowLeft, CheckCircle2, ChevronLeft, ChevronRight, Clock3, CreditCard, Flag, Loader2, ShieldCheck } from "lucide-react"
 import { BATTLE_API_URL, getParticipantToken } from "@/lib/battle"
+const SUBMIT20_API = "https://efndozplpwyemzgqfnep.supabase.co/functions/v1/battle-submit20"
 
 type Question = {
   id: string
@@ -53,6 +54,18 @@ async function callBattle(body: Record<string, unknown>, token: string) {
   return { response, data }
 }
 
+async function callSubmit(body: Record<string, unknown>, token: string) {
+  const answers = Array.isArray(body.answers) ? body.answers : []
+  if (answers.length !== 20) return callBattle(body, token)
+  const response = await fetch(SUBMIT20_API, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "X-Battle-Token": token },
+    body: JSON.stringify({ attempt_id: body.attempt_id, answers }),
+  })
+  const data = await response.json().catch(() => ({}))
+  return { response, data }
+}
+
 function timeText(ms: number) {
   const total = Math.max(0, Math.ceil(ms / 1000))
   const minutes = Math.floor(total / 60)
@@ -68,7 +81,7 @@ export default function BattleTestPage() {
   const [phase, setPhase] = useState<"loading"|"lobby"|"test"|"submitting"|"error">("loading")
   const [error, setError] = useState("")
   const [paywall, setPaywall] = useState(false)
-  const [remainingMs, setRemainingMs] = useState(15 * 60 * 1000)
+  const [remainingMs, setRemainingMs] = useState(20 * 60 * 1000)
   const [integrity, setIntegrity] = useState(false)
   const autoSubmitRef = useRef(false)
   const answersRef = useRef<Array<number | null>>([])
@@ -189,7 +202,7 @@ export default function BattleTestPage() {
     setPhase("submitting")
     setError("")
     try {
-      const { response, data } = await callBattle({
+      const { response, data } = await callSubmit({
         action: "submit",
         attempt_id: attempt.attempt_id,
         answers: payload,
@@ -287,9 +300,9 @@ export default function BattleTestPage() {
         <section className="mx-auto grid max-w-6xl gap-7 px-5 py-12 lg:grid-cols-[1.2fr_.8fr] lg:items-center">
           <div>
             <p className="text-xs font-black uppercase tracking-[.2em] text-cyan-300">Tes Kemampuan</p>
-            <h1 className="mt-4 text-5xl font-black leading-[.95] tracking-[-.055em] sm:text-7xl">30 soal.<br/><span className="text-indigo-300">15 menit.</span></h1>
+            <h1 className="mt-4 text-5xl font-black leading-[.95] tracking-[-.055em] sm:text-7xl">20 soal.<br/><span className="text-indigo-300">20 menit.</span></h1>
             <p className="mt-6 max-w-2xl text-base leading-7 text-slate-300">Numerik, logika, verbal, dan spasial dalam satu tes. Setiap season menyediakan <b className="text-white">1 Ranked Attempt resmi gratis</b> yang menentukan leaderboard season.</p>
-            <div className="mt-5 max-w-2xl rounded-2xl border border-violet-300/20 bg-violet-400/10 p-4 text-sm leading-6 text-violet-100"><b>High Range adaptif:</b> bila Battle Point inti mencapai 850+, sistem membuka 10 soal yang lebih sulit dengan tambahan waktu 8 menit. Skor sangat tinggi harus dikonfirmasi pada tahap ini.</div>
+            <div className="mt-5 max-w-2xl rounded-2xl border border-violet-300/20 bg-violet-400/10 p-4 text-sm leading-6 text-violet-100"><b>Format ringkas:</b> 20 soal dalam 20 menit. Tidak ada tahap tambahan; Battle Point dihitung dari performa pada 20 soal tersebut.</div>
             <div className="mt-7 grid max-w-2xl gap-3 sm:grid-cols-3">
               <div className="rounded-2xl border border-white/10 bg-white/5 p-4"><span className="text-xs text-slate-400">Gratis tersisa</span><strong className="mt-1 block text-3xl font-black">{freeRemaining}x</strong></div>
               <div className="rounded-2xl border border-white/10 bg-white/5 p-4"><span className="text-xs text-slate-400">Kredit Rematch</span><strong className="mt-1 block text-3xl font-black">{paidCredits}x</strong></div>

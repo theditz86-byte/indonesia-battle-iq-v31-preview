@@ -412,9 +412,9 @@ export default function ResultPage() {
   if(error || !data) return <main className="grid min-h-screen place-items-center bg-[#020817] px-5 text-white"><div className="max-w-xl rounded-3xl border border-rose-400/20 bg-rose-500/10 p-7 text-center"><p>{error || "Hasil belum tersedia."}</p><a href="/battle" className="mt-5 inline-flex rounded-xl bg-indigo-600 px-5 py-3 font-black">Kembali ke Battle</a></div></main>
 
   if(!result) return <main className="grid min-h-screen place-items-center bg-[#020817] px-5 text-white"><div className="max-w-xl rounded-3xl border border-white/10 bg-white/5 p-8 text-center"><Brain className="mx-auto h-10 w-10 text-cyan-300"/><h1 className="mt-4 text-2xl font-black">Belum ada hasil pada season ini</h1><p className="mt-2 text-slate-400">Selesaikan tes untuk melihat skor dan profil kognitif Anda.</p><a href="/battle-test" className="mt-6 inline-flex rounded-xl bg-indigo-600 px-5 py-3 font-black">Mulai Tes</a></div></main>
-
   const iq=Number(result.iq_estimate||0)
-  const iqProgress=clamp(((iq-55)/100)*100)
+  const battlePoint=Number(result.battle_score||0)
+  const battleProgress=clamp(battlePoint/10)
   const rankText=result.is_personal_best===false ? "Bukan PB" : result.national_rank && data.leaderboard_total ? "#" + result.national_rank + " dari " + data.leaderboard_total : "#" + (result.national_rank ?? "—")
   const reportDate=result.submitted_at ? new Date(result.submitted_at) : new Date()
   const reportDateCode=[
@@ -480,7 +480,7 @@ export default function ResultPage() {
                     {active && <span className="absolute right-3 top-3 rounded-full bg-cyan-300/15 px-2 py-1 text-[9px] font-black uppercase tracking-wider text-cyan-200">Sedang dilihat</span>}
                     <p className="text-[10px] font-black uppercase tracking-[.14em] text-slate-500">Percobaan #{item.attempt_number ?? "—"} {paid?"· Rematch / Practice":"· Ranked Resmi"}</p>
                     <div className="mt-3 flex items-end justify-between gap-3">
-                      <div><span className="block text-xs text-slate-500">IQ Battle</span><strong className="text-2xl font-black text-white">{item.iq_estimate ?? "—"}</strong></div>
+                      <div><span className="block text-xs text-slate-500">Jawaban benar</span><strong className="text-2xl font-black text-white">{item.correct_count ?? 0}/{item.question_count ?? 0}</strong></div>
                       <div className="text-right"><span className="block text-xs text-slate-500">Battle Point</span><strong className="text-xl font-black text-cyan-300">{Number(item.battle_score||0).toLocaleString("id-ID")}</strong></div>
                     </div>
                     <div className="mt-3 flex flex-wrap gap-1.5">
@@ -517,13 +517,13 @@ export default function ResultPage() {
 
               <div className="relative mx-auto h-[220px] w-[220px] sm:h-[245px] sm:w-[245px] md:h-[250px] md:w-[250px] lg:h-[300px] lg:w-[300px]">
                 <div className="absolute inset-0 rounded-full bg-cyan-400/10 blur-3xl"/>
-                <div className="absolute inset-4 rounded-full p-[2px]" style={{background:"conic-gradient(#67e8f9 "+iqProgress+"%, rgba(255,255,255,.08) "+iqProgress+"%)"}}>
+                <div className="absolute inset-4 rounded-full p-[2px]" style={{background:"conic-gradient(#67e8f9 "+battleProgress+"%, rgba(255,255,255,.08) "+battleProgress+"%)"}}>
                   <div className="grid h-full w-full place-items-center rounded-full bg-[#061329]">
                     <div className="text-center">
-                      <p className="text-[11px] font-black uppercase tracking-[.18em] text-cyan-300">Estimasi IQ Battle</p>
-                      <strong className="mt-2 block text-5xl font-black tracking-[-.06em] sm:text-6xl lg:text-7xl">{iq || "—"}</strong>
-                      <p className="mt-1 text-sm font-bold text-slate-300">{iqTier(iq)}</p>
-                      <p className="mt-2 text-xs text-slate-500">Rentang {result.iq_low ?? "—"}–{result.iq_high ?? "—"}</p>
+                      <p className="text-[11px] font-black uppercase tracking-[.18em] text-cyan-300">Battle Point</p>
+                      <strong className="mt-2 block text-5xl font-black tracking-[-.06em] sm:text-6xl lg:text-7xl">{battlePoint.toLocaleString("id-ID")}</strong>
+                      <p className="mt-1 text-sm font-bold text-slate-300">Skor performa</p>
+                      <p className="mt-2 text-xs text-slate-500">{result.correct_count ?? 0}/{result.question_count ?? 0} benar</p>
                     </div>
                   </div>
                 </div>
@@ -675,7 +675,7 @@ export default function ResultPage() {
           )}
 
           <div className="border-t border-white/10 bg-slate-950/30 px-6 py-6 text-xs leading-6 text-slate-500 sm:px-9">
-            <b className="text-slate-400">Catatan interpretasi:</b> Estimasi IQ Battle dan analisis kognitif di atas menggambarkan performa pada sistem ALZAVA Battle Point. Ini bukan diagnosis psikologis, tes IQ klinis terstandarisasi, penilaian kepribadian, atau pengganti asesmen oleh psikolog berwenang. Pernyataan mengenai “karakter kognitif” berarti pola pemecahan masalah yang tampak pada tes ini, bukan sifat pribadi yang permanen.
+            <b className="text-slate-400">Catatan interpretasi:</b> Battle Point dan analisis kognitif di atas menggambarkan performa pada sistem ALZAVA Battle Point. Ini bukan diagnosis psikologis, asesmen profesional terstandarisasi, penilaian kepribadian, atau pengganti asesmen oleh psikolog berwenang. Pernyataan mengenai “karakter kognitif” berarti pola pemecahan masalah yang tampak pada tes ini, bukan sifat pribadi yang permanen.
           </div>
         </section>
 
@@ -686,7 +686,7 @@ export default function ResultPage() {
                 <div className="pdf-logo-lockup">
                   <img src="/alzava-emblem-v3.svg" alt="ALZAVA Battle Point" />
                   <div>
-                    <p className="pdf-brand">ALZAVA <span>BATTLE IQ</span></p>
+                    <p className="pdf-brand">ALZAVA <span>BATTLE POINT</span></p>
                     <p className="pdf-kicker">ASAH PIKIRAN. RAIH PUNCAK. · LAPORAN PREMIUM</p>
                   </div>
                 </div>
@@ -702,10 +702,10 @@ export default function ResultPage() {
                   </div>
                 </div>
                 <div className="pdf-iq">
-                  <small>ESTIMASI IQ BATTLE</small>
-                  <strong>{iq || "—"}</strong>
-                  <b>{iqTier(iq)}</b>
-                  <span>Rentang {result.iq_low ?? "—"}–{result.iq_high ?? "—"}</span>
+                  <small>BATTLE POINT</small>
+                  <strong>{battlePoint.toLocaleString("id-ID")}</strong>
+                  <b>Skor performa</b>
+                  <span>{result.correct_count ?? 0}/{result.question_count ?? 0} benar</span>
                 </div>
               </div>
 
@@ -747,13 +747,13 @@ export default function ResultPage() {
                     </div>
                     <span>Attempt #{result.attempt_number ?? "—"}</span>
                   </div>
-                  <p>Halaman ini dapat diperlakukan sebagai <b>sertifikat hasil internal ALZAVA Battle Point</b>: mencatat identitas peserta, nomor laporan unik, skor, estimasi IQ Battle, profil kemampuan, waktu, dan status hasil pada satu percobaan tertentu.</p>
+                  <p>Halaman ini dapat diperlakukan sebagai <b>sertifikat hasil internal ALZAVA Battle Point</b>: mencatat identitas peserta, nomor laporan unik, skor, profil kemampuan, waktu, dan status hasil pada satu percobaan tertentu.</p>
                   <div className="pdf-cert-meta">
                     <span><small>NO. LAPORAN</small><b>{reportNumber}</b></span>
                     <span><small>DITERBITKAN</small><b>{reportIssued}</b></span>
                     <span><small>STATUS</small><b>{data.premium_unlocked ? "Premium Verified" : "Result Record"}</b></span>
                   </div>
-                  <p className="pdf-cert-disclaimer">Sertifikat hasil ini adalah dokumen capaian dalam ekosistem ALZAVA, bukan sertifikasi psikologis, diagnosis klinis, atau pengganti asesmen inteligensi yang diadministrasikan profesional.</p>
+                  <p className="pdf-cert-disclaimer">Sertifikat hasil ini adalah dokumen capaian dalam ekosistem ALZAVA, bukan sertifikasi psikologis, diagnosis klinis, atau pengganti asesmen profesional.</p>
                 </article>
 
                 <article className="pdf-radar-explainer">
@@ -766,30 +766,9 @@ export default function ResultPage() {
                     <div><b>Akurasi</b><span>Persentase jawaban benar; menunjukkan kontrol kesalahan.</span></div>
                     <div><b>Tempo</b><span>Indeks efisiensi berdasarkan rata-rata waktu pengerjaan per soal.</span></div>
                   </div>
-                  <p className="pdf-radar-note">Semakin jauh titik dari pusat, semakin tinggi indeks relatif pada hasil tes ini. Bentuk radar digunakan untuk melihat <b>keseimbangan profil</b>, bukan hanya satu angka IQ.</p>
+                  <p className="pdf-radar-note">Semakin jauh titik dari pusat, semakin tinggi indeks relatif pada hasil tes ini. Bentuk radar digunakan untuk melihat <b>keseimbangan profil</b>, bukan hanya satu skor.</p>
                 </article>
               </div>
-
-              <article className="pdf-iq-reference">
-                <div className="pdf-iq-reference-head">
-                  <div>
-                    <p className="pdf-section-label">REFERENSI RENTANG IQ · SKALA 100/15</p>
-                    <h2>Di mana posisi estimasi IQ Battle {iq || "—"}?</h2>
-                  </div>
-                  <span>Mean 100 · SD 15</span>
-                </div>
-                <div className="pdf-iq-band-grid">
-                  {iqReferenceBands.map((band)=>{
-                    const active=iq>=band.min && iq<=band.max
-                    return <div key={band.range} className={active?"pdf-iq-band pdf-iq-band-active":"pdf-iq-band"}>
-                      <b>{band.range}</b>
-                      <strong>{band.id}</strong>
-                      <span>{band.label}</span>
-                    </div>
-                  })}
-                </div>
-                <p className="pdf-iq-reference-note">Acuan interpretasi menggunakan kerangka deviation-IQ umum dengan rata-rata 100 dan simpangan baku sekitar 15. Nama kategori bersifat deskriptif; Pearson menegaskan label kualitatif hanyalah bantuan komunikasi dan bukan kategori diagnosis yang universal. Skor di tes berbeda juga tidak selalu ekuivalen langsung—misalnya Mensa menggunakan kriteria persentil 98, bukan satu angka IQ tunggal untuk semua tes.</p>
-              </article>
 
               <div className="pdf-executive-footer">
                 <div><span>KEKUATAN UTAMA</span><b>{strength?.label || "Profil kognitif"}</b><small>Indeks {strength?.index ?? "—"}</small></div>
@@ -803,7 +782,7 @@ export default function ResultPage() {
                 <div className="pdf-logo-lockup">
                   <img src="/alzava-emblem-v3.svg" alt="ALZAVA Battle Point" />
                   <div>
-                    <p className="pdf-brand">ALZAVA <span>BATTLE IQ</span></p>
+                    <p className="pdf-brand">ALZAVA <span>BATTLE POINT</span></p>
                     <p className="pdf-kicker">COGNITIVE PROFILE · DEEP DIVE</p>
                   </div>
                 </div>
@@ -860,7 +839,7 @@ export default function ResultPage() {
                 <div className="pdf-logo-lockup">
                   <img src="/alzava-emblem-v3.svg" alt="ALZAVA Battle Point" />
                   <div>
-                    <p className="pdf-brand">ALZAVA <span>BATTLE IQ</span></p>
+                    <p className="pdf-brand">ALZAVA <span>BATTLE POINT</span></p>
                     <p className="pdf-kicker">ACTION PLAN · DEVELOPMENT REPORT</p>
                   </div>
                 </div>
@@ -912,7 +891,7 @@ export default function ResultPage() {
                   </div>
                   <span>PERSONAL BEST</span>
                 </div>
-                <p className="pdf-next-copy">Jangan sekadar mengejar angka IQ. Gunakan percobaan berikutnya untuk melihat apakah strategi Anda membaik: lebih akurat, lebih cepat, dan lebih stabil pada domain yang masih tertinggal.</p>
+                <p className="pdf-next-copy">Jangan sekadar mengejar satu skor. Gunakan percobaan berikutnya untuk melihat apakah strategi Anda membaik: lebih akurat, lebih cepat, dan lebih stabil pada domain yang masih tertinggal.</p>
                 <div className="pdf-grid-3 pdf-next-grid">
                   <div>
                     <b>01 · PERKUAT DOMAIN</b>
@@ -948,7 +927,7 @@ export default function ResultPage() {
                 <PremiumSeal reference={result.attempt_id} serial={reportNumber} compact/>
               </div>
 
-              <div className="pdf-footnote"><b>Catatan interpretasi:</b> Estimasi IQ Battle dan analisis kognitif menggambarkan performa pada sistem ALZAVA Battle Point. Ini bukan diagnosis psikologis, tes IQ klinis terstandarisasi, penilaian kepribadian, atau pengganti asesmen oleh psikolog berwenang.</div>
+              <div className="pdf-footnote"><b>Catatan interpretasi:</b> Battle Point dan analisis kognitif menggambarkan performa pada sistem ALZAVA Battle Point. Ini bukan diagnosis psikologis, asesmen profesional terstandarisasi, penilaian kepribadian, atau pengganti asesmen oleh psikolog berwenang.</div>
             </div>
           </section>
         )}

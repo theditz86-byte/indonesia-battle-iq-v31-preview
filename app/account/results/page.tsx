@@ -126,7 +126,7 @@ export default function AccountResultsPage(){
 
           <div className="grid gap-3 border-t border-white/10 p-6 sm:grid-cols-2 sm:p-8 lg:grid-cols-4">
             <div className="rounded-2xl border border-white/10 bg-white/[.04] p-4"><span className="text-xs text-slate-500">Total percobaan</span><strong className="mt-1 block text-3xl font-black">{attempts.length}x</strong></div>
-            <div className="rounded-2xl border border-amber-300/15 bg-amber-300/[.06] p-4"><span className="text-xs text-amber-100/70">Personal Best</span><strong className="mt-1 block text-3xl font-black text-amber-200">{personalBest?.battle_score ? Number(personalBest.battle_score).toLocaleString("id-ID") : "—"}</strong><small className="text-slate-500">IQ {personalBest?.iq_estimate ?? "—"}</small></div>
+            <div className="rounded-2xl border border-amber-300/15 bg-amber-300/[.06] p-4"><span className="text-xs text-amber-100/70">Personal Best</span><strong className="mt-1 block text-3xl font-black text-amber-200">{personalBest?.battle_score ? Number(personalBest.battle_score).toLocaleString("id-ID") : "—"}</strong><small className="text-slate-500">{personalBest?.question_count ? Math.round((Number(personalBest.correct_count||0)/Number(personalBest.question_count))*100) : "—"}% akurasi</small></div>
             <div className="rounded-2xl border border-cyan-300/15 bg-cyan-300/[.06] p-4"><span className="text-xs text-cyan-100/70">Sisa gratis</span><strong className="mt-1 block text-3xl font-black">{freeRemaining}x</strong></div>
             <div className="rounded-2xl border border-violet-300/15 bg-violet-300/[.06] p-4"><span className="text-xs text-violet-100/70">Kredit Rematch</span><strong className="mt-1 block text-3xl font-black">{paidCredits}x</strong></div>
           </div>
@@ -152,7 +152,7 @@ export default function AccountResultsPage(){
                     {item.is_personal_best ? <span className="inline-flex items-center gap-1 rounded-full border border-amber-300/20 bg-amber-300/10 px-2 py-1 text-[9px] font-black uppercase text-amber-200"><Trophy className="h-3 w-3"/>PB</span> : null}
                   </div>
                   <div className="mt-5 grid grid-cols-2 gap-3">
-                    <div><span className="text-xs text-slate-500">IQ Battle</span><strong className="block text-3xl font-black">{item.iq_estimate ?? "—"}</strong></div>
+                    <div><span className="text-xs text-slate-500">Jawaban benar</span><strong className="block text-3xl font-black">{item.correct_count ?? 0}/{item.question_count ?? 0}</strong></div>
                     <div><span className="text-xs text-slate-500">Battle Point</span><strong className="block text-3xl font-black text-cyan-300">{Number(item.battle_score||0).toLocaleString("id-ID")}</strong></div>
                   </div>
                   <div className="mt-4 grid grid-cols-2 gap-2 text-xs">
