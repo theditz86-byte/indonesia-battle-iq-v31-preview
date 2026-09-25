@@ -14,61 +14,7 @@ jobs:
         with:
           ref: main
           fetch-depth: 0
-      - name: Apply HUD panel design
-        shell: bash
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-          import re
-          p=Path('components/result-share-card.tsx')
-          s=p.read_text()
-          pattern=r'''function smallPanel\(ctx:CanvasRenderingContext2D,x:number,y:number,w:number,title:string,value:string,accent="#22d3ee"\)\{.*?\n\}\n\nasync function buildCard'''
-          replacement='''function smallPanel(ctx:CanvasRenderingContext2D,x:number,y:number,w:number,title:string,value:string,accent="#22d3ee"){
-  const h=170,cut=18
-  // Futuristic HUD/chamfered panel inspired by the approved card reference.
-  const path=new Path2D()
-  path.moveTo(x+cut,y);path.lineTo(x+w-cut,y);path.lineTo(x+w,y+cut);path.lineTo(x+w,y+h-cut);path.lineTo(x+w-cut,y+h);path.lineTo(x+cut,y+h);path.lineTo(x,y+h-cut);path.lineTo(x,y+cut);path.closePath()
-  const g=ctx.createLinearGradient(x,y,x+w,y+h)
-  g.addColorStop(0,"rgba(5,20,47,.96)");g.addColorStop(.55,"rgba(4,13,34,.94)");g.addColorStop(1,"rgba(3,8,24,.98)")
-  ctx.save();ctx.shadowColor=accent;ctx.shadowBlur=18;ctx.fillStyle=g;ctx.fill(path);ctx.restore()
-  ctx.strokeStyle=accent+"cc";ctx.lineWidth=2.5;ctx.stroke(path)
-
-  // Inner HUD frame and corner accents.
-  ctx.save();ctx.globalAlpha=.55;ctx.strokeStyle=accent;ctx.lineWidth=1.4
-  const inset=9,ic=13
-  ctx.beginPath();ctx.moveTo(x+inset+ic,y+inset);ctx.lineTo(x+w-inset-ic,y+inset);ctx.lineTo(x+w-inset,y+inset+ic)
-  ctx.moveTo(x+w-inset,y+h-inset-ic);ctx.lineTo(x+w-inset-ic,y+h-inset);ctx.lineTo(x+inset+ic,y+h-inset);ctx.lineTo(x+inset,y+h-inset-ic)
-  ctx.stroke();ctx.restore()
-
-  // Decorative top icon-chip / linework.
-  ctx.fillStyle=accent;ctx.globalAlpha=.95
-  ctx.fillRect(x+w/2-31,y+22,62,3)
-  ctx.fillRect(x+24,y+22,34,2)
-  ctx.fillRect(x+w-58,y+22,34,2)
-  ctx.globalAlpha=1
-  ctx.beginPath();ctx.arc(x+w/2,y+23,7,0,Math.PI*2);ctx.strokeStyle=accent;ctx.lineWidth=2;ctx.stroke()
-  ctx.beginPath();ctx.arc(x+w/2,y+23,2.5,0,Math.PI*2);ctx.fillStyle=accent;ctx.fill()
-
-  // Main value first, like an esports stat card.
-  ctx.textAlign="center"
-  const valueSize=fit(ctx,value,w-30,40,23)
-  ctx.save();ctx.shadowColor=accent;ctx.shadowBlur=12;ctx.fillStyle="#f8fafc";ctx.font=`900 ${valueSize}px Arial,sans-serif`;ctx.fillText(value,x+w/2,y+88);ctx.restore()
-
-  ctx.fillStyle="#cbd5e1";ctx.font="800 17px Arial,sans-serif";ctx.fillText(title.toUpperCase(),x+w/2,y+121)
-  ctx.fillStyle=accent;ctx.globalAlpha=.9;ctx.fillRect(x+44,y+142,w-88,3);ctx.globalAlpha=1
-
-  // Small bottom ticks to mimic the approved neon HUD boxes.
-  ctx.fillStyle=accent+"aa";ctx.fillRect(x+22,y+h-17,28,2);ctx.fillRect(x+w-50,y+h-17,28,2)
-}
-
-async function buildCard'''
-          ns,n=re.subn(pattern,replacement,s,flags=re.S)
-          if n!=1:
-              raise SystemExit(f'panel function replacement count={n}')
-          # Slightly tighten spacing to match the 4-box reference.
-          ns=ns.replace('const w=230,gap=18,start=53,y=1240','const w=232,gap=16,start=52,y=1218')
-          p.write_text(ns)
-          PY
+      - run: python scripts/patch-share-card-hud.py
       - uses: actions/setup-node@v4
         with:
           node-version: 20
