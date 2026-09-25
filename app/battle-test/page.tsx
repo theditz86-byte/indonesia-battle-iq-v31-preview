@@ -60,7 +60,19 @@ async function callSubmit(body: Record<string, unknown>, token: string) {
   const response = await fetch(SUBMIT20_API, {
     method: "POST",
     headers: { "Content-Type": "application/json", "X-Battle-Token": token },
-    body: JSON.stringify({ attempt_id: body.attempt_id, answers }),
+    body: JSON.stringify({ action: "submit", attempt_id: body.attempt_id, answers }),
+  })
+  const data = await response.json().catch(() => ({}))
+  return { response, data }
+}
+
+async function callProgress(action: "progress_get" | "progress_save", attemptId: string, token: string, answers?: Array<number | null>, currentIndex?: number, keepalive = false) {
+  const response = await fetch(SUBMIT20_API, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "X-Battle-Token": token },
+    body: JSON.stringify({ action, attempt_id: attemptId, answers, current_index: currentIndex }),
+    cache: "no-store",
+    keepalive,
   })
   const data = await response.json().catch(() => ({}))
   return { response, data }
@@ -85,6 +97,7 @@ export default function BattleTestPage() {
   const [integrity, setIntegrity] = useState(false)
   const autoSubmitRef = useRef(false)
   const answersRef = useRef<Array<number | null>>([])
+  const progressTimerRef = useRef<number | null>(null)
   const [stageNotice,setStageNotice] = useState("")
 
   const token = typeof window === "undefined" ? "" : getParticipantToken()
@@ -113,6 +126,38 @@ export default function BattleTestPage() {
   useEffect(() => {
     answersRef.current = answers
   }, [answers])
+
+  async function saveProgress(silent = true, keepalive = false) {
+    if (!attempt || attempt.questions.length !== 20 || answersRef.current.length !== 20) return
+    const rawToken = getParticipantToken()
+    if (!rawToken) return
+    try {
+      const { response } = await callProgress("progress_save", attempt.attempt_id, rawToken, answersRef.current, index, keepalive)
+      if (!response.ok && !silent) setError("Progress jawaban belum tersimpan. Coba lanjut beberapa saat lagi.")
+    } catch {
+      if (!silent) setError("Progress jawaban belum tersimpan. Coba lanjut beberapa saat lagi.")
+    }
+  }
+
+  useEffect(() => {
+    if (!attempt || phase !== "test" || attempt.questions.length !== 20 || answers.length !== 20) return
+    if (progressTimerRef.current) window.clearTimeout(progressTimerRef.current)
+    progressTimerRef.current = window.setTimeout(() => { void saveProgress(true) }, 350)
+    return () => {
+      if (progressTimerRef.current) window.clearTimeout(progressTimerRef.current)
+    }
+  }, [answers, index, attempt?.attempt_id, phase])
+
+  useEffect(() => {
+    if (!attempt || phase !== "test" || attempt.questions.length !== 20) return
+    const heartbeat = window.setInterval(() => { void saveProgress(true) }, 15000)
+    const pageHide = () => { void saveProgress(true, true) }
+    window.addEventListener("pagehide", pageHide)
+    return () => {
+      window.clearInterval(heartbeat)
+      window.removeEventListener("pagehide", pageHide)
+    }
+  }, [attempt?.attempt_id, phase, index])
 
   useEffect(() => {
     if (!attempt || phase !== "test") return
@@ -169,12 +214,23 @@ export default function BattleTestPage() {
       const started = data as Attempt
       if (!Array.isArray(started.questions) || !started.questions.length) throw new Error("Paket soal belum tersedia.")
       setAttempt(started)
-      const restored = Array.isArray(started.core_answers) && started.high_range_unlocked
+      let restored = Array.isArray(started.core_answers) && started.high_range_unlocked
         ? [...started.core_answers, ...Array(Math.max(0, started.questions.length - started.core_answers.length)).fill(null)]
         : Array(started.questions.length).fill(null)
+      let restoredIndex = started.high_range_unlocked && started.questions.length > 30 ? 30 : 0
+      if (started.questions.length === 20) {
+        try {
+          const { response: progressResponse, data: progressData } = await callProgress("progress_get", started.attempt_id, rawToken)
+          const saved = progressData?.progress
+          if (progressResponse.ok && Array.isArray(saved?.answers) && saved.answers.length === 20) {
+            restored = saved.answers.map((value: unknown) => Number.isInteger(value) && Number(value) >= 0 && Number(value) <= 3 ? Number(value) : null)
+            if (Number.isInteger(saved?.current_index) && saved.current_index >= 0 && saved.current_index < 20) restoredIndex = saved.current_index
+          }
+        } catch {}
+      }
       setAnswers(restored)
       answersRef.current = restored
-      setIndex(started.high_range_unlocked && started.questions.length > 30 ? 30 : 0)
+      setIndex(restoredIndex)
       autoSubmitRef.current = false
       setRemainingMs(Math.max(0, new Date(started.deadline_at).getTime() - Date.now()))
       setPhase("test")
@@ -302,7 +358,7 @@ export default function BattleTestPage() {
             <p className="text-xs font-black uppercase tracking-[.2em] text-cyan-300">Tes Kemampuan</p>
             <h1 className="mt-4 text-5xl font-black leading-[.95] tracking-[-.055em] sm:text-7xl">20 soal.<br/><span className="text-indigo-300">20 menit.</span></h1>
             <p className="mt-6 max-w-2xl text-base leading-7 text-slate-300">Numerik, logika, verbal, dan spasial dalam satu tes. Setiap season menyediakan <b className="text-white">1 Ranked Attempt resmi gratis</b> yang menentukan leaderboard season.</p>
-            <div className="mt-5 max-w-2xl rounded-2xl border border-violet-300/20 bg-violet-400/10 p-4 text-sm leading-6 text-violet-100"><b>Format ringkas:</b> 20 soal dalam 20 menit. Tidak ada tahap tambahan; Battle Point dihitung dari performa pada 20 soal tersebut.</div>
+            <div className="mt-5 max-w-2xl rounded-2xl border border-violet-300/20 bg-violet-400/10 p-4 text-sm leading-6 text-violet-100"><b>Format ringkas:</b> 20 soal dalam 20 menit. Tidak ada tahap tambahan; Battle Point dihitung dari performa pada 20 soal tersebut. Jawaban tersimpan otomatis; jika tes ditinggalkan, jawaban yang sudah tersimpan tetap dinilai ketika waktu tes berakhir.</div>
             <div className="mt-7 grid max-w-2xl gap-3 sm:grid-cols-3">
               <div className="rounded-2xl border border-white/10 bg-white/5 p-4"><span className="text-xs text-slate-400">Gratis tersisa</span><strong className="mt-1 block text-3xl font-black">{freeRemaining}x</strong></div>
               <div className="rounded-2xl border border-white/10 bg-white/5 p-4"><span className="text-xs text-slate-400">Kredit Rematch</span><strong className="mt-1 block text-3xl font-black">{paidCredits}x</strong></div>
@@ -345,7 +401,7 @@ export default function BattleTestPage() {
       <section className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
         {isPaidRanked && <div className="mb-5 rounded-2xl border border-amber-300/20 bg-amber-300/10 px-4 py-3 text-sm text-amber-100">Rematch / Practice — hasil tes ini tersimpan untuk analisis dan perkembangan pribadi, tetapi tidak mengubah leaderboard resmi.</div>}
         {stageNotice && <div className="mb-5 rounded-2xl border border-violet-300/30 bg-violet-500/15 px-4 py-3 text-sm font-semibold leading-6 text-violet-100">{stageNotice}</div>}
-        <div className="mb-5 rounded-2xl border border-cyan-300/15 bg-cyan-400/[.06] px-4 py-3 text-xs font-semibold leading-5 text-cyan-100">{attempt.high_range_unlocked ? "High Range: 10 soal tambahan · 8 menit · skor rentang atas sedang diverifikasi." : attempt.questions.length===20 ? "Fair Play: 20 soal · 20 menit · kerjakan tanpa AI generatif, mesin pencari, kalkulator, atau bantuan orang lain." : "Fair Play: 30 soal · 15 menit · kerjakan tanpa AI generatif, mesin pencari, kalkulator, atau bantuan orang lain."}</div>
+        <div className="mb-5 rounded-2xl border border-cyan-300/15 bg-cyan-400/[.06] px-4 py-3 text-xs font-semibold leading-5 text-cyan-100">{attempt.high_range_unlocked ? "High Range: 10 soal tambahan · 8 menit · skor rentang atas sedang diverifikasi." : attempt.questions.length===20 ? "Fair Play: 20 soal · 20 menit · jawaban tersimpan otomatis. Jika tes ditinggalkan sebelum selesai, jawaban yang sudah tersimpan akan tetap dinilai saat waktu berakhir." : "Fair Play: 30 soal · 15 menit · kerjakan tanpa AI generatif, mesin pencari, kalkulator, atau bantuan orang lain."}</div>
         {error && <div className="mb-5 rounded-2xl border border-rose-400/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-100">{error}</div>}
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_280px]">
           <article className="rounded-3xl border border-white/10 bg-[#0a1a37]/90 p-5 shadow-2xl sm:p-8">
