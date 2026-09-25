@@ -1,4 +1,4 @@
-import { History, LogIn, MapPin, Unlock } from "lucide-react"
+import { History, LogIn, MapPin, Pencil, Unlock } from "lucide-react"
 import type { BattleEntry, BattleParticipant, Scope } from "@/lib/battle"
 import { entryRank, formatScore } from "@/lib/battle"
 
@@ -39,7 +39,14 @@ export function UserProfileCard({ participant, ownEntry, scope }: { participant:
             <p className="text-[11px] font-semibold uppercase tracking-widest text-slate-400">Posisi Anda</p>
             <p className="truncate text-xl font-extrabold text-white">{participant.nickname}</p>
             <p className="mt-0.5 flex items-center gap-1 text-xs text-slate-300"><MapPin className="h-3.5 w-3.5 text-cyan-400" /><span className="truncate">{participant.district_name || ""}{participant.district_name ? " · " : ""}{participant.regency_name || ""}{participant.regency_name ? " · " : ""}{participant.province_name || ""}</span></p>
-            <div className="mt-2 hidden flex-wrap gap-2 sm:flex"><a href="/account/results#riwayat-hasil" className="inline-flex items-center gap-1.5 rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1.5 text-xs font-bold text-cyan-100 transition-colors hover:bg-cyan-300/15"><History className="h-3.5 w-3.5"/>Hasil & Riwayat</a><a href="/account" className="rounded-full border border-white/20 bg-white/5 px-3 py-1.5 text-xs font-medium text-slate-200 transition-colors hover:bg-white/10">Edit Profil</a></div>
+            <div className="mt-3 hidden flex-wrap gap-2.5 sm:flex">
+              <a href="/account/results#riwayat-hasil" className="inline-flex items-center gap-2 rounded-xl border border-cyan-300/30 bg-cyan-300/10 px-4 py-2.5 text-sm font-extrabold text-cyan-50 shadow-[0_6px_18px_rgba(34,211,238,.08)] transition-all hover:border-cyan-300/50 hover:bg-cyan-300/15">
+                <History className="h-4 w-4" /> Hasil & Riwayat
+              </a>
+              <a href="/account" className="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/[.07] px-4 py-2.5 text-sm font-bold text-white transition-all hover:border-white/30 hover:bg-white/10">
+                <Pencil className="h-4 w-4 text-slate-300" /> Edit Profil
+              </a>
+            </div>
           </div>
         </div>
         <div className="flex items-center gap-8">
