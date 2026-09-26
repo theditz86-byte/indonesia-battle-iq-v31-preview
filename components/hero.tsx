@@ -42,12 +42,12 @@ export function Hero({ season, entries }: { season: BattleSeason | null; entries
             </div>
 
             <p className="mt-4 max-w-[20.5rem] text-sm font-medium leading-6 text-slate-300">
-              Coba battle singkat untuk melihat Preview Battle Point, lalu masuk Ranked Battle dan rebut posisi dari kecamatan hingga Indonesia.
+              Masuk Ranked Battle, kumpulkan Battle Point, lalu rebut posisi dari kecamatan hingga Indonesia.
             </p>
 
             <div className="mt-5 flex flex-wrap gap-3">
-              <a href="/quick-battle" className="flex min-h-14 items-center gap-2.5 rounded-2xl bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-600 px-6 py-3.5 text-base font-black text-white ring-1 ring-indigo-300/30 shadow-[0_0_38px_rgba(124,58,237,.58)] transition-all hover:-translate-y-0.5 hover:scale-[1.025] hover:shadow-[0_0_46px_rgba(124,58,237,.72)]">
-                <Swords className="h-5 w-5" /> Mulai Battle Gratis <ArrowRight className="h-5 w-5" />
+              <a href="/battle-test" className="flex min-h-14 items-center gap-2.5 rounded-2xl bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-600 px-6 py-3.5 text-base font-black text-white ring-1 ring-indigo-300/30 shadow-[0_0_38px_rgba(124,58,237,.58)] transition-all hover:-translate-y-0.5 hover:scale-[1.025] hover:shadow-[0_0_46px_rgba(124,58,237,.72)]">
+                <Swords className="h-5 w-5" /> Mulai Ranked Battle <ArrowRight className="h-5 w-5" />
               </a>
               <a href="#peringkat" className="flex min-h-12 items-center gap-2 rounded-xl border border-cyan-400/45 bg-white/[.07] px-5 py-3 text-[15px] font-extrabold text-white backdrop-blur-lg shadow-[0_0_20px_rgba(34,211,238,0.20)] transition-colors hover:bg-white/10">
                 <BarChart3 className="h-[18px] w-[18px] text-cyan-300" /> Lihat Peringkat
@@ -55,7 +55,7 @@ export function Hero({ season, entries }: { season: BattleSeason | null; entries
             </div>
 
             <div className="mt-3 text-[11px] font-bold text-slate-300/80">
-              Tanpa pembayaran untuk mulai · hasil preview langsung keluar
+              Belum punya akun? Anda akan diarahkan untuk mendaftar terlebih dahulu · 1 Ranked gratis tiap minggu
             </div>
 
             <div className="mt-4 grid w-full max-w-[21rem] grid-cols-2 gap-2 text-[11px] font-extrabold sm:grid-cols-4 lg:grid-cols-2">
