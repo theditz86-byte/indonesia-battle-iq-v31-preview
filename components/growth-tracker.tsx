@@ -84,7 +84,7 @@ export function GrowthTracker() {
   return null
 }
 
-export function trackGrowthEvent(eventName: "register_success" | "login_success" | "share_open", metadata: Record<string, unknown> = {}) {
+export function trackGrowthEvent(eventName: string, metadata: Record<string, unknown> = {}) {
   if (typeof window === "undefined") return
-  void send(eventName, metadata)
+  void send(eventName.slice(0, 80), metadata)
 }
