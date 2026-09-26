@@ -1,5 +1,5 @@
-import { PvpArena } from "@/components/pvp-arena"
+import { PvpClientOnly } from "@/components/pvp-client-only"
 
 export default function PvpPage(){
-  return <PvpArena />
+  return <PvpClientOnly />
 }
