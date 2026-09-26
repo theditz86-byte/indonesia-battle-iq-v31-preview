@@ -1,6 +1,6 @@
 "use client"
 
-import { ChevronDown, History, LogOut, Mail, Menu, MessageCircle, Play, Settings, Share2, WalletCards, X } from "lucide-react"
+import { ChevronDown, History, LogOut, Mail, Menu, Settings, Share2, WalletCards, X } from "lucide-react"
 import { useEffect, useState } from "react"
 import { getParticipantToken, removeParticipantToken } from "@/lib/battle"
 import type { BattleParticipant } from "@/lib/battle"
@@ -13,7 +13,6 @@ const links = [
   { label: "History Ranking", href: "/history-ranking" },
   { label: "Ranked Battle", href: "/battle-test" },
   { label: "Chat Global", href: "/global-chat" },
-  { label: "Pesan", href: "/messages" },
   { label: "Bantuan", href: "/help" },
 ]
 
@@ -26,7 +25,7 @@ export function SiteNavbar({ participant }: { participant: BattleParticipant | n
   useEffect(() => {
     const path = window.location.pathname
     if (path.startsWith("/global-chat")) setActive("Chat Global")
-    else if (path.startsWith("/messages")) setActive("Pesan")
+    else if (path.startsWith("/messages")) setActive("")
     else if (path.startsWith("/history-ranking")) setActive("History Ranking")
     else if (path.startsWith("/battle-test")) setActive("Ranked Battle")
     else if (path.startsWith("/help")) setActive("Bantuan")
@@ -83,7 +82,6 @@ export function SiteNavbar({ participant }: { participant: BattleParticipant | n
           {links.map((link) => (
             <a key={link.label} href={link.href} onClick={() => selectLink(link.label)} className={`relative rounded-full px-3 py-2 text-sm font-medium transition-all ${active === link.label ? "bg-white text-slate-900 shadow-[0_0_16px_rgba(255,255,255,0.25)]" : "text-slate-300 hover:text-white"}`}>
               {link.label}
-              {link.label === "Pesan" && socialBadge > 0 && <span className="absolute -right-1 -top-1 grid h-4 min-w-4 place-items-center rounded-full bg-rose-500 px-1 text-[9px] font-black text-white ring-2 ring-slate-950">{socialBadge > 99 ? "99+" : socialBadge}</span>}
             </a>
           ))}
         </nav>
@@ -95,10 +93,11 @@ export function SiteNavbar({ participant }: { participant: BattleParticipant | n
 
           {participant ? (
             <details className="group relative">
-              <summary className="flex cursor-pointer list-none items-center gap-2 rounded-full border border-white/10 bg-white/5 py-1.5 pl-1.5 pr-2 sm:pr-3 backdrop-blur-lg transition-colors hover:bg-white/10 [&::-webkit-details-marker]:hidden">
+              <summary className="relative flex cursor-pointer list-none items-center gap-2 rounded-full border border-white/10 bg-white/5 py-1.5 pl-1.5 pr-2 sm:pr-3 backdrop-blur-lg transition-colors hover:bg-white/10 [&::-webkit-details-marker]:hidden">
                 {participant.avatar_url ? <img src={participant.avatar_url} alt={name} className="h-8 w-8 rounded-full object-cover ring-2 ring-cyan-400/60" /> : <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-cyan-500 to-indigo-600 text-[10px] font-black text-white ring-2 ring-cyan-400/50">BP</span>}
                 <span className="hidden text-left leading-tight md:block"><span className="block max-w-28 truncate text-sm font-semibold text-white">{name}</span></span>
                 <ChevronDown className="hidden h-4 w-4 text-slate-400 transition-transform group-open:rotate-180 sm:block" />
+                {socialBadge > 0 && <span className="absolute -right-1 -top-1 grid h-5 min-w-5 place-items-center rounded-full bg-rose-500 px-1 text-[10px] font-black text-white ring-2 ring-slate-950 shadow-[0_0_14px_rgba(244,63,94,.65)]">{socialBadge > 99 ? "99+" : socialBadge}</span>}
               </summary>
 
               <div className="absolute right-0 mt-3 w-64 overflow-hidden rounded-2xl border border-white/10 bg-[#061329]/95 p-2 shadow-[0_24px_70px_rgba(0,0,0,.45)] backdrop-blur-xl">
@@ -106,8 +105,6 @@ export function SiteNavbar({ participant }: { participant: BattleParticipant | n
                 <div className="grid gap-1 py-2">
                   <a href="/share-challenge" className="flex items-center gap-3 rounded-xl bg-gradient-to-r from-cyan-400/10 to-indigo-500/10 px-3 py-2.5 text-sm font-black text-cyan-100 hover:from-cyan-400/15 hover:to-indigo-500/15"><Share2 className="h-4 w-4 text-cyan-300"/>Bagikan & Tantang</a>
                   <a href="/account/results#riwayat-hasil" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-200 hover:bg-white/5"><History className="h-4 w-4 text-violet-300"/>Riwayat Tes</a>
-                  <a href="/battle-test" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-200 hover:bg-white/5"><Play className="h-4 w-4 text-emerald-300"/>Ranked Battle</a>
-                  <a href="/global-chat" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-200 hover:bg-white/5"><MessageCircle className="h-4 w-4 text-cyan-300"/>Chat Global</a>
                   <a href="/messages" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-200 hover:bg-white/5"><Mail className="h-4 w-4 text-indigo-300"/><span className="flex-1">Pesan & Teman</span>{socialBadge > 0 && <span className="rounded-full bg-rose-500 px-2 py-0.5 text-[10px] font-black text-white">{socialBadge > 99 ? "99+" : socialBadge}</span>}</a>
                   <a href="/payment?product=attempt_credit" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-200 hover:bg-white/5"><WalletCards className="h-4 w-4 text-amber-300"/>Kredit Rematch</a>
                   <a href="/account" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-200 hover:bg-white/5"><Settings className="h-4 w-4 text-slate-400"/>Pengaturan Profil</a>
@@ -132,7 +129,6 @@ export function SiteNavbar({ participant }: { participant: BattleParticipant | n
             {links.map((link) => (
               <a key={link.label} href={link.href} onClick={() => selectLink(link.label)} className={`relative rounded-xl border px-3 py-3 text-center text-sm font-bold ${active === link.label ? "border-white/30 bg-white text-slate-950" : "border-white/10 bg-white/[.04] text-slate-200 hover:bg-white/[.08]"}`}>
                 {link.label}
-                {link.label === "Pesan" && socialBadge > 0 && <span className="absolute right-2 top-2 grid h-4 min-w-4 place-items-center rounded-full bg-rose-500 px-1 text-[9px] font-black text-white">{socialBadge > 99 ? "99+" : socialBadge}</span>}
               </a>
             ))}
           </nav>
