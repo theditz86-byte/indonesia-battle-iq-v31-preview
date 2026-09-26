@@ -108,7 +108,7 @@ function PodiumColumn({ place, player, className = "" }: { place: 1 | 2 | 3; pla
 
   return (
     <div className={`group relative flex flex-col items-center justify-end ${className}`}>
-      {profileHref ? <a href={profileHref} aria-label={`Lihat profil ${name}`} title={`Lihat profil ${name}`} className="absolute inset-0 z-50 rounded-3xl focus:outline-none focus:ring-2 focus:ring-cyan-300/80" /> : null}
+      {profileHref ? <a href={profileHref} aria-label={`Lihat profil ${name}`} title={`Lihat profil ${name}`} className="absolute inset-0 z-50 rounded-3xl outline-none [-webkit-tap-highlight-color:transparent] focus-visible:ring-2 focus-visible:ring-cyan-300/80" /> : null}
       <div className="relative z-20 flex flex-col items-center transition-transform duration-200 group-hover:-translate-y-1">
         {isChampion && (
           <>
