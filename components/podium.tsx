@@ -9,15 +9,6 @@ function Sparkle({ className = "" }: { className?: string }) {
   )
 }
 
-function LaurelBranch({ className = "" }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 40" fill="currentColor" aria-hidden="true" className={className}>
-      <path d="M13 40C9 30 8 20 12 8c1.5 8 2 20-1 32z" opacity="0.9" />
-      <path d="M12 34c-4-1-6-3-7-7 3 .5 5 2 7 7zM13 28c-4-1-6-3-6-8 3 1 5 3 6 8zM13 21c-3-1-5-4-5-8 3 1 4 4 5 8zM14 15c-3-1-4-4-4-8 3 1 4 4 4 8z" />
-    </svg>
-  )
-}
-
 type PodiumSpot = {
   place: 1 | 2 | 3
   bodyHeight: string
@@ -46,8 +37,8 @@ const spots: Record<number, PodiumSpot> = {
     laurelSize: "h-44 w-44",
     crownSize: "h-[72px] w-[72px]",
     crownOffset: "-top-11",
-    crown: "/images/crown-gold.png?v=cf5",
-    laurel: "/images/laurel-gold.png?v=cf5",
+    crown: "/images/crown-gold.webp?v=growth-p0",
+    laurel: "/images/laurel-gold.webp?v=growth-p0",
     metal: "from-yellow-300 via-amber-500 to-amber-700",
     bodyGradient: "from-amber-300 via-amber-500 to-amber-600",
     bodyRing: "ring-amber-200/70",
@@ -64,8 +55,8 @@ const spots: Record<number, PodiumSpot> = {
     laurelSize: "h-40 w-40",
     crownSize: "h-14 w-14",
     crownOffset: "-top-8",
-    crown: "/images/crown-silver.png?v=cf5",
-    laurel: "/images/laurel-silver.png?v=cf5",
+    crown: "/images/crown-silver.webp?v=growth-p0",
+    laurel: "/images/laurel-silver.webp?v=growth-p0",
     metal: "from-slate-200 via-slate-400 to-slate-600",
     bodyGradient: "from-slate-300 via-slate-400 to-slate-500",
     bodyRing: "ring-slate-200/70",
@@ -82,8 +73,8 @@ const spots: Record<number, PodiumSpot> = {
     laurelSize: "h-40 w-40",
     crownSize: "h-14 w-14",
     crownOffset: "-top-8",
-    crown: "/images/crown-bronze.png?v=cf5",
-    laurel: "/images/laurel-bronze.png?v=cf5",
+    crown: "/images/crown-bronze.webp?v=growth-p0",
+    laurel: "/images/laurel-bronze.webp?v=growth-p0",
     metal: "from-orange-300 via-orange-600 to-amber-800",
     bodyGradient: "from-orange-400 via-orange-500 to-orange-700",
     bodyRing: "ring-orange-200/70",
@@ -129,7 +120,7 @@ function PodiumColumn({ place, player, className = "" }: { place: 1 | 2 | 3; pla
             <div className={`rounded-full bg-gradient-to-br ${s.metal} p-[3px] ${s.glow}`}>
               <div className="rounded-full bg-slate-950 p-[2px]">
                 {player?.avatar_url ? (
-                  <img src={player.avatar_url} alt={name} className={`${s.avatarSize} rounded-full object-cover ring-2 ${s.ringColor}/60`} />
+                  <img src={player.avatar_url} alt={name} loading="lazy" decoding="async" className={`${s.avatarSize} rounded-full object-cover ring-2 ${s.ringColor}/60`} />
                 ) : (
                   <div className={`${s.avatarSize} flex items-center justify-center rounded-full bg-slate-900 text-xl font-black text-white ring-2 ${s.ringColor}/60`}>{initials(name)}</div>
                 )}
