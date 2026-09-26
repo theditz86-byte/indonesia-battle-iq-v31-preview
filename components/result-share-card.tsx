@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Download, Share2, X } from "lucide-react"
 import { BATTLE_API_URL, getParticipantToken } from "@/lib/battle"
 
@@ -324,28 +324,46 @@ async function buildCard(props:Props){
 export default function ResultShareCard(props:Props){
   const [open,setOpen]=useState(false)
   const [busy,setBusy]=useState(false)
-  const [preview,setPreview]=useState("")
   const [blob,setBlob]=useState<Blob|null>(null)
+  const [cardCanvas,setCardCanvas]=useState<HTMLCanvasElement|null>(null)
   const [status,setStatus]=useState("")
+  const previewCanvasRef=useRef<HTMLCanvasElement|null>(null)
 
   async function prepare(){
-    setBusy(true);setStatus("")
+    setBusy(true)
+    setStatus("")
     try{
       const canvas=await buildCard(props)
       const nextBlob=await canvasToBlob(canvas)
-      if(preview)URL.revokeObjectURL(preview)
-      const url=URL.createObjectURL(nextBlob)
-      setBlob(nextBlob);setPreview(url);setOpen(true)
+      setBlob(nextBlob)
+      setCardCanvas(canvas)
+      setOpen(true)
     }catch(e){
       setStatus(e instanceof Error?e.message:"Kartu belum dapat dibuat.")
-    }finally{setBusy(false)}
+    }finally{
+      setBusy(false)
+    }
   }
 
   useEffect(()=>{
     if(props.autoOpen)void prepare()
-    return()=>{if(preview)URL.revokeObjectURL(preview)}
     // eslint-disable-next-line react-hooks/exhaustive-deps
   },[props.autoOpen])
+
+  useEffect(()=>{
+    if(!open||!cardCanvas)return
+    const previewCanvas=previewCanvasRef.current
+    if(!previewCanvas)return
+    previewCanvas.width=cardCanvas.width
+    previewCanvas.height=cardCanvas.height
+    const previewCtx=previewCanvas.getContext("2d")
+    if(!previewCtx){
+      setStatus("Preview belum dapat ditampilkan di browser ini.")
+      return
+    }
+    previewCtx.clearRect(0,0,previewCanvas.width,previewCanvas.height)
+    previewCtx.drawImage(cardCanvas,0,0)
+  },[open,cardCanvas])
 
   function download(){
     if(!blob)return
@@ -386,7 +404,7 @@ export default function ResultShareCard(props:Props){
             <div><p className="text-sm font-black text-white">Kartu Hasil ALZAVA</p><p className="text-[11px] text-slate-400">Format 9:16 · template final</p></div>
             <button onClick={()=>setOpen(false)} className="grid h-9 w-9 place-items-center rounded-xl border border-white/10 bg-white/5 text-slate-300"><X className="h-4 w-4"/></button>
           </div>
-          {preview&&<img src={preview} alt="Preview kartu hasil ALZAVA Battle Point" className="mx-auto max-h-[72vh] w-auto rounded-2xl border border-white/10 bg-slate-950 object-contain"/>}
+          <canvas ref={previewCanvasRef} aria-label="Preview kartu hasil ALZAVA Battle Point" className="mx-auto block h-auto max-h-[72vh] max-w-full rounded-2xl border border-white/10 bg-slate-950"/>
           {status&&<div className="mt-3 rounded-xl border border-cyan-300/15 bg-cyan-300/10 px-3 py-2 text-xs text-cyan-100">{status}</div>}
           {props.debugQa&&<div className="mt-2 text-[10px] text-slate-500">rank={props.nationalRank||0} · total={props.leaderboardTotal||0} · mode={props.rankedAttempt===false?"rematch":"ranked"} · durasi={props.durationMs||0}ms · submitted={props.submittedAt||"-"}</div>}
           <div className="mt-3 grid grid-cols-2 gap-2">
