@@ -19,7 +19,7 @@ header:has(#pvp-result-title) > div:nth-of-type(2)::after {
   width: 12.75rem;
   height: 9.6rem;
   transform: translate(-50%, -48%);
-  background: url('/images/pvp-result-trophy.svg?v=20260926-1') center / contain no-repeat;
+  background: url('/images/pvp-result-trophy.png?v=20260926-2') center / contain no-repeat;
   filter:
     drop-shadow(0 0 10px rgba(255, 217, 104, .62))
     drop-shadow(0 0 24px rgba(247, 198, 75, .34));
