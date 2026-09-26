@@ -194,7 +194,7 @@ export function PvpInviteBridge() {
           </div>
 
           <div className="mt-5 rounded-2xl border border-white/10 bg-slate-950/45 p-4">
-            <div className="flex items-center gap-3">{avatar(me)}<div className="min-w-0"><p className="font-black">{me.nickname || "Pemain"}</p><p className="truncate text-xs text-slate-500">{[me.regency_name, me.province_name].filter(Boolean).join(" · ") || "Indonesia"}</p></div></div>
+            <div className="flex items-center gap-3">{avatar(me)}<div className="min-w-0"><p className="font-black">{me?.nickname || "Pemain"}</p><p className="truncate text-xs text-slate-500">{[me?.regency_name, me?.province_name].filter(Boolean).join(" · ") || "Indonesia"}</p></div></div>
             <div className="mt-4 flex items-center gap-2 rounded-xl border border-white/10 bg-white/[.04] px-3 py-2.5"><Link2 className="h-4 w-4 shrink-0 text-cyan-300" /><span className="min-w-0 flex-1 truncate text-xs text-slate-300">{inviteUrl}</span></div>
           </div>
 
