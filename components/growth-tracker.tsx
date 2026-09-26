@@ -55,6 +55,7 @@ async function send(eventName: string, metadata: Record<string, unknown> = {}) {
 
 function pageEvent(path: string) {
   if (path.startsWith("/battle-test")) return "page_ranked"
+  if (path.startsWith("/daily-training")) return "page_daily_training"
   if (path.startsWith("/result")) return "page_result"
   if (path.startsWith("/pvp")) return "page_pvp"
   if (path.startsWith("/account")) return "page_account"
@@ -73,6 +74,7 @@ export function GrowthTracker() {
       if (!(target instanceof HTMLAnchorElement)) return
       const href = target.getAttribute("href") || ""
       if (href.startsWith("/battle-test")) void send("click_ranked", { href })
+      else if (href.startsWith("/daily-training")) void send("click_daily_training", { href })
       else if (href.startsWith("/pvp")) void send("click_pvp", { href })
       else if (href.startsWith("/account")) void send("click_account", { href })
     }
