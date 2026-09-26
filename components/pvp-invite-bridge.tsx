@@ -82,6 +82,15 @@ export function PvpInviteBridge() {
     if (token) void loadMe(token).then((participant) => setMe(participant))
   }, [])
 
+  useEffect(() => {
+    if (!inviteId || !me?.public_id || inviteId !== me.public_id) return
+    const url = new URL(window.location.href)
+    url.searchParams.delete("invite")
+    window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`)
+    setInviteId("")
+    setInviter(null)
+  }, [inviteId, me?.public_id])
+
   const inviteUrl = useMemo(() => {
     if (!me?.public_id || typeof window === "undefined") return ""
     const url = new URL("/pvp/", window.location.origin)
@@ -123,6 +132,15 @@ export function PvpInviteBridge() {
     } catch {}
   }
 
+  function dismissInvite() {
+    const url = new URL(window.location.href)
+    url.searchParams.delete("invite")
+    window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`)
+    setInviteId("")
+    setInviter(null)
+    setMessage("")
+  }
+
   async function challengeInviter() {
     if (!inviteId || busy) return
     setBusy(true)
@@ -131,20 +149,12 @@ export function PvpInviteBridge() {
       await challengePlayer(inviteId)
       setMessage(`Tantangan dikirim${inviter?.nickname ? ` ke ${inviter.nickname}` : ""}. Menunggu diterima…`)
       trackGrowthEvent("pvp_invite_challenge", { inviter_public_id: inviteId })
+      window.setTimeout(() => dismissInvite(), 900)
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Tantangan belum dapat dikirim.")
     } finally {
       setBusy(false)
     }
-  }
-
-  function dismissInvite() {
-    const url = new URL(window.location.href)
-    url.searchParams.delete("invite")
-    window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`)
-    setInviteId("")
-    setInviter(null)
-    setMessage("")
   }
 
   const token = typeof window !== "undefined" ? getParticipantToken() : ""
