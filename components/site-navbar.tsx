@@ -12,6 +12,7 @@ const links = [
   { label: "Ranking", href: "/battle#peringkat" },
   { label: "History Ranking", href: "/history-ranking" },
   { label: "Ranked Battle", href: "/battle-test" },
+  { label: "Battle PVP", href: "/pvp" },
   { label: "Chat Global", href: "/global-chat" },
   { label: "Bantuan", href: "/help" },
 ]
@@ -28,6 +29,7 @@ export function SiteNavbar({ participant }: { participant: BattleParticipant | n
     else if (path.startsWith("/messages")) setActive("")
     else if (path.startsWith("/history-ranking")) setActive("History Ranking")
     else if (path.startsWith("/battle-test")) setActive("Ranked Battle")
+    else if (path.startsWith("/pvp")) setActive("Battle PVP")
     else if (path.startsWith("/help")) setActive("Bantuan")
     else if (window.location.hash === "#peringkat") setActive("Ranking")
     else setActive("Beranda")
