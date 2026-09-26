@@ -148,7 +148,7 @@ export function PvpResultBridge() {
       onClose={dismiss}
       onViewDetails={dismiss}
       onRematch={() => void rematch()}
-      durationSeconds={1200}
+      durationSeconds={600}
       winner={pair.winner}
       opponent={pair.opponent}
     />
