@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next"
 import "./globals.css"
 import "./attempt-history.css"
+import "./pvp-result-trophy.css"
 import { AccountLoginRedirect } from "@/components/account-login-redirect"
 import { ReferralConversionTracker } from "@/components/referral-conversion-tracker"
 import { ResultErrorAnalysis } from "@/components/result-error-analysis"
