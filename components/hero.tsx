@@ -1,4 +1,4 @@
-import { ArrowRight, BarChart3, Share2, Sparkles, Swords, Trophy } from "lucide-react"
+import { ArrowRight, BarChart3, BrainCircuit, Share2, Sparkles, Swords, Trophy } from "lucide-react"
 import type { BattleEntry, BattleSeason } from "@/lib/battle"
 import { CountdownCard } from "./countdown-card"
 import { Podium } from "./podium"
@@ -57,6 +57,10 @@ export function Hero({ season, entries }: { season: BattleSeason | null; entries
             <div className="mt-3 text-[11px] font-bold text-slate-300/80">
               Belum punya akun? Anda akan diarahkan untuk mendaftar terlebih dahulu · 1 Ranked gratis tiap minggu
             </div>
+
+            <a href="/daily-training" className="mt-3 inline-flex items-center gap-2 rounded-xl border border-emerald-300/20 bg-emerald-300/[.07] px-3 py-2 text-[11px] font-black text-emerald-100 transition hover:border-emerald-300/35 hover:bg-emerald-300/10">
+              <BrainCircuit className="h-4 w-4 text-emerald-300" /> Latihan Harian 5 soal <span className="font-bold text-slate-500">· Non-Ranked</span>
+            </a>
 
             <div className="mt-4 grid w-full max-w-[21rem] grid-cols-2 gap-2 text-[11px] font-extrabold sm:grid-cols-4 lg:grid-cols-2">
               <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-slate-950/35 px-3 py-2 text-slate-200 backdrop-blur-sm"><Sparkles className="h-3.5 w-3.5 text-cyan-300"/>Battle Point</div>
