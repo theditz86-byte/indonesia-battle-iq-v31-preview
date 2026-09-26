@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
-import { ArrowLeft, Award, Clock3, MapPin, MessageCircle, ShieldCheck, Swords, Trophy } from "lucide-react"
+import { ArrowLeft, Award, BarChart3, Clock3, MapPin, MessageCircle, ShieldCheck, Swords, Target, Trophy, TrendingUp } from "lucide-react"
 import { SiteFooter } from "@/components/site-footer"
 import { SiteNavbar } from "@/components/site-navbar"
 import { SocialActions } from "@/components/social-actions"
@@ -32,6 +32,34 @@ type RankedRow = {
   achieved_at?: string | null
 }
 
+type PvpStats = {
+  total_battles?: number | null
+  wins?: number | null
+  losses?: number | null
+  draws?: number | null
+  win_rate?: number | null
+  best_score?: number | null
+  points_for?: number | null
+  points_against?: number | null
+}
+
+type PvpHistoryRow = {
+  id?: string
+  finished_at?: string | null
+  started_at?: string | null
+  sudden_death_started_at?: string | null
+  my_score?: number | null
+  opponent_score?: number | null
+  my_correct?: number | null
+  my_wrong?: number | null
+  opponent_correct?: number | null
+  opponent_wrong?: number | null
+  result?: "win" | "loss" | "draw" | string
+  opponent_public_id?: string | null
+  opponent_nickname?: string | null
+  opponent_avatar_url?: string | null
+}
+
 type PublicProfileResponse = {
   profile?: Profile
   current?: RankedRow | null
@@ -41,6 +69,8 @@ type PublicProfileResponse = {
     ranked_seasons?: number | null
   }
   history?: RankedRow[]
+  pvp_stats?: PvpStats
+  pvp_history?: PvpHistoryRow[]
   titles?: Array<{
     scope_type?: string
     scope_name?: string
@@ -53,6 +83,19 @@ type PublicProfileResponse = {
 
 function initials(name?: string) {
   return (name || "BP").split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]).join("").toUpperCase() || "BP"
+}
+
+function formatDate(value?: string | null) {
+  if (!value) return "—"
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return "—"
+  return new Intl.DateTimeFormat("id-ID", { day: "2-digit", month: "short", year: "numeric" }).format(date)
+}
+
+function pct(correct?: number | null, total?: number | null) {
+  const c = Number(correct) || 0
+  const t = Number(total) || 0
+  return t > 0 ? Math.round((c / t) * 100) : null
 }
 
 export default function PlayerProfilePage() {
@@ -90,6 +133,8 @@ export default function PlayerProfilePage() {
   const profile = data?.profile
   const current = data?.current
   const history = Array.isArray(data?.history) ? data!.history! : []
+  const pvpHistory = Array.isArray(data?.pvp_history) ? data!.pvp_history! : []
+  const pvpStats = data?.pvp_stats || {}
   const accuracy = useMemo(() => {
     const correct = Number(current?.correct_count) || 0
     const total = Number(current?.question_count) || 0
@@ -138,17 +183,56 @@ export default function PlayerProfilePage() {
               </div>
             </section>
 
+            <section className="overflow-hidden rounded-3xl border border-violet-300/15 bg-[linear-gradient(135deg,rgba(79,70,229,.08),rgba(3,12,32,.66)_45%,rgba(34,211,238,.05))] p-6 sm:p-7">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                <div className="flex items-center gap-3"><div className="grid h-11 w-11 place-items-center rounded-xl border border-violet-300/20 bg-violet-400/10 text-violet-200"><Swords className="h-5 w-5" /></div><div><h2 className="text-2xl font-black">Karier Battle PVP</h2><p className="text-xs text-slate-500">Statistik duel 1v1 dari seluruh pertandingan selesai.</p></div></div>
+                <div className="text-xs font-bold text-slate-500">Record: <span className="text-emerald-300">{Number(pvpStats.wins) || 0}W</span> · <span className="text-rose-300">{Number(pvpStats.losses) || 0}L</span>{Number(pvpStats.draws) ? <> · <span className="text-violet-300">{Number(pvpStats.draws)}D</span></> : null}</div>
+              </div>
+              <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+                <div className="rounded-2xl border border-white/10 bg-slate-950/35 p-5"><p className="text-xs font-bold text-slate-500">Total Battle</p><p className="mt-1 text-3xl font-black">{Number(pvpStats.total_battles) || 0}</p><p className="mt-1 text-[11px] text-slate-600">Duel selesai</p></div>
+                <div className="rounded-2xl border border-emerald-300/15 bg-emerald-400/[.06] p-5"><p className="text-xs font-bold text-slate-500">Menang</p><p className="mt-1 text-3xl font-black text-emerald-300">{Number(pvpStats.wins) || 0}</p><p className="mt-1 text-[11px] text-emerald-100/45">Victory</p></div>
+                <div className="rounded-2xl border border-rose-300/15 bg-rose-400/[.05] p-5"><p className="text-xs font-bold text-slate-500">Kalah</p><p className="mt-1 text-3xl font-black text-rose-300">{Number(pvpStats.losses) || 0}</p><p className="mt-1 text-[11px] text-rose-100/45">Defeat</p></div>
+                <div className="rounded-2xl border border-cyan-300/15 bg-cyan-300/[.06] p-5"><p className="flex items-center gap-1.5 text-xs font-bold text-slate-500"><TrendingUp className="h-3.5 w-3.5" /> Win Rate</p><p className="mt-1 text-3xl font-black text-cyan-300">{Number(pvpStats.win_rate || 0).toFixed(1)}%</p><div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/5"><div className="h-full rounded-full bg-gradient-to-r from-cyan-400 to-violet-500" style={{ width: `${Math.min(100, Math.max(0, Number(pvpStats.win_rate) || 0))}%` }} /></div></div>
+                <div className="rounded-2xl border border-amber-300/15 bg-amber-300/[.06] p-5"><p className="flex items-center gap-1.5 text-xs font-bold text-slate-500"><Target className="h-3.5 w-3.5" /> Best PVP Point</p><p className="mt-1 text-3xl font-black text-amber-300">{pvpStats.best_score == null ? "—" : formatScore(pvpStats.best_score)}</p><p className="mt-1 text-[11px] text-slate-600">Skor duel tertinggi</p></div>
+              </div>
+            </section>
+
+            <section className="rounded-3xl border border-white/10 bg-white/[.045] p-6 sm:p-7">
+              <div className="flex items-center gap-3"><div className="grid h-10 w-10 place-items-center rounded-xl bg-violet-400/10 text-violet-300"><BarChart3 className="h-5 w-5" /></div><div><h2 className="text-xl font-black">Riwayat Battle PVP</h2><p className="text-xs text-slate-500">20 duel terakhir · skor dan hasil pertandingan.</p></div></div>
+              <div className="mt-5 space-y-3">
+                {pvpHistory.length === 0 ? <div className="rounded-2xl border border-dashed border-white/10 p-7 text-center text-sm text-slate-500">Belum ada riwayat Battle PVP.</div> : pvpHistory.map((row, index) => {
+                  const win = row.result === "win"
+                  const loss = row.result === "loss"
+                  const badge = win ? "MENANG" : loss ? "KALAH" : "SERI"
+                  const badgeClass = win ? "border-emerald-300/20 bg-emerald-400/10 text-emerald-300" : loss ? "border-rose-300/20 bg-rose-400/10 text-rose-300" : "border-violet-300/20 bg-violet-400/10 text-violet-300"
+                  return <div key={row.id || index} className="grid gap-4 rounded-2xl border border-white/10 bg-slate-950/35 p-4 sm:grid-cols-[auto_1fr_auto] sm:items-center">
+                    <div className="flex items-center gap-3">
+                      {row.opponent_avatar_url ? <img src={row.opponent_avatar_url} alt={row.opponent_nickname || "Lawan"} className="h-11 w-11 rounded-xl object-cover ring-1 ring-white/15" /> : <div className="grid h-11 w-11 place-items-center rounded-xl bg-gradient-to-br from-slate-700 to-slate-900 text-xs font-black ring-1 ring-white/10">{initials(row.opponent_nickname || "Lawan")}</div>}
+                      <div><span className={`inline-flex rounded-full border px-2 py-0.5 text-[10px] font-black tracking-wider ${badgeClass}`}>{badge}</span><p className="mt-1 text-[11px] text-slate-600">{formatDate(row.finished_at)}</p></div>
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-xs text-slate-500">vs</p>
+                      {row.opponent_public_id ? <a href={`/player?id=${encodeURIComponent(row.opponent_public_id)}`} className="truncate font-black text-slate-100 hover:text-cyan-300">{row.opponent_nickname || "Pemain"}</a> : <p className="truncate font-black">{row.opponent_nickname || "Pemain"}</p>}
+                      <p className="mt-1 text-[11px] text-slate-600">Benar {row.my_correct || 0} · Salah {row.my_wrong || 0}{row.sudden_death_started_at ? " · Death Game" : ""}</p>
+                    </div>
+                    <div className="sm:min-w-36 sm:text-right"><p className={`text-2xl font-black ${win ? "text-emerald-300" : loss ? "text-slate-200" : "text-violet-300"}`}>{formatScore(row.my_score)} <span className="text-sm text-slate-600">—</span> {formatScore(row.opponent_score)}</p><p className="mt-1 text-[10px] font-bold uppercase tracking-wider text-slate-600">PVP Point</p></div>
+                  </div>
+                })}
+              </div>
+            </section>
+
             <div className="grid gap-6 lg:grid-cols-[1.4fr_.8fr]">
               <section className="rounded-3xl border border-white/10 bg-white/[.045] p-6 sm:p-7">
-                <div className="flex items-center gap-3"><div className="grid h-10 w-10 place-items-center rounded-xl bg-indigo-400/10 text-indigo-300"><Swords className="h-5 w-5" /></div><div><h2 className="text-xl font-black">Riwayat Ranked</h2><p className="text-xs text-slate-500">Catatan publik per season.</p></div></div>
+                <div className="flex items-center gap-3"><div className="grid h-10 w-10 place-items-center rounded-xl bg-indigo-400/10 text-indigo-300"><Swords className="h-5 w-5" /></div><div><h2 className="text-xl font-black">Riwayat Ranked</h2><p className="text-xs text-slate-500">History skor Ranked Battle per season.</p></div></div>
                 <div className="mt-5 space-y-3">
-                  {history.length === 0 ? <div className="rounded-2xl border border-dashed border-white/10 p-6 text-center text-sm text-slate-500">Belum ada Ranked Battle resmi.</div> : history.map((row, index) => (
-                    <div key={`${row.season_id || index}`} className="grid gap-3 rounded-2xl border border-white/10 bg-slate-950/35 p-4 sm:grid-cols-[1fr_auto_auto] sm:items-center">
-                      <div><p className="font-black">{row.season_label || `Season ${row.season_number || "—"}`}</p><p className="mt-1 flex items-center gap-1.5 text-[11px] text-slate-500"><Clock3 className="h-3.5 w-3.5" /> {formatDuration(row.duration_ms)}</p></div>
-                      <div className="sm:text-right"><p className="text-xs text-slate-500">Battle Point</p><p className="font-black text-cyan-300">{formatScore(row.battle_score)}</p></div>
-                      <div className="sm:min-w-16 sm:text-right"><p className="text-xs text-slate-500">Rank</p><p className="font-black">{row.national_rank ? `#${row.national_rank}` : "—"}</p></div>
+                  {history.length === 0 ? <div className="rounded-2xl border border-dashed border-white/10 p-6 text-center text-sm text-slate-500">Belum ada Ranked Battle resmi.</div> : history.map((row, index) => {
+                    const rankedAccuracy = pct(row.correct_count, row.question_count)
+                    return <div key={`${row.season_id || index}`} className="grid gap-3 rounded-2xl border border-white/10 bg-slate-950/35 p-4 sm:grid-cols-[1fr_auto_auto] sm:items-center">
+                      <div><p className="font-black">{row.season_label || `Season ${row.season_number || "—"}`}</p><p className="mt-1 flex flex-wrap items-center gap-2 text-[11px] text-slate-500"><span className="inline-flex items-center gap-1"><Clock3 className="h-3.5 w-3.5" /> {formatDuration(row.duration_ms)}</span><span>·</span><span>{row.correct_count ?? "—"}/{row.question_count ?? "—"} benar{rankedAccuracy === null ? "" : ` · ${rankedAccuracy}%`}</span><span>·</span><span>{formatDate(row.achieved_at)}</span></p></div>
+                      <div className="sm:text-right"><p className="text-xs text-slate-500">Battle Point</p><p className="text-xl font-black text-cyan-300">{formatScore(row.battle_score)}</p></div>
+                      <div className="sm:min-w-16 sm:text-right"><p className="text-xs text-slate-500">Rank</p><p className="text-xl font-black">{row.national_rank ? `#${row.national_rank}` : "—"}</p></div>
                     </div>
-                  ))}
+                  })}
                 </div>
               </section>
 
