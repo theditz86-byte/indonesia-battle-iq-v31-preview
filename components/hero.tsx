@@ -70,8 +70,9 @@ export function Hero({ season, entries }: { season: BattleSeason | null; entries
             <div className="pointer-events-none absolute inset-x-0 top-10 -z-0 mx-auto h-72 w-3/4 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(250,204,21,0.22),transparent_70%)] blur-2xl" />
             <div className="relative z-10"><Podium entries={entries} /></div>
             {leaderScore > 0 && (
-              <div className="mx-auto mt-1 flex w-fit items-center gap-2 rounded-full border border-amber-300/25 bg-slate-950/60 px-4 py-2 text-xs font-black text-amber-100 shadow-[0_0_24px_rgba(251,191,36,.16)] backdrop-blur-md">
-                <Trophy className="h-3.5 w-3.5 text-amber-300" /> {new Intl.NumberFormat("id-ID").format(leaderScore)} BP sedang memimpin · bisa kamu lewati?
+              <div className="mx-auto mt-2 flex w-fit items-center gap-3 rounded-full border-2 border-amber-300/45 bg-slate-950/75 px-7 py-3.5 text-[15px] font-black text-amber-50 shadow-[0_0_34px_rgba(251,191,36,.30)] ring-1 ring-amber-200/15 backdrop-blur-lg sm:text-base">
+                <Trophy className="h-5 w-5 shrink-0 text-amber-300 drop-shadow-[0_0_8px_rgba(251,191,36,.65)]" />
+                <span>{new Intl.NumberFormat("id-ID").format(leaderScore)} BP sedang memimpin · bisa kamu lewati?</span>
               </div>
             )}
           </div>
