@@ -65,13 +65,15 @@ export function NotificationCenter() {
   const rootRef = useRef<HTMLDivElement | null>(null)
 
   async function load() {
-    if (!getParticipantToken()) return
+    if (!getParticipantToken()) return 0
     setLoading(true)
     try {
       const data = await request("state")
-      if (!data) return
+      if (!data) return 0
+      const nextUnread = Math.max(0, Number(data.unread_count || 0))
       setRows(Array.isArray(data.notifications) ? data.notifications : [])
-      setUnread(Math.max(0, Number(data.unread_count || 0)))
+      setUnread(nextUnread)
+      return nextUnread
     } finally {
       setLoading(false)
     }
@@ -97,8 +99,8 @@ export function NotificationCenter() {
     const next = !open
     setOpen(next)
     if (!next) return
-    await load()
-    if (unread > 0) {
+    const loadedUnread = await load()
+    if (loadedUnread > 0) {
       setUnread(0)
       void request("mark_read")
     }
