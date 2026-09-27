@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react"
 import { BATTLE_API_URL, PARTICIPANT_TOKEN_KEY, formatDuration } from "@/lib/battle"
-import { ArrowLeft, CheckCircle2, Crown, History, Play, Settings, Sparkles, Trophy, WalletCards } from "lucide-react"
+import { ArrowLeft, CheckCircle2, Crown, History, Play, Settings, Trophy } from "lucide-react"
 
 const ACCOUNT_API = "https://efndozplpwyemzgqfnep.supabase.co/functions/v1/battle-account"
 
@@ -85,11 +85,10 @@ export default function AccountResultsPage(){
   const attempts=useMemo(()=>[...(history?.attempts || [])].sort((a,b)=>Number(b.attempt_number||0)-Number(a.attempt_number||0)),[history?.attempts])
   const personalBest=attempts.find((item)=>item.is_personal_best) || attempts.slice().sort((a,b)=>Number(b.battle_score||0)-Number(a.battle_score||0))[0]
   const used=Math.max(0,Number(participant?.attempts_used)||attempts.length)
-  const freeRemaining=Math.max(0,Number(participant?.free_attempts_remaining ?? 1-used)||0)
-  const paidCredits=Math.max(0,Number(participant?.paid_credits)||0)
+  const freeRemaining=Math.max(0,Number(participant?.free_attempts_remaining ?? 3-used)||0)
   const active=Boolean(participant?.active_attempt_id)
-  const testHref=active || freeRemaining>0 || paidCredits>0 ? "/battle-test" : "/payment?product=attempt_credit"
-  const testLabel=active ? "Lanjutkan tes" : freeRemaining>0 ? `Mulai tes · gratis ${freeRemaining}x` : paidCredits>0 ? `Mulai Rematch · kredit ${paidCredits}x` : "Buka Rematch · Rp5.000"
+  const testHref=active || freeRemaining>0 ? "/battle-test" : "/battle#peringkat"
+  const testLabel=active ? "Lanjutkan Ranked" : freeRemaining>0 ? `Mulai Ranked · sisa ${freeRemaining}x` : "3 Ranked season ini sudah digunakan"
 
   if(loading) return <main className="grid min-h-screen place-items-center bg-[#020817] text-slate-300">Memuat riwayat tes…</main>
 
@@ -128,7 +127,7 @@ export default function AccountResultsPage(){
             <div className="rounded-2xl border border-white/10 bg-white/[.04] p-4"><span className="text-xs text-slate-500">Total percobaan</span><strong className="mt-1 block text-3xl font-black">{attempts.length}x</strong></div>
             <div className="rounded-2xl border border-amber-300/15 bg-amber-300/[.06] p-4"><span className="text-xs text-amber-100/70">Personal Best</span><strong className="mt-1 block text-3xl font-black text-amber-200">{personalBest?.battle_score ? Number(personalBest.battle_score).toLocaleString("id-ID") : "—"}</strong><small className="text-slate-500">{personalBest?.question_count ? Math.round((Number(personalBest.correct_count||0)/Number(personalBest.question_count))*100) : "—"}% akurasi</small></div>
             <div className="rounded-2xl border border-cyan-300/15 bg-cyan-300/[.06] p-4"><span className="text-xs text-cyan-100/70">Sisa gratis</span><strong className="mt-1 block text-3xl font-black">{freeRemaining}x</strong></div>
-            <div className="rounded-2xl border border-violet-300/15 bg-violet-300/[.06] p-4"><span className="text-xs text-violet-100/70">Kredit Rematch</span><strong className="mt-1 block text-3xl font-black">{paidCredits}x</strong></div>
+            <div className="rounded-2xl border border-violet-300/15 bg-violet-300/[.06] p-4"><span className="text-xs text-violet-100/70">Kuota Ranked</span><strong className="mt-1 block text-3xl font-black">3x</strong></div>
           </div>
         </section>
 
@@ -145,10 +144,10 @@ export default function AccountResultsPage(){
           {attempts.length ? (
             <div className="mt-5 flex snap-x snap-mandatory gap-4 overflow-x-auto pb-3 [scrollbar-color:rgba(148,163,184,.35)_transparent] [scrollbar-width:thin]">
               {attempts.map((item)=>{
-                const paid=Number(item.attempt_number||0)>1
+                const legacy=Number(item.attempt_number||0)>3
                 return <article key={item.attempt_id || item.attempt_number} className="min-w-[280px] max-w-[320px] flex-[0_0_82vw] snap-start overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/[.055] to-white/[.025] p-5 sm:flex-basis-[310px]">
                   <div className="flex items-start justify-between gap-3">
-                    <div><p className="text-[10px] font-black uppercase tracking-[.14em] text-slate-500">Percobaan #{item.attempt_number ?? "—"}</p><p className="mt-1 text-xs font-bold text-slate-400">{paid?"Rematch / Practice":"Ranked resmi"}</p></div>
+                    <div><p className="text-[10px] font-black uppercase tracking-[.14em] text-slate-500">Percobaan #{item.attempt_number ?? "—"}</p><p className="mt-1 text-xs font-bold text-slate-400">{legacy?"Arsip lama":"Ranked resmi"}</p></div>
                     {item.is_personal_best ? <span className="inline-flex items-center gap-1 rounded-full border border-amber-300/20 bg-amber-300/10 px-2 py-1 text-[9px] font-black uppercase text-amber-200"><Trophy className="h-3 w-3"/>PB</span> : null}
                   </div>
                   <div className="mt-5 grid grid-cols-2 gap-3">
@@ -165,7 +164,6 @@ export default function AccountResultsPage(){
                   <p className="mt-4 text-xs text-slate-500">{item.submitted_at ? new Date(item.submitted_at).toLocaleString("id-ID",{day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"}) : ""}</p>
                   <div className="mt-5 grid gap-2">
                     <a href={item.attempt_id?`/result?attempt=${encodeURIComponent(item.attempt_id)}`:"/result"} className="rounded-xl bg-white px-4 py-2.5 text-center text-sm font-black text-slate-950">Lihat hasil percobaan</a>
-                    {!item.premium_unlocked && item.attempt_id ? <a href={`/payment?product=premium_report&attempt=${encodeURIComponent(item.attempt_id)}`} className="inline-flex items-center justify-center gap-2 rounded-xl border border-violet-300/20 bg-violet-400/10 px-4 py-2.5 text-sm font-bold text-violet-200"><Sparkles className="h-4 w-4"/>Buka Premium · Rp5.000</a> : null}
                   </div>
                 </article>
               })}
@@ -177,7 +175,7 @@ export default function AccountResultsPage(){
 
         <section className="mt-7 grid gap-4 sm:grid-cols-3">
           <a href="/account" className="rounded-2xl border border-white/10 bg-white/[.035] p-5 hover:bg-white/[.06]"><Settings className="h-5 w-5 text-cyan-300"/><p className="mt-3 font-black">Profil & Keamanan</p><p className="mt-1 text-sm text-slate-500">Nama panggilan, avatar, password, dan identitas akun.</p></a>
-          <a href="/payment?product=attempt_credit" className="rounded-2xl border border-white/10 bg-white/[.035] p-5 hover:bg-white/[.06]"><WalletCards className="h-5 w-5 text-violet-300"/><p className="mt-3 font-black">Kredit Rematch</p><p className="mt-1 text-sm text-slate-500">Tambah Rematch / Practice untuk latihan dan analisis tanpa mengubah leaderboard resmi.</p></a>
+          <a href="/battle-test" className="rounded-2xl border border-white/10 bg-white/[.035] p-5 hover:bg-white/[.06]"><Play className="h-5 w-5 text-violet-300"/><p className="mt-3 font-black">Ranked Battle</p><p className="mt-1 text-sm text-slate-500">Gunakan maksimal 3 kesempatan resmi; skor terbaik menentukan leaderboard season.</p></a>
           <a href="/battle-test" className="rounded-2xl border border-white/10 bg-white/[.035] p-5 hover:bg-white/[.06]"><Play className="h-5 w-5 text-emerald-300"/><p className="mt-3 font-black">Tes Kemampuan</p><p className="mt-1 text-sm text-slate-500">Mulai atau lanjutkan tes yang tersedia.</p></a>
         </section>
       </div>

@@ -86,3 +86,23 @@ test("TIU practice requires the shared participant token instead of a second log
   assert.match(s,/getParticipantToken/)
   assert.match(s,/X-Battle-Token/)
 })
+
+
+test("Account and result history follow 3 official Ranked Open Beta policy",()=>{
+  for(const p of ["app/account/page.tsx","app/account/results/page.tsx"]){
+    const s=read(p)
+    assert.doesNotMatch(s,/Buka Rematch|Kredit Rematch|Rematch \/ Practice|Rp5\.000/)
+    assert.match(s,/3 Ranked|3x|3 kesempatan/)
+  }
+})
+
+test("Participant logout reaches server session endpoint",()=>{
+  const s=read("components/site-navbar.tsx")
+  assert.match(s,/battle-participant-session/)
+  assert.match(s,/action:"logout"|action: "logout"/)
+})
+
+test("Quick Battle is indexed and homepage branding leads with Battle Point",()=>{
+  assert.match(read("public/sitemap.xml"),/quick-battle/)
+  assert.match(read("app/layout.tsx"),/Competitive Brain Game Indonesia/)
+})

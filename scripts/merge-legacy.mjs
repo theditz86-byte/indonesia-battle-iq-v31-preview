@@ -10,4 +10,4 @@ await writeFile(
   "self.addEventListener('install',()=>self.skipWaiting());self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(k=>Promise.all(k.map(x=>caches.delete(x)))).then(()=>self.clients.claim())));self.addEventListener('fetch',()=>{});"
 )
 
-console.log("Prepared native Battle IQ production assets.")
+console.log("Prepared ALZAVA Battle Point production assets.")

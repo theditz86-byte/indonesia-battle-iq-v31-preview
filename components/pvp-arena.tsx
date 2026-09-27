@@ -111,7 +111,7 @@ export function PvpArena(){
   useEffect(()=>{const t=window.setInterval(()=>setNow(Date.now()),250);return()=>window.clearInterval(t)},[])
   useEffect(()=>{
     if(matchId){void loadState(matchId);const t=window.setInterval(()=>{if(document.visibilityState==="visible")void loadState(matchId)},2000);return()=>window.clearInterval(t)}
-    const t=window.setInterval(()=>{if(document.visibilityState==="visible")void loadLobby(true)},3000);return()=>window.clearInterval(t)
+    const t=window.setInterval(()=>{if(document.visibilityState==="visible")void loadLobby(true)},5000);return()=>window.clearInterval(t)
   },[matchId,loadLobby,loadState])
 
   const challenge=async(player:Player)=>{if(!player.public_id)return;setBusy(true);setError("");try{await pvp({action:"challenge",target_public_id:player.public_id});await loadLobby(true)}catch(e){setError(e instanceof Error?e.message:"Tantangan belum terkirim.")}finally{setBusy(false)}}

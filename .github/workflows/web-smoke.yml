@@ -1,0 +1,26 @@
+name: Browser Smoke
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npm install --no-save playwright@1.55.0
+      - run: npx playwright install --with-deps chromium
+      - run: npm run build
+      - name: Serve static export and smoke routes
+        run: |
+          python3 -m http.server 4173 -d out >/tmp/alzava-http.log 2>&1 &
+          sleep 2
+          node tests/browser-smoke.mjs

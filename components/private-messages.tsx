@@ -106,7 +106,7 @@ export function PrivateMessages({ participant }: { participant: BattleParticipan
     if (!participant) return
     const overviewTimer = window.setInterval(() => {
       if (document.visibilityState === "visible") void loadOverview(true)
-    }, 20000)
+    }, 30000)
     return () => window.clearInterval(overviewTimer)
   }, [participant, loadOverview])
 
@@ -114,7 +114,7 @@ export function PrivateMessages({ participant }: { participant: BattleParticipan
     if (!selectedId) return
     const threadTimer = window.setInterval(() => {
       if (document.visibilityState === "visible") void syncThread()
-    }, 5000)
+    }, 8000)
     return () => window.clearInterval(threadTimer)
   }, [selectedId, syncThread])
 

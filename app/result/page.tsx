@@ -103,16 +103,6 @@ const descriptions: Record<string,string> = {
   speed: "Menjaga ketepatan ketika keputusan harus dibuat dalam waktu terbatas.",
 }
 
-const iqReferenceBands = [
-  {min:-Infinity,max:69,range:"≤69",label:"Extremely Low",id:"Sangat rendah"},
-  {min:70,max:79,range:"70–79",label:"Very Low",id:"Rendah"},
-  {min:80,max:89,range:"80–89",label:"Low Average",id:"Rata-rata bawah"},
-  {min:90,max:109,range:"90–109",label:"Average",id:"Rata-rata"},
-  {min:110,max:119,range:"110–119",label:"High Average",id:"Rata-rata atas"},
-  {min:120,max:129,range:"120–129",label:"Very High",id:"Sangat tinggi"},
-  {min:130,max:149,range:"130–149",label:"Extremely High",id:"Ekstrem tinggi"},
-  {min:150,max:Infinity,range:"150+",label:"Extremely High",id:"Ekstrem tinggi · 3,3 SD+"},
-] as const
 
 const domainMeaning: Record<string,{strength:string;application:string;growth:string}> = {
   fluid: {
@@ -159,14 +149,6 @@ function levelLabel(index:number) {
   return "Perlu diperkuat"
 }
 
-function iqTier(iq:number) {
-  if(iq>=145) return "Rentang sangat tinggi"
-  if(iq>=130) return "Rentang tinggi"
-  if(iq>=115) return "Di atas rerata"
-  if(iq>=85) return "Rentang rerata"
-  if(iq>=70) return "Di bawah rerata"
-  return "Rentang rendah"
-}
 
 function signatureFor(domains:DomainView[]) {
   if(!domains.length) return {title:"Pemecah Masalah Adaptif",tag:"Adaptive Solver",text:"Profil Anda menunjukkan kombinasi kemampuan yang perlu dibaca bersama dengan akurasi dan tempo pengerjaan."}
@@ -372,7 +354,7 @@ export default function ResultPage() {
     second ? second.label + " memberi dukungan kedua yang membuat strategi Anda lebih fleksibel." : "Strategi Anda dapat berkembang melalui latihan lintas-domain.",
     accuracy>=85 ? "Akurasi tinggi menunjukkan kontrol kesalahan yang kuat pada tes ini." : accuracy>=75 ? "Akurasi sudah kompetitif dan masih memiliki ruang perbaikan yang jelas." : "Peluang peningkatan terbesar datang dari kontrol kesalahan.",
     avgSec<=30 ? "Tempo pengerjaan efisien; Anda tidak membutuhkan waktu berlebihan untuk sebagian besar item." : "Anda cenderung memberi waktu untuk memastikan jawaban pada persoalan kompleks.",
-    result?.high_range_attempted ? "Anda telah melewati High Range, sehingga estimasi rentang atas mendapat verifikasi tambahan." : "Hasil inti memberi baseline yang jelas untuk membandingkan perkembangan pada season berikutnya.",
+    "Hasil Ranked 20 soal memberi baseline yang konsisten untuk dibandingkan dengan kesempatan berikutnya pada season yang sama.",
   ]
 
   const blindSpots=[
@@ -412,7 +394,6 @@ export default function ResultPage() {
   if(error || !data) return <main className="grid min-h-screen place-items-center bg-[#020817] px-5 text-white"><div className="max-w-xl rounded-3xl border border-rose-400/20 bg-rose-500/10 p-7 text-center"><p>{error || "Hasil belum tersedia."}</p><a href="/battle" className="mt-5 inline-flex rounded-xl bg-indigo-600 px-5 py-3 font-black">Kembali ke Battle</a></div></main>
 
   if(!result) return <main className="grid min-h-screen place-items-center bg-[#020817] px-5 text-white"><div className="max-w-xl rounded-3xl border border-white/10 bg-white/5 p-8 text-center"><Brain className="mx-auto h-10 w-10 text-cyan-300"/><h1 className="mt-4 text-2xl font-black">Belum ada hasil pada season ini</h1><p className="mt-2 text-slate-400">Selesaikan tes untuk melihat skor dan profil kognitif Anda.</p><a href="/battle-test" className="mt-6 inline-flex rounded-xl bg-indigo-600 px-5 py-3 font-black">Mulai Tes</a></div></main>
-  const iq=Number(result.iq_estimate||0)
   const battlePoint=Number(result.battle_score||0)
   const battleProgress=clamp(battlePoint/10)
   const rankText=result.is_personal_best===false ? "Bukan PB" : result.national_rank && data.leaderboard_total ? "#" + result.national_rank + " dari " + data.leaderboard_total : "#" + (result.national_rank ?? "—")
@@ -595,7 +576,7 @@ export default function ResultPage() {
                   <div className="mt-6 grid gap-3">
                     <div className="rounded-2xl border border-white/10 bg-slate-950/30 p-4"><p className="text-xs font-black uppercase tracking-wider text-slate-500">Cara mengambil keputusan</p><p className="mt-2 text-sm leading-6 text-slate-300">{pace.text}</p></div>
                     <div className="rounded-2xl border border-white/10 bg-slate-950/30 p-4"><p className="text-xs font-black uppercase tracking-wider text-slate-500">Distribusi kemampuan</p><p className="mt-2 text-sm leading-6 text-slate-300">{spread<=10 ? "Profil relatif merata. Anda tidak terlalu bergantung pada satu jenis representasi masalah." : spread<=20 ? "Profil menunjukkan satu kekuatan utama, tetapi domain lain masih cukup dekat untuk mendukung fleksibilitas." : "Profil cukup terspesialisasi. Keunggulan utama sangat jelas, namun pergantian jenis soal dapat mengubah tempo dan akurasi."}</p></div>
-                    <div className="rounded-2xl border border-white/10 bg-slate-950/30 p-4"><p className="text-xs font-black uppercase tracking-wider text-slate-500">Verifikasi rentang atas</p><p className="mt-2 text-sm leading-6 text-slate-300">{result.high_range_attempted ? "High Range selesai. Skor rentang atas diuji dengan soal tambahan yang lebih sulit, sehingga estimasi tinggi memiliki bukti tambahan." : "High Range tidak dikerjakan pada hasil ini. Untuk skor inti yang sangat tinggi pada format baru, sistem akan membuka tahap verifikasi tambahan."}</p></div>
+                    <div className="rounded-2xl border border-white/10 bg-slate-950/30 p-4"><p className="text-xs font-black uppercase tracking-wider text-slate-500">Verifikasi rentang atas</p><p className="mt-2 text-sm leading-6 text-slate-300">Format Ranked resmi sekarang selalu 20 soal. Interpretasi difokuskan pada Battle Point, akurasi, tempo, dan profil domain—bukan estimasi IQ.</p></div>
                   </div>
                 </article>
               </section>

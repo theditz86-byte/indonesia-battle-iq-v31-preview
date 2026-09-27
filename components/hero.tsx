@@ -12,7 +12,7 @@ export function Hero({ season, entries }: { season: BattleSeason | null; entries
   return (
     <section className="relative overflow-hidden">
       <div className="absolute inset-0">
-        <img src="/images/hero-bg.png?v=cf5" alt="" className="h-full w-full object-cover" fetchPriority="high" decoding="async" />
+        <img src="/images/hero-bg-opt.webp?v=stabilized" alt="" className="h-full w-full object-cover" fetchPriority="high" decoding="async" />
         <div className="absolute inset-0 bg-gradient-to-b from-slate-950/55 via-slate-950/45 to-slate-950" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_30%,rgba(250,204,21,0.14),transparent_55%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_12%_25%,rgba(56,189,248,0.14),transparent_45%)]" />
@@ -83,7 +83,7 @@ export function Hero({ season, entries }: { season: BattleSeason | null; entries
 
           <div className="flex flex-col items-end gap-5">
             <div className="flex items-center gap-2 rounded-full border border-emerald-300/20 bg-emerald-400/10 px-3 py-1.5 text-[11px] font-black text-emerald-200 backdrop-blur-sm">
-              <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-400" /> Leaderboard diperbarui live
+              <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-400" /> Leaderboard diperbarui otomatis
             </div>
             <p className="max-w-xs text-right text-[13px] italic leading-relaxed text-cyan-100/80">&ldquo;Berapa Battle Point-mu—dan siapa yang bisa mengejarnya?&rdquo;</p>
             <CountdownCard season={season} />

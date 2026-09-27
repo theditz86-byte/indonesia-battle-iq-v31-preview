@@ -7,6 +7,7 @@ import type { BattleParticipant } from "@/lib/battle"
 import { NotificationCenter } from "@/components/notification-center"
 
 const SOCIAL_API = "https://efndozplpwyemzgqfnep.supabase.co/functions/v1/battle-social"
+const SESSION_API = "https://efndozplpwyemzgqfnep.supabase.co/functions/v1/battle-participant-session"
 
 const links = [
   { label: "Beranda", href: "/battle" },
@@ -59,11 +60,13 @@ export function SiteNavbar({ participant }: { participant: BattleParticipant | n
       }
     }
     void loadCounts()
-    const timer = window.setInterval(() => { if (document.visibilityState === "visible") void loadCounts() }, 30000)
+    const timer = window.setInterval(() => { if (document.visibilityState === "visible") void loadCounts() }, 60000)
     return () => { cancelled = true; window.clearInterval(timer) }
   }, [participant?.public_id])
 
-  function logout() {
+  async function logout() {
+    const token=getParticipantToken()
+    try { if(token) await fetch(SESSION_API,{method:"POST",headers:{"Content-Type":"application/json","X-Battle-Token":token},body:JSON.stringify({action:"logout"})}) } catch {}
     removeParticipantToken()
     window.location.href = "/battle"
   }
@@ -119,7 +122,7 @@ export function SiteNavbar({ participant }: { participant: BattleParticipant | n
                     <a href="/messages" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-200 hover:bg-white/5"><Mail className="h-4 w-4 text-indigo-300"/><span className="flex-1">Pesan & Teman</span>{socialBadge > 0 && <span className="rounded-full bg-rose-500 px-2 py-0.5 text-[10px] font-black text-white">{socialBadge > 99 ? "99+" : socialBadge}</span>}</a>
                     <a href="/account" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-200 hover:bg-white/5"><Settings className="h-4 w-4 text-slate-400"/>Pengaturan Profil</a>
                     <div className="my-1 border-t border-white/10" />
-                    <button type="button" onClick={logout} className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-bold text-rose-200 transition-colors hover:bg-rose-500/10"><LogOut className="h-4 w-4 text-rose-300"/>Keluar</button>
+                    <button type="button" onClick={()=>void logout()} className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-bold text-rose-200 transition-colors hover:bg-rose-500/10"><LogOut className="h-4 w-4 text-rose-300"/>Keluar</button>
                   </div>
                 </div>
               </details>
