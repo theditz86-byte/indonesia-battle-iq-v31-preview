@@ -16,12 +16,12 @@ export const metadata: Metadata = {
     template: "%s | ALZAVA Battle Point",
   },
   description:
-    "Latihan TIU dan SKD gratis, Simulasi TIU 35 soal, Ranked Battle 3x per minggu, Battle PVP 1v1, Battle Point, dan ranking kecamatan hingga nasional.",
+    "Latihan TIU gratis sebagai bagian dari persiapan SKD, Simulasi TIU 35 soal, Ranked Battle 3x per minggu, Battle PVP 1v1, Battle Point, dan ranking kecamatan hingga nasional.",
   keywords: [
     "latihan TIU CPNS gratis",
     "soal TIU CPNS",
     "simulasi TIU 35 soal",
-    "latihan SKD CPNS",
+    "persiapan SKD TIU",
     "tryout TIU gratis",
     "battle point",
     "ranked battle Indonesia",
