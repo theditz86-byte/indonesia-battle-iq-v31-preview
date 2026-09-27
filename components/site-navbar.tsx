@@ -1,6 +1,6 @@
 "use client"
 
-import { BrainCircuit, ChevronDown, History, LogOut, Mail, Menu, Settings, Share2, Trophy, WalletCards, X } from "lucide-react"
+import { BookOpenCheck, BrainCircuit, ChevronDown, History, LogOut, Mail, Menu, Settings, Share2, Trophy, X } from "lucide-react"
 import { useEffect, useState } from "react"
 import { getParticipantToken, removeParticipantToken } from "@/lib/battle"
 import type { BattleParticipant } from "@/lib/battle"
@@ -11,9 +11,10 @@ const SOCIAL_API = "https://efndozplpwyemzgqfnep.supabase.co/functions/v1/battle
 const links = [
   { label: "Beranda", href: "/battle" },
   { label: "Ranking", href: "/battle#peringkat" },
-  { label: "History Ranking", href: "/history-ranking" },
+  { label: "Latihan SKD", href: "/latihan-skd" },
   { label: "Ranked Battle", href: "/battle-test" },
   { label: "Battle PVP", href: "/pvp" },
+  { label: "History Ranking", href: "/history-ranking" },
   { label: "Chat Global", href: "/global-chat" },
   { label: "Bantuan", href: "/help" },
 ]
@@ -29,7 +30,7 @@ export function SiteNavbar({ participant }: { participant: BattleParticipant | n
     if (path.startsWith("/global-chat")) setActive("Chat Global")
     else if (path.startsWith("/messages")) setActive("")
     else if (path.startsWith("/player")) setActive("")
-    else if (path.startsWith("/daily-training")) setActive("")
+    else if (path.startsWith("/latihan-skd") || path.startsWith("/latihan-tiu") || path.startsWith("/simulasi-tiu") || path.startsWith("/daily-training")) setActive("Latihan SKD")
     else if (path.startsWith("/history-ranking")) setActive("History Ranking")
     else if (path.startsWith("/battle-test")) setActive("Ranked Battle")
     else if (path.startsWith("/pvp")) setActive("Battle PVP")
@@ -83,16 +84,16 @@ export function SiteNavbar({ participant }: { participant: BattleParticipant | n
           </div>
         </a>
 
-        <nav className="hidden items-center gap-1 rounded-full border border-white/10 bg-white/5 p-1 backdrop-blur-lg lg:flex">
+        <nav className="hidden items-center gap-1 rounded-full border border-white/10 bg-white/5 p-1 backdrop-blur-lg xl:flex">
           {links.map((link) => (
-            <a key={link.label} href={link.href} onClick={() => selectLink(link.label)} className={`relative rounded-full px-3 py-2 text-sm font-medium transition-all ${active === link.label ? "bg-white text-slate-900 shadow-[0_0_16px_rgba(255,255,255,0.25)]" : "text-slate-300 hover:text-white"}`}>
+            <a key={link.label} href={link.href} onClick={() => selectLink(link.label)} className={`relative rounded-full px-2.5 py-2 text-[13px] font-medium transition-all ${active === link.label ? "bg-white text-slate-900 shadow-[0_0_16px_rgba(255,255,255,0.25)]" : "text-slate-300 hover:text-white"}`}>
               {link.label}
             </a>
           ))}
         </nav>
 
         <div className="flex shrink-0 items-center gap-2">
-          <button type="button" onClick={() => setMobileOpen((value) => !value)} aria-label={mobileOpen ? "Tutup menu" : "Buka menu"} className="grid h-10 w-10 place-items-center rounded-xl border border-white/10 bg-white/5 text-slate-200 hover:bg-white/10 lg:hidden">
+          <button type="button" onClick={() => setMobileOpen((value) => !value)} aria-label={mobileOpen ? "Tutup menu" : "Buka menu"} className="grid h-10 w-10 place-items-center rounded-xl border border-white/10 bg-white/5 text-slate-200 hover:bg-white/10 xl:hidden">
             {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
 
@@ -108,14 +109,14 @@ export function SiteNavbar({ participant }: { participant: BattleParticipant | n
                 </summary>
 
                 <div className="absolute right-0 mt-3 w-64 overflow-hidden rounded-2xl border border-white/10 bg-[#061329]/95 p-2 shadow-[0_24px_70px_rgba(0,0,0,.45)] backdrop-blur-xl">
-                  <div className="border-b border-white/10 px-3 py-3"><p className="truncate text-sm font-black text-white">{name}</p><p className="mt-0.5 text-[11px] text-slate-500">Profil, progress, riwayat, pesan, dan pengaturan</p></div>
+                  <div className="border-b border-white/10 px-3 py-3"><p className="truncate text-sm font-black text-white">{name}</p><p className="mt-0.5 text-[11px] text-slate-500">Profil, progress, latihan, pesan, dan pengaturan</p></div>
                   <div className="grid gap-1 py-2">
                     <a href="/share-challenge" className="flex items-center gap-3 rounded-xl bg-gradient-to-r from-cyan-400/10 to-indigo-500/10 px-3 py-2.5 text-sm font-black text-cyan-100 hover:from-cyan-400/15 hover:to-indigo-500/15"><Share2 className="h-4 w-4 text-cyan-300"/>Bagikan & Tantang</a>
+                    <a href="/latihan-skd" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-200 hover:bg-white/5"><BookOpenCheck className="h-4 w-4 text-emerald-300"/>Latihan SKD</a>
+                    <a href="/daily-training" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-200 hover:bg-white/5"><BrainCircuit className="h-4 w-4 text-orange-300"/>TIU Harian</a>
                     {participant.public_id && <a href={`/player?id=${encodeURIComponent(participant.public_id)}`} className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-200 hover:bg-white/5"><Trophy className="h-4 w-4 text-amber-300"/>Profil Battle & Prestasi</a>}
                     <a href="/account/results#riwayat-hasil" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-200 hover:bg-white/5"><History className="h-4 w-4 text-violet-300"/>Riwayat Tes</a>
-                    <a href="/daily-training" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-200 hover:bg-white/5"><BrainCircuit className="h-4 w-4 text-emerald-300"/>Latihan Harian</a>
                     <a href="/messages" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-200 hover:bg-white/5"><Mail className="h-4 w-4 text-indigo-300"/><span className="flex-1">Pesan & Teman</span>{socialBadge > 0 && <span className="rounded-full bg-rose-500 px-2 py-0.5 text-[10px] font-black text-white">{socialBadge > 99 ? "99+" : socialBadge}</span>}</a>
-                    <a href="/payment?product=attempt_credit" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-200 hover:bg-white/5"><WalletCards className="h-4 w-4 text-amber-300"/>Kredit Rematch</a>
                     <a href="/account" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-200 hover:bg-white/5"><Settings className="h-4 w-4 text-slate-400"/>Pengaturan Profil</a>
                     <div className="my-1 border-t border-white/10" />
                     <button type="button" onClick={logout} className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-bold text-rose-200 transition-colors hover:bg-rose-500/10"><LogOut className="h-4 w-4 text-rose-300"/>Keluar</button>
@@ -133,11 +134,10 @@ export function SiteNavbar({ participant }: { participant: BattleParticipant | n
       </div>
 
       {mobileOpen && (
-        <div className="border-t border-white/10 bg-[#030a19]/95 px-4 py-3 shadow-2xl backdrop-blur-xl lg:hidden">
+        <div className="border-t border-white/10 bg-[#030a19]/95 px-4 py-3 shadow-2xl backdrop-blur-xl xl:hidden">
           <nav className="mx-auto grid max-w-7xl grid-cols-2 gap-2 sm:grid-cols-3">
             {participant && <a href="/share-challenge" onClick={() => setMobileOpen(false)} className="relative rounded-xl border border-cyan-300/20 bg-cyan-300/10 px-3 py-3 text-center text-sm font-black text-cyan-100">Bagikan & Tantang</a>}
             {participant?.public_id && <a href={`/player?id=${encodeURIComponent(participant.public_id)}`} onClick={() => setMobileOpen(false)} className="relative rounded-xl border border-amber-300/20 bg-amber-300/10 px-3 py-3 text-center text-sm font-black text-amber-100">Profil Battle</a>}
-            {participant && <a href="/daily-training" onClick={() => setMobileOpen(false)} className="relative rounded-xl border border-emerald-300/20 bg-emerald-300/10 px-3 py-3 text-center text-sm font-black text-emerald-100">Latihan Harian</a>}
             {links.map((link) => (
               <a key={link.label} href={link.href} onClick={() => selectLink(link.label)} className={`relative rounded-xl border px-3 py-3 text-center text-sm font-bold ${active === link.label ? "border-white/30 bg-white text-slate-950" : "border-white/10 bg-white/[.04] text-slate-200 hover:bg-white/[.08]"}`}>
                 {link.label}
