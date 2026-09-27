@@ -42,7 +42,7 @@ export function Hero({ season, entries }: { season: BattleSeason | null; entries
             </div>
 
             <p className="mt-4 max-w-[20.5rem] text-sm font-medium leading-6 text-slate-300">
-              Main Ranked Battle hingga 3x per minggu, ambil skor terbaikmu, lalu rebut posisi dari kecamatan hingga Indonesia.
+              Gunakan hingga 3 Ranked Battle kapan saja selama season mingguan—bahkan di hari yang sama—ambil skor terbaikmu, lalu rebut posisi dari kecamatan hingga Indonesia.
             </p>
 
             <div className="mt-5 flex flex-wrap gap-3">
@@ -55,7 +55,7 @@ export function Hero({ season, entries }: { season: BattleSeason | null; entries
             </div>
 
             <div className="mt-3 text-[11px] font-bold text-slate-300/80">
-              Open Beta GRATIS · Ranked dibuka Senin, Rabu, Jumat · skor terbaik masuk leaderboard
+              Open Beta GRATIS · 3 Ranked bebas dipakai kapan saja · skor terbaik masuk leaderboard
             </div>
 
             <a href="/latihan-skd" className="mt-3 inline-flex items-center gap-2 rounded-xl border border-emerald-300/20 bg-emerald-300/[.07] px-3 py-2 text-[11px] font-black text-emerald-100 transition hover:border-emerald-300/35 hover:bg-emerald-300/10">

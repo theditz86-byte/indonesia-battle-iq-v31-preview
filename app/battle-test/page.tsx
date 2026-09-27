@@ -226,13 +226,7 @@ export default function BattleTestPage() {
     try {
       const { response, data } = await callRankedStart(rawToken)
       if (response.status === 402) {
-            const weeklyRemaining = Math.max(0, Number(participant?.weekly_attempts_remaining ?? 3 - Number(participant?.attempts_used || 0)) || 0)
-        const nextDay = participant?.next_ranked_unlock_day
-        setError(weeklyRemaining <= 0
-          ? "Tiga Ranked Battle resmi minggu ini sudah digunakan. Season berikutnya membuka 3 kesempatan baru."
-          : nextDay
-            ? "Kesempatan Ranked berikutnya terbuka " + nextDay + ". Kesempatan yang belum dipakai tetap tersimpan sampai akhir minggu."
-            : "Kesempatan Ranked berikutnya belum terbuka. Coba lagi sesuai jadwal Ranked minggu ini.")
+        setError("Tiga Ranked Battle resmi pada season ini sudah digunakan. Season berikutnya membuka 3 kesempatan baru.")
         setPhase("lobby")
         return
       }
@@ -372,9 +366,7 @@ export default function BattleTestPage() {
 
   if (phase === "lobby") {
     const used = Math.max(0, Number(participant?.attempts_used) || 0)
-    const availableNow = Math.max(0, Number(participant?.free_attempts_remaining ?? Math.max(0, 3 - used)) || 0)
-    const weeklyRemaining = Math.max(0, Number(participant?.weekly_attempts_remaining ?? Math.max(0, 3 - used)) || 0)
-    const nextDay = participant?.next_ranked_unlock_day
+    const remaining = Math.max(0, Number(participant?.weekly_attempts_remaining ?? Math.max(0, 3 - used)) || 0)
     return (
       <main className="min-h-screen bg-[radial-gradient(circle_at_18%_0%,rgba(65,105,225,.22),transparent_30rem),linear-gradient(180deg,#020817,#07142f_55%,#040b1c)] text-white">
         <header className="border-b border-white/10 bg-[#020817]/80 backdrop-blur-xl">
@@ -387,18 +379,18 @@ export default function BattleTestPage() {
           <div>
             <p className="text-xs font-black uppercase tracking-[.2em] text-cyan-300">Tes Kemampuan</p>
             <h1 className="mt-4 text-5xl font-black leading-[.95] tracking-[-.055em] sm:text-7xl">20 soal.<br/><span className="text-indigo-300">20 menit.</span></h1>
-            <p className="mt-6 max-w-2xl text-base leading-7 text-slate-300">Numerik, logika, verbal, dan spasial dalam satu tes. Setiap season menyediakan <b className="text-white">3 Ranked Battle resmi gratis</b>. Kesempatan dibuka Senin, Rabu, dan Jumat; kesempatan yang belum dipakai tetap tersimpan sampai akhir season. <b className="text-white">Skor terbaik dari maksimal 3 attempt</b> masuk leaderboard.</p>
+            <p className="mt-6 max-w-2xl text-base leading-7 text-slate-300">Numerik, logika, verbal, dan spasial dalam satu tes. Setiap season mingguan menyediakan <b className="text-white">3 Ranked Battle resmi gratis</b>. Ketiganya <b className="text-white">boleh dipakai kapan saja selama season aktif, termasuk pada hari yang sama</b>. Skor terbaik dari maksimal 3 attempt masuk leaderboard.</p>
             <div className="mt-5 max-w-2xl rounded-2xl border border-violet-300/20 bg-violet-400/10 p-4 text-sm leading-6 text-violet-100"><b>Format ringkas:</b> 20 soal dalam 20 menit. Tidak ada tahap tambahan; Battle Point dihitung dari performa pada 20 soal tersebut. Jawaban tersimpan otomatis; jika tes ditinggalkan, jawaban yang sudah tersimpan tetap dinilai ketika waktu tes berakhir.</div>
             <div className="mt-7 grid max-w-2xl gap-3 sm:grid-cols-3">
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-4"><span className="text-xs text-slate-400">Tersedia sekarang</span><strong className="mt-1 block text-3xl font-black">{availableNow}x</strong></div>
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-4"><span className="text-xs text-slate-400">Sisa minggu ini</span><strong className="mt-1 block text-3xl font-black">{weeklyRemaining}x</strong></div>
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-4"><span className="text-xs text-slate-400">Sisa kesempatan</span><strong className="mt-1 block text-3xl font-black">{remaining}x</strong></div>
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-4"><span className="text-xs text-slate-400">Batas per season</span><strong className="mt-1 block text-3xl font-black">3x</strong></div>
               <div className="rounded-2xl border border-white/10 bg-white/5 p-4"><span className="text-xs text-slate-400">Sudah digunakan</span><strong className="mt-1 block text-3xl font-black">{used}x</strong></div>
             </div>
           </div>
           <div className="rounded-3xl border border-cyan-300/20 bg-[#0a1c3b]/90 p-6 shadow-2xl">
             <div className="flex items-start gap-3"><ShieldCheck className="mt-1 h-6 w-6 text-cyan-300"/><div><h2 className="text-xl font-black">Aturan Fair Play</h2><p className="mt-1 text-sm leading-6 text-slate-400">Kerjakan sendiri. Dilarang menggunakan AI generatif, kalkulator, mesin pencari, catatan jawaban, atau bantuan orang lain.</p></div></div>
             <div className="mt-5 rounded-2xl border border-amber-300/20 bg-amber-300/10 p-4 text-sm leading-6 text-amber-100">
-              <b>Open Beta GRATIS.</b> Semua pemain mendapat maksimal 3 Ranked Battle resmi per minggu dengan jumlah kesempatan yang sama. Tidak ada pembelian Ranked tambahan. Kesempatan dibuka Senin, Rabu, dan Jumat; yang belum digunakan tetap tersimpan sampai akhir minggu.
+              <b>Open Beta GRATIS.</b> Semua pemain mendapat maksimal 3 Ranked Battle resmi pada season mingguan yang sama. Tidak ada pembelian Ranked tambahan. Ketiga kesempatan langsung tersedia dan bebas dipakai kapan saja selama season aktif, termasuk di hari yang sama.
             </div>
             <label className="mt-5 flex cursor-pointer items-start gap-3 rounded-2xl border border-white/10 bg-slate-950/40 p-4 text-sm leading-6 text-slate-200">
               <input type="checkbox" checked={integrity} onChange={(e)=>setIntegrity(e.target.checked)} className="mt-1 h-5 w-5 accent-indigo-500"/>

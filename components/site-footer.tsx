@@ -17,21 +17,11 @@ export function SiteFooter() {
               <p className="text-[10px] font-medium uppercase tracking-[.13em] text-slate-400">Raih Poin. Taklukkan Peringkat.</p>
             </div>
           </div>
-
-          <nav className="flex flex-wrap gap-x-6 gap-y-2">
-            {footerLinks.map((link) => (
-              <a key={link.href} href={link.href} className="text-sm text-slate-400 transition-colors hover:text-white">{link.label}</a>
-            ))}
-          </nav>
-
-          <div className="max-w-sm text-sm leading-6 text-slate-400">
-            1 Tes Resmi gratis per season untuk leaderboard. Rematch berbayar dipakai untuk latihan dan analisis pribadi tanpa mengubah klasemen resmi.
-          </div>
+          <nav className="flex flex-wrap gap-x-6 gap-y-2">{footerLinks.map((link)=><a key={link.href} href={link.href} className="text-sm text-slate-400 transition-colors hover:text-white">{link.label}</a>)}</nav>
+          <div className="max-w-sm text-sm leading-6 text-slate-400">Open Beta: maksimal 3 Ranked gratis pada season mingguan, bebas dipakai kapan saja. Skor terbaik masuk leaderboard.</div>
         </div>
-
         <div className="mt-8 flex flex-col gap-2 border-t border-white/10 pt-6 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between">
-          <p>&copy; 2026 ALZAVA Battle Point. Semua hak dilindungi.</p>
-          <p className="italic text-slate-400">Raih Poin. Taklukkan Peringkat.</p>
+          <p>&copy; 2026 ALZAVA Battle Point. Semua hak dilindungi.</p><p className="italic text-slate-400">Raih Poin. Taklukkan Peringkat.</p>
         </div>
       </div>
     </footer>

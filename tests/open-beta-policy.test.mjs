@@ -60,3 +60,29 @@ test("set-question generation contract always has non-negative remainder",()=>{
     }
   }
 })
+
+
+test("Ranked gives 3 anytime attempts without weekday gating",()=>{
+  const ranked=read("app/battle-test/page.tsx")
+  const hero=read("components/hero.tsx")
+  assert.match(ranked,/3 Ranked Battle resmi gratis/)
+  assert.match(ranked,/boleh dipakai kapan saja/)
+  assert.doesNotMatch(ranked,/Senin, Rabu, dan Jumat/)
+  assert.doesNotMatch(hero,/Ranked dibuka Senin/)
+})
+
+test("Open Beta public copy does not sell paid Ranked or Premium",()=>{
+  for(const p of ["app/help/page.tsx","app/terms/page.tsx","app/refund/page.tsx","components/site-footer.tsx"]) {
+    const s=read(p)
+    assert.doesNotMatch(s,/Rp5\.000/)
+  }
+  const result=read("app/result/page.tsx")
+  assert.doesNotMatch(result,/Buka Premium Hasil Ini · Rp5\.000/)
+  assert.match(result,/Premium sementara tidak dijual/)
+})
+
+test("TIU practice requires the shared participant token instead of a second login",()=>{
+  const s=read("components/tiu-practice.tsx")
+  assert.match(s,/getParticipantToken/)
+  assert.match(s,/X-Battle-Token/)
+})

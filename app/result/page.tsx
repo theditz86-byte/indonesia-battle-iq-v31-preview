@@ -563,7 +563,7 @@ export default function ResultPage() {
                   <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">Bukan sekadar angka. Baca cara otak Anda memecahkan masalah.</h2>
                   <p className="mt-3 leading-7 text-slate-300">Laporan Premium membuka peta kognitif visual, karakter pemecahan masalah, analisis setiap domain, 5 kekuatan utama, blind spot, strategi belajar, dan rencana peningkatan 30 hari untuk hasil tes ini.</p>
                 </div>
-                <button onClick={openPremium} className="no-print inline-flex shrink-0 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-500 to-fuchsia-500 px-7 py-4 font-black shadow-[0_0_35px_rgba(168,85,247,.3)]"><LockKeyhole className="h-5 w-5"/>Buka Premium Hasil Ini · Rp5.000</button>
+                <span className="no-print inline-flex shrink-0 items-center justify-center gap-2 rounded-2xl border border-violet-300/20 bg-violet-400/10 px-7 py-4 font-black text-violet-100"><LockKeyhole className="h-5 w-5"/>Premium sementara tidak dijual · Open Beta</span>
               </div>
               <div className="mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {[

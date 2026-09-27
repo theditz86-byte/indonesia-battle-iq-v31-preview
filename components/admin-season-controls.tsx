@@ -56,7 +56,7 @@ export function AdminSeasonControls({ token }: { token: string }) {
     if (!token || busy) return
     if (action === "close" && !window.confirm("Tutup season aktif sekarang? Top 3 saat ini akan dikunci ke History Ranking.")) return
     if (action === "reset") {
-      const typed = window.prompt("Reset hanya mengosongkan leaderboard season aktif, bukan riwayat attempt. Ketik RESET untuk melanjutkan.")
+      const typed = window.prompt("Kosongkan LEADERBOARD saja? Jatah Ranked yang sudah dipakai TIDAK kembali. Untuk pengujian dari nol, tutup season lalu buka season baru. Ketik RESET untuk melanjutkan.")
       if (typed !== "RESET") return
     }
     if (action === "open" && state.live_season) return
@@ -86,7 +86,7 @@ export function AdminSeasonControls({ token }: { token: string }) {
         <div>
           <div className="flex items-center gap-2 text-cyan-300"><Trophy className="h-5 w-5"/><p className="text-xs font-black uppercase tracking-[.18em]">Kontrol Season</p></div>
           <h2 className="mt-2 text-2xl font-black">Buka, tutup, dan bersihkan ranking dari Admin</h2>
-          <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-400">Season sekarang dikendalikan manual. Saat ditutup, hanya Top 3 final yang disimpan permanen ke History Ranking.</p>
+          <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-400">Season dikendalikan manual. Saat ditutup, hanya Top 3 final yang disimpan permanen ke History Ranking. Membuka season baru mengembalikan 3 kesempatan Ranked untuk semua peserta.</p>
         </div>
         <button onClick={()=>load()} disabled={busy} className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-bold text-slate-200"><RefreshCw className={`h-4 w-4 ${busy?"animate-spin":""}`}/>Refresh</button>
       </div>
@@ -101,7 +101,7 @@ export function AdminSeasonControls({ token }: { token: string }) {
             </div>
             <div className="mt-5 flex flex-wrap gap-2">
               <button onClick={()=>run("close")} disabled={busy} className="inline-flex items-center gap-2 rounded-xl bg-amber-500 px-4 py-3 text-sm font-black text-slate-950 disabled:opacity-50"><Archive className="h-4 w-4"/>Tutup Season + Simpan Top 3</button>
-              <button onClick={()=>run("reset")} disabled={busy} className="inline-flex items-center gap-2 rounded-xl border border-rose-300/25 bg-rose-500/10 px-4 py-3 text-sm font-black text-rose-200 disabled:opacity-50"><RotateCcw className="h-4 w-4"/>Reset Ranking Aktif</button>
+              <button onClick={()=>run("reset")} disabled={busy} className="inline-flex items-center gap-2 rounded-xl border border-rose-300/25 bg-rose-500/10 px-4 py-3 text-sm font-black text-rose-200 disabled:opacity-50"><RotateCcw className="h-4 w-4"/>Kosongkan Leaderboard Saja</button>
             </div>
           </> : <div className="mt-3 rounded-xl border border-dashed border-white/15 bg-white/[.03] p-5 text-sm text-slate-400">Tidak ada season aktif. Gunakan panel di sebelah untuk membuka season baru.</div>}
         </div>
