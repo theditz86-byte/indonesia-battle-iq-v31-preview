@@ -26,37 +26,32 @@ jobs:
           from pathlib import Path
 
           def replace(path, old, new):
-              p=Path(path)
-              s=p.read_text()
-              if old not in s:
-                  raise SystemExit(f"expected pattern missing: {path}: {old[:80]}")
-              p.write_text(s.replace(old,new))
+              p=Path(path); s=p.read_text()
+              if old in s:
+                  p.write_text(s.replace(old,new)); print('patched',path,old)
+              else:
+                  print('pattern already absent',path,old)
 
-          replace('app/account/page.tsx',
-            'Kelola akun, nama panggilan, foto profil, dan kuota percobaan. Setiap peserta mendapat <strong className="text-white">1x percobaan gratis per season</strong>.',
-            'Kelola akun, nama panggilan, foto profil, keamanan sesi, dan kuota Ranked. Setiap peserta mendapat <strong className="text-white">3x Ranked Battle resmi gratis per season</strong>; skor terbaik menentukan posisi leaderboard.')
-          replace('components/global-chat.tsx', '}, 3000)', '}, 8000)')
-          replace('components/private-messages.tsx', '}, 20000)', '}, 30000)')
-          replace('components/private-messages.tsx', '}, 5000)', '}, 8000)')
-          replace('components/site-navbar.tsx', '}, 30000)', '}, 60000)')
-          replace('components/pvp-arena.tsx', '},2000)', '},2500)')
-          replace('components/pvp-arena.tsx', '},3000)', '},5000)')
-          replace('scripts/merge-legacy.mjs', 'Prepared native Battle IQ production assets.', 'Prepared ALZAVA Battle Point production assets.')
+          replace('app/account/page.tsx','Setiap peserta mendapat <strong className="text-white">1x percobaan gratis per season</strong>.','Setiap peserta mendapat <strong className="text-white">3x Ranked Battle resmi gratis per season</strong>; skor terbaik menentukan posisi leaderboard.')
+          replace('components/global-chat.tsx','}, 3000)','}, 8000)')
+          replace('components/private-messages.tsx','}, 20000)','}, 30000)')
+          replace('components/private-messages.tsx','}, 5000)','}, 8000)')
+          replace('components/site-navbar.tsx','}, 30000)','}, 60000)')
+          replace('components/pvp-arena.tsx','},2000)','},2500)')
+          replace('components/pvp-arena.tsx','},3000)','},5000)')
+          replace('scripts/merge-legacy.mjs','Prepared native Battle IQ production assets.','Prepared ALZAVA Battle Point production assets.')
 
-          tests=Path('tests/open-beta-policy.test.mjs')
-          t=tests.read_text()
+          tests=Path('tests/open-beta-policy.test.mjs'); t=tests.read_text()
           if 'Account copy never regresses to one free Ranked attempt' not in t:
-              t += '''\n\ntest("Account copy never regresses to one free Ranked attempt",()=>{\n  const s=read("app/account/page.tsx")\n  assert.doesNotMatch(s,/1x percobaan gratis per season/)\n  assert.match(s,/3x Ranked Battle resmi gratis per season/)\n})\n'''
-              tests.write_text(t)
+              tests.write_text(t+'''\n\ntest("Account copy never regresses to one free Ranked attempt",()=>{\n  const s=read("app/account/page.tsx")\n  assert.doesNotMatch(s,/1x percobaan gratis per season/)\n  assert.match(s,/3x Ranked Battle resmi gratis per season/)\n})\n''')
           PY
       - run: npm ci --no-audit --no-fund
-      - name: Verify existing quality gate
-        run: npm run check
+      - run: npm run check
       - name: Commit source fixes and remove one-off workflow
         run: |
           rm .github/workflows/stabilize-all.yml
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
-          git commit -m "stabilize account policy and realtime polling load"
+          git commit -m "stabilize account policy and polling load"
           git push
