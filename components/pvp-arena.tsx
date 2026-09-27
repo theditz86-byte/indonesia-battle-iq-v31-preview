@@ -110,7 +110,7 @@ export function PvpArena(){
   useEffect(()=>{mounted.current=true;void loadLobby();return()=>{mounted.current=false}},[loadLobby])
   useEffect(()=>{const t=window.setInterval(()=>setNow(Date.now()),250);return()=>window.clearInterval(t)},[])
   useEffect(()=>{
-    if(matchId){void loadState(matchId);const t=window.setInterval(()=>{if(document.visibilityState==="visible")void loadState(matchId)},2000);return()=>window.clearInterval(t)}
+    if(matchId){void loadState(matchId);const t=window.setInterval(()=>{if(document.visibilityState==="visible")void loadState(matchId)},2500);return()=>window.clearInterval(t)}
     const t=window.setInterval(()=>{if(document.visibilityState==="visible")void loadLobby(true)},5000);return()=>window.clearInterval(t)
   },[matchId,loadLobby,loadState])
 

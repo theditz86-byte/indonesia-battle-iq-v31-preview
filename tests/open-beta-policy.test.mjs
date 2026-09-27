@@ -106,3 +106,10 @@ test("Quick Battle is indexed and homepage branding leads with Battle Point",()=
   assert.match(read("public/sitemap.xml"),/quick-battle/)
   assert.match(read("app/layout.tsx"),/Competitive Brain Game Indonesia/)
 })
+
+
+test("Account copy never regresses to one free Ranked attempt",()=>{
+  const s=read("app/account/page.tsx")
+  assert.doesNotMatch(s,/1x percobaan gratis per season/)
+  assert.match(s,/3x Ranked Battle resmi gratis per season/)
+})

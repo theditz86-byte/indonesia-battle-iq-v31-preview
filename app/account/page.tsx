@@ -276,7 +276,7 @@ export default function AccountPage() {
         <div className="mb-7">
           <p className="text-xs font-black uppercase tracking-[.18em] text-cyan-300">AKUN PESERTA</p>
           <h1 className="mt-3 text-4xl font-black tracking-tight sm:text-6xl">Identitas Battle Anda</h1>
-          <p className="mt-4 max-w-3xl leading-7 text-slate-300">Kelola akun, nama panggilan, foto profil, dan kuota percobaan. Setiap peserta mendapat <strong className="text-white">1x percobaan gratis per season</strong>.</p>
+          <p className="mt-4 max-w-3xl leading-7 text-slate-300">Kelola akun, nama panggilan, foto profil, dan kuota percobaan. Setiap peserta mendapat <strong className="text-white">3x Ranked Battle resmi gratis per season</strong>; skor terbaik menentukan posisi leaderboard.</p>
         </div>
 
         {notice && <div className="mb-5 rounded-2xl border border-emerald-400/30 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-100">{notice}</div>}
