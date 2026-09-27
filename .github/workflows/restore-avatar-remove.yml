@@ -1,0 +1,50 @@
+name: Restore Avatar Remove
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Restore remove avatar UI
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('app/account/page.tsx')
+          s=p.read_text()
+          s=s.replace('const DELETE_API = "https://efndozplpwyemzgqfnep.supabase.co/functions/v1/battle-account-delete"', 'const DELETE_API = "https://efndozplpwyemzgqfnep.supabase.co/functions/v1/battle-account-delete"\nconst AVATAR_REMOVE_API = "https://efndozplpwyemzgqfnep.supabase.co/functions/v1/battle-avatar-remove"')
+          marker='''  async function logout() {\n'''
+          if 'async function removeAvatar()' not in s:
+              insert='''  async function removeAvatar() {\n    if (!participant?.avatar_url || !window.confirm("Hapus foto profil saat ini?")) return\n    clearMessages(); setBusy(true)\n    try {\n      const response = await fetch(AVATAR_REMOVE_API, { method: "POST", headers: { "Content-Type": "application/json", "X-Battle-Token": token }, body: JSON.stringify({ action: "remove" }) })\n      const data = await response.json().catch(() => ({}))\n      if (!response.ok) throw new Error(data?.error || "Foto profil belum dapat dihapus.")\n      setParticipant((prev) => prev ? { ...prev, avatar_url: null } : prev)\n      setNotice("Foto profil berhasil dihapus.")\n    } catch (e) { setError(messageText(e)) } finally { setBusy(false) }\n  }\n\n'''
+              s=s.replace(marker,insert+marker)
+          old='''<label className="grid gap-2 text-sm font-bold">Foto profil <span className="font-normal text-slate-500">JPG/PNG/WebP, maks. 2 MB</span><input type="file" accept="image/jpeg,image/png,image/webp" disabled={busy} onChange={(e) => void uploadAvatar(e.target.files?.[0])} className={fieldClass} /></label><button disabled={busy} className="rounded-xl bg-indigo-600 px-5 py-3 font-black disabled:opacity-60">Simpan Profil</button>'''
+          new='''<label className="grid gap-2 text-sm font-bold">Foto profil <span className="font-normal text-slate-500">JPG/PNG/WebP, maks. 2 MB</span><input type="file" accept="image/jpeg,image/png,image/webp" disabled={busy} onChange={(e) => void uploadAvatar(e.target.files?.[0])} className={fieldClass} /></label>{participant.avatar_url && <button type="button" onClick={()=>void removeAvatar()} disabled={busy} className="rounded-xl border border-rose-300/25 bg-rose-500/10 px-5 py-3 font-black text-rose-200 hover:bg-rose-500/15 disabled:opacity-60">Hapus Foto Profil</button>}<button disabled={busy} className="rounded-xl bg-indigo-600 px-5 py-3 font-black disabled:opacity-60">Simpan Profil</button>'''
+          if old not in s:
+              raise SystemExit('profile form pattern not found')
+          s=s.replace(old,new)
+          p.write_text(s)
+          PY
+      - run: npm ci --no-audit --no-fund
+      - run: npm run check
+      - name: Commit patch and remove one-off workflow
+        run: |
+          rm .github/workflows/restore-avatar-remove.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "restore remove profile photo control"
+          git push
