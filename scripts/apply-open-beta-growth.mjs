@@ -7,7 +7,6 @@ function mustReplace(content, from, to, label) {
   return content.replace(from, to)
 }
 
-// Ranked Battle: 3 official attempts/week, unlocked Mon/Wed/Fri, no paid Ranked path.
 {
   const path = "app/battle-test/page.tsx"
   let s = read(path)
@@ -44,7 +43,7 @@ function mustReplace(content, from, to, label) {
         setError(weeklyRemaining <= 0
           ? "Tiga Ranked Battle resmi minggu ini sudah digunakan. Season berikutnya membuka 3 kesempatan baru."
           : nextDay
-            ? \`Kesempatan Ranked berikutnya terbuka ${nextDay}. Kesempatan yang belum dipakai tetap tersimpan sampai akhir minggu.\`
+            ? "Kesempatan Ranked berikutnya terbuka " + nextDay + ". Kesempatan yang belum dipakai tetap tersimpan sampai akhir minggu."
             : "Kesempatan Ranked berikutnya belum terbuka. Coba lagi sesuai jadwal Ranked minggu ini.")
         setPhase("lobby")
         return
@@ -77,7 +76,7 @@ function mustReplace(content, from, to, label) {
 
   s = mustReplace(s,
 `              Setelah Ranked Attempt resmi digunakan, kredit Rp5.000 membuka <b>Rematch / Practice</b>. Hasilnya tetap mendapat Battle Point dan analisis pribadi, tetapi <b>tidak mengubah leaderboard resmi</b>.`,
-`              <b>Open Beta GRATIS.</b> Semua pemain mendapat maksimal 3 Ranked Battle resmi per minggu dengan jumlah kesempatan yang sama. Tidak ada pembelian Ranked tambahan. ${"{"}nextDay ? \`Kesempatan berikutnya terbuka ${nextDay}.\` : weeklyRemaining > 0 ? "Kesempatan Ranked tersedia sesuai jadwal minggu ini." : "Tiga kesempatan minggu ini sudah digunakan."${"}"}}`,
+`              <b>Open Beta GRATIS.</b> Semua pemain mendapat maksimal 3 Ranked Battle resmi per minggu dengan jumlah kesempatan yang sama. Tidak ada pembelian Ranked tambahan. Kesempatan dibuka Senin, Rabu, dan Jumat; yang belum digunakan tetap tersimpan sampai akhir minggu.`,
 "open beta fair-play message")
 
   s = mustReplace(s,
@@ -88,7 +87,6 @@ function mustReplace(content, from, to, label) {
   write(path, s)
 }
 
-// Result: attempts 1-3 are all official Ranked; surface a direct replay loop.
 {
   const path = "app/result/page.tsx"
   let s = read(path)
@@ -116,7 +114,6 @@ function mustReplace(content, from, to, label) {
   write(path, s)
 }
 
-// Daily Training becomes TIU Harian inside the SKD learning hub.
 {
   const path = "app/daily-training/page.tsx"
   let s = read(path)
