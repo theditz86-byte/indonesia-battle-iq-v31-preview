@@ -1,6 +1,6 @@
 "use client"
 
-import { BookOpenCheck, BrainCircuit, ChevronDown, History, LogOut, Mail, Menu, Settings, Share2, Trophy, X } from "lucide-react"
+import { BrainCircuit, ChevronDown, History, LogOut, Mail, Menu, Settings, Share2, Trophy, X } from "lucide-react"
 import { useEffect, useState } from "react"
 import { getParticipantToken, removeParticipantToken } from "@/lib/battle"
 import type { BattleParticipant } from "@/lib/battle"
@@ -13,7 +13,6 @@ const links = [
   { label: "Beranda", href: "/battle" },
   { label: "Ranking", href: "/battle#peringkat" },
   { label: "Latihan SKD", href: "/latihan-skd" },
-  { label: "Ranked Battle", href: "/battle-test" },
   { label: "Battle PVP", href: "/pvp" },
   { label: "History Ranking", href: "/history-ranking" },
   { label: "Chat Global", href: "/global-chat" },
@@ -33,7 +32,7 @@ export function SiteNavbar({ participant }: { participant: BattleParticipant | n
     else if (path.startsWith("/player")) setActive("")
     else if (path.startsWith("/latihan-skd") || path.startsWith("/latihan-tiu") || path.startsWith("/simulasi-tiu") || path.startsWith("/daily-training")) setActive("Latihan SKD")
     else if (path.startsWith("/history-ranking")) setActive("History Ranking")
-    else if (path.startsWith("/battle-test")) setActive("Ranked Battle")
+    else if (path.startsWith("/battle-test")) setActive("")
     else if (path.startsWith("/pvp")) setActive("Battle PVP")
     else if (path.startsWith("/help")) setActive("Bantuan")
     else if (window.location.hash === "#peringkat") setActive("Ranking")
@@ -115,7 +114,6 @@ export function SiteNavbar({ participant }: { participant: BattleParticipant | n
                   <div className="border-b border-white/10 px-3 py-3"><p className="truncate text-sm font-black text-white">{name}</p><p className="mt-0.5 text-[11px] text-slate-500">Profil, progress, latihan, pesan, dan pengaturan</p></div>
                   <div className="grid gap-1 py-2">
                     <a href="/share-challenge" className="flex items-center gap-3 rounded-xl bg-gradient-to-r from-cyan-400/10 to-indigo-500/10 px-3 py-2.5 text-sm font-black text-cyan-100 hover:from-cyan-400/15 hover:to-indigo-500/15"><Share2 className="h-4 w-4 text-cyan-300"/>Bagikan & Tantang</a>
-                    <a href="/latihan-skd" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-200 hover:bg-white/5"><BookOpenCheck className="h-4 w-4 text-emerald-300"/>Latihan SKD</a>
                     <a href="/daily-training" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-200 hover:bg-white/5"><BrainCircuit className="h-4 w-4 text-orange-300"/>TIU Harian</a>
                     {participant.public_id && <a href={`/player?id=${encodeURIComponent(participant.public_id)}`} className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-200 hover:bg-white/5"><Trophy className="h-4 w-4 text-amber-300"/>Profil Battle & Prestasi</a>}
                     <a href="/account/results#riwayat-hasil" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-200 hover:bg-white/5"><History className="h-4 w-4 text-violet-300"/>Riwayat Tes</a>
