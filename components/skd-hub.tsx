@@ -1,0 +1,42 @@
+"use client"
+
+import { useEffect, useState } from "react"
+import { ArrowRight, BarChart3, BrainCircuit, Clock3, Construction, Flame, Sigma, Swords } from "lucide-react"
+import { SiteNavbar } from "@/components/site-navbar"
+import { SiteFooter } from "@/components/site-footer"
+import { BATTLE_API_URL, getParticipantToken } from "@/lib/battle"
+import type { BattleParticipant } from "@/lib/battle"
+
+export function SkdHub() {
+  const [participant,setParticipant] = useState<BattleParticipant|null>(null)
+  useEffect(()=>{
+    const token=getParticipantToken(); if(!token)return
+    fetch(BATTLE_API_URL,{headers:{"X-Battle-Token":token},cache:"no-store"}).then(r=>r.ok?r.json():null).then(d=>setParticipant(d?.participant||null)).catch(()=>{})
+  },[])
+
+  return <div className="min-h-screen bg-[radial-gradient(circle_at_20%_-10%,rgba(34,211,238,.17),transparent_34rem),radial-gradient(circle_at_90%_10%,rgba(124,58,237,.14),transparent_30rem),linear-gradient(180deg,#020617,#07142e_55%,#020617)] text-white">
+    <SiteNavbar participant={participant}/>
+    <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
+      <section className="overflow-hidden rounded-[36px] border border-white/10 bg-[linear-gradient(135deg,rgba(34,211,238,.10),rgba(7,20,46,.86)_45%,rgba(124,58,237,.12))] p-7 shadow-[0_35px_120px_rgba(0,0,0,.35)] sm:p-10 lg:p-12">
+        <span className="inline-flex rounded-full border border-emerald-300/20 bg-emerald-300/10 px-3 py-1 text-[10px] font-black uppercase tracking-[.18em] text-emerald-200">Open Beta · Gratis</span>
+        <p className="mt-6 text-xs font-black uppercase tracking-[.22em] text-cyan-300">ALZAVA Learning Arena</p>
+        <h1 className="mt-3 max-w-4xl text-5xl font-black tracking-[-.055em] sm:text-6xl lg:text-7xl">Latihan SKD.<br/><span className="text-indigo-300">Mulai dari TIU.</span></h1>
+        <p className="mt-6 max-w-3xl text-base leading-7 text-slate-300">Asah kemampuan numerik, logika-analitis, dan verbal dengan sesi singkat sampai simulasi 35 soal. Semua latihan gratis selama Open Beta dan tidak memengaruhi Ranking resmi.</p>
+        <div className="mt-7 flex flex-wrap gap-3"><a href="/simulasi-tiu" className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 px-6 py-3.5 font-black shadow-[0_0_30px_rgba(99,102,241,.25)]"><Swords className="h-5 w-5"/>Simulasi TIU 35 Soal</a><a href="/latihan-tiu" className="inline-flex items-center gap-2 rounded-2xl border border-cyan-300/20 bg-cyan-300/10 px-6 py-3.5 font-black text-cyan-100"><BrainCircuit className="h-5 w-5"/>Pilih Latihan TIU</a></div>
+      </section>
+
+      <section className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <a href="/daily-training" className="group rounded-[28px] border border-orange-300/15 bg-orange-300/[.055] p-6 transition hover:-translate-y-1 hover:border-orange-300/30"><div className="grid h-12 w-12 place-items-center rounded-2xl bg-orange-300/10"><Flame className="h-6 w-6 text-orange-300"/></div><p className="mt-5 text-xs font-black uppercase tracking-[.16em] text-orange-300">Setiap Hari</p><h2 className="mt-2 text-2xl font-black">TIU Harian</h2><p className="mt-2 text-sm leading-6 text-slate-400">5 soal cepat, pembahasan, dan streak harian untuk menjaga ketajaman.</p><span className="mt-5 inline-flex items-center gap-2 text-sm font-black text-orange-200">Mulai <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1"/></span></a>
+        <a href="/latihan-tiu?category=numerik" className="group rounded-[28px] border border-cyan-300/15 bg-cyan-300/[.05] p-6 transition hover:-translate-y-1 hover:border-cyan-300/30"><div className="grid h-12 w-12 place-items-center rounded-2xl bg-cyan-300/10"><Sigma className="h-6 w-6 text-cyan-300"/></div><p className="mt-5 text-xs font-black uppercase tracking-[.16em] text-cyan-300">10 Soal</p><h2 className="mt-2 text-2xl font-black">Numerik</h2><p className="mt-2 text-sm leading-6 text-slate-400">Deret, persentase, aljabar, kerja, perbandingan, peluang, dan aritmetika sosial.</p><span className="mt-5 inline-flex items-center gap-2 text-sm font-black text-cyan-200">Latihan Numerik <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1"/></span></a>
+        <a href="/latihan-tiu?category=logika" className="group rounded-[28px] border border-violet-300/15 bg-violet-300/[.05] p-6 transition hover:-translate-y-1 hover:border-violet-300/30"><div className="grid h-12 w-12 place-items-center rounded-2xl bg-violet-300/10"><BrainCircuit className="h-6 w-6 text-violet-300"/></div><p className="mt-5 text-xs font-black uppercase tracking-[.16em] text-violet-300">10 Soal</p><h2 className="mt-2 text-2xl font-black">Logika & Analitis</h2><p className="mt-2 text-sm leading-6 text-slate-400">Silogisme, inferensi, logika kondisional, urutan, dan penalaran kritis.</p><span className="mt-5 inline-flex items-center gap-2 text-sm font-black text-violet-200">Latihan Logika <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1"/></span></a>
+        <a href="/latihan-tiu?category=verbal" className="group rounded-[28px] border border-emerald-300/15 bg-emerald-300/[.05] p-6 transition hover:-translate-y-1 hover:border-emerald-300/30"><div className="grid h-12 w-12 place-items-center rounded-2xl bg-emerald-300/10"><BarChart3 className="h-6 w-6 text-emerald-300"/></div><p className="mt-5 text-xs font-black uppercase tracking-[.16em] text-emerald-300">10 Soal</p><h2 className="mt-2 text-2xl font-black">Verbal</h2><p className="mt-2 text-sm leading-6 text-slate-400">Analogi konsep dan kosakata terpilih dengan porsi yang tidak berlebihan.</p><span className="mt-5 inline-flex items-center gap-2 text-sm font-black text-emerald-200">Latihan Verbal <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1"/></span></a>
+        <a href="/simulasi-tiu" className="group rounded-[28px] border border-amber-300/15 bg-amber-300/[.055] p-6 transition hover:-translate-y-1 hover:border-amber-300/30 md:col-span-2 lg:col-span-1"><div className="grid h-12 w-12 place-items-center rounded-2xl bg-amber-300/10"><Clock3 className="h-6 w-6 text-amber-300"/></div><p className="mt-5 text-xs font-black uppercase tracking-[.16em] text-amber-300">35 Soal · 35 Menit</p><h2 className="mt-2 text-2xl font-black">Simulasi TIU</h2><p className="mt-2 text-sm leading-6 text-slate-400">Paket campuran untuk menguji akurasi, tempo, dan kategori yang masih perlu diperkuat.</p><span className="mt-5 inline-flex items-center gap-2 text-sm font-black text-amber-200">Mulai Simulasi <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1"/></span></a>
+        <div className="rounded-[28px] border border-white/10 bg-white/[.035] p-6"><div className="grid h-12 w-12 place-items-center rounded-2xl bg-white/5"><Construction className="h-6 w-6 text-slate-500"/></div><p className="mt-5 text-xs font-black uppercase tracking-[.16em] text-slate-500">Tahap Berikutnya</p><h2 className="mt-2 text-2xl font-black text-slate-300">TWK & TKP</h2><p className="mt-2 text-sm leading-6 text-slate-500">Akan dibuka setelah kualitas bank soal TIU dan analisis latihan stabil.</p><span className="mt-5 inline-flex rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] font-black text-slate-500">SEGERA HADIR</span></div>
+      </section>
+
+      <section className="mt-8 rounded-[28px] border border-indigo-300/15 bg-indigo-300/[.05] p-6 sm:p-8"><div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between"><div><p className="text-xs font-black uppercase tracking-[.18em] text-indigo-300">Dari latihan ke kompetisi</p><h2 className="mt-2 text-3xl font-black">Sudah siap menguji diri?</h2><p className="mt-2 max-w-2xl text-sm leading-6 text-slate-400">Ranked Battle memberi 3 kesempatan resmi per minggu. Skor terbaikmu masuk leaderboard kecamatan sampai nasional.</p></div><a href="/battle-test" className="inline-flex shrink-0 items-center justify-center gap-2 rounded-2xl bg-white px-6 py-3.5 font-black text-slate-950"><Swords className="h-5 w-5"/>Masuk Ranked Battle</a></div></section>
+      <p className="mt-6 text-center text-xs leading-5 text-slate-600">Materi Latihan SKD ALZAVA adalah materi latihan mandiri, bukan soal resmi atau layanan resmi BKN.</p>
+    </main>
+    <SiteFooter/>
+  </div>
+}
