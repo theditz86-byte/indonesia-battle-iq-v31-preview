@@ -20,12 +20,12 @@ export function Hero({ season, entries }: { season: BattleSeason | null; entries
 
       <div className="relative mx-auto max-w-7xl px-4 pb-5 pt-8 sm:px-6 lg:pb-6 lg:pt-10">
         <div className="grid items-center gap-6 lg:grid-cols-[minmax(0,335px)_minmax(0,1fr)_minmax(0,305px)]">
-          <div className="flex flex-col items-start text-left">
+          <div className="flex flex-col items-start text-left lg:-translate-y-6 lg:self-start">
             <span className="inline-flex items-center rounded-full border-2 border-cyan-300/65 bg-cyan-400/15 px-5 py-2.5 text-[13px] font-black uppercase tracking-[.11em] text-cyan-100 shadow-[0_0_30px_rgba(34,211,238,.26)] backdrop-blur-sm">
               Competitive Brain Game Indonesia
             </span>
 
-            <h1 className="mt-5 text-[2.7rem] font-black leading-[0.98] tracking-tight text-white sm:text-5xl">
+            <h1 className="mt-4 text-[2.7rem] font-black leading-[0.98] tracking-tight text-white sm:text-5xl">
               <span className="bg-gradient-to-r from-cyan-400 via-sky-400 to-indigo-400 bg-clip-text text-transparent">Raih Poin.</span><br />
               <span className="bg-gradient-to-r from-amber-300 via-yellow-300 to-orange-400 bg-clip-text text-transparent">Naik Peringkat.</span>
             </h1>
@@ -53,10 +53,6 @@ export function Hero({ season, entries }: { season: BattleSeason | null; entries
                 <BarChart3 className="h-[18px] w-[18px] text-cyan-300" /> Lihat Peringkat
               </a>
             </div>
-
-            <div className="mt-3 text-[11px] font-bold text-slate-300/80">
-              Open Beta GRATIS · 3 Ranked bebas dipakai kapan saja · skor terbaik masuk leaderboard
-            </div>
           </div>
 
           <div className="relative">
@@ -79,7 +75,16 @@ export function Hero({ season, entries }: { season: BattleSeason | null; entries
             <p className="max-w-xs self-end text-right text-[13px] italic leading-relaxed text-cyan-100/80">&ldquo;Berapa Battle Point-mu—dan siapa yang bisa mengejarnya?&rdquo;</p>
             <CountdownCard season={season} />
 
-            <a href="/latihan-skd" className="group mt-1 flex w-full items-center gap-3 rounded-2xl border border-emerald-300/45 bg-gradient-to-r from-emerald-500/18 via-cyan-500/15 to-sky-500/18 px-4 py-3.5 text-left shadow-[0_0_28px_rgba(16,185,129,.16)] ring-1 ring-emerald-200/10 backdrop-blur-md transition-all hover:-translate-y-0.5 hover:border-emerald-300/65 hover:shadow-[0_0_36px_rgba(16,185,129,.24)]">
+            <div className="rounded-2xl border border-violet-300/20 bg-gradient-to-r from-violet-500/10 via-indigo-500/10 to-cyan-500/10 px-4 py-3 shadow-[0_0_22px_rgba(99,102,241,.10)] backdrop-blur-sm">
+              <div className="text-[12px] font-black leading-5 text-white">
+                <span className="text-emerald-300">OPEN BETA GRATIS</span>
+                <span className="text-slate-500"> · </span>
+                3 Ranked bebas dipakai kapan saja
+              </div>
+              <div className="mt-0.5 text-[11px] font-bold leading-4 text-cyan-100/70">Skor terbaik otomatis masuk leaderboard.</div>
+            </div>
+
+            <a href="/latihan-skd" className="group flex w-full items-center gap-3 rounded-2xl border border-emerald-300/45 bg-gradient-to-r from-emerald-500/18 via-cyan-500/15 to-sky-500/18 px-4 py-3.5 text-left shadow-[0_0_28px_rgba(16,185,129,.16)] ring-1 ring-emerald-200/10 backdrop-blur-md transition-all hover:-translate-y-0.5 hover:border-emerald-300/65 hover:shadow-[0_0_36px_rgba(16,185,129,.24)]">
               <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-emerald-400/15 ring-1 ring-emerald-300/25 transition-transform group-hover:scale-105">
                 <BrainCircuit className="h-5 w-5 text-emerald-200" />
               </span>
