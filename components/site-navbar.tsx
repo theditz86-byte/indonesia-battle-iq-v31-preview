@@ -102,7 +102,7 @@ export function SiteNavbar({ participant }: { participant: BattleParticipant | n
           {participant ? (
             <>
               <NotificationCenter />
-              <details data-alzava-profile-menu="true" className="group relative">
+              <details data-alzava-profile-menu="native" className="group relative">
                 <summary className="relative flex cursor-pointer list-none items-center gap-2 rounded-full border border-white/10 bg-white/5 py-1.5 pl-1.5 pr-2 sm:pr-3 backdrop-blur-lg transition-colors hover:bg-white/10 [&::-webkit-details-marker]:hidden">
                   {participant.avatar_url ? <img src={participant.avatar_url} alt={name} className="h-8 w-8 rounded-full object-cover ring-2 ring-cyan-400/60" /> : <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-cyan-500 to-indigo-600 text-[10px] font-black text-white ring-2 ring-cyan-400/50">BP</span>}
                   <span className="hidden text-left leading-tight md:block"><span className="block max-w-28 truncate text-sm font-semibold text-white">{name}</span></span>
