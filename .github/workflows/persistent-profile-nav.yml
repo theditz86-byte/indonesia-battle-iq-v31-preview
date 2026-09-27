@@ -1,0 +1,67 @@
+name: Persistent Profile Navigation
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Patch profile navigation
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          # Root layout: persistent profile corner on pages without native navbar.
+          p=Path('app/layout.tsx')
+          s=p.read_text()
+          imp='import { GlobalProfileCorner } from "@/components/global-profile-corner"\n'
+          if imp not in s:
+              s=s.replace('import { RankedIntegrityMonitor } from "@/components/ranked-integrity-monitor"\n', 'import { RankedIntegrityMonitor } from "@/components/ranked-integrity-monitor"\n'+imp)
+          if '<GlobalProfileCorner />' not in s:
+              s=s.replace('        <RankedIntegrityMonitor />\n        {children}', '        <RankedIntegrityMonitor />\n        <GlobalProfileCorner />\n        {children}')
+          p.write_text(s)
+
+          # Native navbar: mark it so the global corner never duplicates it,
+          # remove repeated account name inside dropdown, and tighten width/spacing.
+          p=Path('components/site-navbar.tsx')
+          s=p.read_text()
+          s=s.replace('<details className="group relative">', '<details data-alzava-profile-menu="true" className="group relative">')
+          repeated='''                  <div className="border-b border-white/10 px-2.5 py-2"><p className="truncate text-[13px] font-black text-white">{name}</p><p className="mt-0.5 text-[10px] text-slate-500">Profil & aktivitas akun</p></div>\n'''
+          s=s.replace(repeated,'')
+          s=s.replace('mt-2.5 w-56 overflow-hidden', 'mt-2 w-[208px] overflow-hidden')
+          s=s.replace('p-1.5 shadow-[0_20px_55px', 'p-1 shadow-[0_20px_55px')
+          s=s.replace('gap-2.5 rounded-lg', 'gap-2 rounded-lg')
+          s=s.replace('px-2.5 py-2 text-[13px]', 'px-2.5 py-1.5 text-[12px]')
+          s=s.replace('px-2.5 py-2 text-left text-[13px]', 'px-2.5 py-1.5 text-left text-[12px]')
+          p.write_text(s)
+
+          # Account page has its own header; reserve room for the persistent profile pill.
+          p=Path('app/account/page.tsx')
+          s=p.read_text()
+          s=s.replace('className="rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-sm font-bold text-slate-200 hover:bg-white/10">← Kembali ke Battle</a>', 'className="rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-sm font-bold text-slate-200 hover:bg-white/10 sm:mr-40">← Kembali ke Battle</a>')
+          p.write_text(s)
+          PY
+      - run: npm ci --no-audit --no-fund
+      - run: npm run check
+      - name: Commit patch and remove one-off workflow
+        run: |
+          rm .github/workflows/persistent-profile-nav.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "keep compact profile navigation across participant pages"
+          git push
