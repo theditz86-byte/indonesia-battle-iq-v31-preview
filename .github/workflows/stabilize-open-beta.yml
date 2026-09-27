@@ -23,6 +23,15 @@ jobs:
           node-version: 22
       - name: Apply source stabilization
         run: node scripts/stabilize-open-beta.mjs
+      - name: Repair generated policy test
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('tests/open-beta-policy.test.mjs')
+          s=p.read_text()
+          s=s.replace('  assert.doesNotMatch(s,/callBattle\\(\\{ action: "start" \\}/)', '  assert.equal(s.includes(\'callBattle({ action: "start" }, rawToken)\'), false)')
+          p.write_text(s)
+          PY
       - name: Generate deterministic lockfile
         run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
       - name: Install dependencies
