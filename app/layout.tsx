@@ -7,6 +7,7 @@ import { GrowthTracker } from "@/components/growth-tracker"
 import { ReferralConversionTracker } from "@/components/referral-conversion-tracker"
 import { ResultErrorAnalysis } from "@/components/result-error-analysis"
 import { RankedIntegrityMonitor } from "@/components/ranked-integrity-monitor"
+import { GlobalProfileCorner } from "@/components/global-profile-corner"
 
 const BRAND_ICON = "/brand/alvaza-logo-new.svg?v=20260925-2"
 
@@ -71,6 +72,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <GrowthTracker />
         <ReferralConversionTracker />
         <RankedIntegrityMonitor />
+        <GlobalProfileCorner />
         {children}
         <ResultErrorAnalysis />
       </body>

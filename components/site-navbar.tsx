@@ -88,7 +88,7 @@ export function SiteNavbar({ participant }: { participant: BattleParticipant | n
 
         <nav className="hidden items-center gap-1 rounded-full border border-white/10 bg-white/5 p-1 backdrop-blur-lg xl:flex">
           {links.map((link) => (
-            <a key={link.label} href={link.href} onClick={() => selectLink(link.label)} className={`relative rounded-full px-2.5 py-2 text-[13px] font-medium transition-all ${active === link.label ? "bg-white text-slate-900 shadow-[0_0_16px_rgba(255,255,255,0.25)]" : "text-slate-300 hover:text-white"}`}>
+            <a key={link.label} href={link.href} onClick={() => selectLink(link.label)} className={`relative rounded-full px-2.5 py-1.5 text-[12px] font-medium transition-all ${active === link.label ? "bg-white text-slate-900 shadow-[0_0_16px_rgba(255,255,255,0.25)]" : "text-slate-300 hover:text-white"}`}>
               {link.label}
             </a>
           ))}
@@ -102,7 +102,7 @@ export function SiteNavbar({ participant }: { participant: BattleParticipant | n
           {participant ? (
             <>
               <NotificationCenter />
-              <details className="group relative">
+              <details data-alzava-profile-menu="true" className="group relative">
                 <summary className="relative flex cursor-pointer list-none items-center gap-2 rounded-full border border-white/10 bg-white/5 py-1.5 pl-1.5 pr-2 sm:pr-3 backdrop-blur-lg transition-colors hover:bg-white/10 [&::-webkit-details-marker]:hidden">
                   {participant.avatar_url ? <img src={participant.avatar_url} alt={name} className="h-8 w-8 rounded-full object-cover ring-2 ring-cyan-400/60" /> : <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-cyan-500 to-indigo-600 text-[10px] font-black text-white ring-2 ring-cyan-400/50">BP</span>}
                   <span className="hidden text-left leading-tight md:block"><span className="block max-w-28 truncate text-sm font-semibold text-white">{name}</span></span>
@@ -110,17 +110,16 @@ export function SiteNavbar({ participant }: { participant: BattleParticipant | n
                   {socialBadge > 0 && <span className="absolute -right-1 -top-1 grid h-5 min-w-5 place-items-center rounded-full bg-rose-500 px-1 text-[10px] font-black text-white ring-2 ring-slate-950 shadow-[0_0_14px_rgba(244,63,94,.65)]">{socialBadge > 99 ? "99+" : socialBadge}</span>}
                 </summary>
 
-                <div className="absolute right-0 mt-2.5 w-56 overflow-hidden rounded-xl border border-white/10 bg-[#061329]/95 p-1.5 shadow-[0_20px_55px_rgba(0,0,0,.42)] backdrop-blur-xl">
-                  <div className="border-b border-white/10 px-2.5 py-2"><p className="truncate text-[13px] font-black text-white">{name}</p><p className="mt-0.5 text-[10px] text-slate-500">Profil & aktivitas akun</p></div>
+                <div className="absolute right-0 mt-2 w-[208px] overflow-hidden rounded-xl border border-white/10 bg-[#061329]/95 p-1 shadow-[0_20px_55px_rgba(0,0,0,.42)] backdrop-blur-xl">
                   <div className="grid gap-0.5 py-1.5">
-                    <a href="/share-challenge" className="flex items-center gap-2.5 rounded-lg bg-gradient-to-r from-cyan-400/10 to-indigo-500/10 px-2.5 py-2 text-[13px] font-black text-cyan-100 hover:from-cyan-400/15 hover:to-indigo-500/15"><Share2 className="h-3.5 w-3.5 text-cyan-300"/>Bagikan & Tantang</a>
-                    <a href="/daily-training" className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-[13px] font-bold text-slate-200 hover:bg-white/5"><BrainCircuit className="h-3.5 w-3.5 text-orange-300"/>TIU Harian</a>
-                    {participant.public_id && <a href={`/player?id=${encodeURIComponent(participant.public_id)}`} className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-[13px] font-bold text-slate-200 hover:bg-white/5"><Trophy className="h-3.5 w-3.5 text-amber-300"/>Profil Battle & Prestasi</a>}
-                    <a href="/account/results#riwayat-hasil" className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-[13px] font-bold text-slate-200 hover:bg-white/5"><History className="h-3.5 w-3.5 text-violet-300"/>Riwayat Tes</a>
-                    <a href="/messages" className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-[13px] font-bold text-slate-200 hover:bg-white/5"><Mail className="h-3.5 w-3.5 text-indigo-300"/><span className="flex-1">Pesan & Teman</span>{socialBadge > 0 && <span className="rounded-full bg-rose-500 px-1.5 py-0.5 text-[9px] font-black text-white">{socialBadge > 99 ? "99+" : socialBadge}</span>}</a>
-                    <a href="/account" className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-[13px] font-bold text-slate-200 hover:bg-white/5"><Settings className="h-3.5 w-3.5 text-slate-400"/>Pengaturan Profil</a>
+                    <a href="/share-challenge" className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-cyan-400/10 to-indigo-500/10 px-2.5 py-1.5 text-[12px] font-black text-cyan-100 hover:from-cyan-400/15 hover:to-indigo-500/15"><Share2 className="h-3.5 w-3.5 text-cyan-300"/>Bagikan & Tantang</a>
+                    <a href="/daily-training" className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-[12px] font-bold text-slate-200 hover:bg-white/5"><BrainCircuit className="h-3.5 w-3.5 text-orange-300"/>TIU Harian</a>
+                    {participant.public_id && <a href={`/player?id=${encodeURIComponent(participant.public_id)}`} className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-[12px] font-bold text-slate-200 hover:bg-white/5"><Trophy className="h-3.5 w-3.5 text-amber-300"/>Profil Battle & Prestasi</a>}
+                    <a href="/account/results#riwayat-hasil" className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-[12px] font-bold text-slate-200 hover:bg-white/5"><History className="h-3.5 w-3.5 text-violet-300"/>Riwayat Tes</a>
+                    <a href="/messages" className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-[12px] font-bold text-slate-200 hover:bg-white/5"><Mail className="h-3.5 w-3.5 text-indigo-300"/><span className="flex-1">Pesan & Teman</span>{socialBadge > 0 && <span className="rounded-full bg-rose-500 px-1.5 py-0.5 text-[9px] font-black text-white">{socialBadge > 99 ? "99+" : socialBadge}</span>}</a>
+                    <a href="/account" className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-[12px] font-bold text-slate-200 hover:bg-white/5"><Settings className="h-3.5 w-3.5 text-slate-400"/>Pengaturan Profil</a>
                     <div className="my-0.5 border-t border-white/10" />
-                    <button type="button" onClick={()=>void logout()} className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-[13px] font-bold text-rose-200 transition-colors hover:bg-rose-500/10"><LogOut className="h-3.5 w-3.5 text-rose-300"/>Keluar</button>
+                    <button type="button" onClick={()=>void logout()} className="flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-left text-[12px] font-bold text-rose-200 transition-colors hover:bg-rose-500/10"><LogOut className="h-3.5 w-3.5 text-rose-300"/>Keluar</button>
                   </div>
                 </div>
               </details>
