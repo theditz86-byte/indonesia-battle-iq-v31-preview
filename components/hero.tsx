@@ -79,8 +79,15 @@ export function Hero({ season, entries }: { season: BattleSeason | null; entries
             <p className="max-w-xs self-end text-right text-[13px] italic leading-relaxed text-cyan-100/80">&ldquo;Berapa Battle Point-mu—dan siapa yang bisa mengejarnya?&rdquo;</p>
             <CountdownCard season={season} />
 
-            <a href="/latihan-skd" className="mt-1 flex w-full items-center justify-center gap-2 rounded-xl border border-emerald-300/25 bg-emerald-300/[.08] px-3 py-2.5 text-[11px] font-black text-emerald-100 shadow-[0_0_18px_rgba(52,211,153,.08)] transition hover:border-emerald-300/40 hover:bg-emerald-300/12">
-              <BrainCircuit className="h-4 w-4 text-emerald-300" /> Latihan SKD & TIU Gratis <span className="font-bold text-slate-500">· Non-Ranked</span>
+            <a href="/latihan-skd" className="group mt-1 flex w-full items-center gap-3 rounded-2xl border border-emerald-300/45 bg-gradient-to-r from-emerald-500/18 via-cyan-500/15 to-sky-500/18 px-4 py-3.5 text-left shadow-[0_0_28px_rgba(16,185,129,.16)] ring-1 ring-emerald-200/10 backdrop-blur-md transition-all hover:-translate-y-0.5 hover:border-emerald-300/65 hover:shadow-[0_0_36px_rgba(16,185,129,.24)]">
+              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-emerald-400/15 ring-1 ring-emerald-300/25 transition-transform group-hover:scale-105">
+                <BrainCircuit className="h-5 w-5 text-emerald-200" />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block text-sm font-black text-white">Latihan SKD & TIU Gratis</span>
+                <span className="mt-0.5 block text-[10px] font-bold text-emerald-100/70">Latihan bebas · tidak memengaruhi ranking</span>
+              </span>
+              <ArrowRight className="h-4 w-4 shrink-0 text-emerald-200 transition-transform group-hover:translate-x-0.5" />
             </a>
 
             <div className="grid w-full grid-cols-2 gap-2 text-[11px] font-extrabold">
