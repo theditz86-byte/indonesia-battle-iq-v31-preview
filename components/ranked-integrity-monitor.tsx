@@ -29,16 +29,21 @@ export function RankedIntegrityMonitor(){
     const onVisibility=()=>{
       if(document.visibilityState==="hidden"){
         hiddenAt.current=Date.now()
+        blurAt.current=null
         return
       }
       if(hiddenAt.current){
         const away=Date.now()-hiddenAt.current
         hiddenAt.current=null
+        blurAt.current=null
         if(away>=5000&&sent.current<4){sent.current++;void send("visibility_leave",away)}
       }
     }
-    const onBlur=()=>{blurAt.current=Date.now()}
+    const onBlur=()=>{
+      if(document.visibilityState==="visible"&&hiddenAt.current===null)blurAt.current=Date.now()
+    }
     const onFocus=()=>{
+      if(hiddenAt.current!==null){blurAt.current=null;return}
       if(blurAt.current){
         const away=Date.now()-blurAt.current
         blurAt.current=null
