@@ -19,7 +19,7 @@ export function Hero({ season, entries }: { season: BattleSeason | null; entries
       </div>
 
       <div className="relative mx-auto max-w-7xl px-4 pb-5 pt-8 sm:px-6 lg:pb-6 lg:pt-10">
-        <div className="grid items-center gap-6 lg:grid-cols-[minmax(0,335px)_minmax(0,1fr)_minmax(0,285px)]">
+        <div className="grid items-center gap-6 lg:grid-cols-[minmax(0,335px)_minmax(0,1fr)_minmax(0,305px)]">
           <div className="flex flex-col items-start text-left">
             <span className="inline-flex items-center rounded-full border-2 border-cyan-300/65 bg-cyan-400/15 px-5 py-2.5 text-[13px] font-black uppercase tracking-[.11em] text-cyan-100 shadow-[0_0_30px_rgba(34,211,238,.26)] backdrop-blur-sm">
               Competitive Brain Game Indonesia
@@ -57,17 +57,6 @@ export function Hero({ season, entries }: { season: BattleSeason | null; entries
             <div className="mt-3 text-[11px] font-bold text-slate-300/80">
               Open Beta GRATIS · 3 Ranked bebas dipakai kapan saja · skor terbaik masuk leaderboard
             </div>
-
-            <a href="/latihan-skd" className="mt-3 inline-flex items-center gap-2 rounded-xl border border-emerald-300/20 bg-emerald-300/[.07] px-3 py-2 text-[11px] font-black text-emerald-100 transition hover:border-emerald-300/35 hover:bg-emerald-300/10">
-              <BrainCircuit className="h-4 w-4 text-emerald-300" /> Latihan SKD & TIU Gratis <span className="font-bold text-slate-500">· Non-Ranked</span>
-            </a>
-
-            <div className="mt-4 grid w-full max-w-[21rem] grid-cols-2 gap-2 text-[11px] font-extrabold sm:grid-cols-4 lg:grid-cols-2">
-              <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-slate-950/35 px-3 py-2 text-slate-200 backdrop-blur-sm"><Sparkles className="h-3.5 w-3.5 text-cyan-300"/>Battle Point</div>
-              <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-slate-950/35 px-3 py-2 text-slate-200 backdrop-blur-sm"><BarChart3 className="h-3.5 w-3.5 text-violet-300"/>Statistik</div>
-              <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-slate-950/35 px-3 py-2 text-slate-200 backdrop-blur-sm"><Trophy className="h-3.5 w-3.5 text-amber-300"/>Rank Nasional</div>
-              <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-slate-950/35 px-3 py-2 text-slate-200 backdrop-blur-sm"><Share2 className="h-3.5 w-3.5 text-emerald-300"/>Share Card</div>
-            </div>
           </div>
 
           <div className="relative">
@@ -81,12 +70,25 @@ export function Hero({ season, entries }: { season: BattleSeason | null; entries
             )}
           </div>
 
-          <div className="flex flex-col items-end gap-5">
-            <div className="flex items-center gap-2 rounded-full border border-emerald-300/20 bg-emerald-400/10 px-3 py-1.5 text-[11px] font-black text-emerald-200 backdrop-blur-sm">
-              <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-400" /> Leaderboard diperbarui otomatis
+          <div className="flex w-full flex-col items-stretch gap-3 lg:-translate-y-6 lg:self-start">
+            <div className="flex justify-end">
+              <div className="flex items-center gap-2 rounded-full border border-emerald-300/20 bg-emerald-400/10 px-3 py-1.5 text-[11px] font-black text-emerald-200 backdrop-blur-sm">
+                <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-400" /> Leaderboard diperbarui otomatis
+              </div>
             </div>
-            <p className="max-w-xs text-right text-[13px] italic leading-relaxed text-cyan-100/80">&ldquo;Berapa Battle Point-mu—dan siapa yang bisa mengejarnya?&rdquo;</p>
+            <p className="max-w-xs self-end text-right text-[13px] italic leading-relaxed text-cyan-100/80">&ldquo;Berapa Battle Point-mu—dan siapa yang bisa mengejarnya?&rdquo;</p>
             <CountdownCard season={season} />
+
+            <a href="/latihan-skd" className="mt-1 flex w-full items-center justify-center gap-2 rounded-xl border border-emerald-300/25 bg-emerald-300/[.08] px-3 py-2.5 text-[11px] font-black text-emerald-100 shadow-[0_0_18px_rgba(52,211,153,.08)] transition hover:border-emerald-300/40 hover:bg-emerald-300/12">
+              <BrainCircuit className="h-4 w-4 text-emerald-300" /> Latihan SKD & TIU Gratis <span className="font-bold text-slate-500">· Non-Ranked</span>
+            </a>
+
+            <div className="grid w-full grid-cols-2 gap-2 text-[11px] font-extrabold">
+              <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-slate-950/45 px-3 py-2.5 text-slate-200 backdrop-blur-sm"><Sparkles className="h-3.5 w-3.5 text-cyan-300"/>Battle Point</div>
+              <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-slate-950/45 px-3 py-2.5 text-slate-200 backdrop-blur-sm"><BarChart3 className="h-3.5 w-3.5 text-violet-300"/>Statistik</div>
+              <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-slate-950/45 px-3 py-2.5 text-slate-200 backdrop-blur-sm"><Trophy className="h-3.5 w-3.5 text-amber-300"/>Rank Nasional</div>
+              <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-slate-950/45 px-3 py-2.5 text-slate-200 backdrop-blur-sm"><Share2 className="h-3.5 w-3.5 text-emerald-300"/>Share Card</div>
+            </div>
           </div>
         </div>
       </div>
