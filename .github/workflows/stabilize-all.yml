@@ -1,4 +1,4 @@
-name: Final Stabilization Patch
+name: Focused Stabilization Patch
 
 on:
   push:
@@ -11,7 +11,7 @@ jobs:
   stabilize:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
         with:
@@ -20,24 +20,21 @@ jobs:
         with:
           node-version: 22
           cache: npm
-      - name: Apply stabilization edits
+      - name: Patch remaining source issues
         run: |
           python3 - <<'PY'
           from pathlib import Path
-          import json
 
           def replace(path, old, new):
-              p=Path(path); s=p.read_text();
+              p=Path(path)
+              s=p.read_text()
               if old not in s:
-                  print(f"skip missing pattern: {path}: {old[:60]}")
-                  return
+                  raise SystemExit(f"expected pattern missing: {path}: {old[:80]}")
               p.write_text(s.replace(old,new))
-              print(f"patched {path}")
 
           replace('app/account/page.tsx',
             'Kelola akun, nama panggilan, foto profil, dan kuota percobaan. Setiap peserta mendapat <strong className="text-white">1x percobaan gratis per season</strong>.',
             'Kelola akun, nama panggilan, foto profil, keamanan sesi, dan kuota Ranked. Setiap peserta mendapat <strong className="text-white">3x Ranked Battle resmi gratis per season</strong>; skor terbaik menentukan posisi leaderboard.')
-
           replace('components/global-chat.tsx', '}, 3000)', '}, 8000)')
           replace('components/private-messages.tsx', '}, 20000)', '}, 30000)')
           replace('components/private-messages.tsx', '}, 5000)', '}, 8000)')
@@ -48,30 +45,18 @@ jobs:
 
           tests=Path('tests/open-beta-policy.test.mjs')
           t=tests.read_text()
-          block='''\n\ntest("Account copy never regresses to one free Ranked attempt",()=>{\n  const s=read("app/account/page.tsx")\n  assert.doesNotMatch(s,/1x percobaan gratis per season/)\n  assert.match(s,/3x Ranked Battle resmi gratis per season/)\n})\n\ntest("Polling intervals stay bounded for open-beta scale",()=>{\n  assert.doesNotMatch(read("components/global-chat.tsx"),/}, 3000\\)/)\n  assert.doesNotMatch(read("components/private-messages.tsx"),/}, 5000\\)/)\n  assert.doesNotMatch(read("components/site-navbar.tsx"),/}, 30000\\)/)\n})\n'''
-          if 'Account copy never regresses' not in t:
-              tests.write_text(t+block)
-
-          pkg=Path('package.json')
-          data=json.loads(pkg.read_text())
-          data.setdefault('scripts',{})['test:e2e']='playwright test'
-          pkg.write_text(json.dumps(data,indent=2,ensure_ascii=False)+'\n')
-
-          Path('playwright.config.ts').write_text('''import { defineConfig, devices } from "@playwright/test"\n\nexport default defineConfig({\n  testDir: "./e2e",\n  timeout: 30_000,\n  retries: 1,\n  use: { baseURL: "http://127.0.0.1:4173", trace: "retain-on-failure" },\n  projects: [\n    { name: "chromium-desktop", use: { ...devices["Desktop Chrome"] } },\n    { name: "chromium-mobile", use: { ...devices["Pixel 7"] } },\n  ],\n})\n''')
-          Path('e2e').mkdir(exist_ok=True)
-          Path('e2e/public-smoke.spec.ts').write_text('''import { test, expect } from "@playwright/test"\nimport AxeBuilder from "@axe-core/playwright"\n\nconst routes = ["/battle/", "/quick-battle/", "/latihan-skd/", "/pvp/", "/account/", "/help/"]\n\nfor (const route of routes) {\n  test(`${route} loads without critical browser or accessibility failure`, async ({ page }) => {\n    const errors: string[] = []\n    page.on("pageerror", error => errors.push(error.message))\n    const response = await page.goto(route, { waitUntil: "networkidle" })\n    expect(response?.ok(), `HTTP failed for ${route}`).toBeTruthy()\n    expect(await page.title()).not.toBe("")\n    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)\n    expect(overflow).toBeLessThanOrEqual(2)\n    const report = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze()\n    const critical = report.violations.filter(v => v.impact === "critical")\n    expect(critical, JSON.stringify(critical, null, 2)).toEqual([])\n    expect(errors).toEqual([])\n  })\n}\n''')
-
-          Path('.github/workflows/e2e.yml').write_text('''name: Browser Smoke & Accessibility\n\non:\n  push:\n    branches: [main]\n  pull_request:\n    branches: [main]\n\njobs:\n  browser-smoke:\n    runs-on: ubuntu-latest\n    timeout-minutes: 20\n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/setup-node@v4\n        with:\n          node-version: 22\n          cache: npm\n      - run: npm ci --no-audit --no-fund\n      - run: npm run build\n      - run: npx playwright install --with-deps chromium\n      - name: Serve static export\n        run: |\n          python3 -m http.server 4173 --directory out >/tmp/alzava-http.log 2>&1 &\n          for i in {1..30}; do curl -fsS http://127.0.0.1:4173/battle/ >/dev/null && exit 0; sleep 1; done\n          cat /tmp/alzava-http.log\n          exit 1\n      - run: npm run test:e2e\n''')
+          if 'Account copy never regresses to one free Ranked attempt' not in t:
+              t += '''\n\ntest("Account copy never regresses to one free Ranked attempt",()=>{\n  const s=read("app/account/page.tsx")\n  assert.doesNotMatch(s,/1x percobaan gratis per season/)\n  assert.match(s,/3x Ranked Battle resmi gratis per season/)\n})\n'''
+              tests.write_text(t)
           PY
-      - name: Add browser-test dependencies
-        run: npm install --save-dev @playwright/test@1.55.1 @axe-core/playwright@4.10.2 --no-audit --no-fund
-      - name: Verify unit, typecheck and production build
+      - run: npm ci --no-audit --no-fund
+      - name: Verify existing quality gate
         run: npm run check
-      - name: Commit stabilized source and remove one-off workflow
+      - name: Commit source fixes and remove one-off workflow
         run: |
           rm .github/workflows/stabilize-all.yml
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
-          git commit -m "stabilize battle rules, polling and browser QA"
+          git commit -m "stabilize account policy and realtime polling load"
           git push
