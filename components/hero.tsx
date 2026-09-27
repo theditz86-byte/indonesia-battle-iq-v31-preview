@@ -21,9 +21,18 @@ export function Hero({ season, entries }: { season: BattleSeason | null; entries
       <div className="relative mx-auto max-w-7xl px-4 pb-5 pt-8 sm:px-6 lg:pb-6 lg:pt-10">
         <div className="grid items-center gap-6 lg:grid-cols-[minmax(0,335px)_minmax(0,1fr)_minmax(0,305px)]">
           <div className="flex flex-col items-start text-left lg:-translate-y-6 lg:self-start">
-            <span className="inline-flex items-center rounded-full border-2 border-cyan-300/65 bg-cyan-400/15 px-5 py-2.5 text-[13px] font-black uppercase tracking-[.11em] text-cyan-100 shadow-[0_0_30px_rgba(34,211,238,.26)] backdrop-blur-sm">
-              Competitive Brain Game Indonesia
-            </span>
+            <div className="group relative w-full max-w-[21rem] overflow-hidden rounded-2xl border border-cyan-300/50 bg-gradient-to-r from-cyan-400/16 via-sky-500/10 to-indigo-500/12 px-4 py-3.5 shadow-[0_0_34px_rgba(34,211,238,.16)] ring-1 ring-cyan-200/10 backdrop-blur-md">
+              <div className="pointer-events-none absolute -right-8 -top-10 h-24 w-24 rounded-full bg-cyan-300/15 blur-2xl" />
+              <div className="relative flex items-center gap-3">
+                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-cyan-200/25 bg-cyan-300/10 shadow-[0_0_20px_rgba(34,211,238,.16)]">
+                  <Sparkles className="h-5 w-5 text-cyan-200" />
+                </span>
+                <div className="min-w-0">
+                  <div className="text-[12px] font-black uppercase leading-4 tracking-[.16em] text-cyan-50">Competitive Brain Game</div>
+                  <div className="mt-0.5 text-[13px] font-black uppercase tracking-[.22em] text-cyan-300">Indonesia</div>
+                </div>
+              </div>
+            </div>
 
             <h1 className="mt-4 text-[2.7rem] font-black leading-[0.98] tracking-tight text-white sm:text-5xl">
               <span className="bg-gradient-to-r from-cyan-400 via-sky-400 to-indigo-400 bg-clip-text text-transparent">Raih Poin.</span><br />
