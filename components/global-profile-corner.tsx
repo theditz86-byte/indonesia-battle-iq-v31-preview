@@ -2,6 +2,7 @@
 
 import { BrainCircuit, ChevronDown, History, LogOut, Mail, Settings, Share2, Trophy } from "lucide-react"
 import { useEffect, useState } from "react"
+import { usePathname } from "next/navigation"
 import { NotificationCenter } from "@/components/notification-center"
 import { getParticipantToken, removeParticipantToken } from "@/lib/battle"
 import type { BattleParticipant } from "@/lib/battle"
@@ -20,48 +21,78 @@ const excludedPrefixes = [
 ]
 
 export function GlobalProfileCorner() {
+  const pathname = usePathname()
   const [ready, setReady] = useState(false)
   const [hidden, setHidden] = useState(true)
   const [participant, setParticipant] = useState<BattleParticipant | null>(null)
 
   useEffect(() => {
-    const path = window.location.pathname
+    const path = pathname || window.location.pathname
+    setReady(false)
+    setHidden(true)
+
     if (excludedPrefixes.some((prefix) => path.startsWith(prefix))) {
-      setHidden(true)
-      setReady(true)
-      return
-    }
-
-    const nativeMenu = document.querySelector('[data-alzava-profile-menu="true"]')
-    if (nativeMenu) {
-      setHidden(true)
-      setReady(true)
-      return
-    }
-
-    setHidden(false)
-    const token = getParticipantToken()
-    if (!token) {
       setReady(true)
       return
     }
 
     let cancelled = false
-    void fetch(ACCOUNT_API, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "X-Battle-Token": token },
-      body: JSON.stringify({ action: "me" }),
-      cache: "no-store",
-    })
-      .then(async (response) => {
-        const data = await response.json().catch(() => ({}))
-        if (!cancelled && response.ok) setParticipant(data.participant || null)
-      })
-      .catch(() => {})
-      .finally(() => { if (!cancelled) setReady(true) })
+    let revealTimer = 0
+    let fetchStarted = false
 
-    return () => { cancelled = true }
-  }, [])
+    const loadParticipant = () => {
+      if (fetchStarted || cancelled) return
+      fetchStarted = true
+      const token = getParticipantToken()
+      if (!token) {
+        setParticipant(null)
+        setReady(true)
+        return
+      }
+      void fetch(ACCOUNT_API, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-Battle-Token": token },
+        body: JSON.stringify({ action: "me" }),
+        cache: "no-store",
+      })
+        .then(async (response) => {
+          const data = await response.json().catch(() => ({}))
+          if (!cancelled && response.ok) setParticipant(data.participant || null)
+        })
+        .catch(() => {})
+        .finally(() => { if (!cancelled) setReady(true) })
+    }
+
+    const syncWithNativeMenu = () => {
+      if (cancelled) return
+      const nativeMenu = document.querySelector('[data-alzava-profile-menu="native"]')
+      if (nativeMenu) {
+        window.clearTimeout(revealTimer)
+        setHidden(true)
+        setReady(true)
+        return
+      }
+      window.clearTimeout(revealTimer)
+      revealTimer = window.setTimeout(() => {
+        if (cancelled) return
+        const stillNoNative = !document.querySelector('[data-alzava-profile-menu="native"]')
+        if (stillNoNative) {
+          setHidden(false)
+          loadParticipant()
+        }
+      }, 180)
+    }
+
+    const observer = new MutationObserver(syncWithNativeMenu)
+    observer.observe(document.body, { childList: true, subtree: true })
+    syncWithNativeMenu()
+
+    return () => {
+      cancelled = true
+      window.clearTimeout(revealTimer)
+      observer.disconnect()
+    }
+  }, [pathname])
 
   async function logout() {
     const token = getParticipantToken()
@@ -84,7 +115,7 @@ export function GlobalProfileCorner() {
     <div className="fixed right-3 top-3 z-[90] flex items-center gap-2 sm:right-5">
       {participant && <NotificationCenter />}
       {participant ? (
-        <details data-alzava-profile-menu="true" className="group relative">
+        <details data-alzava-profile-menu="global" className="group relative">
           <summary className="relative flex cursor-pointer list-none items-center gap-1.5 rounded-full border border-white/10 bg-[#071329]/95 py-1 pl-1 pr-2.5 shadow-[0_12px_34px_rgba(0,0,0,.30)] backdrop-blur-xl transition-colors hover:bg-[#0b1a35] [&::-webkit-details-marker]:hidden">
             {participant.avatar_url ? (
               <img src={participant.avatar_url} alt={name} className="h-8 w-8 rounded-full object-cover ring-2 ring-cyan-400/60" />
