@@ -6,6 +6,7 @@ import { AccountLoginRedirect } from "@/components/account-login-redirect"
 import { GrowthTracker } from "@/components/growth-tracker"
 import { ReferralConversionTracker } from "@/components/referral-conversion-tracker"
 import { ResultErrorAnalysis } from "@/components/result-error-analysis"
+import { RankedIntegrityMonitor } from "@/components/ranked-integrity-monitor"
 
 const BRAND_ICON = "/brand/alvaza-logo-new.svg?v=20260925-2"
 
@@ -68,6 +69,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <AccountLoginRedirect />
         <GrowthTracker />
         <ReferralConversionTracker />
+        <RankedIntegrityMonitor />
         {children}
         <ResultErrorAnalysis />
       </body>
