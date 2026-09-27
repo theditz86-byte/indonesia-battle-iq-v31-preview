@@ -8,6 +8,7 @@ const REGION_API = "https://efndozplpwyemzgqfnep.supabase.co/functions/v1/battle
 const RECOVERY_API = "https://efndozplpwyemzgqfnep.supabase.co/functions/v1/battle-recovery"
 const SESSION_API = "https://efndozplpwyemzgqfnep.supabase.co/functions/v1/battle-participant-session"
 const DELETE_API = "https://efndozplpwyemzgqfnep.supabase.co/functions/v1/battle-account-delete"
+const AVATAR_REMOVE_API = "https://efndozplpwyemzgqfnep.supabase.co/functions/v1/battle-avatar-remove"
 
 type Participant = {
   public_id?: string
@@ -254,6 +255,18 @@ export default function AccountPage() {
     } catch (e) { setError(messageText(e)) } finally { setBusy(false) }
   }
 
+  async function removeAvatar() {
+    if (!participant?.avatar_url || !window.confirm("Hapus foto profil saat ini?")) return
+    clearMessages(); setBusy(true)
+    try {
+      const response = await fetch(AVATAR_REMOVE_API, { method: "POST", headers: { "Content-Type": "application/json", "X-Battle-Token": token }, body: JSON.stringify({ action: "remove" }) })
+      const data = await response.json().catch(() => ({}))
+      if (!response.ok) throw new Error(data?.error || "Foto profil belum dapat dihapus.")
+      setParticipant((prev) => prev ? { ...prev, avatar_url: null } : prev)
+      setNotice("Foto profil berhasil dihapus.")
+    } catch (e) { setError(messageText(e)) } finally { setBusy(false) }
+  }
+
   async function logout() {
     try { await fetch(SESSION_API,{method:"POST",headers:{"Content-Type":"application/json","X-Battle-Token":token},body:JSON.stringify({action:"logout"})}) } catch {}
     localStorage.removeItem(PARTICIPANT_TOKEN_KEY); setToken(""); setParticipant(null); setNotice(""); setError(""); setTab("login")
@@ -342,7 +355,7 @@ export default function AccountPage() {
             <section className={`rounded-3xl border p-6 ${participant.email_verified ? "border-emerald-300/20 bg-emerald-300/[.06]" : "border-amber-300/25 bg-amber-300/10"}`}><div className="flex flex-wrap items-center justify-between gap-2"><h3 className="text-xl font-black">Email Pemulihan</h3><span className={`rounded-full px-3 py-1 text-xs font-black ${participant.email_verified?"bg-emerald-300/10 text-emerald-200":"bg-amber-300/10 text-amber-200"}`}>{participant.email_verified?"Terverifikasi":"Belum terverifikasi"}</span></div><p className="mt-1 text-sm text-slate-300">Email baru dapat dipakai untuk reset password setelah Anda membuka link verifikasi yang dikirim ALZAVA.</p><form onSubmit={saveRecoveryEmail} className="mt-5 flex flex-col gap-3 sm:flex-row"><input type="email" value={recoveryEmail} onChange={(e) => setRecoveryEmail(e.target.value)} required autoComplete="email" placeholder="nama@email.com" className={`${fieldClass} min-w-0 flex-1`} /><button disabled={busy} className="rounded-xl bg-emerald-500 px-5 py-3 font-black text-slate-950 disabled:opacity-60">{participant.email ? "Perbarui Email" : "Simpan Email"}</button>{participant.email && !participant.email_verified && <button type="button" onClick={()=>void requestEmailVerification()} disabled={busy} className="rounded-xl border border-amber-300/25 bg-amber-300/10 px-5 py-3 font-black text-amber-100 disabled:opacity-60">Kirim Verifikasi</button>}</form></section>
 
             <div className="grid gap-5 lg:grid-cols-2">
-              <section className="rounded-3xl border border-white/15 bg-[#0a1a37]/90 p-6"><h3 className="text-xl font-black">Profil Arena</h3><form onSubmit={updateNickname} className="mt-5 grid gap-4"><label className="grid gap-2 text-sm font-bold">Nama Panggilan<input value={editNickname} onChange={(e) => setEditNickname(e.target.value)} required minLength={3} maxLength={24} className={fieldClass} /></label><label className="grid gap-2 text-sm font-bold">Foto profil <span className="font-normal text-slate-500">JPG/PNG/WebP, maks. 2 MB</span><input type="file" accept="image/jpeg,image/png,image/webp" disabled={busy} onChange={(e) => void uploadAvatar(e.target.files?.[0])} className={fieldClass} /></label><button disabled={busy} className="rounded-xl bg-indigo-600 px-5 py-3 font-black disabled:opacity-60">Simpan Profil</button></form></section>
+              <section className="rounded-3xl border border-white/15 bg-[#0a1a37]/90 p-6"><h3 className="text-xl font-black">Profil Arena</h3><form onSubmit={updateNickname} className="mt-5 grid gap-4"><label className="grid gap-2 text-sm font-bold">Nama Panggilan<input value={editNickname} onChange={(e) => setEditNickname(e.target.value)} required minLength={3} maxLength={24} className={fieldClass} /></label><label className="grid gap-2 text-sm font-bold">Foto profil <span className="font-normal text-slate-500">JPG/PNG/WebP, maks. 2 MB</span><input type="file" accept="image/jpeg,image/png,image/webp" disabled={busy} onChange={(e) => void uploadAvatar(e.target.files?.[0])} className={fieldClass} /></label>{participant.avatar_url && <button type="button" onClick={()=>void removeAvatar()} disabled={busy} className="rounded-xl border border-rose-300/25 bg-rose-500/10 px-5 py-3 font-black text-rose-200 hover:bg-rose-500/15 disabled:opacity-60">Hapus Foto Profil</button>}<button disabled={busy} className="rounded-xl bg-indigo-600 px-5 py-3 font-black disabled:opacity-60">Simpan Profil</button></form></section>
               {participant.account_ready !== false && <section className="rounded-3xl border border-white/15 bg-[#0a1a37]/90 p-6"><h3 className="text-xl font-black">Keamanan Akun</h3><p className="mt-1 text-sm text-slate-400">Akun sekarang mendukung beberapa perangkat. Ganti password tanpa mengubah skor; pemulihan password akan mencabut seluruh sesi lama.</p><form onSubmit={changePassword} className="mt-5 grid gap-4"><input type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} required placeholder="Password saat ini" className={fieldClass} /><input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required minLength={8} placeholder="Password baru minimal 8 karakter" className={fieldClass} /><button disabled={busy} className="rounded-xl border border-white/15 bg-white/10 px-5 py-3 font-black hover:bg-white/15 disabled:opacity-60">Ganti Password</button></form><div className="mt-6 border-t border-white/10 pt-5"><p className="text-sm font-black text-rose-200">Hapus Akun</p><p className="mt-1 text-xs leading-5 text-slate-500">Menghapus akses publik, sesi login, profil, pertemanan, dan posisi leaderboard. Riwayat teknis minimum dapat dipertahankan untuk keamanan/audit.</p><button type="button" onClick={()=>void deleteAccount()} disabled={busy} className="mt-3 rounded-xl border border-rose-300/25 bg-rose-500/10 px-4 py-2.5 text-sm font-black text-rose-200 disabled:opacity-50">Hapus Akun Saya</button></div></section>}
             </div>
           </div>
