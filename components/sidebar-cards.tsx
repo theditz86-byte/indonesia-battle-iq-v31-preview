@@ -1,4 +1,4 @@
-import { FileText, Share2, Target, Zap } from "lucide-react"
+import { BrainCircuit, FileText, Share2, Target } from "lucide-react"
 import { paths } from "@/lib/data"
 
 export function PathToTop() {
@@ -16,7 +16,7 @@ export function PathToTop() {
           </li>
         ))}
       </ul>
-      <a href="/quick-battle" className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-cyan-300/20 bg-cyan-300/10 px-4 py-3 text-sm font-black text-cyan-100"><Zap className="h-4 w-4"/>Pemanasan 5 Soal</a>
+      <a href="/latihan-skd" className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-cyan-300/20 bg-cyan-300/10 px-4 py-3 text-sm font-black text-cyan-100"><BrainCircuit className="h-4 w-4"/>Latihan SKD & TIU</a>
     </section>
   )
 }
