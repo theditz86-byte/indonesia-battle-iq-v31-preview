@@ -110,17 +110,17 @@ export function SiteNavbar({ participant }: { participant: BattleParticipant | n
                   {socialBadge > 0 && <span className="absolute -right-1 -top-1 grid h-5 min-w-5 place-items-center rounded-full bg-rose-500 px-1 text-[10px] font-black text-white ring-2 ring-slate-950 shadow-[0_0_14px_rgba(244,63,94,.65)]">{socialBadge > 99 ? "99+" : socialBadge}</span>}
                 </summary>
 
-                <div className="absolute right-0 mt-3 w-64 overflow-hidden rounded-2xl border border-white/10 bg-[#061329]/95 p-2 shadow-[0_24px_70px_rgba(0,0,0,.45)] backdrop-blur-xl">
-                  <div className="border-b border-white/10 px-3 py-3"><p className="truncate text-sm font-black text-white">{name}</p><p className="mt-0.5 text-[11px] text-slate-500">Profil, progress, latihan, pesan, dan pengaturan</p></div>
-                  <div className="grid gap-1 py-2">
-                    <a href="/share-challenge" className="flex items-center gap-3 rounded-xl bg-gradient-to-r from-cyan-400/10 to-indigo-500/10 px-3 py-2.5 text-sm font-black text-cyan-100 hover:from-cyan-400/15 hover:to-indigo-500/15"><Share2 className="h-4 w-4 text-cyan-300"/>Bagikan & Tantang</a>
-                    <a href="/daily-training" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-200 hover:bg-white/5"><BrainCircuit className="h-4 w-4 text-orange-300"/>TIU Harian</a>
-                    {participant.public_id && <a href={`/player?id=${encodeURIComponent(participant.public_id)}`} className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-200 hover:bg-white/5"><Trophy className="h-4 w-4 text-amber-300"/>Profil Battle & Prestasi</a>}
-                    <a href="/account/results#riwayat-hasil" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-200 hover:bg-white/5"><History className="h-4 w-4 text-violet-300"/>Riwayat Tes</a>
-                    <a href="/messages" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-200 hover:bg-white/5"><Mail className="h-4 w-4 text-indigo-300"/><span className="flex-1">Pesan & Teman</span>{socialBadge > 0 && <span className="rounded-full bg-rose-500 px-2 py-0.5 text-[10px] font-black text-white">{socialBadge > 99 ? "99+" : socialBadge}</span>}</a>
-                    <a href="/account" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-200 hover:bg-white/5"><Settings className="h-4 w-4 text-slate-400"/>Pengaturan Profil</a>
-                    <div className="my-1 border-t border-white/10" />
-                    <button type="button" onClick={()=>void logout()} className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-bold text-rose-200 transition-colors hover:bg-rose-500/10"><LogOut className="h-4 w-4 text-rose-300"/>Keluar</button>
+                <div className="absolute right-0 mt-2.5 w-56 overflow-hidden rounded-xl border border-white/10 bg-[#061329]/95 p-1.5 shadow-[0_20px_55px_rgba(0,0,0,.42)] backdrop-blur-xl">
+                  <div className="border-b border-white/10 px-2.5 py-2"><p className="truncate text-[13px] font-black text-white">{name}</p><p className="mt-0.5 text-[10px] text-slate-500">Profil & aktivitas akun</p></div>
+                  <div className="grid gap-0.5 py-1.5">
+                    <a href="/share-challenge" className="flex items-center gap-2.5 rounded-lg bg-gradient-to-r from-cyan-400/10 to-indigo-500/10 px-2.5 py-2 text-[13px] font-black text-cyan-100 hover:from-cyan-400/15 hover:to-indigo-500/15"><Share2 className="h-3.5 w-3.5 text-cyan-300"/>Bagikan & Tantang</a>
+                    <a href="/daily-training" className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-[13px] font-bold text-slate-200 hover:bg-white/5"><BrainCircuit className="h-3.5 w-3.5 text-orange-300"/>TIU Harian</a>
+                    {participant.public_id && <a href={`/player?id=${encodeURIComponent(participant.public_id)}`} className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-[13px] font-bold text-slate-200 hover:bg-white/5"><Trophy className="h-3.5 w-3.5 text-amber-300"/>Profil Battle & Prestasi</a>}
+                    <a href="/account/results#riwayat-hasil" className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-[13px] font-bold text-slate-200 hover:bg-white/5"><History className="h-3.5 w-3.5 text-violet-300"/>Riwayat Tes</a>
+                    <a href="/messages" className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-[13px] font-bold text-slate-200 hover:bg-white/5"><Mail className="h-3.5 w-3.5 text-indigo-300"/><span className="flex-1">Pesan & Teman</span>{socialBadge > 0 && <span className="rounded-full bg-rose-500 px-1.5 py-0.5 text-[9px] font-black text-white">{socialBadge > 99 ? "99+" : socialBadge}</span>}</a>
+                    <a href="/account" className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-[13px] font-bold text-slate-200 hover:bg-white/5"><Settings className="h-3.5 w-3.5 text-slate-400"/>Pengaturan Profil</a>
+                    <div className="my-0.5 border-t border-white/10" />
+                    <button type="button" onClick={()=>void logout()} className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-[13px] font-bold text-rose-200 transition-colors hover:bg-rose-500/10"><LogOut className="h-3.5 w-3.5 text-rose-300"/>Keluar</button>
                   </div>
                 </div>
               </details>
