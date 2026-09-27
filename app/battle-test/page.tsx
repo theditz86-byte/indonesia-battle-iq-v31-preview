@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react"
 import { ArrowLeft, CheckCircle2, ChevronLeft, ChevronRight, Clock3, Flag, Loader2, ShieldCheck } from "lucide-react"
 import { BATTLE_API_URL, getParticipantToken } from "@/lib/battle"
 const SUBMIT20_API = "https://efndozplpwyemzgqfnep.supabase.co/functions/v1/battle-submit20"
+const RANKED_START_API = "https://efndozplpwyemzgqfnep.supabase.co/functions/v1/battle-ranked-start"
 
 type Question = {
   id: string
@@ -54,6 +55,17 @@ async function callBattle(body: Record<string, unknown>, token: string) {
     method: "POST",
     headers: { "Content-Type": "application/json", "X-Battle-Token": token },
     body: JSON.stringify(body),
+  })
+  const data = await response.json().catch(() => ({}))
+  return { response, data }
+}
+
+async function callRankedStart(token: string) {
+  const response = await fetch(RANKED_START_API, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "X-Battle-Token": token },
+    body: JSON.stringify({ action: "start" }),
+    cache: "no-store",
   })
   const data = await response.json().catch(() => ({}))
   return { response, data }
@@ -212,7 +224,7 @@ export default function BattleTestPage() {
     setError("")
     setPhase("loading")
     try {
-      const { response, data } = await callBattle({ action: "start" }, rawToken)
+      const { response, data } = await callRankedStart(rawToken)
       if (response.status === 402) {
             const weeklyRemaining = Math.max(0, Number(participant?.weekly_attempts_remaining ?? 3 - Number(participant?.attempts_used || 0)) || 0)
         const nextDay = participant?.next_ranked_unlock_day

@@ -11,7 +11,7 @@ import { trackGrowthEvent } from "@/components/growth-tracker"
 const TIU_API = "https://efndozplpwyemzgqfnep.supabase.co/functions/v1/battle-tiu"
 
 type Mode = "category" | "simulation"
-type Category = "numerik" | "logika" | "verbal"
+type Category = "numerik" | "logika" | "verbal" | "figural"
 
 type Question = {
   id: string
@@ -37,6 +37,7 @@ type Session = {
   deadline_at: string
   question_count: number
   questions: Question[]
+  resumed?: boolean
 }
 
 type Result = {
@@ -67,6 +68,7 @@ const categoryMeta: Record<Category,{title:string;short:string;description:strin
   numerik: { title:"Numerik", short:"Angka", description:"Deret, persentase, aljabar, perbandingan, kerja, peluang, dan aritmetika sosial." },
   logika: { title:"Logika & Analitis", short:"Logika", description:"Silogisme, logika kondisional, urutan, inferensi, dan penalaran kritis." },
   verbal: { title:"Verbal", short:"Verbal", description:"Analogi konsep serta kosakata terpilih tanpa mendominasi porsi latihan." },
+  figural: { title:"Figural & Spasial", short:"Figural", description:"Rotasi, arah, pola bentuk, simetri, matriks visual, dan penalaran spasial." },
 }
 
 async function callTiu(body: Record<string,unknown>) {
@@ -89,7 +91,7 @@ function timeText(ms:number) {
 }
 
 function labelCategory(value?: string | null) {
-  if (value === "numerik" || value === "logika" || value === "verbal") return categoryMeta[value].title
+  if (value === "numerik" || value === "logika" || value === "verbal" || value === "figural") return categoryMeta[value].title
   return "Campuran TIU"
 }
 
@@ -106,11 +108,24 @@ export function TiuPractice({ mode, defaultCategory="numerik" }: { mode:Mode; de
   const [error,setError] = useState("")
   const [now,setNow] = useState(Date.now())
   const autoSubmitRef = useRef(false)
+  const progressKey = (id:string) => `alzava.tiu.progress.${id}`
+
+  function restoreLocalProgress(id:string,count:number) {
+    try {
+      const raw=window.localStorage.getItem(progressKey(id)); if(!raw) return null
+      const parsed=JSON.parse(raw)
+      const saved=Array.isArray(parsed?.answers)?parsed.answers:[]
+      if(saved.length!==count) return null
+      const answers=saved.map((v:unknown)=>Number.isInteger(v)&&Number(v)>=0&&Number(v)<=4?Number(v):null)
+      const index=Number.isInteger(parsed?.index)&&parsed.index>=0&&parsed.index<count?parsed.index:0
+      return {answers,index}
+    } catch { return null }
+  }
 
   useEffect(() => {
     if (mode === "category") {
       const raw = new URLSearchParams(window.location.search).get("category")
-      if (raw === "numerik" || raw === "logika" || raw === "verbal") setCategory(raw)
+      if (raw === "numerik" || raw === "logika" || raw === "verbal" || raw === "figural") setCategory(raw)
     }
     const token = getParticipantToken()
     if (!token) { setLoading(false); return }
@@ -157,8 +172,9 @@ export function TiuPractice({ mode, defaultCategory="numerik" }: { mode:Mode; de
       const data = await callTiu({action:"start",mode,category})
       const s = data.session as Session
       setSession(s)
-      setAnswers(Array(s.question_count).fill(null))
-      setIndex(0)
+      const restored = s.resumed ? restoreLocalProgress(s.id,s.question_count) : null
+      setAnswers(restored?.answers || Array(s.question_count).fill(null))
+      setIndex(restored?.index || 0)
       setNow(Date.now())
       autoSubmitRef.current=false
       trackGrowthEvent(mode === "simulation" ? "tiu_simulation_start" : "tiu_practice_start", {category:mode === "category" ? category : "mixed",question_count:s.question_count})
@@ -173,6 +189,11 @@ export function TiuPractice({ mode, defaultCategory="numerik" }: { mode:Mode; de
     setAnswers(old=>old.map((value,i)=>i===index?option:value))
   }
 
+  useEffect(()=>{
+    if(!session || !answers.length) return
+    try { window.localStorage.setItem(progressKey(session.id),JSON.stringify({answers,index,saved_at:Date.now()})) } catch {}
+  },[session?.id,answers,index])
+
   async function submit(force=false) {
     if (!session || busy || result) return
     if (!force && unanswered>0 && !window.confirm(`Masih ada ${unanswered} soal belum dijawab. Tetap kirim?`)) return
@@ -180,6 +201,7 @@ export function TiuPractice({ mode, defaultCategory="numerik" }: { mode:Mode; de
     try {
       const data = await callTiu({action:"submit",session_id:session.id,answers})
       setResult(data.result || null)
+      try { window.localStorage.removeItem(progressKey(session.id)) } catch {}
       setSession(null)
       trackGrowthEvent(mode === "simulation" ? "tiu_simulation_complete" : "tiu_practice_complete", {category:mode === "category" ? category : "mixed",score:data.result?.score||0,accuracy:data.result?.accuracy||0})
       const h = await callTiu({action:"history"}).catch(()=>null)

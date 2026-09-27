@@ -56,6 +56,9 @@ async function send(eventName: string, metadata: Record<string, unknown> = {}) {
 function pageEvent(path: string) {
   if (path.startsWith("/battle-test")) return "page_ranked"
   if (path.startsWith("/daily-training")) return "page_daily_training"
+  if (path.startsWith("/latihan-skd")) return "page_latihan_skd"
+  if (path.startsWith("/latihan-tiu")) return "page_latihan_tiu"
+  if (path.startsWith("/simulasi-tiu")) return "page_simulasi_tiu"
   if (path.startsWith("/result")) return "page_result"
   if (path.startsWith("/pvp")) return "page_pvp"
   if (path.startsWith("/account")) return "page_account"
@@ -75,6 +78,9 @@ export function GrowthTracker() {
       const href = target.getAttribute("href") || ""
       if (href.startsWith("/battle-test")) void send("click_ranked", { href })
       else if (href.startsWith("/daily-training")) void send("click_daily_training", { href })
+      else if (href.startsWith("/latihan-skd")) void send("click_latihan_skd", { href })
+      else if (href.startsWith("/latihan-tiu")) void send("click_latihan_tiu", { href })
+      else if (href.startsWith("/simulasi-tiu")) void send("click_simulasi_tiu", { href })
       else if (href.startsWith("/pvp")) void send("click_pvp", { href })
       else if (href.startsWith("/account")) void send("click_account", { href })
     }
