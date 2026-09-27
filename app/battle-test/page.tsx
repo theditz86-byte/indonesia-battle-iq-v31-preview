@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useMemo, useRef, useState } from "react"
-import { ArrowLeft, CheckCircle2, ChevronLeft, ChevronRight, Clock3, CreditCard, Flag, Loader2, ShieldCheck } from "lucide-react"
+import { ArrowLeft, CheckCircle2, ChevronLeft, ChevronRight, Clock3, Flag, Loader2, ShieldCheck } from "lucide-react"
 import { BATTLE_API_URL, getParticipantToken } from "@/lib/battle"
 const SUBMIT20_API = "https://efndozplpwyemzgqfnep.supabase.co/functions/v1/battle-submit20"
 
@@ -97,7 +97,6 @@ export default function BattleTestPage() {
   const [index, setIndex] = useState(0)
   const [phase, setPhase] = useState<"loading"|"lobby"|"test"|"submitting"|"error">("loading")
   const [error, setError] = useState("")
-  const [paywall, setPaywall] = useState(false)
   const [remainingMs, setRemainingMs] = useState(20 * 60 * 1000)
   const [integrity, setIntegrity] = useState(false)
   const autoSubmitRef = useRef(false)
@@ -211,13 +210,11 @@ export default function BattleTestPage() {
       return
     }
     setError("")
-    setPaywall(false)
     setPhase("loading")
     try {
       const { response, data } = await callBattle({ action: "start" }, rawToken)
       if (response.status === 402) {
-        setPaywall(false)
-        const weeklyRemaining = Math.max(0, Number(participant?.weekly_attempts_remaining ?? 3 - Number(participant?.attempts_used || 0)) || 0)
+            const weeklyRemaining = Math.max(0, Number(participant?.weekly_attempts_remaining ?? 3 - Number(participant?.attempts_used || 0)) || 0)
         const nextDay = participant?.next_ranked_unlock_day
         setError(weeklyRemaining <= 0
           ? "Tiga Ranked Battle resmi minggu ini sudah digunakan. Season berikutnya membuka 3 kesempatan baru."
@@ -396,11 +393,7 @@ export default function BattleTestPage() {
               Saya akan mengerjakan sendiri tanpa AI generatif, kalkulator, pencarian web, atau bantuan lain.
             </label>
             {error && <div className="mt-4 rounded-xl border border-rose-400/20 bg-rose-500/10 p-3 text-sm text-rose-100">{error}</div>}
-            {paywall ? (
-              <a href="/payment?product=attempt_credit" className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 px-5 py-3.5 font-black text-slate-950"><CreditCard className="h-5 w-5"/>Buka Rematch · Rp5.000</a>
-            ) : (
-              <button onClick={requestStart} disabled={!integrity} className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-5 py-3.5 font-black disabled:cursor-not-allowed disabled:opacity-50"><Flag className="h-5 w-5"/>Mulai / Lanjutkan Tes</button>
-            )}
+            <button onClick={requestStart} disabled={!integrity} className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-5 py-3.5 font-black disabled:cursor-not-allowed disabled:opacity-50"><Flag className="h-5 w-5"/>Mulai / Lanjutkan Ranked</button>
           </div>
         </section>
         {showPrepNotice && (
@@ -427,7 +420,7 @@ export default function BattleTestPage() {
     <main className="min-h-screen bg-[radial-gradient(circle_at_20%_0%,rgba(55,115,255,.16),transparent_28rem),linear-gradient(180deg,#020817,#06132b)] text-white">
       <header className="sticky top-0 z-30 border-b border-white/10 bg-[#020817]/90 backdrop-blur-xl">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
-          <div><p className="text-xs font-black text-cyan-300">{attempt.high_range_unlocked ? "HIGH RANGE · VERIFIED PATH" : isPaidRanked ? "REMATCH / PRACTICE" : "RANKED ATTEMPT"}</p><p className="text-sm font-bold text-white">Percobaan #{attempt.attempt_number}{attempt.questions.length===20 ? " · 20 soal · 20 menit" : attempt.high_range_unlocked ? " · Tahap 2/2" : " · Tahap 1/2"}</p></div>
+          <div><p className="text-xs font-black text-cyan-300">{attempt.high_range_unlocked ? "HIGH RANGE · VERIFIED PATH" : isRepeatRanked ? "RANKED ATTEMPT · BEST SCORE CHASE" : "RANKED ATTEMPT"}</p><p className="text-sm font-bold text-white">Percobaan #{attempt.attempt_number} dari 3{attempt.questions.length===20 ? " · 20 soal · 20 menit" : attempt.high_range_unlocked ? " · Tahap 2/2" : " · Tahap 1/2"}</p></div>
           <div className={`flex items-center gap-2 rounded-xl border px-4 py-2 font-mono text-lg font-black ${remainingMs < 5*60*1000 ? "border-rose-400/30 bg-rose-500/10 text-rose-200" : "border-white/10 bg-white/5"}`}><Clock3 className="h-4 w-4"/>{timeText(remainingMs)}</div>
         </div>
         <div className="h-1 bg-slate-900"><div className="h-full bg-gradient-to-r from-cyan-400 to-indigo-500 transition-all" style={{width: `${progress}%`}}/></div>
