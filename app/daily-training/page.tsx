@@ -53,7 +53,7 @@ async function daily(action: "state" | "start" | "submit", payload: Record<strin
     cache: "no-store",
   })
   const data = await response.json().catch(() => ({}))
-  if (!response.ok) throw new Error(data?.error || "Latihan Harian belum dapat dimuat.")
+  if (!response.ok) throw new Error(data?.error || "TIU Harian belum dapat dimuat.")
   return data as DailyData
 }
 
@@ -87,7 +87,7 @@ export default function DailyTrainingPage() {
         if (!result.completed) setStartedAt(Date.now())
         setError("")
       })
-      .catch((err) => setError(err instanceof Error ? err.message : "Latihan Harian belum dapat dimuat."))
+      .catch((err) => setError(err instanceof Error ? err.message : "TIU Harian belum dapat dimuat."))
       .finally(() => setLoading(false))
   }, [])
 
@@ -131,7 +131,7 @@ export default function DailyTrainingPage() {
     }
   }
 
-  if (loading) return <div className="grid min-h-screen place-items-center bg-[#020817] text-white"><BrainCircuit className="h-11 w-11 animate-pulse text-cyan-300" /><p className="mt-3 text-sm font-bold text-slate-400">Menyiapkan Latihan Harian…</p></div>
+  if (loading) return <div className="grid min-h-screen place-items-center bg-[#020817] text-white"><BrainCircuit className="h-11 w-11 animate-pulse text-cyan-300" /><p className="mt-3 text-sm font-bold text-slate-400">Menyiapkan TIU Harian…</p></div>
 
   const participant = (data?.participant || null) as BattleParticipant | null
 
@@ -142,7 +142,7 @@ export default function DailyTrainingPage() {
         <section className="mx-auto max-w-2xl rounded-[32px] border border-cyan-300/15 bg-white/[.045] p-8 text-center shadow-[0_30px_100px_rgba(0,0,0,.35)] backdrop-blur-xl sm:p-10">
           <BrainCircuit className="mx-auto h-14 w-14 text-cyan-300" />
           <span className="mt-5 inline-flex rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1 text-[11px] font-black uppercase tracking-[.18em] text-cyan-200">5 Soal · Setiap Hari</span>
-          <h1 className="mt-4 text-4xl font-black tracking-tight">Latihan Harian</h1>
+          <h1 className="mt-4 text-4xl font-black tracking-tight">TIU Harian</h1>
           <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-slate-400">Latihan TIU singkat untuk menjaga ketajaman. Tidak memberi Battle Point dan tidak memengaruhi Ranking resmi.</p>
           <a href={`/account?next=${encodeURIComponent("/daily-training")}`} className="mt-7 inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-cyan-500 via-blue-600 to-violet-600 px-6 py-3.5 font-black text-white shadow-[0_0_30px_rgba(34,211,238,.25)]"><Swords className="h-5 w-5" /> Masuk / Daftar untuk Latihan</a>
         </section>
@@ -180,7 +180,7 @@ export default function DailyTrainingPage() {
       ) : (
         <div className="space-y-6">
           <section className="flex flex-col justify-between gap-4 rounded-[28px] border border-cyan-300/15 bg-white/[.045] p-5 backdrop-blur-xl sm:flex-row sm:items-center sm:p-6">
-            <div><div className="flex flex-wrap items-center gap-2"><span className="rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1 text-[10px] font-black uppercase tracking-[.16em] text-cyan-200">Latihan Harian</span><span className="rounded-full border border-orange-300/15 bg-orange-300/[.07] px-3 py-1 text-[10px] font-black text-orange-200"><Flame className="mr-1 inline h-3 w-3"/>{data?.streak || 0} hari streak</span></div><h1 className="mt-3 text-3xl font-black sm:text-4xl">5 soal untuk menjaga ketajaman</h1><p className="mt-2 text-sm text-slate-400">TIU fokus · non-ranked · tidak mengubah Battle Point.</p></div>
+            <div><div className="flex flex-wrap items-center gap-2"><span className="rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1 text-[10px] font-black uppercase tracking-[.16em] text-cyan-200">TIU Harian</span><span className="rounded-full border border-orange-300/15 bg-orange-300/[.07] px-3 py-1 text-[10px] font-black text-orange-200"><Flame className="mr-1 inline h-3 w-3"/>{data?.streak || 0} hari streak</span></div><h1 className="mt-3 text-3xl font-black sm:text-4xl">5 soal untuk menjaga ketajaman</h1><p className="mt-2 text-sm text-slate-400">TIU fokus · non-ranked · tidak mengubah Battle Point.</p></div>
             <div className="grid min-w-[150px] grid-cols-2 gap-2 text-center"><div className="rounded-xl border border-white/10 bg-slate-950/35 p-3"><p className="text-2xl font-black">{answeredCount}/5</p><p className="text-[10px] text-slate-500">Terjawab</p></div><div className="rounded-xl border border-white/10 bg-slate-950/35 p-3"><p className="font-mono text-xl font-black">{fmtDuration(elapsed)}</p><p className="text-[10px] text-slate-500">Waktu</p></div></div>
           </section>
 
@@ -194,7 +194,7 @@ export default function DailyTrainingPage() {
             <div className="mt-7 flex items-center justify-between gap-3"><button disabled={index===0} onClick={() => setIndex((value) => Math.max(0,value-1))} className="rounded-xl border border-white/10 bg-white/[.04] px-4 py-3 text-sm font-bold text-slate-300 disabled:opacity-30"><RotateCcw className="mr-2 inline h-4 w-4"/>Kembali</button>{index < 4 ? <button disabled={selected===null} onClick={next} className="rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 px-5 py-3 text-sm font-black text-white disabled:opacity-40">Soal Berikutnya <ArrowRight className="ml-2 inline h-4 w-4"/></button> : <button disabled={busy || answers.some((value)=>value===null)} onClick={() => void submit()} className="rounded-xl bg-gradient-to-r from-emerald-500 via-cyan-500 to-blue-600 px-5 py-3 text-sm font-black text-white shadow-[0_0_24px_rgba(34,211,238,.20)] disabled:opacity-40">{busy ? "Memeriksa…" : "Selesaikan Latihan"} <CheckCircle2 className="ml-2 inline h-4 w-4"/></button>}</div>
           </section>}
 
-          <p className="text-center text-xs leading-5 text-slate-500">Latihan Harian hanya dapat diselesaikan satu paket per hari. Besok tersedia paket baru dengan variasi soal berbeda.</p>
+          <p className="text-center text-xs leading-5 text-slate-500">TIU Harian hanya dapat diselesaikan satu paket per hari. Besok tersedia paket baru dengan variasi soal berbeda.</p>
         </div>
       )}
     </main>

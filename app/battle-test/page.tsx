@@ -33,6 +33,11 @@ type ParticipantState = {
   free_attempts_remaining?: number
   paid_credits?: number
   attempts_remaining?: number
+  weekly_attempts_remaining?: number
+  ranked_slots_unlocked?: number
+  next_ranked_unlock_day?: string | null
+  ranked_weekly_limit?: number
+  open_beta?: boolean
   active_attempt_id?: string | null
 }
 
@@ -188,7 +193,7 @@ export default function BattleTestPage() {
   const unanswered = useMemo(() => answers.filter((a) => a === null).length, [answers])
   const current = attempt?.questions[index]
   const progress = attempt?.questions.length ? Math.round(((index + 1) / attempt.questions.length) * 100) : 0
-  const isPaidRanked = Boolean(attempt && attempt.attempt_number > 1)
+  const isRepeatRanked = Boolean(attempt && attempt.attempt_number > 1 && attempt.attempt_number <= 3)
 
   function requestStart() {
     const isFreshRanked = !participant?.active_attempt_id && Math.max(0, Number(participant?.attempts_used) || 0) === 0
@@ -211,8 +216,14 @@ export default function BattleTestPage() {
     try {
       const { response, data } = await callBattle({ action: "start" }, rawToken)
       if (response.status === 402) {
-        setPaywall(true)
-        setError("Ranked Attempt resmi season ini sudah digunakan. Gunakan Rematch / Practice Credit untuk latihan dan analisis tambahan tanpa mengubah leaderboard.")
+        setPaywall(false)
+        const weeklyRemaining = Math.max(0, Number(participant?.weekly_attempts_remaining ?? 3 - Number(participant?.attempts_used || 0)) || 0)
+        const nextDay = participant?.next_ranked_unlock_day
+        setError(weeklyRemaining <= 0
+          ? "Tiga Ranked Battle resmi minggu ini sudah digunakan. Season berikutnya membuka 3 kesempatan baru."
+          : nextDay
+            ? "Kesempatan Ranked berikutnya terbuka " + nextDay + ". Kesempatan yang belum dipakai tetap tersimpan sampai akhir minggu."
+            : "Kesempatan Ranked berikutnya belum terbuka. Coba lagi sesuai jadwal Ranked minggu ini.")
         setPhase("lobby")
         return
       }
@@ -352,8 +363,9 @@ export default function BattleTestPage() {
 
   if (phase === "lobby") {
     const used = Math.max(0, Number(participant?.attempts_used) || 0)
-    const freeRemaining = Math.max(0, Number(participant?.free_attempts_remaining ?? 1 - used) || 0)
-    const paidCredits = Math.max(0, Number(participant?.paid_credits) || 0)
+    const availableNow = Math.max(0, Number(participant?.free_attempts_remaining ?? Math.max(0, 3 - used)) || 0)
+    const weeklyRemaining = Math.max(0, Number(participant?.weekly_attempts_remaining ?? Math.max(0, 3 - used)) || 0)
+    const nextDay = participant?.next_ranked_unlock_day
     return (
       <main className="min-h-screen bg-[radial-gradient(circle_at_18%_0%,rgba(65,105,225,.22),transparent_30rem),linear-gradient(180deg,#020817,#07142f_55%,#040b1c)] text-white">
         <header className="border-b border-white/10 bg-[#020817]/80 backdrop-blur-xl">
@@ -366,18 +378,18 @@ export default function BattleTestPage() {
           <div>
             <p className="text-xs font-black uppercase tracking-[.2em] text-cyan-300">Tes Kemampuan</p>
             <h1 className="mt-4 text-5xl font-black leading-[.95] tracking-[-.055em] sm:text-7xl">20 soal.<br/><span className="text-indigo-300">20 menit.</span></h1>
-            <p className="mt-6 max-w-2xl text-base leading-7 text-slate-300">Numerik, logika, verbal, dan spasial dalam satu tes. Setiap season menyediakan <b className="text-white">1 Ranked Attempt resmi gratis</b> yang menentukan leaderboard season.</p>
+            <p className="mt-6 max-w-2xl text-base leading-7 text-slate-300">Numerik, logika, verbal, dan spasial dalam satu tes. Setiap season menyediakan <b className="text-white">3 Ranked Battle resmi gratis</b>. Kesempatan dibuka Senin, Rabu, dan Jumat; kesempatan yang belum dipakai tetap tersimpan sampai akhir season. <b className="text-white">Skor terbaik dari maksimal 3 attempt</b> masuk leaderboard.</p>
             <div className="mt-5 max-w-2xl rounded-2xl border border-violet-300/20 bg-violet-400/10 p-4 text-sm leading-6 text-violet-100"><b>Format ringkas:</b> 20 soal dalam 20 menit. Tidak ada tahap tambahan; Battle Point dihitung dari performa pada 20 soal tersebut. Jawaban tersimpan otomatis; jika tes ditinggalkan, jawaban yang sudah tersimpan tetap dinilai ketika waktu tes berakhir.</div>
             <div className="mt-7 grid max-w-2xl gap-3 sm:grid-cols-3">
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-4"><span className="text-xs text-slate-400">Gratis tersisa</span><strong className="mt-1 block text-3xl font-black">{freeRemaining}x</strong></div>
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-4"><span className="text-xs text-slate-400">Kredit Rematch</span><strong className="mt-1 block text-3xl font-black">{paidCredits}x</strong></div>
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-4"><span className="text-xs text-slate-400">Tersedia sekarang</span><strong className="mt-1 block text-3xl font-black">{availableNow}x</strong></div>
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-4"><span className="text-xs text-slate-400">Sisa minggu ini</span><strong className="mt-1 block text-3xl font-black">{weeklyRemaining}x</strong></div>
               <div className="rounded-2xl border border-white/10 bg-white/5 p-4"><span className="text-xs text-slate-400">Sudah digunakan</span><strong className="mt-1 block text-3xl font-black">{used}x</strong></div>
             </div>
           </div>
           <div className="rounded-3xl border border-cyan-300/20 bg-[#0a1c3b]/90 p-6 shadow-2xl">
             <div className="flex items-start gap-3"><ShieldCheck className="mt-1 h-6 w-6 text-cyan-300"/><div><h2 className="text-xl font-black">Aturan Fair Play</h2><p className="mt-1 text-sm leading-6 text-slate-400">Kerjakan sendiri. Dilarang menggunakan AI generatif, kalkulator, mesin pencari, catatan jawaban, atau bantuan orang lain.</p></div></div>
             <div className="mt-5 rounded-2xl border border-amber-300/20 bg-amber-300/10 p-4 text-sm leading-6 text-amber-100">
-              Setelah Ranked Attempt resmi digunakan, kredit Rp5.000 membuka <b>Rematch / Practice</b>. Hasilnya tetap mendapat Battle Point dan analisis pribadi, tetapi <b>tidak mengubah leaderboard resmi</b>.
+              <b>Open Beta GRATIS.</b> Semua pemain mendapat maksimal 3 Ranked Battle resmi per minggu dengan jumlah kesempatan yang sama. Tidak ada pembelian Ranked tambahan. Kesempatan dibuka Senin, Rabu, dan Jumat; yang belum digunakan tetap tersimpan sampai akhir minggu.
             </div>
             <label className="mt-5 flex cursor-pointer items-start gap-3 rounded-2xl border border-white/10 bg-slate-950/40 p-4 text-sm leading-6 text-slate-200">
               <input type="checkbox" checked={integrity} onChange={(e)=>setIntegrity(e.target.checked)} className="mt-1 h-5 w-5 accent-indigo-500"/>
@@ -422,7 +434,7 @@ export default function BattleTestPage() {
       </header>
 
       <section className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
-        {isPaidRanked && <div className="mb-5 rounded-2xl border border-amber-300/20 bg-amber-300/10 px-4 py-3 text-sm text-amber-100">Rematch / Practice — hasil tes ini tersimpan untuk analisis dan perkembangan pribadi, tetapi tidak mengubah leaderboard resmi.</div>}
+        {isRepeatRanked && <div className="mb-5 rounded-2xl border border-cyan-300/20 bg-cyan-300/10 px-4 py-3 text-sm text-cyan-100">Ranked Attempt #{attempt.attempt_number} dari 3 — tetap resmi. Jika skornya lebih tinggi, skor terbaik ini akan menggantikan skor leaderboard-mu.</div>}
         {stageNotice && <div className="mb-5 rounded-2xl border border-violet-300/30 bg-violet-500/15 px-4 py-3 text-sm font-semibold leading-6 text-violet-100">{stageNotice}</div>}
         <div className="mb-5 rounded-2xl border border-cyan-300/15 bg-cyan-400/[.06] px-4 py-3 text-xs font-semibold leading-5 text-cyan-100">{attempt.high_range_unlocked ? "High Range: 10 soal tambahan · 8 menit · skor rentang atas sedang diverifikasi." : attempt.questions.length===20 ? "Fair Play: 20 soal · 20 menit · jawaban tersimpan otomatis. Jika tes ditinggalkan sebelum selesai, jawaban yang sudah tersimpan akan tetap dinilai saat waktu berakhir." : "Fair Play: 30 soal · 15 menit · kerjakan tanpa AI generatif, mesin pencari, kalkulator, atau bantuan orang lain."}</div>
         {error && <div className="mb-5 rounded-2xl border border-rose-400/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-100">{error}</div>}

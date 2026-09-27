@@ -449,6 +449,7 @@ export default function ResultPage() {
               submittedAt={result.submitted_at}
               rankedAttempt={result.ranked_attempt !== false}
             />
+            <a href="/battle-test" className="inline-flex items-center gap-2 rounded-xl border border-cyan-300/20 bg-cyan-300/10 px-4 py-2.5 text-sm font-black text-cyan-100"><Rocket className="h-4 w-4"/>Ranked Lagi</a>
             {data.premium_unlocked && <button onClick={printPremium} className="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-black text-slate-950 shadow-xl"><Download className="h-4 w-4"/>Simpan PDF Premium</button>}
           </div>
         </div>
@@ -459,7 +460,7 @@ export default function ResultPage() {
               <div>
                 <p className="text-[10px] font-black uppercase tracking-[.2em] text-cyan-300">Riwayat Hasil Season Ini</p>
                 <h2 className="mt-1 text-xl font-black text-white">Pilih percobaan yang ingin dilihat</h2>
-                <p className="mt-1 text-sm text-slate-400">Setiap percobaan menyimpan hasilnya sendiri. Laporan Premium juga melekat pada hasil yang dipilih.</p>
+                <p className="mt-1 text-sm text-slate-400">Setiap Ranked menyimpan hasilnya sendiri. Skor terbaik dari maksimal 3 kesempatan resmi menjadi skor leaderboard season.</p>
               </div>
               {switchingResult && <span className="rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1.5 text-xs font-bold text-cyan-200">Memuat hasil…</span>}
             </div>
@@ -469,7 +470,7 @@ export default function ResultPage() {
                 .sort((a,b)=>Number(a.attempt_number||0)-Number(b.attempt_number||0))
                 .map((item)=>{
                   const active=item.attempt_id===data.selected_attempt_id || item.attempt_id===result?.attempt_id
-                  const paid=Number(item.attempt_number||0)>1
+                  const legacy=Number(item.attempt_number||0)>3
                   return <button
                     key={item.attempt_id || String(item.attempt_number)}
                     type="button"
@@ -478,7 +479,7 @@ export default function ResultPage() {
                     className={`relative overflow-hidden rounded-2xl border p-4 text-left transition-all disabled:opacity-60 ${active?"border-cyan-300/45 bg-gradient-to-br from-cyan-400/12 via-indigo-500/12 to-violet-500/10 shadow-[0_0_0_1px_rgba(103,232,249,.08),0_18px_50px_rgba(0,0,0,.22)]":"border-white/10 bg-white/[.035] hover:border-white/20 hover:bg-white/[.06]"}`}
                   >
                     {active && <span className="absolute right-3 top-3 rounded-full bg-cyan-300/15 px-2 py-1 text-[9px] font-black uppercase tracking-wider text-cyan-200">Sedang dilihat</span>}
-                    <p className="text-[10px] font-black uppercase tracking-[.14em] text-slate-500">Percobaan #{item.attempt_number ?? "—"} {paid?"· Rematch / Practice":"· Ranked Resmi"}</p>
+                    <p className="text-[10px] font-black uppercase tracking-[.14em] text-slate-500">Percobaan #{item.attempt_number ?? "—"} {legacy?"· Arsip Lama":"· Ranked Resmi"}</p>
                     <div className="mt-3 flex items-end justify-between gap-3">
                       <div><span className="block text-xs text-slate-500">Jawaban benar</span><strong className="text-2xl font-black text-white">{item.correct_count ?? 0}/{item.question_count ?? 0}</strong></div>
                       <div className="text-right"><span className="block text-xs text-slate-500">Battle Point</span><strong className="text-xl font-black text-cyan-300">{Number(item.battle_score||0).toLocaleString("id-ID")}</strong></div>
@@ -511,7 +512,7 @@ export default function ResultPage() {
                 <div className="mt-7 flex flex-wrap gap-2">
                   <span className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-bold text-slate-300">{signature.tag}</span>
                   <span className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-bold text-slate-300">{pace.title}</span>
-                  <span className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-bold text-slate-300">{result.ranked_attempt ? "Ranked Resmi" : "Rematch / Practice"}</span>
+                  <span className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-bold text-slate-300">{result.ranked_attempt ? "Ranked Resmi" : "Arsip Lama"}</span>
                 </div>
               </div>
 
