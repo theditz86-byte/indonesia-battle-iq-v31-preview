@@ -3,10 +3,12 @@ import assert from "node:assert/strict"
 import fs from "node:fs"
 const read=(p)=>fs.readFileSync(p,"utf8")
 
-test("Ranked uses dedicated native-20 start backend",()=>{
+test("Ranked uses dedicated native-20 start backend only",()=>{
   const s=read("app/battle-test/page.tsx")
   assert.match(s,/battle-ranked-start/)
+  assert.match(s,/20 soal/)
   assert.equal(s.includes('callBattle({ action: "start" }, rawToken)'),false)
+  assert.doesNotMatch(s,/Rp5\.000|Buka Rematch|Kredit Rematch/)
 })
 
 test("Open Beta participant payment page has no QRIS purchase flow",()=>{
@@ -25,4 +27,36 @@ test("TIU exposes figural and local resume",()=>{
 test("Growth tracker covers SKD and TIU funnel",()=>{
   const s=read("components/growth-tracker.tsx")
   for(const event of ["page_latihan_skd","page_latihan_tiu","page_simulasi_tiu","click_latihan_skd","click_latihan_tiu","click_simulasi_tiu"]) assert.match(s,new RegExp(event))
+})
+
+test("SKD metadata does not overclaim TWK and TKP availability",()=>{
+  const s=read("app/latihan-skd/page.tsx")
+  assert.match(s,/Bagian dari Persiapan SKD/)
+  assert.match(s,/TWK dan TKP belum menjadi fokus versi ini/)
+})
+
+test("completed one-off source mutating workflows stay removed",()=>{
+  for(const p of [
+    ".github/workflows/apply-result-share-card.yml",
+    ".github/workflows/apply-admin-battle-point-source.yml",
+    ".github/workflows/rebrand-admin-mobile-battle-point.yml",
+    "scripts/apply-result-share-card.py",
+  ]) assert.equal(fs.existsSync(p),false,`${p} must not return`)
+})
+
+test("set-question generation contract always has non-negative remainder",()=>{
+  for(let total=45;total<=60;total++){
+    for(let a=20;a<=28;a++){
+      for(let b=18;b<=26;b++){
+        const minBoth=Math.max(6,a+b-total)
+        const maxBoth=Math.min(a,b)-3
+        if(minBoth>maxBoth) continue
+        for(let both=minBoth;both<=maxBoth;both++){
+          const neither=total-(a+b-both)
+          assert.ok(neither>=0,`invalid set: total=${total}, a=${a}, b=${b}, both=${both}`)
+          assert.ok(both<=a&&both<=b)
+        }
+      }
+    }
+  }
 })
