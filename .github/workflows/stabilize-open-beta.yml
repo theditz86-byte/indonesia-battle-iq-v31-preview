@@ -23,6 +23,18 @@ jobs:
           node-version: 22
       - name: Apply source stabilization
         run: node scripts/stabilize-open-beta.mjs
+      - name: Complete TIU resume typing
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('components/tiu-practice.tsx')
+          s=p.read_text()
+          old='  question_count: number\n  questions: Question[]\n}'
+          new='  question_count: number\n  questions: Question[]\n  resumed?: boolean\n}'
+          if old not in s:
+              raise SystemExit('Session type target missing')
+          p.write_text(s.replace(old,new,1))
+          PY
       - name: Write policy tests
         run: |
           mkdir -p tests
