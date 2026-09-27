@@ -149,7 +149,7 @@ export function GlobalProfileCorner() {
   const name = participant.nickname || "Akun Peserta"
 
   return (
-    <div className="fixed right-3 top-3 z-[90] flex items-center gap-2 sm:right-5">
+    <div className="fixed right-6 top-3 z-[90] flex items-center gap-2 sm:right-8 lg:right-12">
       <NotificationCenter />
       <details data-alzava-profile-menu="global" className="group relative">
         <summary className="relative flex cursor-pointer list-none items-center gap-1.5 rounded-full border border-white/10 bg-[#071329]/95 py-1 pl-1 pr-2.5 shadow-[0_12px_34px_rgba(0,0,0,.30)] backdrop-blur-xl transition-colors hover:bg-[#0b1a35] [&::-webkit-details-marker]:hidden">
