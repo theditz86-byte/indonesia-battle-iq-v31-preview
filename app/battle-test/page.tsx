@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react"
 import { ArrowLeft, CheckCircle2, ChevronLeft, ChevronRight, Clock3, Flag, Loader2, ShieldCheck } from "lucide-react"
 import { BATTLE_API_URL, getParticipantToken } from "@/lib/battle"
+
 const SUBMIT20_API = "https://efndozplpwyemzgqfnep.supabase.co/functions/v1/battle-submit20"
 const RANKED_START_API = "https://efndozplpwyemzgqfnep.supabase.co/functions/v1/battle-ranked-start"
 
@@ -23,8 +24,6 @@ type Attempt = {
   started_at?: string
   deadline_at: string
   resumed?: boolean
-  high_range_unlocked?: boolean
-  core_answers?: Array<number | null> | null
   questions: Question[]
 }
 
@@ -50,16 +49,6 @@ const domainLabel: Record<string,string> = {
   speed: "Kecepatan Nalar",
 }
 
-async function callBattle(body: Record<string, unknown>, token: string) {
-  const response = await fetch(BATTLE_API_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", "X-Battle-Token": token },
-    body: JSON.stringify(body),
-  })
-  const data = await response.json().catch(() => ({}))
-  return { response, data }
-}
-
 async function callRankedStart(token: string) {
   const response = await fetch(RANKED_START_API, {
     method: "POST",
@@ -71,13 +60,13 @@ async function callRankedStart(token: string) {
   return { response, data }
 }
 
-async function callSubmit(body: Record<string, unknown>, token: string) {
-  const answers = Array.isArray(body.answers) ? body.answers : []
+async function callSubmit(attemptId: string, answers: Array<number | null>, token: string) {
   if (answers.length !== 20) throw new Error("Format Ranked tidak valid. Muat ulang arena sebelum melanjutkan.")
   const response = await fetch(SUBMIT20_API, {
     method: "POST",
     headers: { "Content-Type": "application/json", "X-Battle-Token": token },
-    body: JSON.stringify({ action: "submit", attempt_id: body.attempt_id, answers }),
+    body: JSON.stringify({ action: "submit", attempt_id: attemptId, answers }),
+    cache: "no-store",
   })
   const data = await response.json().catch(() => ({}))
   return { response, data }
@@ -111,13 +100,11 @@ export default function BattleTestPage() {
   const [error, setError] = useState("")
   const [remainingMs, setRemainingMs] = useState(20 * 60 * 1000)
   const [integrity, setIntegrity] = useState(false)
+  const [showPrepNotice, setShowPrepNotice] = useState(false)
   const autoSubmitRef = useRef(false)
   const answersRef = useRef<Array<number | null>>([])
+  const indexRef = useRef(0)
   const progressTimerRef = useRef<number | null>(null)
-  const [stageNotice,setStageNotice] = useState("")
-  const [showPrepNotice, setShowPrepNotice] = useState(false)
-
-  const token = typeof window === "undefined" ? "" : getParticipantToken()
 
   useEffect(() => {
     const rawToken = getParticipantToken()
@@ -126,30 +113,29 @@ export default function BattleTestPage() {
       return
     }
     fetch(BATTLE_API_URL, { headers: { "X-Battle-Token": rawToken }, cache: "no-store" })
-      .then(async (r) => {
-        if (!r.ok) throw new Error("Akun peserta belum dapat dimuat.")
-        return await r.json()
+      .then(async (response) => {
+        if (!response.ok) throw new Error("Akun peserta belum dapat dimuat.")
+        return await response.json()
       })
       .then((data) => {
         setParticipant(data.participant || null)
         setPhase("lobby")
       })
-      .catch((e) => {
-        setError(e instanceof Error ? e.message : "Akun peserta belum dapat dimuat.")
+      .catch((reason) => {
+        setError(reason instanceof Error ? reason.message : "Akun peserta belum dapat dimuat.")
         setPhase("error")
       })
   }, [])
 
-  useEffect(() => {
-    answersRef.current = answers
-  }, [answers])
+  useEffect(() => { answersRef.current = answers }, [answers])
+  useEffect(() => { indexRef.current = index }, [index])
 
   async function saveProgress(silent = true, keepalive = false) {
-    if (!attempt || attempt.questions.length !== 20 || answersRef.current.length !== 20) return
+    if (!attempt || answersRef.current.length !== 20) return
     const rawToken = getParticipantToken()
     if (!rawToken) return
     try {
-      const { response } = await callProgress("progress_save", attempt.attempt_id, rawToken, answersRef.current, index, keepalive)
+      const { response } = await callProgress("progress_save", attempt.attempt_id, rawToken, answersRef.current, indexRef.current, keepalive)
       if (!response.ok && !silent) setError("Progress jawaban belum tersimpan. Coba lanjut beberapa saat lagi.")
     } catch {
       if (!silent) setError("Progress jawaban belum tersimpan. Coba lanjut beberapa saat lagi.")
@@ -157,7 +143,7 @@ export default function BattleTestPage() {
   }
 
   useEffect(() => {
-    if (!attempt || phase !== "test" || attempt.questions.length !== 20 || answers.length !== 20) return
+    if (!attempt || phase !== "test" || answers.length !== 20) return
     if (progressTimerRef.current) window.clearTimeout(progressTimerRef.current)
     progressTimerRef.current = window.setTimeout(() => { void saveProgress(true) }, 350)
     return () => {
@@ -166,7 +152,7 @@ export default function BattleTestPage() {
   }, [answers, index, attempt?.attempt_id, phase])
 
   useEffect(() => {
-    if (!attempt || phase !== "test" || attempt.questions.length !== 20) return
+    if (!attempt || phase !== "test") return
     const heartbeat = window.setInterval(() => { void saveProgress(true) }, 15000)
     const pageHide = () => { void saveProgress(true, true) }
     window.addEventListener("pagehide", pageHide)
@@ -174,7 +160,7 @@ export default function BattleTestPage() {
       window.clearInterval(heartbeat)
       window.removeEventListener("pagehide", pageHide)
     }
-  }, [attempt?.attempt_id, phase, index])
+  }, [attempt?.attempt_id, phase])
 
   useEffect(() => {
     if (!attempt || phase !== "test") return
@@ -201,9 +187,9 @@ export default function BattleTestPage() {
     return () => window.removeEventListener("beforeunload", warn)
   }, [phase])
 
-  const unanswered = useMemo(() => answers.filter((a) => a === null).length, [answers])
+  const unanswered = useMemo(() => answers.filter((answer) => answer === null).length, [answers])
   const current = attempt?.questions[index]
-  const progress = attempt?.questions.length ? Math.round(((index + 1) / attempt.questions.length) * 100) : 0
+  const progress = attempt ? Math.round(((index + 1) / 20) * 100) : 0
   const isRepeatRanked = Boolean(attempt && attempt.attempt_number > 1 && attempt.attempt_number <= 3)
 
   function requestStart() {
@@ -236,28 +222,29 @@ export default function BattleTestPage() {
       }
       if (!response.ok) throw new Error(data?.error || "Tes belum dapat dimulai.")
       const started = data as Attempt
-      if (!Array.isArray(started.questions) || started.questions.length !== 20) throw new Error("Paket Ranked tidak valid. Arena resmi saat ini wajib 20 soal.")
-      setAttempt(started)
+      if (!Array.isArray(started.questions) || started.questions.length !== 20) throw new Error("Paket Ranked tidak valid. Arena resmi wajib tepat 20 soal.")
+
       let restored: Array<number | null> = Array(20).fill(null)
       let restoredIndex = 0
-      if (started.questions.length === 20) {
-        try {
-          const { response: progressResponse, data: progressData } = await callProgress("progress_get", started.attempt_id, rawToken)
-          const saved = progressData?.progress
-          if (progressResponse.ok && Array.isArray(saved?.answers) && saved.answers.length === 20) {
-            restored = saved.answers.map((value: unknown) => Number.isInteger(value) && Number(value) >= 0 && Number(value) <= 3 ? Number(value) : null)
-            if (Number.isInteger(saved?.current_index) && saved.current_index >= 0 && saved.current_index < 20) restoredIndex = saved.current_index
-          }
-        } catch {}
-      }
+      try {
+        const { response: progressResponse, data: progressData } = await callProgress("progress_get", started.attempt_id, rawToken)
+        const saved = progressData?.progress
+        if (progressResponse.ok && Array.isArray(saved?.answers) && saved.answers.length === 20) {
+          restored = saved.answers.map((value: unknown) => Number.isInteger(value) && Number(value) >= 0 && Number(value) <= 3 ? Number(value) : null)
+          if (Number.isInteger(saved?.current_index) && saved.current_index >= 0 && saved.current_index < 20) restoredIndex = saved.current_index
+        }
+      } catch {}
+
+      setAttempt(started)
       setAnswers(restored)
       answersRef.current = restored
       setIndex(restoredIndex)
+      indexRef.current = restoredIndex
       autoSubmitRef.current = false
       setRemainingMs(Math.max(0, new Date(started.deadline_at).getTime() - Date.now()))
       setPhase("test")
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Tes belum dapat dimulai.")
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "Tes belum dapat dimulai.")
       setPhase("lobby")
     }
   }
@@ -277,21 +264,19 @@ export default function BattleTestPage() {
       window.location.href = "/account"
       return
     }
+    if (payload.length !== 20) {
+      setError("Format Ranked tidak valid. Muat ulang arena sebelum melanjutkan.")
+      return
+    }
     setPhase("submitting")
     setError("")
     try {
-      const { response, data } = await callSubmit({
-        action: "submit",
-        attempt_id: attempt.attempt_id,
-        answers: payload,
-      }, rawToken)
+      const { response, data } = await callSubmit(attempt.attempt_id, payload, rawToken)
       if (!response.ok) throw new Error(data?.error || "Hasil belum berhasil dikirim.")
-      try {
-        localStorage.setItem("battle_iq.last_result", JSON.stringify(data.result || {}))
-      } catch {}
+      try { localStorage.setItem("battle_iq.last_result", JSON.stringify(data.result || {})) } catch {}
       window.location.href = "/result"
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Hasil belum berhasil dikirim.")
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "Hasil belum berhasil dikirim.")
       setPhase("test")
       autoSubmitRef.current = false
     }
@@ -300,57 +285,12 @@ export default function BattleTestPage() {
   async function finishStage(force = false) {
     if (!attempt || phase === "submitting") return
     const payload = answersRef.current
-    const missing = payload.filter((a) => a === null).length
-
-    if (!force && missing > 0 && !window.confirm(`Masih ada ${missing} soal belum dijawab. Tetap lanjut?`)) return
-
-    if (attempt.questions.length === 30 && !attempt.high_range_unlocked) {
-      const rawToken = getParticipantToken()
-      if (!rawToken) {
-        window.location.href = "/account"
-        return
-      }
-      setPhase("submitting")
-      setError("")
-      try {
-        const { response, data } = await callBattle({
-          action: "qualify",
-          attempt_id: attempt.attempt_id,
-          answers: payload.slice(0,30),
-        }, rawToken)
-        if (!response.ok) throw new Error(data?.error || "Tahap inti belum dapat diperiksa.")
-
-        const result = data.result || {}
-        if (result.qualified && Array.isArray(result.questions) && result.questions.length) {
-          const extra = result.questions as Question[]
-          const nextAnswers = [...payload.slice(0,30), ...Array(extra.length).fill(null)]
-          setAttempt({
-            ...attempt,
-            questions:[...attempt.questions,...extra],
-            deadline_at:result.deadline_at,
-            high_range_unlocked:true,
-            core_answers:payload.slice(0,30),
-          })
-          setAnswers(nextAnswers)
-          answersRef.current = nextAnswers
-          setIndex(30)
-          setRemainingMs(Math.max(0,new Date(result.deadline_at).getTime()-Date.now()))
-          setStageNotice(`High Range terbuka — skor inti ${result.core_score ?? "tinggi"}. Anda mendapat 10 soal tambahan dan 8 menit untuk mengonfirmasi rentang skor atas.`)
-          autoSubmitRef.current=false
-          setPhase("test")
-          return
-        }
-
-        await sendSubmit(payload.slice(0,30))
-        return
-      } catch(e) {
-        setError(e instanceof Error ? e.message : "Tahap inti belum dapat diperiksa.")
-        setPhase("test")
-        autoSubmitRef.current=false
-        return
-      }
+    if (payload.length !== 20) {
+      setError("Format Ranked tidak valid. Muat ulang arena sebelum melanjutkan.")
+      return
     }
-
+    const missing = payload.filter((answer) => answer === null).length
+    if (!force && missing > 0 && !window.confirm(`Masih ada ${missing} soal belum dijawab. Tetap lanjut?`)) return
     await sendSubmit(payload)
   }
 
@@ -388,7 +328,7 @@ export default function BattleTestPage() {
           <div className="rounded-3xl border border-cyan-300/20 bg-[#0a1c3b]/90 p-6 shadow-2xl">
             <div className="flex items-start gap-3"><ShieldCheck className="mt-1 h-6 w-6 text-cyan-300"/><div><h2 className="text-xl font-black">Aturan Fair Play</h2><p className="mt-1 text-sm leading-6 text-slate-400">Kerjakan sendiri. Dilarang menggunakan AI generatif, kalkulator, mesin pencari, catatan jawaban, atau bantuan orang lain.</p></div></div>
             <label className="mt-5 flex cursor-pointer items-start gap-3 rounded-2xl border border-white/10 bg-slate-950/40 p-4 text-sm leading-6 text-slate-200">
-              <input type="checkbox" checked={integrity} onChange={(e)=>setIntegrity(e.target.checked)} className="mt-1 h-5 w-5 accent-indigo-500"/>
+              <input type="checkbox" checked={integrity} onChange={(event)=>setIntegrity(event.target.checked)} className="mt-1 h-5 w-5 accent-indigo-500"/>
               Saya memahami dan menyetujui Aturan Fair Play di atas.
             </label>
             {error && <div className="mt-4 rounded-xl border border-rose-400/20 bg-rose-500/10 p-3 text-sm text-rose-100">{error}</div>}
@@ -419,7 +359,7 @@ export default function BattleTestPage() {
     <main className="min-h-screen bg-[radial-gradient(circle_at_20%_0%,rgba(55,115,255,.16),transparent_28rem),linear-gradient(180deg,#020817,#06132b)] text-white">
       <header className="sticky top-0 z-30 border-b border-white/10 bg-[#020817]/90 backdrop-blur-xl">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
-          <div><p className="text-xs font-black text-cyan-300">{attempt.high_range_unlocked ? "HIGH RANGE · VERIFIED PATH" : isRepeatRanked ? "RANKED ATTEMPT · BEST SCORE CHASE" : "RANKED ATTEMPT"}</p><p className="text-sm font-bold text-white">Percobaan #{attempt.attempt_number} dari 3{attempt.questions.length===20 ? " · 20 soal · 20 menit" : attempt.high_range_unlocked ? " · Tahap 2/2" : " · Tahap 1/2"}</p></div>
+          <div><p className="text-xs font-black text-cyan-300">{isRepeatRanked ? "RANKED ATTEMPT · BEST SCORE CHASE" : "RANKED ATTEMPT"}</p><p className="text-sm font-bold text-white">Percobaan #{attempt.attempt_number} dari 3 · 20 soal · 20 menit</p></div>
           <div className={`flex items-center gap-2 rounded-xl border px-4 py-2 font-mono text-lg font-black ${remainingMs < 5*60*1000 ? "border-rose-400/30 bg-rose-500/10 text-rose-200" : "border-white/10 bg-white/5"}`}><Clock3 className="h-4 w-4"/>{timeText(remainingMs)}</div>
         </div>
         <div className="h-1 bg-slate-900"><div className="h-full bg-gradient-to-r from-cyan-400 to-indigo-500 transition-all" style={{width: `${progress}%`}}/></div>
@@ -427,14 +367,13 @@ export default function BattleTestPage() {
 
       <section className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
         {isRepeatRanked && <div className="mb-5 rounded-2xl border border-cyan-300/20 bg-cyan-300/10 px-4 py-3 text-sm text-cyan-100">Ranked Attempt #{attempt.attempt_number} dari 3 — tetap resmi. Jika skornya lebih tinggi, skor terbaik ini akan menggantikan skor leaderboard-mu.</div>}
-        {stageNotice && <div className="mb-5 rounded-2xl border border-violet-300/30 bg-violet-500/15 px-4 py-3 text-sm font-semibold leading-6 text-violet-100">{stageNotice}</div>}
-        <div className="mb-5 rounded-2xl border border-cyan-300/15 bg-cyan-400/[.06] px-4 py-3 text-xs font-semibold leading-5 text-cyan-100">{attempt.high_range_unlocked ? "High Range: 10 soal tambahan · 8 menit · skor rentang atas sedang diverifikasi." : attempt.questions.length===20 ? "Fair Play: 20 soal · 20 menit · jawaban tersimpan otomatis. Jika tes ditinggalkan sebelum selesai, jawaban yang sudah tersimpan akan tetap dinilai saat waktu berakhir." : "Fair Play: 30 soal · 15 menit · kerjakan tanpa AI generatif, mesin pencari, kalkulator, atau bantuan orang lain."}</div>
+        <div className="mb-5 rounded-2xl border border-cyan-300/15 bg-cyan-400/[.06] px-4 py-3 text-xs font-semibold leading-5 text-cyan-100">Fair Play: 20 soal · 20 menit · jawaban tersimpan otomatis. Jika tes ditinggalkan sebelum selesai, jawaban yang sudah tersimpan tetap dinilai ketika waktu tes berakhir.</div>
         {error && <div className="mb-5 rounded-2xl border border-rose-400/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-100">{error}</div>}
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_280px]">
           <article className="rounded-3xl border border-white/10 bg-[#0a1a37]/90 p-5 shadow-2xl sm:p-8">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <span className="rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1 text-xs font-black text-cyan-200">{domainLabel[current.domain] || current.domain}</span>
-              <span className="text-sm font-bold text-slate-400">Soal {index + 1} / {attempt.questions.length}</span>
+              <span className="text-sm font-bold text-slate-400">Soal {index + 1} / 20</span>
             </div>
             <h1 className="mt-7 text-xl font-extrabold leading-8 text-white sm:text-2xl">{current.prompt}</h1>
             {current.instruction && <p className="mt-3 text-sm leading-6 text-slate-400">{current.instruction}</p>}
@@ -450,22 +389,22 @@ export default function BattleTestPage() {
               })}
             </div>
             <div className="mt-8 flex items-center justify-between gap-3">
-              <button onClick={()=>setIndex((i)=>Math.max(0,i-1))} disabled={index===0} className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-3 font-bold text-slate-200 disabled:opacity-30"><ChevronLeft className="h-4 w-4"/>Sebelumnya</button>
-              {index < attempt.questions.length - 1 ? (
-                <button onClick={()=>setIndex((i)=>Math.min(attempt.questions.length-1,i+1))} className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-5 py-3 font-black">Berikutnya<ChevronRight className="h-4 w-4"/></button>
+              <button onClick={()=>setIndex((value)=>Math.max(0,value-1))} disabled={index===0} className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-3 font-bold text-slate-200 disabled:opacity-30"><ChevronLeft className="h-4 w-4"/>Sebelumnya</button>
+              {index < 19 ? (
+                <button onClick={()=>setIndex((value)=>Math.min(19,value+1))} className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-5 py-3 font-black">Berikutnya<ChevronRight className="h-4 w-4"/></button>
               ) : (
-                <button onClick={()=>finishStage(false)} disabled={phase==="submitting"} className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-3 font-black disabled:opacity-60">{phase==="submitting"?<Loader2 className="h-4 w-4 animate-spin"/>:<CheckCircle2 className="h-4 w-4"/>}{attempt.questions.length===30 ? "Periksa High Range" : "Kirim Hasil Final"}</button>
+                <button onClick={()=>finishStage(false)} disabled={phase==="submitting"} className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-3 font-black disabled:opacity-60">{phase==="submitting"?<Loader2 className="h-4 w-4 animate-spin"/>:<CheckCircle2 className="h-4 w-4"/>}Kirim Hasil Final</button>
               )}
             </div>
           </article>
 
           <aside className="h-fit rounded-3xl border border-white/10 bg-white/5 p-5 lg:sticky lg:top-24">
-            <div className="flex items-center justify-between"><h2 className="font-black">Navigasi Soal</h2><span className="text-xs text-slate-400">{attempt.questions.length-unanswered}/{attempt.questions.length} dijawab</span></div>
+            <div className="flex items-center justify-between"><h2 className="font-black">Navigasi Soal</h2><span className="text-xs text-slate-400">{20-unanswered}/20 dijawab</span></div>
             <div className="mt-4 grid grid-cols-5 gap-2">
-              {attempt.questions.map((_, i) => <button key={i} onClick={()=>setIndex(i)} className={`h-9 rounded-lg text-xs font-black ${i===index ? (i>=30 ? "bg-violet-500 text-white ring-2 ring-violet-300/40" : "bg-indigo-500 text-white ring-2 ring-indigo-300/40") : answers[i]!==null ? "bg-emerald-500/20 text-emerald-200" : i>=30 ? "bg-violet-950/70 text-violet-300" : "bg-slate-900 text-slate-500"}`}>{i+1}</button>)}
+              {attempt.questions.map((_, questionIndex) => <button key={questionIndex} onClick={()=>setIndex(questionIndex)} className={`h-9 rounded-lg text-xs font-black ${questionIndex===index ? "bg-indigo-500 text-white ring-2 ring-indigo-300/40" : answers[questionIndex]!==null ? "bg-emerald-500/20 text-emerald-200" : "bg-slate-900 text-slate-400"}`}>{questionIndex+1}</button>)}
             </div>
             <div className="mt-5 rounded-2xl bg-slate-950/40 p-4 text-sm text-slate-400">Belum dijawab: <b className="text-white">{unanswered}</b></div>
-            <button onClick={()=>finishStage(false)} disabled={phase==="submitting"} className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-emerald-400/30 bg-emerald-500/10 px-4 py-3 font-black text-emerald-200 disabled:opacity-60"><CheckCircle2 className="h-4 w-4"/>{attempt.questions.length===20 ? "Kirim Hasil" : attempt.questions.length===30 ? "Selesai Inti" : "Selesai High Range"}</button>
+            <button onClick={()=>finishStage(false)} disabled={phase==="submitting"} className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-emerald-400/30 bg-emerald-500/10 px-4 py-3 font-black text-emerald-200 disabled:opacity-60"><CheckCircle2 className="h-4 w-4"/>Kirim Hasil</button>
           </aside>
         </div>
       </section>
