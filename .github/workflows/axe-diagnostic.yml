@@ -1,0 +1,46 @@
+name: ALZAVA Axe Diagnostic
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/axe-diagnostic.yml
+permissions:
+  contents: read
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npm run build
+      - run: npm install --no-save playwright@1.55.0 @axe-core/playwright@4.10.2
+      - run: npx playwright install --with-deps chromium
+      - name: Print contrast nodes
+        run: |
+          python3 -m http.server 4173 -d out >/tmp/alzava-http.log 2>&1 &
+          sleep 2
+          cat >/tmp/axe-diagnostic.mjs <<'JS'
+          import { chromium } from "playwright"
+          import AxeBuilder from "@axe-core/playwright"
+          const base="http://127.0.0.1:4173"
+          const browser=await chromium.launch({headless:true})
+          const context=await browser.newContext({viewport:{width:390,height:844}})
+          const page=await context.newPage()
+          for(const route of ["/battle/","/pvp/","/global-chat/","/messages/"]){
+            await page.goto(base+route,{waitUntil:"domcontentloaded"})
+            const result=await new AxeBuilder({page}).withRules(["color-contrast"]).analyze()
+            console.log(`ROUTE ${route} violations=${result.violations.length}`)
+            for(const v of result.violations){
+              for(const n of v.nodes){
+                console.log(JSON.stringify({target:n.target,html:n.html,failureSummary:n.failureSummary}))
+              }
+            }
+          }
+          await browser.close()
+          JS
+          node /tmp/axe-diagnostic.mjs
