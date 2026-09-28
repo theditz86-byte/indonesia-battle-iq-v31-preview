@@ -1,5 +1,6 @@
 name: ALZAVA Hardening Smoke V2
 
+# Final hardening pass: remove legacy Ranked branches and verify authenticated routes.
 on:
   push:
     branches: [main]
@@ -31,7 +32,19 @@ jobs:
           s=re.sub(r'\nasync function callBattle\(body: Record<string, unknown>, token: string\) \{.*?\n\}\n\nasync function callRankedStart', '\nasync function callRankedStart', s, count=1, flags=re.S)
           block=re.search(r'  async function finishStage\(force = false\) \{.*?\n  \}\n\n  if \(phase === "loading"\)',s,re.S)
           if not block: raise SystemExit("finishStage anchor missing")
-          simple='''  async function finishStage(force = false) {\n    if (!attempt || phase === "submitting") return\n    const payload = answersRef.current\n    if (payload.length !== 20) {\n      setError("Format Ranked tidak valid. Muat ulang arena sebelum melanjutkan.")\n      return\n    }\n    const missing = payload.filter((a) => a === null).length\n    if (!force && missing > 0 && !window.confirm(`Masih ada ${missing} soal belum dijawab. Tetap lanjut?`)) return\n    await sendSubmit(payload)\n  }\n\n  if (phase === "loading")'''
+          simple='''  async function finishStage(force = false) {
+    if (!attempt || phase === "submitting") return
+    const payload = answersRef.current
+    if (payload.length !== 20) {
+      setError("Format Ranked tidak valid. Muat ulang arena sebelum melanjutkan.")
+      return
+    }
+    const missing = payload.filter((a) => a === null).length
+    if (!force && missing > 0 && !window.confirm(`Masih ada ${missing} soal belum dijawab. Tetap lanjut?`)) return
+    await sendSubmit(payload)
+  }
+
+  if (phase === "loading")'''
           s=s[:block.start()]+simple+s[block.end():]
           s=s.replace('  const [stageNotice,setStageNotice] = useState("")\n','')
           s=s.replace('          <div><p className="text-xs font-black text-cyan-300">{attempt.high_range_unlocked ? "HIGH RANGE · VERIFIED PATH" : isRepeatRanked ? "RANKED ATTEMPT · BEST SCORE CHASE" : "RANKED ATTEMPT"}</p><p className="text-sm font-bold text-white">Percobaan #{attempt.attempt_number} dari 3{attempt.questions.length===20 ? " · 20 soal · 20 menit" : attempt.high_range_unlocked ? " · Tahap 2/2" : " · Tahap 1/2"}</p></div>',
@@ -48,7 +61,19 @@ jobs:
               raise SystemExit("legacy Ranked refs remain: "+" || ".join(hits[:6]))
           p.write_text(s)
 
-          Path("tests/authenticated-smoke.mjs").write_text('''import { chromium } from "playwright"\nconst token=process.env.ALZAVA_E2E_TOKEN||""\nif(!token){console.log("authenticated smoke skipped: ALZAVA_E2E_TOKEN is not configured");process.exit(0)}\nconst base="http://127.0.0.1:4173"\nconst browser=await chromium.launch({headless:true})\nconst context=await browser.newContext({viewport:{width:390,height:844}})\nconst page=await context.newPage();const errors=[]\npage.on("pageerror",e=>errors.push(String(e)))\nawait page.goto(base+"/battle/",{waitUntil:"domcontentloaded"})\nawait page.evaluate((value)=>localStorage.setItem("indonesia-battle-iq.participant-token.v1",value),token)\nfor(const route of ["/battle/","/battle-test/","/messages/","/global-chat/","/latihan-tiu/","/pvp/"]){const r=await page.goto(base+route,{waitUntil:"domcontentloaded",timeout:25000});await page.waitForTimeout(800);if(!r||r.status()>=400)throw new Error(`${route} HTTP ${r?.status()}`);const body=(await page.locator("body").innerText()).trim();if(body.length<20)throw new Error(`${route} rendered empty`)}\nawait browser.close();if(errors.length)throw new Error(`authenticated browser errors: ${errors.join(" | ")}`);console.log("authenticated smoke ok")\n''')
+          Path("tests/authenticated-smoke.mjs").write_text('''import { chromium } from "playwright"
+const token=process.env.ALZAVA_E2E_TOKEN||""
+if(!token){console.log("authenticated smoke skipped: ALZAVA_E2E_TOKEN is not configured");process.exit(0)}
+const base="http://127.0.0.1:4173"
+const browser=await chromium.launch({headless:true})
+const context=await browser.newContext({viewport:{width:390,height:844}})
+const page=await context.newPage();const errors=[]
+page.on("pageerror",e=>errors.push(String(e)))
+await page.goto(base+"/battle/",{waitUntil:"domcontentloaded"})
+await page.evaluate((value)=>localStorage.setItem("indonesia-battle-iq.participant-token.v1",value),token)
+for(const route of ["/battle/","/battle-test/","/messages/","/global-chat/","/latihan-tiu/","/pvp/"]){const r=await page.goto(base+route,{waitUntil:"domcontentloaded",timeout:25000});await page.waitForTimeout(800);if(!r||r.status()>=400)throw new Error(`${route} HTTP ${r?.status()}`);const body=(await page.locator("body").innerText()).trim();if(body.length<20)throw new Error(`${route} rendered empty`)}
+await browser.close();if(errors.length)throw new Error(`authenticated browser errors: ${errors.join(" | ")}`);console.log("authenticated smoke ok")
+''')
 
           wp=Path(".github/workflows/web-smoke.yml")
           w=wp.read_text()
