@@ -111,7 +111,7 @@ export function PvpArena(){
   useEffect(()=>{const t=window.setInterval(()=>setNow(Date.now()),250);return()=>window.clearInterval(t)},[])
   useEffect(()=>{
     if(matchId){void loadState(matchId);const t=window.setInterval(()=>{if(document.visibilityState==="visible")void loadState(matchId)},2500);return()=>window.clearInterval(t)}
-    const t=window.setInterval(()=>{if(document.visibilityState==="visible")void loadLobby(true)},5000);return()=>window.clearInterval(t)
+    const t=window.setInterval(()=>{if(document.visibilityState==="visible")void loadLobby(true)},8000);return()=>window.clearInterval(t)
   },[matchId,loadLobby,loadState])
 
   const challenge=async(player:Player)=>{if(!player.public_id)return;setBusy(true);setError("");try{await pvp({action:"challenge",target_public_id:player.public_id});await loadLobby(true)}catch(e){setError(e instanceof Error?e.message:"Tantangan belum terkirim.")}finally{setBusy(false)}}
@@ -128,9 +128,10 @@ export function PvpArena(){
   const remaining=state?.status==="live"?Math.max(0,endsAt-serverNow):0
   const resultTitle=state?.winner==="me"?"KAMU MENANG!":state?.winner==="opponent"?"LAWAN MENANG":"HASIL SERI"
   const region=(p?:Player)=>[p?.regency_name,p?.province_name].filter(Boolean).join(" · ")||"Indonesia"
+  const focusMode=Boolean(matchId&&state&&(state.status==="ready"||state.status==="live"))
 
   return <div className="min-h-screen bg-[#020817] text-white">
-    <SiteNavbar participant={participant}/>
+    {!focusMode && <SiteNavbar participant={participant}/>}
     <main className="relative overflow-hidden">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(34,211,238,.12),transparent_38%),radial-gradient(circle_at_80%_30%,rgba(124,58,237,.10),transparent_30%)]"/>
       <div className="relative mx-auto max-w-7xl px-4 py-10 sm:px-6">
@@ -156,7 +157,7 @@ export function PvpArena(){
         </> : <div className="space-y-8">
           <section className="grid gap-6 lg:grid-cols-[1.15fr_.85fr]">
             <div className="rounded-[32px] border border-cyan-300/15 bg-gradient-to-br from-cyan-500/10 via-blue-500/5 to-violet-500/10 p-7 sm:p-9"><div className="inline-flex items-center gap-2 rounded-full border border-emerald-300/20 bg-emerald-300/10 px-3 py-1.5 text-xs font-black text-emerald-200"><Wifi className="h-3.5 w-3.5"/>PVP ONLINE LOBBY</div><h1 className="mt-5 text-4xl font-black tracking-tight sm:text-5xl">Battle PVP <span className="text-cyan-300">1v1</span></h1><p className="mt-4 max-w-2xl text-sm leading-7 text-slate-300">Tantang pemain yang sedang online. Dalam 10 menit, jawab soal sebanyak mungkin dan rebut skor tertinggi.</p><div className="mt-6 flex flex-wrap gap-3 text-sm font-black"><span className="rounded-xl border border-emerald-300/20 bg-emerald-300/10 px-4 py-2 text-emerald-200">Benar +50</span><span className="rounded-xl border border-rose-300/20 bg-rose-300/10 px-4 py-2 text-rose-200">Salah −25</span><span className="rounded-xl border border-cyan-300/20 bg-cyan-300/10 px-4 py-2 text-cyan-200">10 Menit</span><span className="rounded-xl border border-violet-300/20 bg-violet-300/10 px-4 py-2 text-violet-200">Soal Tak Terbatas</span></div></div>
-            <div className="rounded-[32px] border border-white/10 bg-white/[.04] p-6"><p className="text-xs font-black uppercase tracking-[.2em] text-slate-500">Status Arena</p><div className="mt-5 flex items-center gap-3">{avatar(participant as Player,"h-14 w-14")}<div><p className="font-black">{participant?.nickname||"Peserta"}</p><p className="text-xs text-emerald-300">● Online · siap menerima tantangan</p></div></div><div className="mt-5 grid grid-cols-2 gap-3"><div className="rounded-2xl border border-white/10 bg-slate-950/40 p-4 text-center"><p className="text-3xl font-black">{online.length}</p><p className="mt-1 text-xs text-slate-500">Pemain online</p></div><div className="rounded-2xl border border-white/10 bg-slate-950/40 p-4 text-center"><Clock3 className="mx-auto h-6 w-6 text-cyan-300"/><p className="mt-2 text-xs text-slate-500">Update tiap 3 detik</p></div></div></div>
+            <div className="rounded-[32px] border border-white/10 bg-white/[.04] p-6"><p className="text-xs font-black uppercase tracking-[.2em] text-slate-500">Status Arena</p><div className="mt-5 flex items-center gap-3">{avatar(participant as Player,"h-14 w-14")}<div><p className="font-black">{participant?.nickname||"Peserta"}</p><p className="text-xs text-emerald-300">● Online · siap menerima tantangan</p></div></div><div className="mt-5 grid grid-cols-2 gap-3"><div className="rounded-2xl border border-white/10 bg-slate-950/40 p-4 text-center"><p className="text-3xl font-black">{online.length}</p><p className="mt-1 text-xs text-slate-500">Pemain online</p></div><div className="rounded-2xl border border-white/10 bg-slate-950/40 p-4 text-center"><Clock3 className="mx-auto h-6 w-6 text-cyan-300"/><p className="mt-2 text-xs text-slate-500">Update otomatis</p></div></div></div>
           </section>
           {outgoing&&<div className="rounded-2xl border border-amber-300/20 bg-amber-300/10 p-4 text-sm text-amber-100"><div className="flex items-center gap-3"><RefreshCw className="h-5 w-5 animate-spin"/><div><p className="font-black">Menunggu {outgoing.player?.nickname} menerima tantangan…</p><p className="mt-1 text-xs text-amber-100/70">Tantangan berlaku sekitar 60 detik dan hanya aktif selama pemain tetap online.</p></div></div></div>}
           {error&&<div className="rounded-2xl border border-rose-300/20 bg-rose-300/10 px-4 py-3 text-sm text-rose-100">{error}</div>}
@@ -167,6 +168,6 @@ export function PvpArena(){
       </div>
     </main>
     {incoming&&!matchId&&<div className="fixed inset-0 z-[120] grid place-items-center bg-black/75 p-4 backdrop-blur-md"><div className="w-full max-w-md rounded-3xl border border-cyan-300/20 bg-[#07152d] p-6 text-center shadow-2xl"><div className="mx-auto w-fit">{avatar(incoming.player,"h-20 w-20")}</div><p className="mt-4 text-xs font-black uppercase tracking-[.22em] text-cyan-300">Tantangan PVP Masuk</p><h2 className="mt-2 text-2xl font-black">{incoming.player?.nickname} menantangmu!</h2><p className="mt-2 text-sm text-slate-400">10 menit · soal tak terbatas · benar +50 · salah −25</p><div className="mt-6 grid grid-cols-2 gap-3"><button disabled={busy} onClick={()=>void respond(false)} className="rounded-2xl border border-white/10 bg-white/[.04] px-4 py-3 font-black text-slate-200"><XCircle className="mr-2 inline h-4 w-4"/>Tolak</button><button disabled={busy} onClick={()=>void respond(true)} className="rounded-2xl bg-gradient-to-r from-cyan-500 to-violet-600 px-4 py-3 font-black text-white"><CheckCircle2 className="mr-2 inline h-4 w-4"/>Terima</button></div></div></div>}
-    <SiteFooter/>
+    {!focusMode && <SiteFooter/>}
   </div>
 }

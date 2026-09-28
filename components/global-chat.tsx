@@ -102,7 +102,7 @@ export function GlobalChat({ participant }: { participant: BattleParticipant | n
     if (!participant) return
     const timer = window.setInterval(() => {
       if (document.visibilityState === "visible") void sync(true)
-    }, 8000)
+    }, 12000)
     return () => window.clearInterval(timer)
   }, [participant, sync])
 

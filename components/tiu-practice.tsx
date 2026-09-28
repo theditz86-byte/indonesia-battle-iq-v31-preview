@@ -9,6 +9,7 @@ import type { BattleParticipant } from "@/lib/battle"
 import { trackGrowthEvent } from "@/components/growth-tracker"
 
 const TIU_API = "https://efndozplpwyemzgqfnep.supabase.co/functions/v1/battle-tiu"
+const TIU_SESSION_API = "https://efndozplpwyemzgqfnep.supabase.co/functions/v1/battle-tiu-session"
 
 type Mode = "category" | "simulation"
 type Category = "numerik" | "logika" | "verbal" | "figural"
@@ -85,6 +86,21 @@ async function callTiu(body: Record<string,unknown>) {
   return data
 }
 
+async function callTiuSession(body: Record<string,unknown>, keepalive=false) {
+  const token = getParticipantToken()
+  if (!token) throw new Error("participant_required")
+  const response = await fetch(TIU_SESSION_API, {
+    method: "POST",
+    headers: { "Content-Type":"application/json", "X-Battle-Token":token },
+    body: JSON.stringify(body),
+    cache: "no-store",
+    keepalive,
+  })
+  const data = await response.json().catch(() => ({}))
+  if (!response.ok) throw new Error(data?.error || "Sesi TIU belum dapat diproses.")
+  return data
+}
+
 function timeText(ms:number) {
   const total = Math.max(0, Math.ceil(ms/1000))
   return `${String(Math.floor(total/60)).padStart(2,"0")}:${String(total%60).padStart(2,"0")}`
@@ -108,6 +124,9 @@ export function TiuPractice({ mode, defaultCategory="numerik" }: { mode:Mode; de
   const [error,setError] = useState("")
   const [now,setNow] = useState(Date.now())
   const autoSubmitRef = useRef(false)
+  const progressTimerRef = useRef<number | null>(null)
+  const answersRef = useRef<Array<number|null>>([])
+  const indexRef = useRef(0)
   const progressKey = (id:string) => `alzava.tiu.progress.${id}`
 
   function restoreLocalProgress(id:string,count:number) {
@@ -144,6 +163,9 @@ export function TiuPractice({ mode, defaultCategory="numerik" }: { mode:Mode; de
     return ()=>window.clearInterval(timer)
   }, [session?.id])
 
+  useEffect(()=>{ answersRef.current=answers },[answers])
+  useEffect(()=>{ indexRef.current=index },[index])
+
   const remainingMs = session ? Math.max(0,new Date(session.deadline_at).getTime()-now) : 0
   const current = session?.questions[index]
   const unanswered = answers.filter(a=>a===null).length
@@ -172,7 +194,18 @@ export function TiuPractice({ mode, defaultCategory="numerik" }: { mode:Mode; de
       const data = await callTiu({action:"start",mode,category})
       const s = data.session as Session
       setSession(s)
-      const restored = s.resumed ? restoreLocalProgress(s.id,s.question_count) : null
+      let restored = s.resumed ? restoreLocalProgress(s.id,s.question_count) : null
+      if (s.resumed) {
+        try {
+          const saved = await callTiuSession({action:"progress_get",session_id:s.id})
+          if (Array.isArray(saved?.progress?.answers) && saved.progress.answers.length===s.question_count) {
+            restored = {
+              answers: saved.progress.answers.map((v:unknown)=>Number.isInteger(v)&&Number(v)>=0&&Number(v)<=4?Number(v):null),
+              index: Number.isInteger(saved?.progress?.current_index) && saved.progress.current_index>=0 && saved.progress.current_index<s.question_count ? saved.progress.current_index : 0,
+            }
+          }
+        } catch {}
+      }
       setAnswers(restored?.answers || Array(s.question_count).fill(null))
       setIndex(restored?.index || 0)
       setNow(Date.now())
@@ -192,14 +225,29 @@ export function TiuPractice({ mode, defaultCategory="numerik" }: { mode:Mode; de
   useEffect(()=>{
     if(!session || !answers.length) return
     try { window.localStorage.setItem(progressKey(session.id),JSON.stringify({answers,index,saved_at:Date.now()})) } catch {}
+    if(progressTimerRef.current) window.clearTimeout(progressTimerRef.current)
+    progressTimerRef.current=window.setTimeout(()=>{
+      void callTiuSession({action:"progress_save",session_id:session.id,answers,current_index:index}).catch(()=>{})
+    },450)
+    return()=>{ if(progressTimerRef.current) window.clearTimeout(progressTimerRef.current) }
   },[session?.id,answers,index])
+
+  useEffect(()=>{
+    if(!session) return
+    const heartbeat=window.setInterval(()=>{
+      void callTiuSession({action:"progress_save",session_id:session.id,answers:answersRef.current,current_index:indexRef.current}).catch(()=>{})
+    },15000)
+    const onHide=()=>{ void callTiuSession({action:"progress_save",session_id:session.id,answers:answersRef.current,current_index:indexRef.current},true).catch(()=>{}) }
+    window.addEventListener("pagehide",onHide)
+    return()=>{ window.clearInterval(heartbeat); window.removeEventListener("pagehide",onHide) }
+  },[session?.id])
 
   async function submit(force=false) {
     if (!session || busy || result) return
     if (!force && unanswered>0 && !window.confirm(`Masih ada ${unanswered} soal belum dijawab. Tetap kirim?`)) return
     setBusy(true); setError("")
     try {
-      const data = await callTiu({action:"submit",session_id:session.id,answers})
+      const data = await callTiuSession({action:"submit",session_id:session.id,answers})
       setResult(data.result || null)
       try { window.localStorage.removeItem(progressKey(session.id)) } catch {}
       setSession(null)
@@ -216,7 +264,7 @@ export function TiuPractice({ mode, defaultCategory="numerik" }: { mode:Mode; de
   if (loading) return <main className="grid min-h-screen place-items-center bg-[#020817] text-white"><div className="text-center"><BrainCircuit className="mx-auto h-10 w-10 animate-pulse text-cyan-300"/><p className="mt-3 text-sm font-bold text-slate-400">Menyiapkan Latihan TIU…</p></div></main>
 
   return <div className="min-h-screen bg-[radial-gradient(circle_at_15%_-10%,rgba(34,211,238,.16),transparent_34rem),radial-gradient(circle_at_90%_12%,rgba(124,58,237,.13),transparent_30rem),linear-gradient(180deg,#020617,#07142e_55%,#020617)] text-white">
-    <SiteNavbar participant={participant}/>
+    {!session && <SiteNavbar participant={participant}/>}
     <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
       {!getParticipantToken() ? <section className="mx-auto max-w-2xl rounded-[32px] border border-cyan-300/15 bg-white/[.045] p-8 text-center shadow-2xl backdrop-blur-xl sm:p-10">
         <BrainCircuit className="mx-auto h-14 w-14 text-cyan-300"/>
@@ -263,7 +311,7 @@ export function TiuPractice({ mode, defaultCategory="numerik" }: { mode:Mode; de
         </div>
       </section>}
     </main>
-    <SiteFooter/>
+    {!session && <SiteFooter/>}
   </div>
 }
 

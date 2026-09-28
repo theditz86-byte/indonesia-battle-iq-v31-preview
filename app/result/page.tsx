@@ -47,6 +47,8 @@ type LatestResult = {
     submitted_at?: string
     is_personal_best?: boolean
     premium_unlocked?: boolean
+    integrity_status?: string
+    ranking_eligible?: boolean
   }>
   result?: {
     attempt_id?: string
@@ -68,6 +70,8 @@ type LatestResult = {
     submitted_at?: string
     best_score?: number
     national_rank?: number
+    integrity_status?: string
+    ranking_eligible?: boolean
   } | null
 }
 
@@ -434,6 +438,12 @@ export default function ResultPage() {
             {data.premium_unlocked && <button onClick={printPremium} className="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-black text-slate-950 shadow-xl"><Download className="h-4 w-4"/>Simpan PDF Premium</button>}
           </div>
         </div>
+
+        {result.integrity_status === "flagged" && (
+          <section className="no-print mb-6 rounded-2xl border border-amber-300/25 bg-amber-300/10 px-5 py-4 text-sm leading-6 text-amber-100">
+            <div className="flex items-start gap-3"><ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-amber-300"/><div><b>Hasil tersimpan · sedang ditinjau Fair Play.</b><p className="mt-1 text-amber-100/75">Percobaan ini sementara tidak mengubah Ranking. Jika Anda sudah memiliki skor verified sebelumnya, skor tersebut tetap aman di leaderboard.</p></div></div>
+          </section>
+        )}
 
         {Array.isArray(data.attempts) && data.attempts.length > 1 && (
           <section className="no-print mb-6 rounded-[1.75rem] border border-white/10 bg-slate-950/45 p-4 shadow-xl backdrop-blur-xl sm:p-5">

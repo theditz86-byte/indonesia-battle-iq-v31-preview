@@ -73,7 +73,7 @@ async function callRankedStart(token: string) {
 
 async function callSubmit(body: Record<string, unknown>, token: string) {
   const answers = Array.isArray(body.answers) ? body.answers : []
-  if (answers.length !== 20) return callBattle(body, token)
+  if (answers.length !== 20) throw new Error("Format Ranked tidak valid. Muat ulang arena sebelum melanjutkan.")
   const response = await fetch(SUBMIT20_API, {
     method: "POST",
     headers: { "Content-Type": "application/json", "X-Battle-Token": token },
@@ -236,12 +236,10 @@ export default function BattleTestPage() {
       }
       if (!response.ok) throw new Error(data?.error || "Tes belum dapat dimulai.")
       const started = data as Attempt
-      if (!Array.isArray(started.questions) || !started.questions.length) throw new Error("Paket soal belum tersedia.")
+      if (!Array.isArray(started.questions) || started.questions.length !== 20) throw new Error("Paket Ranked tidak valid. Arena resmi saat ini wajib 20 soal.")
       setAttempt(started)
-      let restored = Array.isArray(started.core_answers) && started.high_range_unlocked
-        ? [...started.core_answers, ...Array(Math.max(0, started.questions.length - started.core_answers.length)).fill(null)]
-        : Array(started.questions.length).fill(null)
-      let restoredIndex = started.high_range_unlocked && started.questions.length > 30 ? 30 : 0
+      let restored: Array<number | null> = Array(20).fill(null)
+      let restoredIndex = 0
       if (started.questions.length === 20) {
         try {
           const { response: progressResponse, data: progressData } = await callProgress("progress_get", started.attempt_id, rawToken)
