@@ -6,12 +6,12 @@ export function PathToTop() {
     <section id="panduan" className="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-lg">
       <div className="mb-5 flex items-center gap-3">
         <Target className="h-6 w-6 text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.6)]" />
-        <div><h2 className="text-lg font-extrabold text-white">Dari lokal menuju Indonesia</h2><p className="mt-0.5 text-[11px] text-slate-500">Peringkat terdekat terasa lebih mungkin dikejar.</p></div>
+        <div><h2 className="text-lg font-extrabold text-white">Dari lokal menuju Indonesia</h2><p className="mt-0.5 text-[11px] text-slate-400">Peringkat terdekat terasa lebih mungkin dikejar.</p></div>
       </div>
       <ul className="space-y-3">
         {paths.map((p, i) => (
           <li key={p.step} className="flex items-start gap-4 rounded-2xl border border-white/5 bg-slate-950/30 p-4 transition-colors hover:border-white/15 hover:bg-white/5">
-            <span className={`text-2xl font-black leading-none ${i === paths.length - 1 ? "text-amber-300" : "text-slate-600"}`}>{p.step}</span>
+            <span className={`text-2xl font-black leading-none ${i === paths.length - 1 ? "text-amber-300" : "text-slate-500"}`}>{p.step}</span>
             <div className="leading-tight"><p className="text-sm font-bold text-white">{p.title}</p><p className="mt-0.5 text-xs text-slate-400">{p.desc}</p></div>
           </li>
         ))}
