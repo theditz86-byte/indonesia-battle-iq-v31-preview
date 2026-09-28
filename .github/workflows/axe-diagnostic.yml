@@ -24,7 +24,7 @@ jobs:
         run: |
           python3 -m http.server 4173 -d out >/tmp/alzava-http.log 2>&1 &
           sleep 2
-          cat >/tmp/axe-diagnostic.mjs <<'JS'
+          cat >tests/axe-diagnostic.mjs <<'JS'
           import { chromium } from "playwright"
           import AxeBuilder from "@axe-core/playwright"
           const base="http://127.0.0.1:4173"
@@ -43,4 +43,4 @@ jobs:
           }
           await browser.close()
           JS
-          node /tmp/axe-diagnostic.mjs
+          node tests/axe-diagnostic.mjs
