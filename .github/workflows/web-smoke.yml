@@ -20,7 +20,10 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - run: npm run build
       - name: Serve static export and smoke routes
+        env:
+          ALZAVA_E2E_TOKEN: ${{ secrets.ALZAVA_E2E_TOKEN }}
         run: |
           python3 -m http.server 4173 -d out >/tmp/alzava-http.log 2>&1 &
           sleep 2
           node tests/browser-smoke.mjs
+          node tests/authenticated-smoke.mjs
