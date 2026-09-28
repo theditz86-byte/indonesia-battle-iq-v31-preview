@@ -34,14 +34,8 @@ export type BattleParticipant = {
   district_name?: string
   is_qa?: boolean
   attempts_used?: number
-  free_attempts_remaining?: number
   weekly_attempts_remaining?: number
-  ranked_slots_unlocked?: number
-  next_ranked_unlock_day?: string | null
-  ranked_weekly_limit?: number
   open_beta?: boolean
-  paid_credits?: number
-  attempts_remaining?: number
   active_attempt_id?: string | null
 }
 
