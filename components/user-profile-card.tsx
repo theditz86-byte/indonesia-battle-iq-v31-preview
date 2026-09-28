@@ -23,18 +23,15 @@ export function UserProfileCard({ participant, ownEntry, scope }: { participant:
   }
 
   const isQa = Boolean(participant.is_qa)
-  const used = Math.max(0, Number(participant.attempts_used) || 0)
-  const availableNow = Math.max(0, Number(participant.free_attempts_remaining ?? Math.max(0, 3 - used)) || 0)
-  const weeklyRemaining = Math.max(0, Number(participant.weekly_attempts_remaining ?? Math.max(0, 3 - used)) || 0)
+  const used = Math.max(0, Math.min(3, Number(participant.attempts_used) || 0))
+  const remaining = Math.max(0, Number(participant.weekly_attempts_remaining ?? 3 - used) || 0)
   const hasActive = Boolean(participant.active_attempt_id)
-  const nextDay = participant.next_ranked_unlock_day
   const actionHref = "/battle-test"
   const actionLabel = isQa
     ? hasActive ? "Lanjutkan QA Test" : "Mulai QA Test · bebas percobaan"
     : hasActive ? "Lanjutkan Ranked Battle"
-      : availableNow > 0 ? `Mulai Ranked · tersedia ${availableNow}x`
-        : weeklyRemaining > 0 && nextDay ? `Ranked berikutnya · ${nextDay}`
-          : "3 Ranked minggu ini selesai"
+      : remaining > 0 ? `Mulai Ranked · tersisa ${remaining}x`
+        : "3 Ranked minggu ini selesai"
 
   return (
     <div className={`rounded-2xl border p-6 backdrop-blur-md shadow-[0_10px_40px_rgba(0,0,0,0.4)] ${isQa ? "border-amber-300/35 bg-amber-300/[.08]" : "border-white/20 bg-white/10"}`}>
@@ -73,8 +70,8 @@ export function UserProfileCard({ participant, ownEntry, scope }: { participant:
               </>
             ) : (
               <>
-                <p className="text-xs text-slate-400">Ranked resmi <span className="font-bold text-white">3x/season</span> · {Math.min(3, used)}/3 digunakan</p>
-                <p className="text-[11px] text-slate-500">{hasActive ? "Percobaan sedang berjalan" : availableNow > 0 ? `${availableNow} kesempatan tersedia sekarang` : weeklyRemaining > 0 && nextDay ? `Kesempatan berikutnya terbuka ${nextDay}` : "Skor terbaik dari 3 attempt masuk leaderboard"}</p>
+                <p className="text-xs text-slate-400">Ranked resmi <span className="font-bold text-white">3x/season</span> · {used}/3 digunakan</p>
+                <p className="text-[11px] text-slate-500">{hasActive ? "Percobaan sedang berjalan" : remaining > 0 ? `${remaining} kesempatan tersisa dan bebas dipakai kapan saja selama season aktif` : "Skor terbaik dari 3 attempt masuk leaderboard"}</p>
               </>
             )}
             <a href={actionHref} className={`mt-1 flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-bold text-white shadow-[0_0_24px_rgba(99,102,241,0.5)] transition-transform hover:scale-[1.02] ${isQa ? "bg-gradient-to-r from-amber-500 to-orange-500" : "bg-gradient-to-r from-indigo-600 to-violet-600"}`}><Unlock className="h-4 w-4" />{actionLabel}</a>
