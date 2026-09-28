@@ -63,7 +63,7 @@ export function Leaderboard({ entries, participant, scope, loading, error, updat
   return (
     <section className="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-lg shadow-[0_0_40px_rgba(0,50,150,0.1)]">
       <div className="mb-5 flex items-center justify-between">
-        <div className="flex items-center gap-3"><Trophy className="h-6 w-6 text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.6)]" /><div><h2 className="text-xl font-extrabold text-white">Peringkat {scopeLabel(scope, participant)}</h2><p className="mt-0.5 text-[11px] text-slate-500">Mulai dari wilayah terdekat, lalu kejar posisi Indonesia.</p></div></div>
+        <div className="flex items-center gap-3"><Trophy className="h-6 w-6 text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.6)]" /><div><h2 className="text-xl font-extrabold text-white">Peringkat {scopeLabel(scope, participant)}</h2><p className="mt-0.5 text-[11px] text-slate-400">Mulai dari wilayah terdekat, lalu kejar posisi Indonesia.</p></div></div>
         <div className="flex items-center gap-2"><span className="flex items-center gap-1.5 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1 text-xs font-medium text-emerald-300"><span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />Live</span><button aria-label="Muat ulang" onClick={onRefresh} disabled={loading} className="flex h-8 w-8 items-center justify-center rounded-full border border-white/10 bg-white/5 text-slate-300 transition-colors hover:text-white disabled:opacity-60"><RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} /></button></div>
       </div>
       <div className="mb-4 flex flex-wrap gap-1 rounded-2xl border border-white/10 bg-slate-950/40 p-1">
