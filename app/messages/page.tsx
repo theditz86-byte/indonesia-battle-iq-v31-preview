@@ -24,7 +24,7 @@ export default function MessagesPage() {
     <div className="min-h-screen bg-[radial-gradient(circle_at_30%_-10%,rgba(34,211,238,.10),transparent_34rem),radial-gradient(circle_at_90%_5%,rgba(124,58,237,.10),transparent_32rem),#020617] text-white">
       <SiteNavbar participant={participant} />
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10">
-        {loading ? <div className="grid min-h-[540px] place-items-center text-sm text-slate-500">Memuat Pesan & Teman…</div> : <PrivateMessages participant={participant} />}
+        {loading ? <div className="grid min-h-[540px] place-items-center text-sm text-slate-400">Memuat Pesan & Teman…</div> : <PrivateMessages participant={participant} />}
       </main>
       <SiteFooter />
     </div>
