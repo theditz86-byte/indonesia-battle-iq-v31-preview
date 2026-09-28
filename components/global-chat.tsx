@@ -100,10 +100,17 @@ export function GlobalChat({ participant }: { participant: BattleParticipant | n
   useEffect(() => {
     void sync()
     if (!participant) return
-    const timer = window.setInterval(() => {
+    const refreshIfVisible = () => {
       if (document.visibilityState === "visible") void sync(true)
-    }, 12000)
-    return () => window.clearInterval(timer)
+    }
+    const timer = window.setInterval(refreshIfVisible, 30000)
+    window.addEventListener("focus", refreshIfVisible)
+    document.addEventListener("visibilitychange", refreshIfVisible)
+    return () => {
+      window.clearInterval(timer)
+      window.removeEventListener("focus", refreshIfVisible)
+      document.removeEventListener("visibilitychange", refreshIfVisible)
+    }
   }, [participant, sync])
 
   useEffect(() => {
