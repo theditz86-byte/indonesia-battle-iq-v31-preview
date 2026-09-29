@@ -36,6 +36,8 @@ export type PrivateMessage = {
   message?: string
   created_at?: string
   is_own?: boolean
+  delivery_status?: "sent" | "seen"
+  seen_at?: string | null
 }
 
 export type SocialOverview = {
