@@ -11,6 +11,7 @@ import { GlobalProfileCorner } from "@/components/global-profile-corner"
 import { MaintenanceBanner } from "@/components/maintenance-banner"
 import { RankingEligibilityNotice } from "@/components/ranking-eligibility-notice"
 import { PvpHistoryShareBridge } from "@/components/pvp-history-share-bridge"
+import { PvpGlobalPresence } from "@/components/pvp-global-presence"
 import { TrafficTracker } from "@/components/traffic-tracker"
 import { AdminControlCenter } from "@/components/admin-control-center"
 
@@ -75,6 +76,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body className="antialiased">
         <MaintenanceBanner />
         <TrafficTracker />
+        <PvpGlobalPresence />
         <AccountLoginRedirect />
         <GrowthTracker />
         <ReferralConversionTracker />
