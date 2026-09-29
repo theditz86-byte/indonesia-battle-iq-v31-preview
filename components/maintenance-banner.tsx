@@ -1,6 +1,6 @@
 "use client"
 
-const MAINTENANCE_MODE = false
+const MAINTENANCE_MODE = true
 
 export function MaintenanceBanner(){
   if(!MAINTENANCE_MODE) return null
