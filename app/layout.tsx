@@ -8,6 +8,8 @@ import { ReferralConversionTracker } from "@/components/referral-conversion-trac
 import { ResultErrorAnalysis } from "@/components/result-error-analysis"
 import { RankedIntegrityMonitor } from "@/components/ranked-integrity-monitor"
 import { GlobalProfileCorner } from "@/components/global-profile-corner"
+import { MaintenanceBanner } from "@/components/maintenance-banner"
+import { RankingEligibilityNotice } from "@/components/ranking-eligibility-notice"
 
 const BRAND_ICON = "/brand/alvaza-logo-new.svg?v=20260925-2"
 
@@ -68,12 +70,14 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="id">
       <body className="antialiased">
+        <MaintenanceBanner />
         <AccountLoginRedirect />
         <GrowthTracker />
         <ReferralConversionTracker />
         <RankedIntegrityMonitor />
         <GlobalProfileCorner />
         {children}
+        <RankingEligibilityNotice />
         <ResultErrorAnalysis />
       </body>
     </html>
