@@ -12,6 +12,7 @@ import { MaintenanceBanner } from "@/components/maintenance-banner"
 import { RankingEligibilityNotice } from "@/components/ranking-eligibility-notice"
 import { PvpHistoryShareBridge } from "@/components/pvp-history-share-bridge"
 import { TrafficTracker } from "@/components/traffic-tracker"
+import { AdminControlCenter } from "@/components/admin-control-center"
 
 const BRAND_ICON = "/brand/alvaza-logo-new.svg?v=20260925-2"
 
@@ -79,6 +80,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <ReferralConversionTracker />
         <RankedIntegrityMonitor />
         <GlobalProfileCorner />
+        <AdminControlCenter />
         {children}
         <PvpHistoryShareBridge />
         <RankingEligibilityNotice />
