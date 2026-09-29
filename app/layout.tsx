@@ -10,6 +10,7 @@ import { RankedIntegrityMonitor } from "@/components/ranked-integrity-monitor"
 import { GlobalProfileCorner } from "@/components/global-profile-corner"
 import { MaintenanceBanner } from "@/components/maintenance-banner"
 import { RankingEligibilityNotice } from "@/components/ranking-eligibility-notice"
+import { PvpHistoryShareBridge } from "@/components/pvp-history-share-bridge"
 
 const BRAND_ICON = "/brand/alvaza-logo-new.svg?v=20260925-2"
 
@@ -77,6 +78,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <RankedIntegrityMonitor />
         <GlobalProfileCorner />
         {children}
+        <PvpHistoryShareBridge />
         <RankingEligibilityNotice />
         <ResultErrorAnalysis />
       </body>
