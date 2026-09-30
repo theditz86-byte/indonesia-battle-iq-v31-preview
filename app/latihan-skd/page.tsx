@@ -2,12 +2,12 @@ import type { Metadata } from "next"
 import { SkdHub } from "@/components/skd-hub"
 
 export const metadata: Metadata = {
-  title: "Latihan TIU CPNS Gratis — Bagian dari Persiapan SKD",
-  description: "Latihan TIU gratis selama Open Beta ALZAVA Battle Point sebagai bagian dari persiapan SKD. Tersedia TIU Harian, numerik, logika-analitis, verbal, figural-spasial, dan simulasi TIU 35 soal dengan pembahasan. TWK dan TKP belum menjadi fokus versi ini.",
-  keywords: ["latihan TIU CPNS gratis","persiapan SKD TIU","soal TIU CPNS","simulasi TIU 35 soal","tryout TIU gratis"],
+  title: "Latihan SKD CPNS — TWK TIU TKP & Mini SKD 55 Soal",
+  description: "Latihan SKD lengkap di ALZAVA Battle Point: Mini SKD 55 soal dalam 50 menit berisi 15 TWK, 17 TIU, dan 23 TKP, plus latihan fokus TIU dan review pembahasan.",
+  keywords: ["latihan SKD CPNS","simulasi SKD 55 soal","latihan TWK","latihan TIU","latihan TKP","tryout SKD gratis"],
   alternates: { canonical: "/latihan-skd" },
 }
 
-export default function LatihanSkdPage() {
+export default function LatihanSkdPage(){
   return <SkdHub />
 }
