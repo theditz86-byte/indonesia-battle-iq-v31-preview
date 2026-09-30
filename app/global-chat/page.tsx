@@ -4,18 +4,67 @@ import { useEffect, useState } from "react"
 import { GlobalChat } from "@/components/global-chat"
 import { SiteFooter } from "@/components/site-footer"
 import { SiteNavbar } from "@/components/site-navbar"
-import { fetchOverview } from "@/lib/battle"
+import { fetchOverview, getParticipantToken } from "@/lib/battle"
 import type { BattleParticipant } from "@/lib/battle"
+
+const ACCOUNT_API = "https://efndozplpwyemzgqfnep.supabase.co/functions/v1/battle-account"
+
+async function loadParticipant(): Promise<BattleParticipant | null> {
+  const token = getParticipantToken()
+  if (!token) return null
+
+  try {
+    const overview = await fetchOverview("country", null)
+    if (overview.participant) return overview.participant
+  } catch {
+    // Fallback below keeps account-aware pages working when the public overview is temporarily unavailable.
+  }
+
+  try {
+    const response = await fetch(ACCOUNT_API, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-Battle-Token": token },
+      body: JSON.stringify({ action: "me" }),
+      cache: "no-store",
+    })
+    const data = await response.json().catch(() => ({}))
+    if (!response.ok || !data?.participant) return null
+    return data.participant as BattleParticipant
+  } catch {
+    return null
+  }
+}
 
 export default function GlobalChatPage() {
   const [participant, setParticipant] = useState<BattleParticipant | null>(null)
+  const [checkingSession, setCheckingSession] = useState(true)
 
   useEffect(() => {
     let cancelled = false
-    void fetchOverview("country", null)
-      .then((data) => { if (!cancelled) setParticipant(data.participant) })
-      .catch(() => { if (!cancelled) setParticipant(null) })
-    return () => { cancelled = true }
+
+    const refreshParticipant = async () => {
+      const current = await loadParticipant()
+      if (!cancelled) {
+        setParticipant(current)
+        setCheckingSession(false)
+      }
+    }
+
+    void refreshParticipant()
+
+    const onFocus = () => void refreshParticipant()
+    const onVisibility = () => {
+      if (document.visibilityState === "visible") void refreshParticipant()
+    }
+
+    window.addEventListener("focus", onFocus)
+    document.addEventListener("visibilitychange", onVisibility)
+
+    return () => {
+      cancelled = true
+      window.removeEventListener("focus", onFocus)
+      document.removeEventListener("visibilitychange", onVisibility)
+    }
   }, [])
 
   return (
@@ -27,7 +76,11 @@ export default function GlobalChatPage() {
           <h1 className="mt-2 text-3xl font-black tracking-tight text-white sm:text-5xl">Chat Global</h1>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-400">Tempat peserta Battle Point saling menyapa, berbagi pengalaman, dan berkenalan secara langsung.</p>
         </div>
-        <GlobalChat participant={participant} />
+        {checkingSession ? (
+          <section className="rounded-3xl border border-white/10 bg-white/[.05] p-8 text-center text-sm text-slate-400 shadow-[0_18px_60px_rgba(0,0,0,.28)]">Memeriksa sesi peserta…</section>
+        ) : (
+          <GlobalChat participant={participant} />
+        )}
       </main>
       <SiteFooter />
     </div>
