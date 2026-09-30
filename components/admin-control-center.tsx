@@ -21,6 +21,7 @@ const TOKEN_KEY="battle_admin_token"
 
 const sections=[
   {id:"admin-overview",label:"Overview",icon:Gauge,match:"Dashboard ALZAVA Battle Point"},
+  {id:"admin-participants",label:"Peserta & Aktivitas",icon:Users,route:"/admin/peserta/"},
   {id:"admin-growth",label:"Growth",icon:BarChart3,match:"Referral & Challenge Funnel"},
   {id:"admin-traffic",label:"Traffic",icon:Activity,match:"Pengunjung Situs"},
   {id:"admin-season",label:"Season & Ranking",icon:Trophy,match:"Season resmi terpisah dari testing"},
@@ -46,17 +47,19 @@ export function AdminControlCenter(){
     const token=window.localStorage.getItem(TOKEN_KEY)||""
     if(!token)return
     setEnabled(true)
+    setActive(window.location.pathname.startsWith("/admin/peserta")?"admin-participants":"admin-overview")
     document.body.classList.add("admin-control-center-enabled")
     setLastSync(new Date())
 
     const assignIds=()=>{
       sections.forEach(s=>{
+        if(!s.match)return
         const h=findHeading(s.match)
         const section=(h?.closest("section")||h?.parentElement) as HTMLElement|null
         if(section&&!section.id)section.id=s.id
       })
       const root=document.querySelector("main > div") as HTMLElement|null
-      if(root&&!document.getElementById("admin-overview")) root.id="admin-overview"
+      if(root&&!document.getElementById("admin-overview")&&!window.location.pathname.startsWith("/admin/peserta")) root.id="admin-overview"
     }
     assignIds()
     const mo=new MutationObserver(assignIds)
@@ -68,10 +71,11 @@ export function AdminControlCenter(){
   },[])
 
   useEffect(()=>{
-    if(!enabled)return
+    if(!enabled||window.location.pathname.startsWith("/admin/peserta"))return
     const onScroll=()=>{
       let best="admin-overview",bestDist=Infinity
       sections.forEach(s=>{
+        if(s.route)return
         const el=document.getElementById(s.id)
         if(!el)return
         const d=Math.abs(el.getBoundingClientRect().top-110)
@@ -89,7 +93,6 @@ export function AdminControlCenter(){
     if(refreshing)return
     setRefreshing(true)
     setLastSync(new Date())
-    // Re-use the page's own data loader by doing a soft reload; keeps all admin sections in sync.
     window.setTimeout(()=>window.location.reload(),180)
   }
 
@@ -100,8 +103,10 @@ export function AdminControlCenter(){
     window.location.assign("/admin/")
   }
 
-  function jump(id:string){
+  function jump(id:string,route?:string){
     setOpen(false);setActive(id)
+    if(route){window.location.assign(route);return}
+    if(window.location.pathname.startsWith("/admin/peserta")){window.location.assign(`/admin/#${id}`);return}
     const el=document.getElementById(id)
     if(el)window.scrollTo({top:window.scrollY+el.getBoundingClientRect().top-98,behavior:"smooth"})
   }
@@ -130,7 +135,7 @@ export function AdminControlCenter(){
         </div>
 
         <nav className="mt-5 grid gap-1.5">
-          {sections.map(({id,label,icon:Icon})=><button key={id} onClick={()=>jump(id)} className={`group flex items-center gap-3 rounded-2xl px-3.5 py-3 text-left text-sm font-bold transition ${active===id?"border border-cyan-300/20 bg-cyan-300/10 text-white shadow-[0_0_25px_rgba(34,211,238,.08)]":"border border-transparent text-slate-400 hover:border-white/10 hover:bg-white/5 hover:text-white"}`}><Icon className={`h-4 w-4 ${active===id?"text-cyan-300":"text-slate-500 group-hover:text-cyan-300"}`}/><span>{label}</span>{active===id&&<span className="ml-auto h-2 w-2 rounded-full bg-cyan-300 shadow-[0_0_10px_rgba(103,232,249,.9)]"/>}</button>)}
+          {sections.map(({id,label,icon:Icon,route})=><button key={id} onClick={()=>jump(id,route)} className={`group flex items-center gap-3 rounded-2xl px-3.5 py-3 text-left text-sm font-bold transition ${active===id?"border border-cyan-300/20 bg-cyan-300/10 text-white shadow-[0_0_25px_rgba(34,211,238,.08)]":"border border-transparent text-slate-400 hover:border-white/10 hover:bg-white/5 hover:text-white"}`}><Icon className={`h-4 w-4 ${active===id?"text-cyan-300":"text-slate-500 group-hover:text-cyan-300"}`}/><span>{label}</span>{active===id&&<span className="ml-auto h-2 w-2 rounded-full bg-cyan-300 shadow-[0_0_10px_rgba(103,232,249,.9)]"/>}</button>)}
         </nav>
 
         <div className="mt-auto rounded-2xl border border-emerald-300/15 bg-emerald-300/[.06] p-4">
@@ -146,7 +151,7 @@ export function AdminControlCenter(){
       <div className="flex min-h-[82px] items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
         <div className="flex min-w-0 items-center gap-3">
           <button onClick={()=>setOpen(true)} className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl border border-white/10 bg-white/5 text-white lg:hidden"><Menu className="h-5 w-5"/></button>
-          <div className="min-w-0"><div className="flex items-center gap-2"><p className="truncate text-lg font-black text-white sm:text-xl">Dashboard Admin</p><span className="hidden rounded-full border border-emerald-300/20 bg-emerald-300/10 px-2.5 py-1 text-[10px] font-black uppercase text-emerald-300 sm:inline">Live</span></div><p className="truncate text-xs text-slate-500">Control center · terakhir sinkron {syncLabel}</p></div>
+          <div className="min-w-0"><div className="flex items-center gap-2"><p className="truncate text-lg font-black text-white sm:text-xl">{active==="admin-participants"?"Peserta & Aktivitas":"Dashboard Admin"}</p><span className="hidden rounded-full border border-emerald-300/20 bg-emerald-300/10 px-2.5 py-1 text-[10px] font-black uppercase text-emerald-300 sm:inline">Live</span></div><p className="truncate text-xs text-slate-500">Control center · terakhir sinkron {syncLabel}</p></div>
         </div>
 
         <div className="flex shrink-0 items-center gap-2">
