@@ -13,8 +13,8 @@ type SiteState={incoming_challenge?:Challenge|null;active_match?:{id?:string;sta
 
 function initials(name?:string){return (name||"BP").split(/\s+/).filter(Boolean).slice(0,2).map(x=>x[0]?.toUpperCase()).join("")||"BP"}
 
-async function siteStatus(token:string){
-  const r=await fetch(SITE_API,{method:"POST",headers:{"Content-Type":"application/json","X-Battle-Token":token},body:"{}",cache:"no-store"})
+async function siteStatus(token:string,pagePath:string){
+  const r=await fetch(SITE_API,{method:"POST",headers:{"Content-Type":"application/json","X-Battle-Token":token},body:JSON.stringify({page_path:pagePath}),cache:"no-store"})
   const d=await r.json().catch(()=>({}))
   if(!r.ok)throw new Error(d?.error||"Status online belum dapat diperbarui.")
   return d as SiteState
@@ -41,7 +41,7 @@ export function PvpGlobalPresence(){
     const token=getParticipantToken()
     if(!token){setIncoming(null);setActiveMatch(null);return}
     try{
-      const data=await siteStatus(token)
+      const data=await siteStatus(token,path)
       setActiveMatch(data.active_match||null)
       const next=data.incoming_challenge||null
       setIncoming(next)
