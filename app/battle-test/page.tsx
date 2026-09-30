@@ -26,6 +26,7 @@ type Attempt = {
   started_at?: string
   deadline_at: string
   resumed?: boolean
+  bonus_attempt?: boolean
   questions: Question[]
 }
 
@@ -33,6 +34,7 @@ type ParticipantState = {
   nickname?: string
   attempts_used?: number
   weekly_attempts_remaining?: number
+  bonus_attempts_available?: number
   ranked_weekly_limit?: number
   active_attempt_id?: string | null
 }
@@ -185,6 +187,7 @@ export default function BattleTestPage() {
   const current = attempt?.questions[index]
   const progress = attempt ? Math.round(((index + 1) / QUESTION_COUNT) * 100) : 0
   const isRepeatRanked = Boolean(attempt && attempt.attempt_number > 1 && attempt.attempt_number <= 3)
+  const isBonusRanked = Boolean(attempt?.bonus_attempt)
   const isHardFinal = index >= HARD_START_INDEX
 
   function requestStart() {
@@ -212,7 +215,7 @@ export default function BattleTestPage() {
       }
       if (!response.ok) {
         if (data?.code === "ranked_slot_locked") {
-          setError("Tiga Ranked Battle resmi pada season ini sudah digunakan. Season berikutnya membuka 3 kesempatan baru.")
+          setError(data?.error || "Tiga Ranked Battle resmi sudah digunakan dan tidak ada Bonus Attempt aktif.")
           setPhase("lobby")
           return
         }
@@ -304,6 +307,7 @@ export default function BattleTestPage() {
   if (phase === "lobby") {
     const used = Math.max(0, Number(participant?.attempts_used) || 0)
     const remaining = Math.max(0, Number(participant?.weekly_attempts_remaining ?? Math.max(0, 3 - used)) || 0)
+    const bonusAvailable = Math.max(0, Number(participant?.bonus_attempts_available) || 0)
     return (
       <main className="min-h-screen bg-[radial-gradient(circle_at_18%_0%,rgba(65,105,225,.22),transparent_30rem),linear-gradient(180deg,#020817,#07142f_55%,#040b1c)] text-white">
         <header className="border-b border-white/10 bg-[#020817]/80 backdrop-blur-xl">
@@ -320,8 +324,8 @@ export default function BattleTestPage() {
             <div className="mt-5 max-w-2xl rounded-2xl border border-violet-300/20 bg-violet-400/10 p-4 text-sm leading-6 text-violet-100"><b>Format:</b> 30 soal dalam 20 menit. Soal 26–30 menjadi Tantangan Akhir dengan tingkat nalar lebih tinggi. Battle Score dihitung dari ketepatan; jika skor sama, peserta yang menyelesaikan lebih cepat berada di atas.</div>
             <div className="mt-7 grid max-w-2xl gap-3 sm:grid-cols-3">
               <div className="rounded-2xl border border-white/10 bg-white/5 p-4"><span className="text-xs text-slate-400">Sisa kesempatan</span><strong className="mt-1 block text-3xl font-black">{remaining}x</strong></div>
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-4"><span className="text-xs text-slate-400">Batas per season</span><strong className="mt-1 block text-3xl font-black">3x</strong></div>
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-4"><span className="text-xs text-slate-400">Sudah digunakan</span><strong className="mt-1 block text-3xl font-black">{used}x</strong></div>
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-4"><span className="text-xs text-slate-400">Jatah resmi</span><strong className="mt-1 block text-3xl font-black">3x</strong></div>
+              <div className="rounded-2xl border border-cyan-300/15 bg-cyan-300/[.06] p-4"><span className="text-xs text-cyan-100/70">Bonus Admin</span><strong className="mt-1 block text-3xl font-black text-cyan-200">{bonusAvailable}x</strong></div>
             </div>
           </div>
           <div className="rounded-3xl border border-cyan-300/20 bg-[#0a1c3b]/90 p-6 shadow-2xl">
@@ -358,14 +362,15 @@ export default function BattleTestPage() {
     <main className="min-h-screen bg-[radial-gradient(circle_at_20%_0%,rgba(55,115,255,.16),transparent_28rem),linear-gradient(180deg,#020817,#06132b)] text-white">
       <header className="sticky top-0 z-30 border-b border-white/10 bg-[#020817]/90 backdrop-blur-xl">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
-          <div><p className={`text-xs font-black ${isHardFinal ? "text-amber-300" : "text-cyan-300"}`}>{isHardFinal ? "TANTANGAN AKHIR · SOAL 26–30" : isRepeatRanked ? "RANKED ATTEMPT · BEST SCORE CHASE" : "RANKED ATTEMPT"}</p><p className="text-sm font-bold text-white">Percobaan #{attempt.attempt_number} dari 3 · {QUESTION_COUNT} soal · {TIME_LIMIT_MINUTES} menit</p></div>
+          <div><p className={`text-xs font-black ${isHardFinal ? "text-amber-300" : "text-cyan-300"}`}>{isHardFinal ? "TANTANGAN AKHIR · SOAL 26–30" : isBonusRanked ? "BONUS RANKED ATTEMPT · RESMI" : isRepeatRanked ? "RANKED ATTEMPT · BEST SCORE CHASE" : "RANKED ATTEMPT"}</p><p className="text-sm font-bold text-white">{isBonusRanked ? `Bonus Attempt · Percobaan #${attempt.attempt_number}` : `Percobaan #${attempt.attempt_number} dari 3`} · {QUESTION_COUNT} soal · {TIME_LIMIT_MINUTES} menit</p></div>
           <div className={`flex items-center gap-2 rounded-xl border px-4 py-2 font-mono text-lg font-black ${remainingMs < 5*60*1000 ? "border-rose-400/30 bg-rose-500/10 text-rose-200" : "border-white/10 bg-white/5"}`}><Clock3 className="h-4 w-4"/>{timeText(remainingMs)}</div>
         </div>
         <div className="h-1 bg-slate-900"><div className="h-full bg-gradient-to-r from-cyan-400 to-indigo-500 transition-all" style={{width:`${progress}%`}}/></div>
       </header>
 
       <section className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
-        {isRepeatRanked && <div className="mb-5 rounded-2xl border border-cyan-300/20 bg-cyan-300/10 px-4 py-3 text-sm text-cyan-100">Ranked Attempt #{attempt.attempt_number} dari 3 — recipe soal dari attempt sebelumnya tidak dipakai ulang.</div>}
+        {isBonusRanked && <div className="mb-5 rounded-2xl border border-amber-300/20 bg-amber-300/10 px-4 py-3 text-sm text-amber-100">Bonus Ranked Attempt dari Admin — tetap resmi dan dapat memperbarui skor leaderboard. Recipe soal season ini tetap tidak diulang.</div>}
+        {!isBonusRanked && isRepeatRanked && <div className="mb-5 rounded-2xl border border-cyan-300/20 bg-cyan-300/10 px-4 py-3 text-sm text-cyan-100">Ranked Attempt #{attempt.attempt_number} dari 3 — recipe soal dari attempt sebelumnya tidak dipakai ulang.</div>}
         <div className="mb-5 rounded-2xl border border-cyan-300/15 bg-cyan-400/[.06] px-4 py-3 text-xs font-semibold leading-5 text-cyan-100">Fair Play: {QUESTION_COUNT} soal · {TIME_LIMIT_MINUTES} menit · jawaban tersimpan otomatis. Skor sama diurutkan berdasarkan waktu penyelesaian tercepat.</div>
         {error && <div className="mb-5 rounded-2xl border border-rose-400/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-100">{error}</div>}
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_280px]">
