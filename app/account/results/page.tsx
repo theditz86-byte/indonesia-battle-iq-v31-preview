@@ -176,7 +176,7 @@ export default function AccountResultsPage(){
         <section className="mt-7 grid gap-4 sm:grid-cols-3">
           <a href="/account" className="rounded-2xl border border-white/10 bg-white/[.035] p-5 hover:bg-white/[.06]"><Settings className="h-5 w-5 text-cyan-300"/><p className="mt-3 font-black">Profil & Keamanan</p><p className="mt-1 text-sm text-slate-500">Nama panggilan, avatar, password, dan identitas akun.</p></a>
           <a href="/battle-test" className="rounded-2xl border border-white/10 bg-white/[.035] p-5 hover:bg-white/[.06]"><Play className="h-5 w-5 text-violet-300"/><p className="mt-3 font-black">Ranked Battle</p><p className="mt-1 text-sm text-slate-500">Gunakan maksimal 3 kesempatan resmi; skor terbaik menentukan leaderboard season.</p></a>
-          <a href="/battle-test" className="rounded-2xl border border-white/10 bg-white/[.035] p-5 hover:bg-white/[.06]"><Play className="h-5 w-5 text-emerald-300"/><p className="mt-3 font-black">Tes Kemampuan</p><p className="mt-1 text-sm text-slate-500">Mulai atau lanjutkan tes yang tersedia.</p></a>
+          <a href="/latihan-skd" className="rounded-2xl border border-white/10 bg-white/[.035] p-5 hover:bg-white/[.06]"><Play className="h-5 w-5 text-emerald-300"/><p className="mt-3 font-black">Latihan SKD</p><p className="mt-1 text-sm text-slate-500">Latihan TWK, TIU, dan TKP serta simulasi Mini SKD tanpa memengaruhi Ranked Battle.</p></a>
         </section>
       </div>
     </main>
