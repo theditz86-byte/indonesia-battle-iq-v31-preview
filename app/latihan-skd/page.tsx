@@ -9,10 +9,5 @@ export const metadata: Metadata = {
 }
 
 export default function LatihanSkdPage(){
-  return <>
-    <SkdHub />
-    <a href="/riwayat-skd" className="fixed bottom-5 right-5 z-50 rounded-2xl border border-cyan-300/25 bg-[#07142e]/95 px-5 py-3 text-sm font-black text-cyan-100 shadow-2xl backdrop-blur transition hover:-translate-y-0.5 hover:border-cyan-300/50">
-      Riwayat Mini SKD
-    </a>
-  </>
+  return <SkdHub />
 }
