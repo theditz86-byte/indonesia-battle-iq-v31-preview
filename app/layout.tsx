@@ -14,6 +14,8 @@ import { PvpHistoryShareBridge } from "@/components/pvp-history-share-bridge"
 import { PvpGlobalPresence } from "@/components/pvp-global-presence"
 import { TrafficTracker } from "@/components/traffic-tracker"
 import { AdminControlCenterV2 } from "@/components/admin-control-center-v2"
+import { PretestLifecycleBridge } from "@/components/pretest-lifecycle-bridge"
+import { PretestHistoryCard } from "@/components/pretest-history-card"
 
 const BRAND_ICON = "/brand/alvaza-logo-new.svg?v=20260925-2"
 
@@ -24,7 +26,7 @@ export const metadata: Metadata = {
     template: "%s | ALZAVA Battle Point",
   },
   description:
-    "Competitive brain game Indonesia: 3 Ranked Battle per season, Battle Point, ranking kecamatan hingga nasional, PVP 1v1, Quick Battle, serta latihan TIU sebagai arena latihan non-ranked.",
+    "Competitive brain game Indonesia: Quick Battle Pre-Test, 3 Ranked Battle per season, Battle Point, ranking kecamatan hingga nasional, PVP 1v1, serta latihan SKD dan TIU.",
   keywords: [
     "battle point Indonesia",
     "competitive brain game Indonesia",
@@ -48,13 +50,13 @@ export const metadata: Metadata = {
     siteName: "ALZAVA Battle Point",
     title: "ALZAVA Battle Point — Competitive Brain Game Indonesia",
     description:
-      "Adu nalar di Ranked Battle dan PVP 1v1, raih Battle Point, dan kejar ranking dari kecamatan hingga nasional. Latihan TIU tersedia sebagai mode non-ranked.",
+      "Coba Quick Battle Pre-Test, adu nalar di Ranked Battle dan PVP 1v1, raih Battle Point, dan kejar ranking dari kecamatan hingga nasional.",
     images: [{ url: "/images/hero-bg.png", width: 1200, height: 630, alt: "ALZAVA Battle Point" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "ALZAVA Battle Point",
-    description: "Adu Nalar. Raih Poin. Naik Peringkat. Ranked Battle, PVP, dan Quick Battle.",
+    description: "Coba kemampuan awalmu. Adu Nalar. Raih Poin. Naik Peringkat.",
     images: ["/images/hero-bg.png"],
   },
   icons: {
@@ -83,7 +85,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <RankedIntegrityMonitor />
         <GlobalProfileCorner />
         <AdminControlCenterV2 />
+        <PretestLifecycleBridge />
         {children}
+        <PretestHistoryCard />
         <PvpHistoryShareBridge />
         <RankingEligibilityNotice />
         <ResultErrorAnalysis />
