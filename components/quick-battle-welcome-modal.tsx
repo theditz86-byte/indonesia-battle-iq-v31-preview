@@ -9,7 +9,7 @@ import { MobileSheet } from "./quick-battle/mobile-sheet"
 const DISMISS_KEY = "alzava_quickbattle_popup_dismissed_at"
 const COOLDOWN_MS = 2 * 60 * 60 * 1000
 const SHOW_DELAY_MS = 0
-const EXIT_MS = 220
+const EXIT_MS = 180
 const PRELOAD_ASSETS = [
   "/aditaka-quick-battle.png",
   "/skd.png",
@@ -54,7 +54,7 @@ export function QuickBattleWelcomeModal() {
     const timer = window.setTimeout(() => {
       returnFocusRef.current = document.activeElement as HTMLElement | null
       setMounted(true)
-      requestAnimationFrame(() => requestAnimationFrame(() => setVisible(true)))
+      requestAnimationFrame(() => setVisible(true))
     }, SHOW_DELAY_MS)
     return () => window.clearTimeout(timer)
   }, [pathname])
@@ -108,7 +108,7 @@ export function QuickBattleWelcomeModal() {
 
   return (
     <div
-      className={`fixed inset-0 z-[9999] flex ${isMobile ? "items-end justify-center pb-2" : "items-center justify-center"} bg-[rgba(1,7,20,.82)] backdrop-blur-[10px] transition-opacity duration-[250ms] motion-reduce:transition-none ${visible ? "opacity-100" : "opacity-0"}`}
+      className={`fixed inset-0 z-[9999] flex ${isMobile ? "items-end justify-center pb-2" : "items-center justify-center"} bg-[rgba(1,7,20,.82)] backdrop-blur-[8px] transition-opacity duration-[180ms] motion-reduce:transition-none ${visible ? "opacity-100" : "opacity-0"}`}
       onMouseDown={(e) => {
         if (e.target === e.currentTarget) dismiss()
       }}
@@ -120,7 +120,7 @@ export function QuickBattleWelcomeModal() {
         aria-labelledby={TITLE_ID}
         aria-describedby={DESC_ID}
         tabIndex={-1}
-        className={`font-[family-name:var(--font-qb)] outline-none transition-all duration-[320ms] ease-out motion-reduce:transition-none ${visible ? "translate-y-0 scale-100 opacity-100" : "translate-y-[14px] scale-[0.965] opacity-0"}`}
+        className={`font-[family-name:var(--font-qb)] outline-none transition-all duration-[220ms] ease-out motion-reduce:transition-none ${visible ? "translate-y-0 scale-100 opacity-100" : "translate-y-[10px] scale-[0.98] opacity-0"}`}
         style={isMobile ? { width: "calc(100vw - 16px)" } : { width: STAGE_W * scale, height: STAGE_H * scale }}
       >
         {isMobile ? (
