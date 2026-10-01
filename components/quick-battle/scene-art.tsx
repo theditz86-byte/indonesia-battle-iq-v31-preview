@@ -1,6 +1,6 @@
-import { BUMN_ASSET, SKD_ASSET } from "./scene-gates"
-import { CASN_ASSET } from "./scene-casn"
-import { TROPHY_ASSET } from "./scene-trophy"
+import { QUICK_BATTLE_SCENE_SRC } from "./asset-scene"
+
+const SCENE_SRC = QUICK_BATTLE_SCENE_SRC.replace(/\s+/g, "")
 
 const SPARKS = [
   [640, 330, 3], [700, 520, 2], [820, 250, 2], [1180, 420, 3], [1290, 300, 2],
@@ -8,23 +8,6 @@ const SPARKS = [
   [1320, 520, 3], [900, 380, 2], [1100, 700, 2], [620, 640, 2], [1060, 80, 2],
   [770, 90, 3], [1200, 200, 2],
 ]
-
-function Paper({ left, top, rotate = 0, flip = false, size = 96 }: { left:number; top:number; rotate?:number; flip?:boolean; size?:number }) {
-  return <div aria-hidden="true" className="pointer-events-none absolute rounded-md border-2 border-amber-300 bg-[#f7e9c9] shadow-[0_0_18px_rgba(255,190,40,.5)]" style={{left,top,width:size*.68,height:size,transform:`rotate(${rotate}deg) scaleX(${flip?-1:1})`}}>
-    <div className="absolute left-[14%] top-[18%] h-[12%] w-[18%] rounded-sm border-2 border-slate-600"/>
-    <div className="absolute left-[39%] top-[20%] h-[4%] w-[45%] rounded bg-slate-600"/>
-    <div className="absolute left-[39%] top-[33%] h-[4%] w-[35%] rounded bg-slate-600"/>
-    <div className="absolute left-[14%] top-[51%] h-[10%] w-[16%] rounded-sm border-2 border-slate-600"/>
-    <div className="absolute left-[39%] top-[53%] h-[4%] w-[45%] rounded bg-slate-600"/>
-    <div className="absolute left-[39%] top-[66%] h-[4%] w-[36%] rounded bg-slate-600"/>
-  </div>
-}
-
-function Coin() {
-  return <div aria-hidden="true" className="pointer-events-none absolute left-[648px] top-[388px] grid h-[120px] w-[120px] place-items-center rounded-full border-[8px] border-amber-300 bg-[radial-gradient(circle,#27306a_0%,#121432_67%)] shadow-[0_0_28px_rgba(255,190,40,.82)]">
-    <span className="text-[74px] leading-none text-amber-300 drop-shadow-[0_0_12px_rgba(255,190,40,.8)]">✦</span>
-  </div>
-}
 
 export function SceneArt() {
   return (
@@ -43,16 +26,24 @@ export function SceneArt() {
         </g>
       </svg>
 
-      <img src={CASN_ASSET} alt="" className="pointer-events-none absolute" style={{ left:700, top:-40, width:450, height:450 }} />
-      <img src={SKD_ASSET} alt="" className="pointer-events-none absolute" style={{ left:470, top:40, width:400, height:400 }} />
-      <img src={BUMN_ASSET} alt="" className="pointer-events-none absolute" style={{ left:1085, top:20, width:310, height:310 }} />
+      <img
+        src={SCENE_SRC}
+        alt=""
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 h-full w-full object-contain"
+      />
 
-      <div aria-hidden="true" className="pointer-events-none absolute mix-blend-screen" style={{ left:540, top:20, width:660, height:700, background:"radial-gradient(closest-side, rgba(255,200,70,.75), rgba(255,140,30,.3) 55%, transparent 100%)" }} />
-
-      <img src={TROPHY_ASSET} alt="" className="pointer-events-none absolute" style={{ left:940, top:100, width:360, height:360, filter:"drop-shadow(0 0 30px rgba(255,170,30,.7))" }} />
-      <Coin />
-      <Paper left={1262} top={170} rotate={12} size={110} />
-      <Paper left={596} top={440} rotate={-14} flip size={96} />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute mix-blend-screen"
+        style={{
+          left: 540,
+          top: 20,
+          width: 660,
+          height: 700,
+          background: "radial-gradient(closest-side, rgba(255,200,70,.68), rgba(255,140,30,.24) 55%, transparent 100%)",
+        }}
+      />
 
       <svg aria-hidden="true" viewBox="0 0 1380 940" className="pointer-events-none absolute inset-0 h-full w-full" preserveAspectRatio="none">
         {SPARKS.map(([x,y,r],i)=><circle key={i} cx={x} cy={y} r={r} fill={i%3===0?"#7cc4ff":"#ffd23f"} opacity="0.9" />)}
