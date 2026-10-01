@@ -4,10 +4,12 @@ import { useEffect, useMemo, useState } from "react"
 import {
   Activity,
   BarChart3,
+  BookOpenCheck,
   CreditCard,
   Gauge,
   LogOut,
   Menu,
+  Power,
   RefreshCw,
   ShieldCheck,
   Trophy,
@@ -27,12 +29,25 @@ const sections=[
   {id:"admin-season",label:"Season & Ranking",icon:Trophy,match:"Season resmi terpisah dari testing"},
   {id:"admin-moderation",label:"Moderasi",icon:ShieldCheck,match:"Laporan Peserta"},
   {id:"admin-payment",label:"Pembayaran",icon:CreditCard,match:"Verifikasi Transaksi"},
+  {id:"admin-bank",label:"Bank Soal SKD",icon:BookOpenCheck,route:"/admin/bank-soal/"},
+  {id:"admin-maintenance",label:"Maintenance",icon:Power,route:"/admin/maintenance/"},
   {id:"admin-tools",label:"Recovery & Tools",icon:Wrench,match:"Recovery"},
 ]
 
 function findHeading(match:string){
   const nodes=Array.from(document.querySelectorAll("h1,h2,h3")) as HTMLElement[]
   return nodes.find(el=>(el.textContent||"").toLowerCase().includes(match.toLowerCase()))||null
+}
+
+function sectionForPath(pathname:string){
+  if(pathname.startsWith("/admin/peserta"))return"admin-participants"
+  if(pathname.startsWith("/admin/bank-soal"))return"admin-bank"
+  if(pathname.startsWith("/admin/maintenance"))return"admin-maintenance"
+  return"admin-overview"
+}
+
+function isStandaloneAdminPage(pathname:string){
+  return pathname.startsWith("/admin/peserta")||pathname.startsWith("/admin/bank-soal")||pathname.startsWith("/admin/maintenance")
 }
 
 export function AdminControlCenter(){
@@ -47,7 +62,7 @@ export function AdminControlCenter(){
     const token=window.localStorage.getItem(TOKEN_KEY)||""
     if(!token)return
     setEnabled(true)
-    setActive(window.location.pathname.startsWith("/admin/peserta")?"admin-participants":"admin-overview")
+    setActive(sectionForPath(window.location.pathname))
     document.body.classList.add("admin-control-center-enabled")
     setLastSync(new Date())
 
@@ -59,7 +74,7 @@ export function AdminControlCenter(){
         if(section&&!section.id)section.id=s.id
       })
       const root=document.querySelector("main > div") as HTMLElement|null
-      if(root&&!document.getElementById("admin-overview")&&!window.location.pathname.startsWith("/admin/peserta")) root.id="admin-overview"
+      if(root&&!document.getElementById("admin-overview")&&!isStandaloneAdminPage(window.location.pathname)) root.id="admin-overview"
     }
     assignIds()
     const mo=new MutationObserver(assignIds)
@@ -71,7 +86,7 @@ export function AdminControlCenter(){
   },[])
 
   useEffect(()=>{
-    if(!enabled||window.location.pathname.startsWith("/admin/peserta"))return
+    if(!enabled||isStandaloneAdminPage(window.location.pathname))return
     const onScroll=()=>{
       let best="admin-overview",bestDist=Infinity
       sections.forEach(s=>{
@@ -88,6 +103,7 @@ export function AdminControlCenter(){
   },[enabled])
 
   const syncLabel=useMemo(()=>lastSync?lastSync.toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"}):"—",[lastSync])
+  const activeLabel=sections.find(section=>section.id===active)?.label||"Dashboard Admin"
 
   async function refresh(){
     if(refreshing)return
@@ -106,7 +122,7 @@ export function AdminControlCenter(){
   function jump(id:string,route?:string){
     setOpen(false);setActive(id)
     if(route){window.location.assign(route);return}
-    if(window.location.pathname.startsWith("/admin/peserta")){window.location.assign(`/admin/#${id}`);return}
+    if(isStandaloneAdminPage(window.location.pathname)){window.location.assign(`/admin/#${id}`);return}
     const el=document.getElementById(id)
     if(el)window.scrollTo({top:window.scrollY+el.getBoundingClientRect().top-98,behavior:"smooth"})
   }
@@ -134,7 +150,7 @@ export function AdminControlCenter(){
           <button onClick={()=>setOpen(false)} className="grid h-9 w-9 place-items-center rounded-xl border border-white/10 bg-white/5 text-slate-300 lg:hidden"><X className="h-4 w-4"/></button>
         </div>
 
-        <nav className="mt-5 grid gap-1.5">
+        <nav className="mt-5 grid gap-1.5 overflow-y-auto pr-1">
           {sections.map(({id,label,icon:Icon,route})=><button key={id} onClick={()=>jump(id,route)} className={`group flex items-center gap-3 rounded-2xl px-3.5 py-3 text-left text-sm font-bold transition ${active===id?"border border-cyan-300/20 bg-cyan-300/10 text-white shadow-[0_0_25px_rgba(34,211,238,.08)]":"border border-transparent text-slate-400 hover:border-white/10 hover:bg-white/5 hover:text-white"}`}><Icon className={`h-4 w-4 ${active===id?"text-cyan-300":"text-slate-500 group-hover:text-cyan-300"}`}/><span>{label}</span>{active===id&&<span className="ml-auto h-2 w-2 rounded-full bg-cyan-300 shadow-[0_0_10px_rgba(103,232,249,.9)]"/>}</button>)}
         </nav>
 
@@ -151,7 +167,7 @@ export function AdminControlCenter(){
       <div className="flex min-h-[82px] items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
         <div className="flex min-w-0 items-center gap-3">
           <button onClick={()=>setOpen(true)} className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl border border-white/10 bg-white/5 text-white lg:hidden"><Menu className="h-5 w-5"/></button>
-          <div className="min-w-0"><div className="flex items-center gap-2"><p className="truncate text-lg font-black text-white sm:text-xl">{active==="admin-participants"?"Peserta & Aktivitas":"Dashboard Admin"}</p><span className="hidden rounded-full border border-emerald-300/20 bg-emerald-300/10 px-2.5 py-1 text-[10px] font-black uppercase text-emerald-300 sm:inline">Live</span></div><p className="truncate text-xs text-slate-500">Control center · terakhir sinkron {syncLabel}</p></div>
+          <div className="min-w-0"><div className="flex items-center gap-2"><p className="truncate text-lg font-black text-white sm:text-xl">{activeLabel}</p><span className="hidden rounded-full border border-emerald-300/20 bg-emerald-300/10 px-2.5 py-1 text-[10px] font-black uppercase text-emerald-300 sm:inline">Live</span></div><p className="truncate text-xs text-slate-500">Control center · terakhir sinkron {syncLabel}</p></div>
         </div>
 
         <div className="flex shrink-0 items-center gap-2">
