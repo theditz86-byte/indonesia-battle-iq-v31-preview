@@ -1,6 +1,4 @@
-import { QUICK_BATTLE_SCENE_SRC } from "./asset-scene"
-
-const SCENE_SRC = QUICK_BATTLE_SCENE_SRC.replace(/\s+/g, "")
+import Image from "next/image"
 
 const SPARKS = [
   [640, 330, 3], [700, 520, 2], [820, 250, 2], [1180, 420, 3], [1290, 300, 2],
@@ -12,11 +10,20 @@ const SPARKS = [
 export function SceneArt() {
   return (
     <>
-      <svg aria-hidden="true" viewBox="0 0 1380 940" className="pointer-events-none absolute inset-0 h-full w-full" preserveAspectRatio="none">
+      <svg
+        aria-hidden="true"
+        viewBox="0 0 1380 940"
+        className="pointer-events-none absolute inset-0 h-full w-full"
+        preserveAspectRatio="none"
+      >
         <g opacity="0.55">
           <polygon points="560,0 640,0 900,520 820,520" fill="#2f6bff" opacity="0.14" />
           <polygon points="900,0 960,0 1250,600 1180,600" fill="#8b3dff" opacity="0.14" />
           <polygon points="1100,0 1140,0 1380,380 1380,440" fill="#ffb02e" opacity="0.1" />
+        </g>
+        <g opacity="0.7">
+          <rect x="545" y="95" width="70" height="230" fill="#0a1946" />
+          <rect x="1160" y="60" width="55" height="260" fill="#0a1946" />
         </g>
         <g stroke="#6aa8ff" strokeLinecap="round" fill="none">
           <path d="M560 250 L760 120" strokeOpacity="0.45" strokeWidth="1.5" />
@@ -26,24 +33,16 @@ export function SceneArt() {
         </g>
       </svg>
 
-      <img
-        src={SCENE_SRC}
-        alt=""
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 h-full w-full object-contain"
-      />
+      <Image src="/casn.png" alt="" width={1254} height={1254} className="pointer-events-none absolute" style={{ left:700, top:-40, width:450, height:450 }} />
+      <Image src="/skd.png" alt="" width={1254} height={1254} className="pointer-events-none absolute" style={{ left:470, top:40, width:400, height:400 }} />
+      <Image src="/bumn.png" alt="" width={1254} height={1254} className="pointer-events-none absolute" style={{ left:1085, top:20, width:310, height:310 }} />
 
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute mix-blend-screen"
-        style={{
-          left: 540,
-          top: 20,
-          width: 660,
-          height: 700,
-          background: "radial-gradient(closest-side, rgba(255,200,70,.68), rgba(255,140,30,.24) 55%, transparent 100%)",
-        }}
-      />
+      <div aria-hidden="true" className="pointer-events-none absolute mix-blend-screen" style={{ left:540, top:20, width:660, height:700, background:"radial-gradient(closest-side, rgba(255,200,70,.75), rgba(255,140,30,.3) 55%, transparent 100%)" }} />
+
+      <Image src="/trophy.png" alt="" width={1254} height={1254} className="pointer-events-none absolute" style={{ left:940, top:100, width:360, height:360, filter:"drop-shadow(0 0 30px rgba(255,170,30,.7))" }} />
+      <Image src="/coin.png" alt="" width={1254} height={1254} className="pointer-events-none absolute" style={{ left:648, top:388, width:120, height:120, filter:"drop-shadow(0 0 22px rgba(255,190,40,.8))" }} />
+      <Image src="/paper.png" alt="" width={1254} height={1254} className="pointer-events-none absolute" style={{ left:1262, top:170, width:110, height:110, transform:"rotate(12deg)" }} />
+      <Image src="/paper.png" alt="" width={1254} height={1254} className="pointer-events-none absolute" style={{ left:596, top:440, width:96, height:96, transform:"rotate(-14deg) scaleX(-1)" }} />
 
       <svg aria-hidden="true" viewBox="0 0 1380 940" className="pointer-events-none absolute inset-0 h-full w-full" preserveAspectRatio="none">
         {SPARKS.map(([x,y,r],i)=><circle key={i} cx={x} cy={y} r={r} fill={i%3===0?"#7cc4ff":"#ffd23f"} opacity="0.9" />)}
