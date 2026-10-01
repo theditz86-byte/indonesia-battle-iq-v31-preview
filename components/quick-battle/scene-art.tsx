@@ -33,16 +33,16 @@ export function SceneArt() {
         </g>
       </svg>
 
-      <Image src="/casn.png" alt="" width={1254} height={1254} className="pointer-events-none absolute" style={{ left:700, top:-40, width:450, height:450 }} />
-      <Image src="/skd.png" alt="" width={1254} height={1254} className="pointer-events-none absolute" style={{ left:470, top:40, width:400, height:400 }} />
-      <Image src="/bumn.png" alt="" width={1254} height={1254} className="pointer-events-none absolute" style={{ left:1085, top:20, width:310, height:310 }} />
+      <Image src="/casn.png" alt="" width={1254} height={1254} priority className="pointer-events-none absolute" style={{ left:700, top:-40, width:450, height:450 }} />
+      <Image src="/skd.png" alt="" width={1254} height={1254} priority className="pointer-events-none absolute" style={{ left:470, top:40, width:400, height:400 }} />
+      <Image src="/bumn.png" alt="" width={1254} height={1254} priority className="pointer-events-none absolute" style={{ left:1085, top:20, width:310, height:310 }} />
 
       <div aria-hidden="true" className="pointer-events-none absolute mix-blend-screen" style={{ left:540, top:20, width:660, height:700, background:"radial-gradient(closest-side, rgba(255,200,70,.75), rgba(255,140,30,.3) 55%, transparent 100%)" }} />
 
-      <Image src="/trophy.png" alt="" width={1254} height={1254} className="pointer-events-none absolute" style={{ left:940, top:100, width:360, height:360, filter:"drop-shadow(0 0 30px rgba(255,170,30,.7))" }} />
-      <Image src="/coin.png" alt="" width={1254} height={1254} className="pointer-events-none absolute" style={{ left:648, top:388, width:120, height:120, filter:"drop-shadow(0 0 22px rgba(255,190,40,.8))" }} />
-      <Image src="/paper.png" alt="" width={1254} height={1254} className="pointer-events-none absolute" style={{ left:1262, top:170, width:110, height:110, transform:"rotate(12deg)" }} />
-      <Image src="/paper.png" alt="" width={1254} height={1254} className="pointer-events-none absolute" style={{ left:596, top:440, width:96, height:96, transform:"rotate(-14deg) scaleX(-1)" }} />
+      <Image src="/trophy.png" alt="" width={1254} height={1254} priority className="pointer-events-none absolute" style={{ left:940, top:100, width:360, height:360, filter:"drop-shadow(0 0 30px rgba(255,170,30,.7))" }} />
+      <Image src="/coin.png" alt="" width={1254} height={1254} loading="eager" className="pointer-events-none absolute" style={{ left:648, top:388, width:120, height:120, filter:"drop-shadow(0 0 22px rgba(255,190,40,.8))" }} />
+      <Image src="/paper.png" alt="" width={1254} height={1254} loading="eager" className="pointer-events-none absolute" style={{ left:1262, top:170, width:110, height:110, transform:"rotate(12deg)" }} />
+      <Image src="/paper.png" alt="" width={1254} height={1254} loading="eager" className="pointer-events-none absolute" style={{ left:596, top:440, width:96, height:96, transform:"rotate(-14deg) scaleX(-1)" }} />
 
       <svg aria-hidden="true" viewBox="0 0 1380 940" className="pointer-events-none absolute inset-0 h-full w-full" preserveAspectRatio="none">
         {SPARKS.map(([x,y,r],i)=><circle key={i} cx={x} cy={y} r={r} fill={i%3===0?"#7cc4ff":"#ffd23f"} opacity="0.9" />)}
