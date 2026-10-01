@@ -1,13 +1,16 @@
-import { ArrowRight, BarChart3, BrainCircuit, Share2, Sparkles, Swords, Trophy } from "lucide-react"
-import type { BattleEntry, BattleSeason } from "@/lib/battle"
+import { ArrowRight, BarChart3, BrainCircuit, Share2, Sparkles, Swords, Trophy, Zap } from "lucide-react"
+import type { BattleEntry, BattleParticipant, BattleSeason } from "@/lib/battle"
 import { CountdownCard } from "./countdown-card"
 import { Podium } from "./podium"
 
-export function Hero({ season, entries }: { season: BattleSeason | null; entries: BattleEntry[] }) {
+export function Hero({ season, entries, participant }: { season: BattleSeason | null; entries: BattleEntry[]; participant?: BattleParticipant | null }) {
   const leaderScore = Number(entries?.[0]?.battle_score || 0)
-  const challengeText = leaderScore > 0
-    ? `Bisa lewati ${new Intl.NumberFormat("id-ID").format(leaderScore)} Battle Point?`
-    : "Seberapa tinggi posisi kemampuanmu di Indonesia?"
+  const guest = !participant
+  const challengeText = guest
+    ? "Coba kemampuan awalmu sebelum masuk arena utama."
+    : leaderScore > 0
+      ? `Bisa lewati ${new Intl.NumberFormat("id-ID").format(leaderScore)} Battle Point?`
+      : "Seberapa tinggi posisi kemampuanmu di Indonesia?"
 
   return (
     <section className="relative overflow-hidden">
@@ -43,25 +46,49 @@ export function Hero({ season, entries }: { season: BattleSeason | null; entries
               {challengeText}
             </p>
 
-            <div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] font-extrabold text-cyan-100/90">
-              <span>30 soal</span><span className="text-slate-500">•</span>
-              <span>20 menit</span><span className="text-slate-500">•</span>
-              <span>3 Ranked gratis/minggu</span><span className="text-slate-500">•</span>
-              <span>Best Score Ranking</span>
-            </div>
-
-            <p className="mt-4 max-w-[20.5rem] text-sm font-medium leading-6 text-slate-300">
-              Gunakan hingga 3 Ranked Battle kapan saja selama season mingguan—bahkan di hari yang sama—ambil skor terbaikmu, lalu rebut posisi dari kecamatan hingga Indonesia.
-            </p>
-
-            <div className="mt-5 flex flex-wrap gap-3">
-              <a href="/battle-test" className="flex min-h-14 items-center gap-2.5 rounded-2xl bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-600 px-6 py-3.5 text-base font-black text-white ring-1 ring-indigo-300/30 shadow-[0_0_38px_rgba(124,58,237,.58)] transition-all hover:-translate-y-0.5 hover:scale-[1.025] hover:shadow-[0_0_46px_rgba(124,58,237,.72)]">
-                <Swords className="h-5 w-5" /> Mulai Ranked Battle <ArrowRight className="h-5 w-5" />
-              </a>
-              <a href="#peringkat" className="flex min-h-12 items-center gap-2 rounded-xl border border-cyan-400/45 bg-white/[.07] px-5 py-3 text-[15px] font-extrabold text-white backdrop-blur-lg shadow-[0_0_20px_rgba(34,211,238,0.20)] transition-colors hover:bg-white/10">
-                <BarChart3 className="h-[18px] w-[18px] text-cyan-300" /> Lihat Peringkat
-              </a>
-            </div>
+            {guest ? (
+              <>
+                <div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] font-extrabold text-cyan-100/90">
+                  <span>5 soal</span><span className="text-slate-500">•</span>
+                  <span>±3 menit</span><span className="text-slate-500">•</span>
+                  <span>tanpa daftar</span><span className="text-slate-500">•</span>
+                  <span>hasil langsung</span>
+                </div>
+                <p className="mt-4 max-w-[20.5rem] text-sm font-medium leading-6 text-slate-300">
+                  Mulai dari Pre-Test singkat TWK, TIU, dan TKP. Dapatkan Battle Point awalmu, lalu simpan hasilnya saat membuat akun gratis.
+                </p>
+                <div className="mt-5 w-full max-w-[21rem] rounded-2xl border border-amber-300/30 bg-gradient-to-r from-amber-300/[.10] via-cyan-300/[.07] to-violet-400/[.08] p-3 shadow-[0_0_32px_rgba(251,191,36,.14)]">
+                  <div className="mb-2 flex items-center gap-2 text-[10px] font-black uppercase tracking-[.15em] text-amber-300"><Zap className="h-3.5 w-3.5"/>Untuk pengunjung baru</div>
+                  <a href="/pretest" className="flex min-h-14 items-center justify-center gap-2.5 rounded-xl bg-gradient-to-r from-amber-400 via-orange-400 to-fuchsia-500 px-5 py-3.5 text-base font-black text-slate-950 shadow-[0_0_34px_rgba(251,191,36,.32)] transition-all hover:-translate-y-0.5 hover:scale-[1.015]">
+                    <Zap className="h-5 w-5" /> Quick Battle — Pre-Test <ArrowRight className="h-5 w-5" />
+                  </a>
+                  <p className="mt-2 text-center text-[10px] font-bold text-slate-400">Tidak memengaruhi ranking · hasil dapat disimpan setelah daftar</p>
+                </div>
+                <a href="#peringkat" className="mt-3 flex min-h-11 items-center gap-2 rounded-xl border border-cyan-400/35 bg-white/[.05] px-4 py-2.5 text-sm font-extrabold text-white backdrop-blur-lg transition-colors hover:bg-white/10">
+                  <BarChart3 className="h-4 w-4 text-cyan-300" /> Lihat Peringkat Dulu
+                </a>
+              </>
+            ) : (
+              <>
+                <div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] font-extrabold text-cyan-100/90">
+                  <span>30 soal</span><span className="text-slate-500">•</span>
+                  <span>20 menit</span><span className="text-slate-500">•</span>
+                  <span>3 Ranked gratis/minggu</span><span className="text-slate-500">•</span>
+                  <span>Best Score Ranking</span>
+                </div>
+                <p className="mt-4 max-w-[20.5rem] text-sm font-medium leading-6 text-slate-300">
+                  Gunakan hingga 3 Ranked Battle kapan saja selama season mingguan—bahkan di hari yang sama—ambil skor terbaikmu, lalu rebut posisi dari kecamatan hingga Indonesia.
+                </p>
+                <div className="mt-5 flex flex-wrap gap-3">
+                  <a href="/battle-test" className="flex min-h-14 items-center gap-2.5 rounded-2xl bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-600 px-6 py-3.5 text-base font-black text-white ring-1 ring-indigo-300/30 shadow-[0_0_38px_rgba(124,58,237,.58)] transition-all hover:-translate-y-0.5 hover:scale-[1.025] hover:shadow-[0_0_46px_rgba(124,58,237,.72)]">
+                    <Swords className="h-5 w-5" /> Mulai Ranked Battle <ArrowRight className="h-5 w-5" />
+                  </a>
+                  <a href="#peringkat" className="flex min-h-12 items-center gap-2 rounded-xl border border-cyan-400/45 bg-white/[.07] px-5 py-3 text-[15px] font-extrabold text-white backdrop-blur-lg shadow-[0_0_20px_rgba(34,211,238,0.20)] transition-colors hover:bg-white/10">
+                    <BarChart3 className="h-[18px] w-[18px] text-cyan-300" /> Lihat Peringkat
+                  </a>
+                </div>
+              </>
+            )}
           </div>
 
           <div className="relative">
