@@ -1,7 +1,6 @@
 const DB_NAME = "alzava-secure-chat-v1"
 const DB_VERSION = 1
 const STORE_NAME = "device_keys"
-const PRIMARY_KEY = "primary"
 const ALG_LABEL = "ECDH-P256+HKDF-SHA256+AES-256-GCM"
 const WRAP_INFO = new TextEncoder().encode("alzava-secure-dm-wrap-v1")
 
@@ -54,6 +53,10 @@ function cryptoAvailable() {
   return typeof window !== "undefined" && !!window.crypto?.subtle && typeof window.indexedDB !== "undefined"
 }
 
+function storageKey(accountKey: string) {
+  return `participant:${accountKey}`
+}
+
 function openDb(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(DB_NAME, DB_VERSION)
@@ -66,12 +69,12 @@ function openDb(): Promise<IDBDatabase> {
   })
 }
 
-async function readStoredDevice(): Promise<StoredDevice | null> {
+async function readStoredDevice(id: string): Promise<StoredDevice | null> {
   const db = await openDb()
   try {
     return await new Promise((resolve, reject) => {
       const tx = db.transaction(STORE_NAME, "readonly")
-      const request = tx.objectStore(STORE_NAME).get(PRIMARY_KEY)
+      const request = tx.objectStore(STORE_NAME).get(id)
       request.onsuccess = () => resolve((request.result as StoredDevice | undefined) || null)
       request.onerror = () => reject(request.error || new Error("Secure chat key read failed"))
     })
@@ -116,20 +119,22 @@ async function fingerprintPublicJwk(jwk: JsonWebKey) {
   return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("")
 }
 
-async function createDevice(): Promise<StoredDevice> {
+async function createDevice(id: string): Promise<StoredDevice> {
   const generated = await crypto.subtle.generateKey({ name: "ECDH", namedCurve: "P-256" }, true, ["deriveBits"]) as CryptoKeyPair
   const publicJwk = await crypto.subtle.exportKey("jwk", generated.publicKey)
   const privateJwk = await crypto.subtle.exportKey("jwk", generated.privateKey)
   const privateKey = await crypto.subtle.importKey("jwk", privateJwk, { name: "ECDH", namedCurve: "P-256" }, false, ["deriveBits"])
   const fingerprint = await fingerprintPublicJwk(publicJwk)
-  return { id: PRIMARY_KEY, deviceId: crypto.randomUUID(), publicJwk, fingerprint, privateKey }
+  return { id, deviceId: crypto.randomUUID(), publicJwk, fingerprint, privateKey }
 }
 
-export async function getOrCreateLocalE2EEDevice(): Promise<LocalE2EEDevice> {
+export async function getOrCreateLocalE2EEDevice(accountKey: string): Promise<LocalE2EEDevice> {
   if (!cryptoAvailable()) throw new Error("Browser belum mendukung penyimpanan kunci enkripsi yang diperlukan.")
-  let stored = await readStoredDevice()
+  if (!accountKey) throw new Error("Akun peserta tidak valid untuk secure chat.")
+  const id = storageKey(accountKey)
+  let stored = await readStoredDevice(id)
   if (!stored?.deviceId || !stored.privateKey || !stored.publicJwk || !stored.fingerprint) {
-    stored = await createDevice()
+    stored = await createDevice(id)
     await writeStoredDevice(stored)
   }
   return { deviceId: stored.deviceId, publicJwk: stored.publicJwk, fingerprint: stored.fingerprint, privateKey: stored.privateKey }
