@@ -7,15 +7,24 @@ import { DesktopStage, STAGE_H, STAGE_W } from "./quick-battle/desktop-stage"
 import { MobileSheet } from "./quick-battle/mobile-sheet"
 
 const DISMISS_KEY = "alzava_quickbattle_popup_dismissed_at"
-const DAY_MS = 24 * 60 * 60 * 1000
+const COOLDOWN_MS = 2 * 60 * 60 * 1000
 const SHOW_DELAY_MS = 0
 const EXIT_MS = 220
+const PRELOAD_ASSETS = [
+  "/aditaka-quick-battle.png",
+  "/skd.png",
+  "/casn.png",
+  "/bumn.png",
+  "/trophy.png",
+  "/coin.png",
+  "/paper.png",
+]
 
 function shouldSuppress(pathname: string) {
   if (pathname.startsWith("/admin") || pathname === "/pretest") return true
   try {
     const dismissedAt = Number(localStorage.getItem(DISMISS_KEY))
-    return Boolean(dismissedAt) && Date.now() - dismissedAt < DAY_MS
+    return Boolean(dismissedAt) && Date.now() - dismissedAt < COOLDOWN_MS
   } catch {
     return false
   }
@@ -28,6 +37,15 @@ export function QuickBattleWelcomeModal() {
   const [size, setSize] = useState({ w: 1440, h: 900 })
   const dialogRef = useRef<HTMLDivElement>(null)
   const returnFocusRef = useRef<HTMLElement | null>(null)
+
+  useEffect(() => {
+    if (typeof window === "undefined") return
+    PRELOAD_ASSETS.forEach((src) => {
+      const img = new window.Image()
+      img.decoding = "async"
+      img.src = src
+    })
+  }, [])
 
   useEffect(() => {
     if (pathname !== "/" && pathname !== "/battle") return
