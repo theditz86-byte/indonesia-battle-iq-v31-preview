@@ -2,10 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react"
 import {
-  Activity,
   BarChart3,
   BookOpenCheck,
-  CreditCard,
   Gauge,
   LogOut,
   Menu,
@@ -22,16 +20,19 @@ const ADMIN_API_URL="https://efndozplpwyemzgqfnep.supabase.co/functions/v1/battl
 const TOKEN_KEY="battle_admin_token"
 
 const sections=[
-  {id:"admin-overview",label:"Overview",icon:Gauge,match:"Dashboard ALZAVA Battle Point"},
+  {id:"admin-overview",label:"Overview",icon:Gauge,target:"admin-overview",match:"Dashboard ALZAVA Battle Point"},
   {id:"admin-participants",label:"Peserta & Aktivitas",icon:Users,route:"/admin/peserta/"},
-  {id:"admin-growth",label:"Growth",icon:BarChart3,match:"Referral & Challenge Funnel"},
-  {id:"admin-traffic",label:"Traffic",icon:Activity,match:"Pengunjung Situs"},
-  {id:"admin-season",label:"Season & Ranking",icon:Trophy,match:"Season resmi terpisah dari testing"},
-  {id:"admin-moderation",label:"Moderasi",icon:ShieldCheck,match:"Laporan Peserta"},
-  {id:"admin-payment",label:"Pembayaran",icon:CreditCard,match:"Verifikasi Transaksi"},
+  {id:"admin-growth-traffic",label:"Growth & Traffic",icon:BarChart3,target:"admin-growth",match:"Referral & Challenge Funnel"},
+  {id:"admin-season",label:"Season & Ranking",icon:Trophy,target:"admin-season",match:"Season resmi terpisah dari testing"},
+  {id:"admin-moderation-payment",label:"Moderasi & Pembayaran",icon:ShieldCheck,target:"admin-moderation",match:"Laporan Peserta"},
   {id:"admin-bank",label:"Bank Soal SKD",icon:BookOpenCheck,route:"/admin/bank-soal/"},
   {id:"admin-maintenance",label:"Maintenance",icon:Power,route:"/admin/maintenance/"},
-  {id:"admin-tools",label:"Recovery & Tools",icon:Wrench,match:"Recovery"},
+  {id:"admin-tools",label:"Recovery & Tools",icon:Wrench,target:"admin-tools",match:"Recovery"},
+]
+
+const groupedTargets=[
+  {id:"admin-traffic",match:"Pengunjung Situs",navId:"admin-growth-traffic"},
+  {id:"admin-payment",match:"Verifikasi Transaksi",navId:"admin-moderation-payment"},
 ]
 
 function findHeading(match:string){
@@ -71,10 +72,16 @@ export function AdminControlCenter(){
         if(!s.match)return
         const h=findHeading(s.match)
         const section=(h?.closest("section")||h?.parentElement) as HTMLElement|null
+        const target=s.target||s.id
+        if(section&&!section.id)section.id=target
+      })
+      groupedTargets.forEach(s=>{
+        const h=findHeading(s.match)
+        const section=(h?.closest("section")||h?.parentElement) as HTMLElement|null
         if(section&&!section.id)section.id=s.id
       })
       const root=document.querySelector("main > div") as HTMLElement|null
-      if(root&&!document.getElementById("admin-overview")&&!isStandaloneAdminPage(window.location.pathname)) root.id="admin-overview"
+      if(root&&!document.getElementById("admin-overview")&&!isStandaloneAdminPage(window.location.pathname))root.id="admin-overview"
     }
     assignIds()
     const mo=new MutationObserver(assignIds)
@@ -91,10 +98,16 @@ export function AdminControlCenter(){
       let best="admin-overview",bestDist=Infinity
       sections.forEach(s=>{
         if(s.route)return
-        const el=document.getElementById(s.id)
+        const el=document.getElementById(s.target||s.id)
         if(!el)return
         const d=Math.abs(el.getBoundingClientRect().top-110)
         if(d<bestDist){bestDist=d;best=s.id}
+      })
+      groupedTargets.forEach(s=>{
+        const el=document.getElementById(s.id)
+        if(!el)return
+        const d=Math.abs(el.getBoundingClientRect().top-110)
+        if(d<bestDist){bestDist=d;best=s.navId}
       })
       setActive(best)
     }
@@ -119,11 +132,12 @@ export function AdminControlCenter(){
     window.location.assign("/admin/")
   }
 
-  function jump(id:string,route?:string){
+  function jump(id:string,route?:string,target?:string){
     setOpen(false);setActive(id)
     if(route){window.location.assign(route);return}
-    if(isStandaloneAdminPage(window.location.pathname)){window.location.assign(`/admin/#${id}`);return}
-    const el=document.getElementById(id)
+    const anchor=target||id
+    if(isStandaloneAdminPage(window.location.pathname)){window.location.assign(`/admin/#${anchor}`);return}
+    const el=document.getElementById(anchor)
     if(el)window.scrollTo({top:window.scrollY+el.getBoundingClientRect().top-98,behavior:"smooth"})
   }
 
@@ -151,7 +165,7 @@ export function AdminControlCenter(){
         </div>
 
         <nav className="mt-5 grid gap-1.5 overflow-y-auto pr-1">
-          {sections.map(({id,label,icon:Icon,route})=><button key={id} onClick={()=>jump(id,route)} className={`group flex items-center gap-3 rounded-2xl px-3.5 py-3 text-left text-sm font-bold transition ${active===id?"border border-cyan-300/20 bg-cyan-300/10 text-white shadow-[0_0_25px_rgba(34,211,238,.08)]":"border border-transparent text-slate-400 hover:border-white/10 hover:bg-white/5 hover:text-white"}`}><Icon className={`h-4 w-4 ${active===id?"text-cyan-300":"text-slate-500 group-hover:text-cyan-300"}`}/><span>{label}</span>{active===id&&<span className="ml-auto h-2 w-2 rounded-full bg-cyan-300 shadow-[0_0_10px_rgba(103,232,249,.9)]"/>}</button>)}
+          {sections.map(({id,label,icon:Icon,route,target})=><button key={id} onClick={()=>jump(id,route,target)} className={`group flex items-center gap-3 rounded-2xl px-3.5 py-3 text-left text-sm font-bold transition ${active===id?"border border-cyan-300/20 bg-cyan-300/10 text-white shadow-[0_0_25px_rgba(34,211,238,.08)]":"border border-transparent text-slate-400 hover:border-white/10 hover:bg-white/5 hover:text-white"}`}><Icon className={`h-4 w-4 ${active===id?"text-cyan-300":"text-slate-500 group-hover:text-cyan-300"}`}/><span>{label}</span>{active===id&&<span className="ml-auto h-2 w-2 rounded-full bg-cyan-300 shadow-[0_0_10px_rgba(103,232,249,.9)]"/>}</button>)}
         </nav>
 
         <div className="mt-auto rounded-2xl border border-emerald-300/15 bg-emerald-300/[.06] p-4">
