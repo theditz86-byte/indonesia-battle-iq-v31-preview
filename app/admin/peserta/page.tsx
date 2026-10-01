@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { ArrowLeft, Loader2, ShieldCheck } from "lucide-react"
 import { AdminParticipantMonitor } from "@/components/admin-participant-monitor"
+import { AdminSkdLiveScoreboard } from "@/components/admin-skd-live-scoreboard"
 
 const TOKEN_KEY="battle_admin_token"
 
@@ -17,7 +18,8 @@ export default function AdminParticipantsPage(){
 
   return <main className="min-h-screen bg-[radial-gradient(circle_at_20%_0%,rgba(56,189,248,.14),transparent_32rem),linear-gradient(180deg,#020817,#07142f)] px-4 py-8 text-white sm:px-6">
     <div className="mx-auto max-w-7xl">
-      <div className="mb-6"><p className="text-xs font-black uppercase tracking-[.18em] text-cyan-300">Admin · Operasional</p><h1 className="mt-1 text-3xl font-black">Peserta & Aktivitas</h1><p className="mt-2 text-sm text-slate-400">Pantau siapa yang online dan aktivitas yang sedang berlangsung, sekaligus kelola bonus Ranked Attempt dengan audit trail.</p></div>
+      <div className="mb-6"><p className="text-xs font-black uppercase tracking-[.18em] text-cyan-300">Admin · Operasional</p><h1 className="mt-1 text-3xl font-black">Peserta & Aktivitas</h1><p className="mt-2 text-sm text-slate-400">Pantau siapa yang online, aktivitas yang sedang berlangsung, dan progres Mini SKD secara live.</p></div>
+      <AdminSkdLiveScoreboard token={token}/>
       <AdminParticipantMonitor token={token}/>
     </div>
   </main>
