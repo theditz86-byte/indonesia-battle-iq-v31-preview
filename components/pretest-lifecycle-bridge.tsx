@@ -20,10 +20,10 @@ export function PretestLifecycleBridge() {
     }
 
     async function claim() {
-      if (claiming.current || localStorage.getItem(PRETEST_CLAIMED_KEY) === "1") return
+      if (claiming.current) return
       const guest = localStorage.getItem(PRETEST_GUEST_KEY) || ""
       const participant = localStorage.getItem(PARTICIPANT_TOKEN_KEY) || ""
-      if (!guest || !participant) return
+      if (!guest || !participant || localStorage.getItem(PRETEST_CLAIMED_KEY) === guest) return
       claiming.current = true
       try {
         const response = await fetch(PRETEST_API, {
@@ -34,7 +34,8 @@ export function PretestLifecycleBridge() {
         })
         const data = await response.json().catch(() => ({}))
         if (response.ok && data?.claimed) {
-          localStorage.setItem(PRETEST_CLAIMED_KEY, "1")
+          localStorage.setItem(PRETEST_CLAIMED_KEY, guest)
+          localStorage.removeItem(PRETEST_GUEST_KEY)
           window.dispatchEvent(new CustomEvent("alzava-pretest-claimed", { detail: data.baseline || null }))
         }
       } finally { claiming.current = false }
