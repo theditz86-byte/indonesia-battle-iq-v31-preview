@@ -75,7 +75,6 @@ export function AdminMaintenanceControl(){
   }
 
   const enabled=Boolean(status.maintenance_mode)
-  const statusTone=enabled?"amber":"emerald"
   const statusLabel=enabled?"MAINTENANCE AKTIF":"SITUS AKTIF"
   const summary=useMemo(()=>enabled?"Akses peserta sedang dibatasi sesuai kebijakan maintenance aktif.":"Layanan peserta berjalan normal dan dapat digunakan.",[enabled])
 
