@@ -45,7 +45,7 @@ export function DesktopStage({ onStart, onDismiss }: Props) {
         }}
       />
       <Image
-        src="/images/aditaka-quick-battle-mini.webp"
+        src="/aditaka-quick-battle.png"
         alt="Host ALZAVA Battle Point"
         width={1024}
         height={1536}
