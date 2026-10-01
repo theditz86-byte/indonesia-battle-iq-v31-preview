@@ -1,4 +1,5 @@
 import { getParticipantToken } from "@/lib/battle"
+import type { E2EEPayloadV1 } from "@/lib/e2ee"
 
 export const SOCIAL_API_URL = "https://efndozplpwyemzgqfnep.supabase.co/functions/v1/battle-social"
 export const MODERATION_API_URL = "https://efndozplpwyemzgqfnep.supabase.co/functions/v1/battle-moderation"
@@ -48,6 +49,8 @@ export type PrivateMessage = {
   is_own?: boolean
   delivery_status?: "sent" | "seen"
   seen_at?: string | null
+  encryption_version?: number
+  e2ee_payload?: E2EEPayloadV1 | null
 }
 
 export type SocialOverview = {
