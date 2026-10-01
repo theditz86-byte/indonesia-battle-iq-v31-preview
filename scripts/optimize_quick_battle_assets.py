@@ -1,6 +1,7 @@
 from pathlib import Path
 from PIL import Image
 
+# Kept in-repo so the optimized Quick Battle artwork can be regenerated safely.
 ROOT = Path(__file__).resolve().parents[1]
 OUT_DIR = ROOT / "public" / "qb-webp"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
