@@ -1,7 +1,8 @@
 "use client"
 
 import { useCallback, useEffect, useMemo, useState } from "react"
-import { BrainCircuit, Loader2, Minus, RefreshCw, Search, Swords, Trophy, Users, Wifi } from "lucide-react"
+import { BrainCircuit, Loader2, RefreshCw, Search, Swords, Trophy, Users, Wifi } from "lucide-react"
+import { AdminBonusControl } from "@/components/admin-bonus-control"
 
 const ADMIN_TOOLS_URL="https://efndozplpwyemzgqfnep.supabase.co/functions/v1/battle-admin-tools"
 
@@ -49,7 +50,6 @@ export function AdminParticipantMonitor({token}:Props){
   const [search,setSearch]=useState("")
   const [query,setQuery]=useState("")
   const [loading,setLoading]=useState(true)
-  const [acting,setActing]=useState("")
   const [error,setError]=useState("")
   const [message,setMessage]=useState("")
 
@@ -72,34 +72,6 @@ export function AdminParticipantMonitor({token}:Props){
     const timer=window.setInterval(()=>{if(document.visibilityState==="visible")void load(true)},15000)
     return()=>window.clearInterval(timer)
   },[load])
-
-  async function grant(row:ParticipantRow,count:number){
-    const reason=window.prompt(`Alasan memberikan +${count} Ranked Attempt untuk ${row.nickname||"peserta"}:`,`Kompensasi / kebijakan admin`)
-    if(reason===null)return
-    if(reason.trim().length<3){setError("Alasan pemberian bonus wajib diisi.");return}
-    if(!window.confirm(`Berikan +${count} Bonus Ranked Attempt kepada ${row.nickname||"peserta"}?`))return
-    setActing(row.public_id);setError("");setMessage("")
-    try{
-      await callTools({action:"ranked_bonus_grant",admin_token:token,participant_public_id:row.public_id,count,reason:reason.trim()})
-      setMessage(`+${count} Ranked Attempt berhasil diberikan kepada ${row.nickname||"peserta"}.`)
-      await load(true)
-    }catch(e){setError(e instanceof Error?e.message:"Bonus attempt belum dapat diberikan.")}
-    finally{setActing("")}
-  }
-
-  async function revoke(row:ParticipantRow){
-    if(!Number(row.bonus_available||0))return
-    const reason=window.prompt(`Alasan mencabut 1 bonus Ranked milik ${row.nickname||"peserta"}:`,`Koreksi pemberian bonus`)
-    if(reason===null)return
-    if(!window.confirm(`Cabut 1 bonus Ranked Attempt yang BELUM dipakai dari ${row.nickname||"peserta"}?`))return
-    setActing(row.public_id);setError("");setMessage("")
-    try{
-      await callTools({action:"ranked_bonus_revoke",admin_token:token,participant_public_id:row.public_id,reason:reason.trim()})
-      setMessage(`1 bonus Ranked Attempt milik ${row.nickname||"peserta"} berhasil dicabut.`)
-      await load(true)
-    }catch(e){setError(e instanceof Error?e.message:"Bonus attempt belum dapat dicabut.")}
-    finally{setActing("")}
-  }
 
   const cards=useMemo(()=>[
     ["Total Peserta",Number(summary.total||0),Users,"text-slate-200"],
@@ -127,7 +99,6 @@ export function AdminParticipantMonitor({token}:Props){
 
     <div className="mt-5 overflow-hidden rounded-2xl border border-white/10">
       {loading&&rows.length===0?<div className="flex items-center justify-center gap-2 py-12 text-slate-400"><Loader2 className="h-5 w-5 animate-spin"/>Memuat peserta...</div>:rows.length===0?<div className="py-12 text-center text-sm text-slate-500">Tidak ada peserta pada filter ini.</div>:<div className="divide-y divide-white/10">{rows.map(row=>{
-        const busy=acting===row.public_id
         const detail=row.activity_detail||activityLabel(row.activity)
         return <article key={row.public_id} className="bg-slate-950/30 p-4 transition-colors hover:bg-white/[.035] sm:p-5">
           <div className="grid gap-4 xl:grid-cols-[minmax(0,1.35fr)_minmax(0,.9fr)_minmax(0,.9fr)_auto] xl:items-center">
@@ -145,11 +116,11 @@ export function AdminParticipantMonitor({token}:Props){
 
             <div className="grid grid-cols-2 gap-2 text-center"><div className="rounded-xl bg-white/[.04] px-3 py-2"><p className="text-[10px] text-slate-500">Battle Point</p><p className="font-black">{row.battle_score==null?"—":Number(row.battle_score).toLocaleString("id-ID")}</p></div><div className="rounded-xl bg-white/[.04] px-3 py-2"><p className="text-[10px] text-slate-500">Rank Nasional</p><p className="font-black">{row.national_rank==null?"—":`#${row.national_rank}`}</p></div></div>
 
-            <div className="flex flex-wrap gap-2 xl:justify-end"><button disabled={busy} onClick={()=>void grant(row,1)} className="rounded-xl bg-cyan-600 px-3 py-2 text-xs font-black disabled:opacity-50">+1</button><button disabled={busy} onClick={()=>void grant(row,2)} className="rounded-xl border border-cyan-300/20 bg-cyan-300/10 px-3 py-2 text-xs font-black text-cyan-100 disabled:opacity-50">+2</button><button disabled={busy} onClick={()=>void grant(row,3)} className="rounded-xl border border-violet-300/20 bg-violet-300/10 px-3 py-2 text-xs font-black text-violet-100 disabled:opacity-50">+3</button><button disabled={busy||!Number(row.bonus_available||0)} onClick={()=>void revoke(row)} title="Cabut 1 bonus yang belum dipakai" className="inline-flex items-center gap-1 rounded-xl border border-rose-300/20 bg-rose-300/10 px-3 py-2 text-xs font-black text-rose-200 disabled:opacity-30"><Minus className="h-3.5 w-3.5"/>1</button></div>
+            <div className="xl:justify-self-end"><AdminBonusControl token={token} participant={row} onChanged={async text=>{setMessage(text);setError("");await load(true)}}/></div>
           </div>
         </article>
       })}</div>}
     </div>
-    <p className="mt-3 text-[11px] leading-5 text-slate-500">Tab Online selalu menampilkan semua peserta dengan heartbeat aktif, termasuk yang sedang Ranked, Battle PvP, atau Latihan. Bonus Ranked tidak mengurangi atau menimpa 3 attempt resmi.</p>
+    <p className="mt-3 text-[11px] leading-5 text-slate-500">Tab Online selalu menampilkan semua peserta dengan heartbeat aktif, termasuk yang sedang Ranked, Battle PvP, atau Latihan. Bonus Ranked tidak mengurangi atau menimpa 3 attempt resmi. Gunakan “Atur Bonus” untuk menambah atau mencabut bonus yang belum digunakan.</p>
   </section>
 }
