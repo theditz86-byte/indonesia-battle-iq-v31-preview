@@ -1,6 +1,6 @@
 "use client"
 
-import { BrainCircuit, ChevronDown, History, LogOut, Mail, Menu, Settings, Share2, Trophy, X } from "lucide-react"
+import { BrainCircuit, ChevronDown, History, LogOut, Mail, Menu, Settings, Share2, Trophy, Users, X } from "lucide-react"
 import { useEffect, useState } from "react"
 import { getParticipantToken, removeParticipantToken } from "@/lib/battle"
 import type { BattleParticipant } from "@/lib/battle"
@@ -22,13 +22,14 @@ const links = [
 export function SiteNavbar({ participant }: { participant: BattleParticipant | null }) {
   const [active, setActive] = useState("Beranda")
   const [socialBadge, setSocialBadge] = useState(0)
+  const [friendBadge, setFriendBadge] = useState(0)
   const [mobileOpen, setMobileOpen] = useState(false)
   const name = participant?.nickname || "Akun Peserta"
 
   useEffect(() => {
     const path = window.location.pathname
     if (path.startsWith("/global-chat")) setActive("Chat Global")
-    else if (path.startsWith("/messages")) setActive("")
+    else if (path.startsWith("/messages") || path.startsWith("/friends")) setActive("")
     else if (path.startsWith("/player")) setActive("")
     else if (path.startsWith("/latihan-skd") || path.startsWith("/latihan-tiu") || path.startsWith("/simulasi-tiu") || path.startsWith("/daily-training")) setActive("Latihan SKD")
     else if (path.startsWith("/history-ranking")) setActive("History Ranking")
@@ -40,7 +41,7 @@ export function SiteNavbar({ participant }: { participant: BattleParticipant | n
   }, [])
 
   useEffect(() => {
-    if (!participant?.public_id) { setSocialBadge(0); return }
+    if (!participant?.public_id) { setSocialBadge(0); setFriendBadge(0); return }
     let cancelled = false
     async function loadCounts() {
       const token = getParticipantToken()
@@ -53,14 +54,21 @@ export function SiteNavbar({ participant }: { participant: BattleParticipant | n
           cache: "no-store",
         })
         const data = await response.json().catch(() => ({}))
-        if (!cancelled && response.ok) setSocialBadge(Math.max(0, Number(data.unread_total || 0) + Number(data.incoming_count || 0)))
+        if (!cancelled && response.ok) {
+          const incoming = Math.max(0, Number(data.incoming_count || 0))
+          const unread = Math.max(0, Number(data.unread_total || 0))
+          setFriendBadge(incoming)
+          setSocialBadge(incoming + unread)
+        }
       } catch {
-        if (!cancelled) setSocialBadge(0)
+        if (!cancelled) { setSocialBadge(0); setFriendBadge(0) }
       }
     }
     void loadCounts()
+    const onRefresh = () => void loadCounts()
+    window.addEventListener("alzava:social-refresh", onRefresh)
     const timer = window.setInterval(() => { if (document.visibilityState === "visible") void loadCounts() }, 60000)
-    return () => { cancelled = true; window.clearInterval(timer) }
+    return () => { cancelled = true; window.removeEventListener("alzava:social-refresh", onRefresh); window.clearInterval(timer) }
   }, [participant?.public_id])
 
   async function logout() {
@@ -101,6 +109,11 @@ export function SiteNavbar({ participant }: { participant: BattleParticipant | n
 
           {participant ? (
             <>
+              <a href="/friends" className="relative hidden h-10 items-center gap-2 rounded-xl border border-cyan-300/15 bg-cyan-300/[.055] px-3 text-xs font-black text-cyan-100 transition hover:border-cyan-300/30 hover:bg-cyan-300/10 sm:inline-flex" title="Cari & tambah teman">
+                <Users className="h-4 w-4 text-cyan-300" />
+                <span className="hidden 2xl:inline">Teman</span>
+                {friendBadge > 0 && <span className="absolute -right-1.5 -top-1.5 grid h-5 min-w-5 place-items-center rounded-full bg-rose-500 px-1 text-[10px] font-black text-white ring-2 ring-slate-950">{friendBadge > 99 ? "99+" : friendBadge}</span>}
+              </a>
               <NotificationCenter />
               <details data-alzava-profile-menu="native" className="group relative">
                 <summary className="relative flex cursor-pointer list-none items-center gap-2 rounded-full border border-white/10 bg-white/5 py-1.5 pl-1.5 pr-2 sm:pr-3 backdrop-blur-lg transition-colors hover:bg-white/10 [&::-webkit-details-marker]:hidden">
@@ -116,7 +129,8 @@ export function SiteNavbar({ participant }: { participant: BattleParticipant | n
                     <a href="/daily-training" className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-[12px] font-bold text-slate-200 hover:bg-white/5"><BrainCircuit className="h-3.5 w-3.5 text-orange-300"/>TIU Harian</a>
                     {participant.public_id && <a href={`/player?id=${encodeURIComponent(participant.public_id)}`} className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-[12px] font-bold text-slate-200 hover:bg-white/5"><Trophy className="h-3.5 w-3.5 text-amber-300"/>Profil Battle & Prestasi</a>}
                     <a href="/account/results#riwayat-hasil" className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-[12px] font-bold text-slate-200 hover:bg-white/5"><History className="h-3.5 w-3.5 text-violet-300"/>Riwayat Tes</a>
-                    <a href="/messages" className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-[12px] font-bold text-slate-200 hover:bg-white/5"><Mail className="h-3.5 w-3.5 text-indigo-300"/><span className="flex-1">Pesan & Teman</span>{socialBadge > 0 && <span className="rounded-full bg-rose-500 px-1.5 py-0.5 text-[9px] font-black text-white">{socialBadge > 99 ? "99+" : socialBadge}</span>}</a>
+                    <a href="/friends" className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-[12px] font-bold text-slate-200 hover:bg-white/5"><Users className="h-3.5 w-3.5 text-cyan-300"/><span className="flex-1">Cari & Tambah Teman</span>{friendBadge > 0 && <span className="rounded-full bg-rose-500 px-1.5 py-0.5 text-[9px] font-black text-white">{friendBadge > 99 ? "99+" : friendBadge}</span>}</a>
+                    <a href="/messages" className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-[12px] font-bold text-slate-200 hover:bg-white/5"><Mail className="h-3.5 w-3.5 text-indigo-300"/><span className="flex-1">Pesan Pribadi</span>{socialBadge > friendBadge && <span className="rounded-full bg-indigo-500 px-1.5 py-0.5 text-[9px] font-black text-white">{socialBadge-friendBadge > 99 ? "99+" : socialBadge-friendBadge}</span>}</a>
                     <a href="/account" className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-[12px] font-bold text-slate-200 hover:bg-white/5"><Settings className="h-3.5 w-3.5 text-slate-400"/>Pengaturan Profil</a>
                     <div className="my-0.5 border-t border-white/10" />
                     <button type="button" onClick={()=>void logout()} className="flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-left text-[12px] font-bold text-rose-200 transition-colors hover:bg-rose-500/10"><LogOut className="h-3.5 w-3.5 text-rose-300"/>Keluar</button>
@@ -136,6 +150,7 @@ export function SiteNavbar({ participant }: { participant: BattleParticipant | n
       {mobileOpen && (
         <div className="border-t border-white/10 bg-[#030a19]/95 px-4 py-3 shadow-2xl backdrop-blur-xl xl:hidden">
           <nav className="mx-auto grid max-w-7xl grid-cols-2 gap-2 sm:grid-cols-3">
+            {participant && <a href="/friends" onClick={() => setMobileOpen(false)} className="relative rounded-xl border border-cyan-300/20 bg-cyan-300/10 px-3 py-3 text-center text-sm font-black text-cyan-100">Cari Teman{friendBadge>0&&<span className="ml-2 rounded-full bg-rose-500 px-1.5 py-0.5 text-[9px] text-white">{friendBadge}</span>}</a>}
             {participant && <a href="/share-challenge" onClick={() => setMobileOpen(false)} className="relative rounded-xl border border-cyan-300/20 bg-cyan-300/10 px-3 py-3 text-center text-sm font-black text-cyan-100">Bagikan & Tantang</a>}
             {participant?.public_id && <a href={`/player?id=${encodeURIComponent(participant.public_id)}`} onClick={() => setMobileOpen(false)} className="relative rounded-xl border border-amber-300/20 bg-amber-300/10 px-3 py-3 text-center text-sm font-black text-amber-100">Profil Battle</a>}
             {links.map((link) => (
