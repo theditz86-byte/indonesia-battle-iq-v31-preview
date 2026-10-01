@@ -20,14 +20,14 @@ const ADMIN_API_URL="https://efndozplpwyemzgqfnep.supabase.co/functions/v1/battl
 const TOKEN_KEY="battle_admin_token"
 
 const sections=[
-  {id:"admin-overview",label:"Overview",icon:Gauge,target:"admin-overview",match:"Dashboard ALZAVA Battle Point"},
+  {id:"admin-overview",label:"Overview",icon:Gauge,route:"/admin/overview/"},
   {id:"admin-participants",label:"Peserta & Aktivitas",icon:Users,route:"/admin/peserta/"},
   {id:"admin-growth-traffic",label:"Growth & Traffic",icon:BarChart3,target:"admin-growth",match:"Referral & Challenge Funnel"},
   {id:"admin-season",label:"Season & Ranking",icon:Trophy,target:"admin-season",match:"Season resmi terpisah dari testing"},
   {id:"admin-moderation-payment",label:"Moderasi & Pembayaran",icon:ShieldCheck,target:"admin-moderation",match:"Laporan Peserta"},
   {id:"admin-bank",label:"Bank Soal SKD",icon:BookOpenCheck,route:"/admin/bank-soal/"},
   {id:"admin-maintenance",label:"Maintenance",icon:Power,route:"/admin/maintenance/"},
-  {id:"admin-tools",label:"Recovery & Tools",icon:Wrench,target:"admin-tools",match:"Recovery"},
+  {id:"admin-tools",label:"Pemulihan Admin",icon:Wrench,route:"/admin/recovery/"},
 ]
 
 const groupedTargets=[
@@ -41,14 +41,16 @@ function findHeading(match:string){
 }
 
 function sectionForPath(pathname:string){
+  if(pathname.startsWith("/admin/overview"))return"admin-overview"
   if(pathname.startsWith("/admin/peserta"))return"admin-participants"
   if(pathname.startsWith("/admin/bank-soal"))return"admin-bank"
   if(pathname.startsWith("/admin/maintenance"))return"admin-maintenance"
+  if(pathname.startsWith("/admin/recovery"))return"admin-tools"
   return"admin-overview"
 }
 
 function isStandaloneAdminPage(pathname:string){
-  return pathname.startsWith("/admin/peserta")||pathname.startsWith("/admin/bank-soal")||pathname.startsWith("/admin/maintenance")
+  return pathname.startsWith("/admin/overview")||pathname.startsWith("/admin/peserta")||pathname.startsWith("/admin/bank-soal")||pathname.startsWith("/admin/maintenance")||pathname.startsWith("/admin/recovery")
 }
 
 export function AdminControlCenter(){
