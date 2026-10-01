@@ -47,7 +47,7 @@ export function Badge({ className = "" }: { className?: string }) {
       className={`inline-flex items-center gap-3 rounded-full border-2 border-[#f7c531] bg-[#0a1030]/70 font-black uppercase text-[#f7c531] shadow-[0_0_22px_rgba(247,197,49,.45),inset_0_0_14px_rgba(247,197,49,.15)] ${className}`}
     >
       <Zap className="h-[1.25em] w-[1.25em] fill-[#f7c531]" aria-hidden="true" />
-      <span className="tracking-[0.14em]">Untuk Pengunjung Baru</span>
+      <span className="tracking-[0.14em]">Quick Battle Gratis</span>
     </div>
   )
 }
