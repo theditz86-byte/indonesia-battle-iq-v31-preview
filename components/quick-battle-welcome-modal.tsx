@@ -86,7 +86,7 @@ export function QuickBattleWelcomeModal() {
 
   const isMobile = size.w < 768
   const baseScale = Math.min((Math.min(size.w * 0.92, STAGE_W)) / STAGE_W, (size.h * 0.9) / STAGE_H)
-  const scale = baseScale * 0.75
+  const scale = baseScale * 0.7875
 
   return (
     <div
