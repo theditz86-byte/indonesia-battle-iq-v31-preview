@@ -32,7 +32,7 @@ export function MobileSheet({ onStart, onDismiss }: Props) {
 
       <div className="relative mt-3 h-[300px]">
         <Image
-          src="/images/aditaka-quick-battle-mini.webp"
+          src="/aditaka-quick-battle.png"
           alt="Host ALZAVA Battle Point"
           width={1024}
           height={1536}
@@ -48,7 +48,9 @@ export function MobileSheet({ onStart, onDismiss }: Props) {
       <Description className="relative mt-3 text-[15px] leading-[1.5]" />
 
       <Benefits className="mt-5 grid grid-cols-2 gap-3" cardClass="h-[112px] px-2" textClass="text-[14px]" />
+
       <ScoreCard className="mx-auto mt-5 w-[260px] scale-[0.92] [transform:rotate(3deg)]" />
+
       <PrimaryCta onClick={onStart} className="mt-6 min-h-[62px] w-full rounded-[24px] text-[20px]" />
       <SecondaryCta onClick={onDismiss} className="mx-auto mt-4 block h-12 w-[80%] text-[16px]" />
       <FooterNote className="mt-4 flex-wrap text-[12px]" />
