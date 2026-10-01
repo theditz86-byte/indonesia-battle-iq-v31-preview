@@ -1,0 +1,6 @@
+@media (min-width: 768px) {
+  [role="dialog"][aria-labelledby="quick-battle-title"] {
+    scale: 0.75;
+    transform-origin: center center;
+  }
+}
