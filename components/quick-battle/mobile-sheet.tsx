@@ -32,7 +32,7 @@ export function MobileSheet({ onStart, onDismiss }: Props) {
 
       <div className="relative mt-3 h-[300px]">
         <Image
-          src="/aditaka-quick-battle.png"
+          src="/qb-webp/aditaka-quick-battle.webp"
           alt="Host ALZAVA Battle Point"
           width={1024}
           height={1536}
