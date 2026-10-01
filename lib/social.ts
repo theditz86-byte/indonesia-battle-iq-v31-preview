@@ -6,6 +6,7 @@ export const MODERATION_API_URL = "https://efndozplpwyemzgqfnep.supabase.co/func
 export type SocialProfile = {
   public_id?: string
   nickname?: string
+  username?: string
   avatar_url?: string | null
   province_name?: string
   regency_name?: string
@@ -13,6 +14,15 @@ export type SocialProfile = {
 }
 
 export type FriendshipState = "self" | "none" | "incoming" | "outgoing" | "friends" | "blocked" | "blocked_by_you"
+
+export type FriendSearchResult = SocialProfile & {
+  friendship_state?: FriendshipState
+}
+
+export type FriendSearchResponse = {
+  query?: string
+  results?: FriendSearchResult[]
+}
 
 export type FriendItem = {
   relation_id?: string
