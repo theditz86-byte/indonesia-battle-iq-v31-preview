@@ -5,6 +5,7 @@ import {
   BarChart3,
   BookOpenCheck,
   Gauge,
+  ListOrdered,
   LogOut,
   Menu,
   Power,
@@ -22,6 +23,7 @@ const TOKEN_KEY="battle_admin_token"
 const sections=[
   {id:"admin-overview",label:"Overview",icon:Gauge,route:"/admin/overview/"},
   {id:"admin-participants",label:"Peserta & Aktivitas",icon:Users,route:"/admin/peserta/"},
+  {id:"admin-registrations",label:"Urutan Pendaftar",icon:ListOrdered,route:"/admin/pendaftar/"},
   {id:"admin-growth-traffic",label:"Growth & Traffic",icon:BarChart3,target:"admin-growth",match:"Referral & Challenge Funnel"},
   {id:"admin-season",label:"Season & Ranking",icon:Trophy,target:"admin-season",match:"Season resmi terpisah dari testing"},
   {id:"admin-moderation-payment",label:"Moderasi & Pembayaran",icon:ShieldCheck,target:"admin-moderation",match:"Laporan Peserta"},
@@ -43,6 +45,7 @@ function findHeading(match:string){
 function sectionForPath(pathname:string){
   if(pathname.startsWith("/admin/overview"))return"admin-overview"
   if(pathname.startsWith("/admin/peserta"))return"admin-participants"
+  if(pathname.startsWith("/admin/pendaftar"))return"admin-registrations"
   if(pathname.startsWith("/admin/bank-soal"))return"admin-bank"
   if(pathname.startsWith("/admin/maintenance"))return"admin-maintenance"
   if(pathname.startsWith("/admin/recovery"))return"admin-tools"
@@ -50,7 +53,7 @@ function sectionForPath(pathname:string){
 }
 
 function isStandaloneAdminPage(pathname:string){
-  return pathname.startsWith("/admin/overview")||pathname.startsWith("/admin/peserta")||pathname.startsWith("/admin/bank-soal")||pathname.startsWith("/admin/maintenance")||pathname.startsWith("/admin/recovery")
+  return pathname.startsWith("/admin/overview")||pathname.startsWith("/admin/peserta")||pathname.startsWith("/admin/pendaftar")||pathname.startsWith("/admin/bank-soal")||pathname.startsWith("/admin/maintenance")||pathname.startsWith("/admin/recovery")
 }
 
 export function AdminControlCenter(){
