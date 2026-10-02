@@ -1,0 +1,59 @@
+name: Embed Quick Battle Signature
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/embed-quick-battle-signature.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  embed-signature:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Embed signature asset into component source
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import base64
+
+          asset = Path("public/qb-webp/aditaka-signature-v2.webp")
+          if not asset.exists():
+              raise SystemExit(f"Missing signature asset: {asset}")
+
+          encoded = base64.b64encode(asset.read_bytes()).decode("ascii")
+          data_file = Path("components/quick-battle/aditaka-signature-data.ts")
+          data_file.write_text(
+              'export const ADITAKA_SIGNATURE_SRC = "data:image/webp;base64,' + encoded + '"\n',
+              encoding="utf-8",
+          )
+
+          stage = Path("components/quick-battle/desktop-stage.tsx")
+          text = stage.read_text(encoding="utf-8")
+          import_line = 'import { ADITAKA_SIGNATURE_SRC } from "./aditaka-signature-data"\n'
+          if import_line not in text:
+              text = text.replace(
+                  'import { RockForeground, SceneArt } from "./scene-art"\n',
+                  'import { RockForeground, SceneArt } from "./scene-art"\n' + import_line,
+              )
+          text = text.replace('src="/qb-webp/aditaka-signature-v2.webp"', 'src={ADITAKA_SIGNATURE_SRC}')
+          stage.write_text(text, encoding="utf-8")
+          PY
+
+      - name: Commit embedded signature
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add components/quick-battle/aditaka-signature-data.ts components/quick-battle/desktop-stage.tsx
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git commit -m "Embed Quick Battle signature in component"
+          git push
