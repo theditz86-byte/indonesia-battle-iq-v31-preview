@@ -34,9 +34,9 @@ export function CloseButton({ onClick, className = "" }: { onClick: () => void; 
       type="button"
       onClick={onClick}
       aria-label="Tutup Quick Battle"
-      className={`flex items-center justify-center rounded-full border-2 border-[rgba(180,200,255,.75)] bg-[#0a1236]/80 text-white backdrop-blur-sm transition hover:border-cyan-300 hover:shadow-[0_0_22px_rgba(34,211,238,.7)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300 ${className}`}
+      className={`cursor-pointer flex items-center justify-center rounded-full border-2 border-[rgba(180,200,255,.75)] bg-[#0a1236]/80 text-white backdrop-blur-sm transition hover:border-cyan-300 hover:shadow-[0_0_22px_rgba(34,211,238,.7)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300 ${className}`}
     >
-      <X className="h-1/2 w-1/2" strokeWidth={2.5} aria-hidden="true" />
+      <X className="h-[58%] w-[58%]" strokeWidth={2.5} aria-hidden="true" />
     </button>
   )
 }
@@ -160,7 +160,7 @@ export function PrimaryCta({ onClick, className = "" }: { onClick: () => void; c
     <button
       type="button"
       onClick={onClick}
-      className={`qb-cta-pulse flex items-center justify-center gap-5 border border-white/50 bg-gradient-to-r from-[#ffd319] via-[#ffb83f] via-45% to-[#e32bf5] font-black text-[#0a0a1a] shadow-[0_0_30px_rgba(255,200,40,.5),0_0_44px_rgba(227,43,245,.4)] transition duration-200 hover:-translate-y-0.5 hover:scale-[1.015] hover:shadow-[0_0_44px_rgba(255,200,40,.75),0_0_64px_rgba(227,43,245,.6)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-white/70 ${className}`}
+      className={`cursor-pointer qb-cta-pulse flex items-center justify-center gap-5 border border-white/50 bg-gradient-to-r from-[#ffd319] via-[#ffb83f] via-45% to-[#e32bf5] font-black text-[#0a0a1a] shadow-[0_0_30px_rgba(255,200,40,.5),0_0_44px_rgba(227,43,245,.4)] transition duration-200 hover:-translate-y-0.5 hover:scale-[1.015] hover:shadow-[0_0_44px_rgba(255,200,40,.75),0_0_64px_rgba(227,43,245,.6)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-white/70 ${className}`}
     >
       <Zap className="h-[1.1em] w-[1.1em]" strokeWidth={2.2} aria-hidden="true" />
       <span>Mulai Quick Battle</span>
@@ -170,7 +170,7 @@ export function PrimaryCta({ onClick, className = "" }: { onClick: () => void; c
 }
 
 export function SecondaryCta({ onClick, className = "" }: { onClick: () => void; className?: string }) {
-  return <button type="button" onClick={onClick} className={`rounded-full border border-[#3b82f6] bg-[#0a1236]/80 font-bold text-white shadow-[0_0_14px_rgba(59,130,246,.35)] transition hover:bg-[#12206a] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300 ${className}`}>Nanti saja</button>
+  return <button type="button" onClick={onClick} className={`cursor-pointer rounded-full border border-[#3b82f6] bg-[#0a1236]/80 font-bold text-white shadow-[0_0_14px_rgba(59,130,246,.35)] transition hover:bg-[#12206a] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300 ${className}`}>Nanti saja</button>
 }
 
 export function FooterNote({ className = "" }: { className?: string }) {
