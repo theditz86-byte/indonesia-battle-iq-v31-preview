@@ -12,7 +12,7 @@ const SHOW_DELAY_MS = 0
 const EXIT_MS = 180
 const PRELOAD_ASSETS = [
   "/qb-webp/aditaka-quick-battle.webp",
-  "/qb-webp/aditaka-signature.webp",
+  "/qb-webp/aditaka-signature-v2.webp",
   "/qb-webp/skd.webp",
   "/qb-webp/casn.webp",
   "/qb-webp/bumn.webp",
