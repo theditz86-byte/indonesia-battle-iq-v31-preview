@@ -44,6 +44,7 @@ export function DesktopStage({ onStart, onDismiss }: Props) {
             "radial-gradient(closest-side, rgba(255,200,70,.7), rgba(60,140,255,.35) 60%, transparent 100%)",
         }}
       />
+
       <Image
         src="/qb-webp/aditaka-quick-battle.webp"
         alt="Host ALZAVA Battle Point"
@@ -71,26 +72,40 @@ export function DesktopStage({ onStart, onDismiss }: Props) {
       <RockForeground />
       <Tagline className="absolute left-[925px] top-[722px] w-[400px] text-[34px] [transform:rotate(-5deg)]" />
 
-      <Image
-        src="/qb-webp/aditaka-signature.webp"
+      <img
+        src="/qb-webp/aditaka-signature-v2.webp"
         alt="Tanda tangan Aditaka"
-        width={512}
-        height={288}
-        className="pointer-events-none absolute"
+        width={275}
+        height={152}
+        className="pointer-events-none absolute block select-none"
         style={{
-          left: 825,
-          top: 758,
-          width: 235,
-          height: 132,
+          left: 735,
+          top: 735,
+          width: 275,
+          height: "auto",
+          zIndex: 45,
           objectFit: "contain",
           filter:
-            "drop-shadow(0 0 7px rgba(255,255,255,.95)) drop-shadow(0 0 16px rgba(120,180,255,.85)) drop-shadow(0 0 28px rgba(70,130,255,.55))",
+            "drop-shadow(0 0 7px rgba(255,255,255,.98)) drop-shadow(0 0 17px rgba(130,190,255,.95)) drop-shadow(0 0 32px rgba(70,130,255,.72))",
         }}
       />
 
-      <PrimaryCta onClick={onStart} className="absolute left-[47px] top-[697px] h-[88px] w-[625px] rounded-[30px] text-[32px]" />
-      <SecondaryCta onClick={onDismiss} className="absolute left-[80px] top-[805px] h-[68px] w-[560px] text-[24px]" />
-      <FooterNote className="absolute left-[680px] top-[895px] w-[650px] justify-end text-right text-[28px]" />
+      <PrimaryCta
+        onClick={onStart}
+        className="absolute left-[47px] top-[697px] h-[88px] w-[625px] rounded-[30px] text-[32px]"
+      />
+
+      <SecondaryCta
+        onClick={onDismiss}
+        className="absolute left-[80px] top-[820px] h-[64px] w-[560px] text-[24px]"
+      />
+
+      <div
+        className="absolute z-[60]"
+        style={{ left: 620, top: 895, width: 710 }}
+      >
+        <FooterNote className="!justify-end !gap-4 !text-[28px] !leading-none whitespace-nowrap text-right [&_svg]:!h-7 [&_svg]:!w-7" />
+      </div>
     </div>
   )
 }
