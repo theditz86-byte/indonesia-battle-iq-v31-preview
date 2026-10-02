@@ -70,6 +70,24 @@ export function DesktopStage({ onStart, onDismiss }: Props) {
       <ScoreCard className="absolute left-[1076px] top-[388px] w-[256px] [transform:perspective(900px)_rotateY(-16deg)_rotateZ(7deg)]" />
       <RockForeground />
       <Tagline className="absolute left-[925px] top-[722px] w-[400px] text-[34px] [transform:rotate(-5deg)]" />
+
+      <Image
+        src="/qb-webp/aditaka-signature.webp"
+        alt="Tanda tangan Aditaka"
+        width={512}
+        height={288}
+        className="pointer-events-none absolute"
+        style={{
+          left: 800,
+          top: 790,
+          width: 250,
+          height: 141,
+          objectFit: "contain",
+          filter:
+            "drop-shadow(0 0 7px rgba(255,255,255,.95)) drop-shadow(0 0 16px rgba(120,180,255,.85)) drop-shadow(0 0 28px rgba(70,130,255,.55))",
+        }}
+      />
+
       <PrimaryCta onClick={onStart} className="absolute left-[47px] top-[697px] h-[88px] w-[625px] rounded-[30px] text-[32px]" />
       <SecondaryCta onClick={onDismiss} className="absolute left-[80px] top-[788px] h-[68px] w-[560px] text-[24px]" />
       <FooterNote className="absolute left-[130px] top-[865px] w-[520px] justify-start text-[14px]" />
