@@ -5,7 +5,6 @@ import {
   Brand,
   CloseButton,
   Description,
-  FooterNote,
   Headline,
   PrimaryCta,
   ScoreCard,
@@ -53,7 +52,6 @@ export function MobileSheet({ onStart, onDismiss }: Props) {
 
       <PrimaryCta onClick={onStart} className="mt-6 min-h-[62px] w-full rounded-[24px] text-[20px]" />
       <SecondaryCta onClick={onDismiss} className="mx-auto mt-4 block h-12 w-[80%] text-[16px]" />
-      <FooterNote className="mt-4 flex-wrap text-[12px]" />
     </div>
   )
 }
