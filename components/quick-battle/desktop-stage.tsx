@@ -75,18 +75,19 @@ export function DesktopStage({ onStart, onDismiss }: Props) {
       <img
         src="/qb-webp/aditaka-signature-v2.webp"
         alt="Tanda tangan Aditaka"
-        width={275}
-        height={152}
+        width={210}
+        height={116}
         className="pointer-events-none absolute block select-none"
         style={{
-          left: 735,
-          top: 735,
-          width: 275,
+          left: 800,
+          top: 770,
+          width: 210,
           height: "auto",
           zIndex: 45,
           objectFit: "contain",
+          opacity: 0.92,
           filter:
-            "drop-shadow(0 0 7px rgba(255,255,255,.98)) drop-shadow(0 0 17px rgba(130,190,255,.95)) drop-shadow(0 0 32px rgba(70,130,255,.72))",
+            "drop-shadow(0 0 5px rgba(255,255,255,.95)) drop-shadow(0 0 12px rgba(130,190,255,.82)) drop-shadow(0 0 22px rgba(70,130,255,.55))",
         }}
       />
 
@@ -102,9 +103,9 @@ export function DesktopStage({ onStart, onDismiss }: Props) {
 
       <div
         className="absolute z-[60]"
-        style={{ left: 620, top: 895, width: 710 }}
+        style={{ left: 760, top: 884, width: 560 }}
       >
-        <FooterNote className="!justify-end !gap-4 !text-[28px] !leading-none whitespace-nowrap text-right [&_svg]:!h-7 [&_svg]:!w-7" />
+        <FooterNote className="!justify-end !gap-3 !text-[18px] !leading-none whitespace-nowrap text-right [&_svg]:!h-5 [&_svg]:!w-5" />
       </div>
     </div>
   )
