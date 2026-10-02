@@ -7,7 +7,6 @@ import {
   Brand,
   CloseButton,
   Description,
-  FooterNote,
   Headline,
   PrimaryCta,
   ScoreCard,
@@ -76,19 +75,20 @@ export function DesktopStage({ onStart, onDismiss }: Props) {
       <img
         src={ADITAKA_SIGNATURE_SRC}
         alt="Tanda tangan Aditaka"
-        width={210}
-        height={116}
+        width={512}
+        height={288}
         className="pointer-events-none absolute block select-none"
         style={{
-          left: 800,
-          top: 770,
-          width: 210,
+          left: 748,
+          top: 742,
+          width: 286,
           height: "auto",
-          zIndex: 45,
+          zIndex: 120,
           objectFit: "contain",
-          opacity: 0.92,
+          opacity: 1,
+          mixBlendMode: "screen",
           filter:
-            "drop-shadow(0 0 5px rgba(255,255,255,.95)) drop-shadow(0 0 12px rgba(130,190,255,.82)) drop-shadow(0 0 22px rgba(70,130,255,.55))",
+            "drop-shadow(0 0 6px rgba(255,255,255,1)) drop-shadow(0 0 14px rgba(130,190,255,.95)) drop-shadow(0 0 26px rgba(70,130,255,.72))",
         }}
       />
 
@@ -101,13 +101,6 @@ export function DesktopStage({ onStart, onDismiss }: Props) {
         onClick={onDismiss}
         className="absolute left-[80px] top-[820px] h-[64px] w-[560px] text-[24px]"
       />
-
-      <div
-        className="absolute z-[60]"
-        style={{ left: 760, top: 884, width: 560 }}
-      >
-        <FooterNote className="!justify-end !gap-3 !text-[18px] !leading-none whitespace-nowrap text-right [&_svg]:!h-5 [&_svg]:!w-5" />
-      </div>
     </div>
   )
 }
