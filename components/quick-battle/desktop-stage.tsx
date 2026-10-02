@@ -78,10 +78,10 @@ export function DesktopStage({ onStart, onDismiss }: Props) {
         height={288}
         className="pointer-events-none absolute"
         style={{
-          left: 800,
-          top: 790,
-          width: 250,
-          height: 141,
+          left: 825,
+          top: 758,
+          width: 235,
+          height: 132,
           objectFit: "contain",
           filter:
             "drop-shadow(0 0 7px rgba(255,255,255,.95)) drop-shadow(0 0 16px rgba(120,180,255,.85)) drop-shadow(0 0 28px rgba(70,130,255,.55))",
@@ -89,8 +89,8 @@ export function DesktopStage({ onStart, onDismiss }: Props) {
       />
 
       <PrimaryCta onClick={onStart} className="absolute left-[47px] top-[697px] h-[88px] w-[625px] rounded-[30px] text-[32px]" />
-      <SecondaryCta onClick={onDismiss} className="absolute left-[80px] top-[788px] h-[68px] w-[560px] text-[24px]" />
-      <FooterNote className="absolute left-[130px] top-[865px] w-[520px] justify-start text-[14px]" />
+      <SecondaryCta onClick={onDismiss} className="absolute left-[80px] top-[805px] h-[68px] w-[560px] text-[24px]" />
+      <FooterNote className="absolute left-[680px] top-[895px] w-[650px] justify-end text-right text-[28px]" />
     </div>
   )
 }
