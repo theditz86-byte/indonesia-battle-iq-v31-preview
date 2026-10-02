@@ -1,5 +1,4 @@
 import Image from "next/image"
-import { AditakaSignature } from "./aditaka-signature"
 import { RockForeground, SceneArt } from "./scene-art"
 import {
   Badge,
@@ -71,8 +70,6 @@ export function DesktopStage({ onStart, onDismiss }: Props) {
       <ScoreCard className="absolute left-[1076px] top-[388px] w-[256px] [transform:perspective(900px)_rotateY(-16deg)_rotateZ(7deg)]" />
       <RockForeground />
       <Tagline className="absolute left-[925px] top-[722px] w-[400px] text-[34px] [transform:rotate(-5deg)]" />
-
-      <AditakaSignature className="pointer-events-none absolute left-[780px] top-[752px] z-[200] h-auto w-[245px] select-none opacity-70 brightness-75 drop-shadow-[0_0_4px_rgba(145,185,255,.35)]" />
 
       <PrimaryCta
         onClick={onStart}
