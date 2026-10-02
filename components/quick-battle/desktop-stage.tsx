@@ -62,7 +62,7 @@ export function DesktopStage({ onStart, onDismiss }: Props) {
       />
 
       <div className="absolute left-[46px] top-[30px]"><Brand /></div>
-      <CloseButton onClick={onDismiss} className="absolute right-5 top-5 h-[72px] w-[72px]" />
+      <CloseButton onClick={onDismiss} className="absolute right-4 top-4 h-[86px] w-[86px]" />
       <Badge className="absolute left-[60px] top-[115px] h-[50px] px-[26px] text-[18px]" />
       <Headline className="absolute left-[54px] top-[172px] w-[660px] text-[88px] leading-[0.9]" />
       <Description className="absolute left-[60px] top-[420px] w-[470px] text-[20px] leading-[1.35]" />
@@ -71,8 +71,8 @@ export function DesktopStage({ onStart, onDismiss }: Props) {
       <RockForeground />
       <Tagline className="absolute left-[925px] top-[722px] w-[400px] text-[34px] [transform:rotate(-5deg)]" />
       <PrimaryCta onClick={onStart} className="absolute left-[47px] top-[697px] h-[88px] w-[625px] rounded-[30px] text-[32px]" />
-      <SecondaryCta onClick={onDismiss} className="absolute left-[110px] top-[796px] h-[58px] w-[500px] text-[22px]" />
-      <FooterNote className="absolute left-[130px] top-[860px] w-[520px] justify-start text-[14px]" />
+      <SecondaryCta onClick={onDismiss} className="absolute left-[80px] top-[788px] h-[68px] w-[560px] text-[24px]" />
+      <FooterNote className="absolute left-[130px] top-[865px] w-[520px] justify-start text-[14px]" />
     </div>
   )
 }
