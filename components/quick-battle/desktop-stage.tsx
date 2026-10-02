@@ -1,6 +1,6 @@
 import Image from "next/image"
+import { AditakaSignature } from "./aditaka-signature"
 import { RockForeground, SceneArt } from "./scene-art"
-import { ADITAKA_SIGNATURE_SRC } from "./aditaka-signature-data"
 import {
   Badge,
   Benefits,
@@ -72,25 +72,7 @@ export function DesktopStage({ onStart, onDismiss }: Props) {
       <RockForeground />
       <Tagline className="absolute left-[925px] top-[722px] w-[400px] text-[34px] [transform:rotate(-5deg)]" />
 
-      <img
-        src={ADITAKA_SIGNATURE_SRC}
-        alt="Tanda tangan Aditaka"
-        width={512}
-        height={288}
-        className="pointer-events-none absolute block select-none"
-        style={{
-          left: 748,
-          top: 742,
-          width: 286,
-          height: "auto",
-          zIndex: 120,
-          objectFit: "contain",
-          opacity: 1,
-          mixBlendMode: "screen",
-          filter:
-            "drop-shadow(0 0 6px rgba(255,255,255,1)) drop-shadow(0 0 14px rgba(130,190,255,.95)) drop-shadow(0 0 26px rgba(70,130,255,.72))",
-        }}
-      />
+      <AditakaSignature className="pointer-events-none absolute left-[735px] top-[705px] z-[200] h-auto w-[325px] select-none drop-shadow-[0_0_8px_rgba(255,255,255,1)] drop-shadow-[0_0_22px_rgba(80,150,255,.95)]" />
 
       <PrimaryCta
         onClick={onStart}
