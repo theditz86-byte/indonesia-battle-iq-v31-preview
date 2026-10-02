@@ -1,5 +1,6 @@
 import Image from "next/image"
 import { RockForeground, SceneArt } from "./scene-art"
+import { ADITAKA_SIGNATURE_SRC } from "./aditaka-signature-data"
 import {
   Badge,
   Benefits,
@@ -73,7 +74,7 @@ export function DesktopStage({ onStart, onDismiss }: Props) {
       <Tagline className="absolute left-[925px] top-[722px] w-[400px] text-[34px] [transform:rotate(-5deg)]" />
 
       <img
-        src="/qb-webp/aditaka-signature-v2.webp"
+        src={ADITAKA_SIGNATURE_SRC}
         alt="Tanda tangan Aditaka"
         width={210}
         height={116}
