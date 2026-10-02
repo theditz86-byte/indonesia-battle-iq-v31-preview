@@ -1,5 +1,6 @@
 name: Embed Quick Battle Signature
 
+# One-shot helper: touching this file triggers embedding of the signature into source.
 on:
   push:
     branches: [main]
