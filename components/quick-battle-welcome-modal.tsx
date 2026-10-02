@@ -11,13 +11,13 @@ const COOLDOWN_MS = 2 * 60 * 60 * 1000
 const SHOW_DELAY_MS = 0
 const EXIT_MS = 180
 const PRELOAD_ASSETS = [
-  "/aditaka-quick-battle.png",
-  "/skd.png",
-  "/casn.png",
-  "/bumn.png",
-  "/trophy.png",
-  "/coin.png",
-  "/paper.png",
+  "/qb-webp/aditaka-quick-battle.webp",
+  "/qb-webp/skd.webp",
+  "/qb-webp/casn.webp",
+  "/qb-webp/bumn.webp",
+  "/qb-webp/trophy.webp",
+  "/qb-webp/coin.webp",
+  "/qb-webp/paper.webp",
 ]
 
 function shouldSuppress(pathname: string) {
@@ -104,11 +104,11 @@ export function QuickBattleWelcomeModal() {
 
   const isMobile = size.w < 768
   const baseScale = Math.min((Math.min(size.w * 0.92, STAGE_W)) / STAGE_W, (size.h * 0.9) / STAGE_H)
-  const scale = baseScale * 0.7875
+  const scale = baseScale * 0.86625
 
   return (
     <div
-      className={`fixed inset-0 z-[9999] flex ${isMobile ? "items-end justify-center pb-2" : "items-center justify-center"} bg-[rgba(1,7,20,.82)] backdrop-blur-[8px] transition-opacity duration-[180ms] motion-reduce:transition-none ${visible ? "opacity-100" : "opacity-0"}`}
+      className={`fixed inset-0 z-[9999] flex ${isMobile ? "items-end justify-center pb-2" : "items-center justify-center"} bg-[rgba(1,7,20,.82)] backdrop-blur-[6.8px] transition-opacity duration-[180ms] motion-reduce:transition-none ${visible ? "opacity-100" : "opacity-0"}`}
       onMouseDown={(e) => {
         if (e.target === e.currentTarget) dismiss()
       }}
