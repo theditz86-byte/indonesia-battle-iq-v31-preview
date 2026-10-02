@@ -72,7 +72,7 @@ export function DesktopStage({ onStart, onDismiss }: Props) {
       <RockForeground />
       <Tagline className="absolute left-[925px] top-[722px] w-[400px] text-[34px] [transform:rotate(-5deg)]" />
 
-      <AditakaSignature className="pointer-events-none absolute left-[735px] top-[705px] z-[200] h-auto w-[325px] select-none drop-shadow-[0_0_8px_rgba(255,255,255,1)] drop-shadow-[0_0_22px_rgba(80,150,255,.95)]" />
+      <AditakaSignature className="pointer-events-none absolute left-[780px] top-[752px] z-[200] h-auto w-[245px] select-none opacity-70 brightness-75 drop-shadow-[0_0_4px_rgba(145,185,255,.35)]" />
 
       <PrimaryCta
         onClick={onStart}
