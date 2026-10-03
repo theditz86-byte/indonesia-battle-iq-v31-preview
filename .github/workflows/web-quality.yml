@@ -17,6 +17,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Apply private message reply patch
+        run: python .github/scripts/add-private-message-reply.py
+
+      - name: Commit private message reply patch if needed
+        run: |
+          git config user.name "alzava-reply-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add components/private-messages.tsx lib/social.ts
+          git diff --cached --quiet && true || (git commit -m "Add reply to private messages" && git push)
+
       - name: Apply PVP polling hardening
         shell: python
         run: |
