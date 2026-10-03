@@ -5,7 +5,6 @@ import { FormEvent, useCallback, useEffect, useRef, useState } from "react"
 import type { BattleParticipant } from "@/lib/battle"
 import {
   decryptPrivateMessage,
-  encryptPrivateMessage,
   encryptedPreview,
   getOrCreateLocalE2EEDevice,
   type E2EEKeyDirectory,
@@ -218,36 +217,27 @@ export function PrivateMessages({ participant }: { participant: BattleParticipan
     }
   }
 
-  const secureActive = Boolean(secureDevice && (secureDirectory?.other_devices?.length || 0) > 0)
-
   async function send(event: FormEvent) {
-    event.preventDefault()
-    const text = draft.trim()
-    if (!text || !selectedId || sending) return
-    setSending(true)
-    try {
-      let data: ThreadResponse
-      if (secureActive && secureDevice && secureDirectory) {
-        const payload = await encryptPrivateMessage(text, secureDevice, secureDirectory)
-        data = await socialCall<ThreadResponse>("send_encrypted_message", { conversation_id: selectedId, payload })
-      } else {
-        data = await socialCall<ThreadResponse>("send_message", { conversation_id: selectedId, message: text })
-      }
-      applyThread(data)
-      setDraft("")
-      void loadOverview(true)
-    } catch (err) {
-      if (secureActive) {
-        setThreadError("Pesan terenkripsi belum dapat dikirim. Isi pesan tidak dikirim sebagai teks biasa; silakan coba lagi.")
-      } else {
-        setThreadError(err instanceof Error ? err.message : "Pesan belum dapat dikirim.")
-      }
-    } finally {
-      setSending(false)
-    }
+  event.preventDefault()
+  const text = draft.trim()
+  if (!text || !selectedId || sending) return
+  setSending(true)
+  try {
+    const data = await socialCall<ThreadResponse>("send_message", {
+      conversation_id: selectedId,
+      message: text,
+    })
+    applyThread(data)
+    setDraft("")
+    void loadOverview(true)
+  } catch (err) {
+    setThreadError(err instanceof Error ? err.message : "Pesan belum dapat dikirim.")
+  } finally {
+    setSending(false)
   }
+}
 
-  if (!participant) {
+if (!participant) {
     return (
       <section className="rounded-3xl border border-white/10 bg-white/[.05] p-10 text-center">
         <MessageCircle className="mx-auto h-10 w-10 text-cyan-300" />
@@ -295,11 +285,9 @@ export function PrivateMessages({ participant }: { participant: BattleParticipan
           {!selectedId || !selectedOther ? <div className="grid flex-1 place-items-center p-8 text-center"><div><div className="mx-auto grid h-16 w-16 place-items-center rounded-3xl bg-indigo-400/10 text-indigo-300"><UserCheck className="h-8 w-8" /></div><h2 className="mt-4 text-2xl font-black">Pilih teman untuk ngobrol</h2><p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">Pesan pribadi V1 hanya teks, sehingga tetap ringan. Klik teman atau percakapan di sebelah kiri.</p></div></div> : <>
             <div className="flex items-center justify-between gap-3 border-b border-white/10 px-5 py-4 sm:px-6"><a href={playerProfileHref(selectedOther.public_id)} className="flex min-w-0 items-center gap-3 rounded-xl hover:bg-white/[.035]"><Avatar profile={selectedOther} size="lg" /><div className="min-w-0"><p className="truncate font-black">{selectedOther.nickname || "Peserta"}</p><p className="truncate text-xs text-slate-500">{[selectedOther.district_name, selectedOther.regency_name].filter(Boolean).join(" · ") || selectedOther.province_name || "Indonesia"}</p></div></a><a href={playerProfileHref(selectedOther.public_id)} className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs font-bold text-slate-300 hover:bg-white/10">Lihat Profil</a></div>
 
-            {secureActive && <div className="mx-4 mt-4 flex items-start justify-center gap-2 rounded-xl border border-amber-300/15 bg-amber-300/[.06] px-4 py-2.5 text-center text-[11px] leading-5 text-amber-100/80 sm:mx-6"><Lock className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-300" /><span>Pesan baru di percakapan ini dilindungi dengan enkripsi end-to-end. Hanya Anda dan {selectedOther.nickname || "teman Anda"} yang dapat membacanya.</span></div>}
-
             <div className="h-[500px] overflow-y-auto px-4 py-5 sm:px-6">{threadLoading ? <div className="grid h-full place-items-center text-sm text-slate-500">Membuka percakapan…</div> : messages.length === 0 ? <div className="grid h-full place-items-center text-center"><div><MessageCircle className="mx-auto h-8 w-8 text-slate-700" /><p className="mt-3 font-black">Belum ada pesan.</p><p className="mt-1 text-xs text-slate-600">Sapa {selectedOther.nickname || "temanmu"} untuk memulai percakapan.</p></div></div> : <div className="space-y-3">{messages.map((message) => { const encrypted = message.encryption_version === 1 && !!message.e2ee_payload; const body = encrypted ? (decryptedMessages[String(message.id)] || "Membuka pesan terenkripsi…") : (message.message || ""); return <div key={message.id} className={`flex ${message.is_own ? "justify-end" : "justify-start"}`}><div className={`max-w-[82%] rounded-2xl px-4 py-3 text-sm leading-6 shadow-lg sm:max-w-[70%] ${message.is_own ? "rounded-tr-md bg-gradient-to-br from-indigo-600 to-violet-600 text-white" : "rounded-tl-md border border-white/10 bg-white/[.07] text-slate-100"}`}><p className="whitespace-pre-wrap break-words">{body}</p><div className={`mt-1 flex items-center justify-end gap-1.5 text-[9px] ${message.is_own ? "text-indigo-200/80" : "text-slate-600"}`}>{encrypted && <><Lock className="h-2.5 w-2.5"/><span>Terenkripsi</span></>}<span>{timeLabel(message.created_at)}</span>{message.is_own && (message.delivery_status === "seen" ? <><CheckCheck className="h-3 w-3 text-cyan-200"/><span className="text-cyan-100">Dilihat</span></> : <><Check className="h-3 w-3"/><span>Terkirim</span></>)}</div></div></div> })}<div ref={endRef} /></div>}</div>
 
-            <form onSubmit={send} className="border-t border-white/10 bg-slate-950/35 p-4 sm:p-5">{threadError && <p className="mb-3 rounded-xl border border-rose-400/20 bg-rose-400/10 px-3 py-2 text-xs font-semibold text-rose-200">{threadError}</p>}{secureError && !secureActive && <p className="mb-2 text-[10px] text-slate-600">Secure chat akan aktif otomatis saat perangkat mendukung dan kedua peserta sudah siap.</p>}<div className="flex items-end gap-3"><div className="min-w-0 flex-1"><textarea value={draft} onChange={(event) => setDraft(event.target.value.slice(0, 1000))} onKeyDown={(event) => { if (event.key === "Enter" && !event.altKey && !event.nativeEvent.isComposing) { event.preventDefault(); if (draft.trim() && !sending) event.currentTarget.form?.requestSubmit() } }} rows={2} maxLength={1000} placeholder={`Pesan ke ${selectedOther.nickname || "teman"}…`} className="w-full resize-none rounded-2xl border border-white/10 bg-white/[.06] px-4 py-3 text-sm text-white outline-none placeholder:text-slate-600 focus:border-indigo-400/50" /><div className="mt-1 flex items-center justify-between gap-3 text-[9px] text-slate-700"><span>{secureActive ? "🔒 E2EE aktif · " : ""}Enter kirim · Alt + Enter baris baru</span><span>{draft.length}/1000</span></div></div><button disabled={sending || !draft.trim()} className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-cyan-500 to-indigo-600 text-white shadow-[0_0_24px_rgba(34,211,238,.22)] disabled:opacity-40"><Send className="h-5 w-5" /></button></div></form>
+            <form onSubmit={send} className="border-t border-white/10 bg-slate-950/35 p-4 sm:p-5">{threadError && <p className="mb-3 rounded-xl border border-rose-400/20 bg-rose-400/10 px-3 py-2 text-xs font-semibold text-rose-200">{threadError}</p>}<div className="flex items-end gap-3"><div className="min-w-0 flex-1"><textarea value={draft} onChange={(event) => setDraft(event.target.value.slice(0, 1000))} onKeyDown={(event) => { if (event.key === "Enter" && !event.altKey && !event.nativeEvent.isComposing) { event.preventDefault(); if (draft.trim() && !sending) event.currentTarget.form?.requestSubmit() } }} rows={2} maxLength={1000} placeholder={`Pesan ke ${selectedOther.nickname || "teman"}…`} className="w-full resize-none rounded-2xl border border-white/10 bg-white/[.06] px-4 py-3 text-sm text-white outline-none placeholder:text-slate-600 focus:border-indigo-400/50" /><div className="mt-1 flex items-center justify-between gap-3 text-[9px] text-slate-700"><span>Enter kirim · Alt + Enter baris baru</span><span>{draft.length}/1000</span></div></div><button disabled={sending || !draft.trim()} className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-cyan-500 to-indigo-600 text-white shadow-[0_0_24px_rgba(34,211,238,.22)] disabled:opacity-40"><Send className="h-5 w-5" /></button></div></form>
           </>}
         </div>
       </div>
