@@ -183,6 +183,25 @@ export default function PlayerProfilePage() {
         ? `Turun ${Math.abs(movement)} peringkat`
         : "Peringkat tetap"
 
+  const currentSeasonLabel = useMemo(() => {
+    const label = String(current?.season_label || "").trim()
+    if (label) return label
+    const seasonNumber = Number(current?.season_number)
+    return Number.isFinite(seasonNumber) && seasonNumber > 0 ? `Season ${seasonNumber}` : "Season aktif"
+  }, [current?.season_label, current?.season_number])
+
+  const bestSeasonLabel = useMemo(() => {
+    const bestScore = data?.stats?.best_score
+    if (bestScore == null) return null
+    const rows = [current, ...history].filter(Boolean) as RankedRow[]
+    const bestRow = rows.find((row) => row.battle_score != null && Number(row.battle_score) === Number(bestScore))
+    if (!bestRow) return null
+    const label = String(bestRow.season_label || "").trim()
+    if (label) return label
+    const seasonNumber = Number(bestRow.season_number)
+    return Number.isFinite(seasonNumber) && seasonNumber > 0 ? `Season ${seasonNumber}` : null
+  }, [current, data?.stats?.best_score, history])
+
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_50%_-10%,rgba(56,189,248,.15),transparent_34rem),linear-gradient(180deg,#020617_0%,#071327_48%,#020617_100%)] text-white">
       <SiteNavbar participant={viewer} />
@@ -210,7 +229,7 @@ export default function PlayerProfilePage() {
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1 text-[11px] font-black uppercase tracking-[.15em] text-cyan-200">Player Profile</span>
-                      {current?.national_rank === 1 && <span className="rounded-full border border-amber-300/25 bg-amber-300/10 px-3 py-1 text-[11px] font-black text-amber-200">🏆 Rank #1</span>}
+                      {current?.national_rank === 1 && <span className="rounded-full border border-amber-300/25 bg-amber-300/10 px-3 py-1 text-[11px] font-black text-amber-200">🏆 Rank #1 • {currentSeasonLabel}</span>}
                       {data?.featured_title?.title && <span className="rounded-full border border-amber-300/25 bg-gradient-to-r from-amber-300/10 to-yellow-400/10 px-3 py-1 text-[11px] font-black text-amber-100">★ {data.featured_title.title}</span>}
                     </div>
                     <h1 className="mt-3 truncate text-4xl font-black tracking-tight sm:text-5xl">{profile.nickname || "Peserta"}</h1>
@@ -222,10 +241,10 @@ export default function PlayerProfilePage() {
               </div>
 
               <div className="grid gap-3 p-5 sm:grid-cols-2 sm:p-7 lg:grid-cols-4">
-                <div className="rounded-2xl border border-cyan-300/15 bg-cyan-300/[.07] p-5"><p className="text-xs font-bold text-slate-400">Battle Point</p><p className="mt-1 text-3xl font-black text-cyan-300">{current ? formatScore(current.battle_score) : "—"}</p><p className="mt-1 text-[11px] text-slate-500">Season aktif</p></div>
-                <div className="rounded-2xl border border-white/10 bg-white/[.045] p-5"><p className="text-xs font-bold text-slate-400">Peringkat Nasional</p><p className="mt-1 text-3xl font-black">{current?.national_rank ? `#${current.national_rank}` : "—"}</p><p className="mt-1 text-[11px] text-slate-500">Ranking resmi</p></div>
-                <div className="rounded-2xl border border-white/10 bg-white/[.045] p-5"><p className="text-xs font-bold text-slate-400">Ketepatan</p><p className="mt-1 text-3xl font-black">{accuracy === null ? "—" : `${accuracy}%`}</p><p className="mt-1 text-[11px] text-slate-500">{current?.correct_count ?? "—"}/{current?.question_count ?? "—"} benar</p></div>
-                <div className="rounded-2xl border border-white/10 bg-white/[.045] p-5"><p className="text-xs font-bold text-slate-400">Best Battle Point</p><p className="mt-1 text-3xl font-black text-amber-300">{data?.stats?.best_score == null ? "—" : formatScore(data.stats.best_score)}</p><p className="mt-1 text-[11px] text-slate-500">{data?.stats?.ranked_seasons || 0} season tercatat</p></div>
+                <div className="rounded-2xl border border-cyan-300/15 bg-cyan-300/[.07] p-5"><p className="text-xs font-bold text-slate-400">Battle Point</p><p className="mt-1 text-3xl font-black text-cyan-300">{current ? formatScore(current.battle_score) : "—"}</p><p className="mt-1 text-[11px] text-slate-500">{current ? `${currentSeasonLabel} • Aktif` : "Belum ada season aktif"}</p></div>
+                <div className="rounded-2xl border border-white/10 bg-white/[.045] p-5"><p className="text-xs font-bold text-slate-400">Peringkat Nasional</p><p className="mt-1 text-3xl font-black">{current?.national_rank ? `#${current.national_rank}` : "—"}</p><p className="mt-1 text-[11px] font-semibold text-cyan-200/80">{current ? `${currentSeasonLabel} • Aktif` : "Belum ada ranking aktif"}</p></div>
+                <div className="rounded-2xl border border-white/10 bg-white/[.045] p-5"><p className="text-xs font-bold text-slate-400">Ketepatan</p><p className="mt-1 text-3xl font-black">{accuracy === null ? "—" : `${accuracy}%`}</p><p className="mt-1 text-[11px] text-slate-500">{current?.correct_count ?? "—"}/{current?.question_count ?? "—"} benar{current ? ` • ${currentSeasonLabel}` : ""}</p></div>
+                <div className="rounded-2xl border border-white/10 bg-white/[.045] p-5"><p className="text-xs font-bold text-slate-400">Best Battle Point</p><p className="mt-1 text-3xl font-black text-amber-300">{data?.stats?.best_score == null ? "—" : formatScore(data.stats.best_score)}</p><p className="mt-1 text-[11px] text-slate-500">{bestSeasonLabel ? `${bestSeasonLabel} • Rekor terbaik` : `${data?.stats?.ranked_seasons || 0} season tercatat`}</p></div>
               </div>
             </section>
 
