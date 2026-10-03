@@ -1,15 +1,16 @@
-name: Apply Private Message Reply
+name: Optimize Quick Battle assets
 
 on:
   push:
     paths:
       - '.github/workflows/optimize-quick-battle-assets.yml'
+  workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
-  patch:
+  optimize:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -17,17 +18,30 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Apply reply patch
-        run: python .github/scripts/add-private-message-reply.py
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
 
-      - name: Commit reply feature
+      - name: Install Pillow
+        run: python -m pip install --disable-pip-version-check pillow==11.3.0
+
+      - name: Generate optimized WebP assets
+        run: python scripts/optimize_quick_battle_assets.py
+
+      - name: Show generated sizes
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add components/private-messages.tsx lib/social.ts
-          if git diff --cached --quiet; then
+          ls -lh public/qb-webp
+          du -ch public/qb-webp/*.webp | tail -1
+
+      - name: Commit optimized assets and WebP paths
+        run: |
+          if git diff --quiet && [ -z "$(git status --porcelain public/qb-webp)" ]; then
             echo "No changes to commit."
             exit 0
           fi
-          git commit -m "Add reply to private messages"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/qb-webp components/quick-battle public/_headers
+          git commit -m "Optimize Quick Battle artwork to WebP"
           git push origin HEAD:main
