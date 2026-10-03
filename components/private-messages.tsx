@@ -7,6 +7,7 @@ import {
   Lock,
   MessageCircle,
   MoreVertical,
+  Reply,
   Send,
   Trash2,
   UserCheck,
@@ -89,12 +90,14 @@ export function PrivateMessages({ participant }: { participant: BattleParticipan
   const [deletingMessageId, setDeletingMessageId] = useState<number | null>(null)
   const [deletingForEveryoneId, setDeletingForEveryoneId] = useState<number | null>(null)
   const [openMessageMenuId, setOpenMessageMenuId] = useState<number | null>(null)
+  const [replyingTo, setReplyingTo] = useState<PrivateMessage | null>(null)
   const [error, setError] = useState("")
   const [threadError, setThreadError] = useState("")
   const [secureDevice, setSecureDevice] = useState<LocalE2EEDevice | null>(null)
   const [decryptedMessages, setDecryptedMessages] = useState<Record<string, string>>({})
   const queryOpenedRef = useRef(false)
   const endRef = useRef<HTMLDivElement | null>(null)
+  const composerRef = useRef<HTMLTextAreaElement | null>(null)
 
   const loadOverview = useCallback(async (background = false) => {
     if (!participant) {
@@ -241,6 +244,10 @@ export function PrivateMessages({ participant }: { participant: BattleParticipan
   }, [messages.length])
 
   useEffect(() => {
+    setReplyingTo(null)
+  }, [selectedId])
+
+  useEffect(() => {
     if (openMessageMenuId === null) return
 
     function handlePointerDown(event: PointerEvent) {
@@ -260,6 +267,19 @@ export function PrivateMessages({ participant }: { participant: BattleParticipan
       document.removeEventListener("keydown", handleKeyDown)
     }
   }, [openMessageMenuId])
+
+  function replyPreviewText(message: PrivateMessage) {
+    if (message.encryption_version === 1) {
+      return decryptedMessages[String(message.id)] || "Pesan terenkripsi"
+    }
+    return (message.message || "Pesan").trim() || "Pesan"
+  }
+
+  function startReply(message: PrivateMessage) {
+    setReplyingTo(message)
+    setOpenMessageMenuId(null)
+    window.requestAnimationFrame(() => composerRef.current?.focus())
+  }
 
   async function respond(item: FriendItem, accept: boolean) {
     const publicId = item.participant?.public_id
@@ -338,9 +358,11 @@ export function PrivateMessages({ participant }: { participant: BattleParticipan
       const data = await socialCall<ThreadResponse>("send_message", {
         conversation_id: selectedId,
         message: text,
+        reply_to_message_id: replyingTo?.id ?? null,
       })
       applyThread(data)
       setDraft("")
+      setReplyingTo(null)
       void loadOverview(true)
     } catch (err) {
       setThreadError(err instanceof Error ? err.message : "Pesan belum dapat dikirim.")
@@ -641,6 +663,14 @@ export function PrivateMessages({ participant }: { participant: BattleParticipan
                                   >
                                     <button
                                       type="button"
+                                      onClick={() => startReply(message)}
+                                      className="flex w-full cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-semibold text-slate-200 transition-colors hover:bg-white/[.07]"
+                                    >
+                                      <Reply className="h-3.5 w-3.5 text-cyan-300" />
+                                      Balas
+                                    </button>
+                                    <button
+                                      type="button"
                                       disabled={deletingMessageId !== null || deletingForEveryoneId !== null}
                                       onClick={() => void deleteForMe(message)}
                                       className="flex w-full cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-semibold text-slate-200 transition-colors hover:bg-white/[.07] disabled:opacity-40"
@@ -663,6 +693,26 @@ export function PrivateMessages({ participant }: { participant: BattleParticipan
                                 )}
                               </div>
 
+                              {message.reply_to && (
+                                <div
+                                  className={`mb-2 rounded-lg border-l-2 px-3 py-2 text-left ${
+                                    message.is_own
+                                      ? "border-cyan-200/70 bg-black/15"
+                                      : "border-cyan-400/60 bg-slate-950/35"
+                                  }`}
+                                >
+                                  <p className="truncate text-[10px] font-black text-cyan-200">
+                                    {message.reply_to.is_own
+                                      ? "Anda"
+                                      : message.reply_to.sender_nickname || selectedOther.nickname || "Peserta"}
+                                  </p>
+                                  <p className="mt-0.5 line-clamp-2 text-[11px] leading-4 text-white/70">
+                                    {message.reply_to.is_deleted || message.reply_to.is_unavailable
+                                      ? "Pesan tidak tersedia"
+                                      : message.reply_to.message || "Pesan"}
+                                  </p>
+                                </div>
+                              )}
                               <p className="whitespace-pre-wrap break-words">{body}</p>
                               <div
                                 className={`mt-1 flex items-center justify-end gap-1.5 text-[9px] ${
@@ -700,6 +750,25 @@ export function PrivateMessages({ participant }: { participant: BattleParticipan
               </div>
 
               <form onSubmit={send} className="border-t border-white/10 bg-slate-950/35 p-4 sm:p-5">
+                {replyingTo && (
+                  <div className="mb-3 flex items-center gap-3 rounded-xl border border-cyan-300/20 bg-cyan-300/[.06] px-3 py-2.5">
+                    <Reply className="h-4 w-4 shrink-0 text-cyan-300" />
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[10px] font-black text-cyan-200">
+                        Balas {replyingTo.is_own ? "pesan Anda" : selectedOther.nickname || "pesan"}
+                      </p>
+                      <p className="mt-0.5 truncate text-xs text-slate-400">{replyPreviewText(replyingTo)}</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setReplyingTo(null)}
+                      aria-label="Batal membalas"
+                      className="grid h-7 w-7 shrink-0 place-items-center rounded-lg text-slate-400 hover:bg-white/10 hover:text-white"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                )}
                 {threadError && (
                   <p className="mb-3 rounded-xl border border-rose-400/20 bg-rose-400/10 px-3 py-2 text-xs font-semibold text-rose-200">
                     {threadError}
@@ -708,6 +777,7 @@ export function PrivateMessages({ participant }: { participant: BattleParticipan
                 <div className="flex items-end gap-3">
                   <div className="min-w-0 flex-1">
                     <textarea
+                      ref={composerRef}
                       value={draft}
                       onChange={(event) => setDraft(event.target.value.slice(0, 1000))}
                       onKeyDown={(event) => {

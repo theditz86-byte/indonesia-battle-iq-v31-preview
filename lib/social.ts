@@ -51,6 +51,15 @@ export type PrivateMessage = {
   seen_at?: string | null
   encryption_version?: number
   e2ee_payload?: E2EEPayloadV1 | null
+  reply_to_message_id?: number | null
+  reply_to?: {
+    id?: number
+    message?: string | null
+    is_deleted?: boolean
+    is_unavailable?: boolean
+    is_own?: boolean
+    sender_nickname?: string | null
+  } | null
 }
 
 export type SocialOverview = {
