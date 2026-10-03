@@ -1,0 +1,102 @@
+from pathlib import Path
+import textwrap
+
+path = Path("components/private-messages.tsx")
+text = path.read_text(encoding="utf-8")
+
+old_state = '  const [deletingMessageId, setDeletingMessageId] = useState<number | null>(null)\n'
+if 'deletingForEveryoneId' not in text:
+    if old_state not in text:
+        raise SystemExit("delete state marker not found")
+    text = text.replace(
+        old_state,
+        old_state + '  const [deletingForEveryoneId, setDeletingForEveryoneId] = useState<number | null>(null)\n',
+        1,
+    )
+
+if 'async function deleteForEveryone' not in text:
+    marker = '  async function send(event: FormEvent) {'
+    if marker not in text:
+        raise SystemExit("send marker not found")
+    extra = '''  function canDeleteForEveryone(message: PrivateMessage) {
+    if (!message.is_own || !message.created_at) return false
+    const createdAt = new Date(message.created_at).getTime()
+    if (!Number.isFinite(createdAt)) return false
+    const ageMs = Date.now() - createdAt
+    return ageMs >= 0 && ageMs <= 30 * 60 * 1000
+  }
+
+  async function deleteForEveryone(message: PrivateMessage) {
+    if (!selectedId || deletingForEveryoneId !== null || !canDeleteForEveryone(message)) return
+    const confirmed = window.confirm(
+      "Hapus pesan ini untuk semua? Pesan akan hilang dari chat Anda dan lawan chat. Fitur ini hanya berlaku 30 menit setelah pesan dikirim.",
+    )
+    if (!confirmed) return
+
+    setDeletingForEveryoneId(message.id)
+    try {
+      const data = await socialCall<ThreadResponse>("delete_for_everyone", {
+        conversation_id: selectedId,
+        message_id: message.id,
+      })
+      applyThread(data)
+      setThreadError("")
+      void loadOverview(true)
+    } catch (err) {
+      setThreadError(err instanceof Error ? err.message : "Pesan belum dapat dihapus untuk semua.")
+    } finally {
+      setDeletingForEveryoneId(null)
+    }
+  }
+
+'''
+    text = text.replace(marker, extra + marker, 1)
+
+if 'title="Hapus untuk semua dalam 30 menit"' not in text:
+    needle = 'onClick={() => void deleteForMe(message)}'
+    idx = text.find(needle)
+    if idx < 0:
+        raise SystemExit("delete-for-me onClick not found")
+
+    button_start = text.rfind('<button', 0, idx)
+    button_end = text.find('</button>', idx)
+    if button_start < 0 or button_end < 0:
+        raise SystemExit("delete-for-me button bounds not found")
+    button_end += len('</button>')
+
+    line_start = text.rfind('\n', 0, button_start) + 1
+    indent = text[line_start:button_start]
+    block = textwrap.dedent('''
+    <div className={`mt-1.5 flex items-center gap-3 ${message.is_own ? "justify-end" : "justify-start"}`}>
+      <button
+        type="button"
+        disabled={deletingMessageId !== null || deletingForEveryoneId !== null}
+        onClick={() => void deleteForMe(message)}
+        title="Hapus hanya untuk saya"
+        className={`inline-flex items-center gap-1 text-[10px] transition-colors disabled:opacity-40 ${
+          message.is_own
+            ? "text-indigo-200/55 hover:text-rose-200"
+            : "text-slate-600 hover:text-rose-300"
+        }`}
+      >
+        <Trash2 className="h-3 w-3" />
+        {deletingMessageId === message.id ? "Menghapus…" : "Hapus untuk saya"}
+      </button>
+      {canDeleteForEveryone(message) && (
+        <button
+          type="button"
+          disabled={deletingMessageId !== null || deletingForEveryoneId !== null}
+          onClick={() => void deleteForEveryone(message)}
+          title="Hapus untuk semua dalam 30 menit"
+          className="inline-flex items-center gap-1 text-[10px] font-semibold text-rose-300/75 transition-colors hover:text-rose-200 disabled:opacity-40"
+        >
+          <Trash2 className="h-3 w-3" />
+          {deletingForEveryoneId === message.id ? "Menghapus…" : "Hapus untuk semua"}
+        </button>
+      )}
+    </div>
+    ''').strip('\n')
+    replacement = textwrap.indent(block, indent)
+    text = text[:line_start] + replacement + text[button_end:]
+
+path.write_text(text, encoding="utf-8")
