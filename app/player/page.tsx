@@ -97,6 +97,14 @@ type RankProgress = {
 type PublicProfileResponse = {
   profile?: Profile
   current?: RankedRow | null
+  active_season?: {
+    id?: string
+    season_number?: number | null
+    label?: string | null
+    starts_at?: string | null
+    ends_at?: string | null
+    status?: string | null
+  } | null
   stats?: {
     best_score?: number | null
     best_national_rank?: number | null
@@ -161,7 +169,9 @@ export default function PlayerProfilePage() {
   }, [])
 
   const profile = data?.profile
-  const current = data?.current
+  const rawCurrent = data?.current
+  const activeSeason = data?.active_season
+  const current = rawCurrent?.season_status === "live" ? rawCurrent : null
   const history = Array.isArray(data?.history) ? data!.history! : []
   const pvpHistory = Array.isArray(data?.pvp_history) ? data!.pvp_history! : []
   const achievements = Array.isArray(data?.achievements) ? data!.achievements! : []
@@ -184,23 +194,23 @@ export default function PlayerProfilePage() {
         : "Peringkat tetap"
 
   const currentSeasonLabel = useMemo(() => {
-    const label = String(current?.season_label || "").trim()
+    const label = String(current?.season_label || activeSeason?.label || "").trim()
     if (label) return label
-    const seasonNumber = Number(current?.season_number)
+    const seasonNumber = Number(current?.season_number ?? activeSeason?.season_number)
     return Number.isFinite(seasonNumber) && seasonNumber > 0 ? `Season ${seasonNumber}` : "Season aktif"
-  }, [current?.season_label, current?.season_number])
+  }, [activeSeason?.label, activeSeason?.season_number, current?.season_label, current?.season_number])
 
   const bestSeasonLabel = useMemo(() => {
     const bestScore = data?.stats?.best_score
     if (bestScore == null) return null
-    const rows = [current, ...history].filter(Boolean) as RankedRow[]
+    const rows = [rawCurrent, ...history].filter(Boolean) as RankedRow[]
     const bestRow = rows.find((row) => row.battle_score != null && Number(row.battle_score) === Number(bestScore))
     if (!bestRow) return null
     const label = String(bestRow.season_label || "").trim()
     if (label) return label
     const seasonNumber = Number(bestRow.season_number)
     return Number.isFinite(seasonNumber) && seasonNumber > 0 ? `Season ${seasonNumber}` : null
-  }, [current, data?.stats?.best_score, history])
+  }, [data?.stats?.best_score, history, rawCurrent])
 
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_50%_-10%,rgba(56,189,248,.15),transparent_34rem),linear-gradient(180deg,#020617_0%,#071327_48%,#020617_100%)] text-white">
@@ -241,8 +251,8 @@ export default function PlayerProfilePage() {
               </div>
 
               <div className="grid gap-3 p-5 sm:grid-cols-2 sm:p-7 lg:grid-cols-4">
-                <div className="rounded-2xl border border-cyan-300/15 bg-cyan-300/[.07] p-5"><p className="text-xs font-bold text-slate-400">Battle Point</p><p className="mt-1 text-3xl font-black text-cyan-300">{current ? formatScore(current.battle_score) : "—"}</p><p className="mt-1 text-[11px] text-slate-500">{current ? `${currentSeasonLabel} • Aktif` : "Belum ada season aktif"}</p></div>
-                <div className="rounded-2xl border border-white/10 bg-white/[.045] p-5"><p className="text-xs font-bold text-slate-400">Peringkat Nasional</p><p className="mt-1 text-3xl font-black">{current?.national_rank ? `#${current.national_rank}` : "—"}</p><p className="mt-1 text-[11px] font-semibold text-cyan-200/80">{current ? `${currentSeasonLabel} • Aktif` : "Belum ada ranking aktif"}</p></div>
+                <div className="rounded-2xl border border-cyan-300/15 bg-cyan-300/[.07] p-5"><p className="text-xs font-bold text-slate-400">Battle Point</p><p className="mt-1 text-3xl font-black text-cyan-300">{current ? formatScore(current.battle_score) : "—"}</p><p className="mt-1 text-[11px] text-slate-500">{current ? `${currentSeasonLabel} • Aktif` : `${currentSeasonLabel} • Belum bermain`}</p></div>
+                <div className="rounded-2xl border border-white/10 bg-white/[.045] p-5"><p className="text-xs font-bold text-slate-400">Peringkat Nasional</p><p className="mt-1 text-3xl font-black">{current?.national_rank ? `#${current.national_rank}` : "—"}</p><p className="mt-1 text-[11px] font-semibold text-cyan-200/80">{current ? `${currentSeasonLabel} • Aktif` : `${currentSeasonLabel} • Belum ada ranking`}</p></div>
                 <div className="rounded-2xl border border-white/10 bg-white/[.045] p-5"><p className="text-xs font-bold text-slate-400">Ketepatan</p><p className="mt-1 text-3xl font-black">{accuracy === null ? "—" : `${accuracy}%`}</p><p className="mt-1 text-[11px] text-slate-500">{current?.correct_count ?? "—"}/{current?.question_count ?? "—"} benar{current ? ` • ${currentSeasonLabel}` : ""}</p></div>
                 <div className="rounded-2xl border border-white/10 bg-white/[.045] p-5"><p className="text-xs font-bold text-slate-400">Best Battle Point</p><p className="mt-1 text-3xl font-black text-amber-300">{data?.stats?.best_score == null ? "—" : formatScore(data.stats.best_score)}</p><p className="mt-1 text-[11px] text-slate-500">{bestSeasonLabel ? `${bestSeasonLabel} • Rekor terbaik` : `${data?.stats?.ranked_seasons || 0} season tercatat`}</p></div>
               </div>
