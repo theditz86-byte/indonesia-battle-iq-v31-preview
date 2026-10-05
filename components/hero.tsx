@@ -42,10 +42,6 @@ export function Hero({ season, entries, participant }: { season: BattleSeason | 
               <span className="bg-gradient-to-r from-amber-300 via-yellow-300 to-orange-400 bg-clip-text text-transparent">Naik Peringkat.</span>
             </h1>
 
-            <div className="mt-3 inline-flex max-w-[21rem] items-center rounded-full border border-amber-300/20 bg-amber-300/[.07] px-3 py-1.5 text-[11px] font-extrabold leading-4 text-amber-100 shadow-[0_0_18px_rgba(251,191,36,.08)] backdrop-blur-sm">
-              Asah Nalar. Naik Level. Siap Hadapi SKD CPNS &amp; Seleksi BUMN.
-            </div>
-
             <p className="mt-4 max-w-[21rem] text-[15px] font-black leading-6 text-white">
               {challengeText}
             </p>
