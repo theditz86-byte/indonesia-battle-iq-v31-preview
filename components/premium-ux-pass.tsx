@@ -95,24 +95,37 @@ export function PremiumUxPass() {
         header.alzava-authenticated-nav nav a[href="/help"]{display:none!important}
       }
 
-      body[data-alzava-route="/battle"] main > section:first-child [class*="shadow-[0_0_"]{
+      body[data-alzava-route="/battle"] main .text-slate-500,
+      body[data-alzava-route="/battle/"] main .text-slate-500,
+      body[data-alzava-route="/battle"] main .text-slate-600,
+      body[data-alzava-route="/battle/"] main .text-slate-600{
+        color:rgb(148 163 184)!important;
+      }
+
+      body[data-alzava-route="/battle"] main > section:first-child [class*="shadow-[0_0_"],
+      body[data-alzava-route="/battle/"] main > section:first-child [class*="shadow-[0_0_"]{
         filter:saturate(.96);
       }
 
-      body[data-alzava-route="/battle"] main > section:first-child{
+      body[data-alzava-route="/battle"] main > section:first-child,
+      body[data-alzava-route="/battle/"] main > section:first-child{
         border-bottom:1px solid rgba(255,255,255,.035);
       }
 
       body[data-alzava-route="/battle-test"] button,
-      body[data-alzava-route="/battle-test"] a{
+      body[data-alzava-route="/battle-test/"] button,
+      body[data-alzava-route="/battle-test"] a,
+      body[data-alzava-route="/battle-test/"] a{
         transition-duration:160ms!important;
       }
 
-      body[data-alzava-route="/battle-test"] main{
+      body[data-alzava-route="/battle-test"] main,
+      body[data-alzava-route="/battle-test/"] main{
         letter-spacing:-.005em;
       }
 
-      body[data-alzava-route="/player"] main h1{
+      body[data-alzava-route="/player"] main h1,
+      body[data-alzava-route="/player/"] main h1{
         text-wrap:balance;
       }
 
