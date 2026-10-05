@@ -17,6 +17,7 @@ import { TrafficTracker } from "@/components/traffic-tracker"
 import { AdminControlCenterV2 } from "@/components/admin-control-center-v2"
 import { PretestLifecycleBridge } from "@/components/pretest-lifecycle-bridge"
 import { PretestHistoryCard } from "@/components/pretest-history-card"
+import { PlayerUiHardening } from "@/components/player-ui-hardening"
 
 const BRAND_ICON = "/brand/alvaza-logo-new.svg?v=20260925-2"
 
@@ -87,6 +88,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <GlobalProfileCorner />
         <AdminControlCenterV2 />
         <PretestLifecycleBridge />
+        <PlayerUiHardening />
         {children}
         <PretestHistoryCard />
         <PvpHistoryShareBridge />
