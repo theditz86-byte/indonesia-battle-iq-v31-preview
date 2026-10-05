@@ -17,6 +17,8 @@ type BattleTitle = {
   title?: string | null
   final_rank?: number | null
   battle_score?: number | null
+  season_label?: string | null
+  season_number?: number | null
 }
 
 type ProfilePayload = {
@@ -24,33 +26,39 @@ type ProfilePayload = {
   featured_title?: BattleTitle | null
 }
 
-function seasonLabel(row?: RankedRow | null) {
+function seasonLabel(row?: RankedRow | BattleTitle | null) {
   const label = String(row?.season_label || "").trim()
   if (label) return label
   const number = Number(row?.season_number)
   return Number.isFinite(number) && number > 0 ? `Season ${number}` : ""
 }
 
+function makeNameFullyVisible(element: HTMLElement) {
+  element.classList.remove("truncate")
+  element.classList.add("whitespace-normal", "break-words")
+  element.style.overflow = "visible"
+  element.style.textOverflow = "clip"
+  element.style.whiteSpace = "normal"
+  element.style.maxWidth = "100%"
+}
+
 function expandPlayerNames() {
-  const links = document.querySelectorAll<HTMLElement>('a[href^="/player"], a[href*="/player?id="]')
-  links.forEach((link) => {
-    if (!link.classList.contains("truncate")) return
-    link.classList.remove("truncate")
-    link.classList.add("whitespace-normal", "break-words")
-    link.style.overflow = "visible"
-    link.style.textOverflow = "clip"
-    link.style.whiteSpace = "normal"
-    link.style.maxWidth = "100%"
+  const playerLinks = document.querySelectorAll<HTMLElement>('a[href^="/player"], a[href*="/player?id="]')
+  playerLinks.forEach((link) => {
+    if (link.classList.contains("truncate")) makeNameFullyVisible(link)
+    link.querySelectorAll<HTMLElement>(".truncate").forEach(makeNameFullyVisible)
+    const fullName = (link.textContent || "").trim()
+    if (fullName && !link.getAttribute("title")) link.setAttribute("title", fullName)
+  })
+
+  document.querySelectorAll<HTMLElement>(".truncate").forEach((element) => {
+    const text = (element.textContent || "").trim()
+    const nearby = (element.parentElement?.textContent || "").toLowerCase()
+    if (text && text.length <= 24 && nearby.includes("panggilan")) makeNameFullyVisible(element)
   })
 
   if (window.location.pathname.startsWith("/player")) {
-    document.querySelectorAll<HTMLElement>("main h1.truncate").forEach((heading) => {
-      heading.classList.remove("truncate")
-      heading.classList.add("break-words")
-      heading.style.overflow = "visible"
-      heading.style.textOverflow = "clip"
-      heading.style.whiteSpace = "normal"
-    })
+    document.querySelectorAll<HTMLElement>("main h1.truncate").forEach(makeNameFullyVisible)
   }
 }
 
@@ -78,7 +86,7 @@ function applyChampionSeason(title: string, label: string) {
     sub.style.fontSize = "9px"
     sub.style.fontWeight = "800"
     sub.style.letterSpacing = ".04em"
-    sub.style.opacity = ".78"
+    sub.style.opacity = ".82"
     sub.style.marginTop = "2px"
     badge.appendChild(sub)
   }
@@ -122,7 +130,7 @@ export function PlayerUiHardening() {
               .sort((a, b) => Number(b.season_number || 0) - Number(a.season_number || 0))[0]
 
             championTitle = String(featured.title)
-            championSeason = seasonLabel(exact || fallback)
+            championSeason = seasonLabel(featured) || seasonLabel(exact || fallback)
             apply()
           })
           .catch(() => {})
