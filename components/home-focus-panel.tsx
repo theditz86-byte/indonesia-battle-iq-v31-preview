@@ -38,7 +38,7 @@ export function HomeFocusPanel({
           <h2 className="mt-4 max-w-2xl text-2xl font-black leading-tight text-white sm:text-3xl">
             {participant ? `Halo, ${participant.nickname || "Pejuang"}. Mau latihan dulu atau langsung ke Ranked?` : "Mulai dari latihan singkat, lalu ukur kemampuanmu di arena Ranked."}
           </h2>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-400">
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-300">
             {participant
               ? "Saran terbaik: pemanasan singkat lebih dulu, lalu gunakan Ranked saat sudah fokus. Ranking mengambil skor terbaikmu pada season aktif."
               : "Coba kemampuan awal tanpa tekanan, pelajari pola soal, lalu daftar saat ingin menyimpan progres dan masuk leaderboard resmi."}
@@ -60,29 +60,29 @@ export function HomeFocusPanel({
         <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
           <div className="rounded-2xl border border-white/10 bg-white/[.035] p-4">
             <div className="flex items-center justify-between gap-3">
-              <span className="text-[11px] font-bold text-slate-500">Peringkat Nasional</span>
+              <span className="text-[11px] font-bold text-slate-300">Peringkat Nasional</span>
               <Trophy className="h-4 w-4 text-amber-300" />
             </div>
             <p className="mt-1 text-2xl font-black text-white">{rank ? `#${rank}` : "—"}</p>
-            <p className="mt-1 text-[11px] text-slate-500">{score ? `${formatScore(score)} Battle Point` : "Belum ada skor season ini"}</p>
+            <p className="mt-1 text-[11px] text-slate-400">{score ? `${formatScore(score)} Battle Point` : "Belum ada skor season ini"}</p>
           </div>
 
           <div className="rounded-2xl border border-white/10 bg-white/[.035] p-4">
             <div className="flex items-center justify-between gap-3">
-              <span className="text-[11px] font-bold text-slate-500">Ranked Tersisa</span>
+              <span className="text-[11px] font-bold text-slate-300">Ranked Tersisa</span>
               <Target className="h-4 w-4 text-cyan-300" />
             </div>
             <p className="mt-1 text-2xl font-black text-white">{participant ? `${remaining}/3` : "3/3"}</p>
-            <p className="mt-1 text-[11px] text-slate-500">{hasActive ? "Ada attempt yang sedang berjalan" : "Gunakan saat benar-benar siap"}</p>
+            <p className="mt-1 text-[11px] text-slate-400">{hasActive ? "Ada attempt yang sedang berjalan" : "Gunakan saat benar-benar siap"}</p>
           </div>
 
           <div className="rounded-2xl border border-emerald-300/10 bg-emerald-300/[.035] p-4">
             <div className="flex items-center justify-between gap-3">
-              <span className="text-[11px] font-bold text-slate-500">Fair Play Ranked</span>
+              <span className="text-[11px] font-bold text-slate-300">Fair Play Ranked</span>
               <ShieldCheck className="h-4 w-4 text-emerald-300" />
             </div>
             <p className="mt-1 text-sm font-black text-emerald-100">Skor terbaik masuk ranking</p>
-            <p className="mt-1 text-[11px] leading-5 text-slate-500">Skor sama ditentukan waktu tercepat.</p>
+            <p className="mt-1 text-[11px] leading-5 text-slate-400">Skor sama ditentukan waktu tercepat.</p>
           </div>
         </div>
       </div>
@@ -95,7 +95,7 @@ export function HomeFocusPanel({
           [Target, "3 attempt per season"],
         ].map(([Icon, text], index) => {
           const C = Icon as typeof Clock3
-          return <div key={String(text)} className={`flex items-center gap-2.5 px-4 py-3 text-[11px] font-semibold text-slate-400 ${index ? "border-t border-white/10 sm:border-l sm:border-t-0" : ""}`}><C className="h-4 w-4 shrink-0 text-cyan-300/80" />{String(text)}</div>
+          return <div key={String(text)} className={`flex items-center gap-2.5 px-4 py-3 text-[11px] font-semibold text-slate-300 ${index ? "border-t border-white/10 sm:border-l sm:border-t-0" : ""}`}><C className="h-4 w-4 shrink-0 text-cyan-300" />{String(text)}</div>
         })}
       </div>
     </section>
