@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { Hero } from "@/components/hero"
-import { HomeFocusPanel } from "@/components/home-focus-panel"
 import { Leaderboard } from "@/components/leaderboard"
 import { PathToTop, PromoBanner } from "@/components/sidebar-cards"
 import { SiteFooter } from "@/components/site-footer"
@@ -93,24 +92,16 @@ export function BattleDashboard() {
     return entries.find((entry) => entry.participant_public_id === participant.public_id)
   }, [entries, participant])
 
-  const ownNationalEntry = useMemo(() => {
-    if (!participant?.public_id) return undefined
-    return heroEntries.find((entry) => entry.participant_public_id === participant.public_id) || ownEntry
-  }, [heroEntries, ownEntry, participant])
-
   return (
     <div className="min-h-screen bg-slate-950 text-white">
       <QuickBattleWelcomeModal />
       <SiteNavbar participant={participant} />
       <main>
         <Hero season={season} entries={heroEntries} participant={participant} />
-        <div className="relative z-10 mx-auto mt-4 max-w-7xl px-4 sm:px-6 lg:mt-5">
-          <HomeFocusPanel season={season} participant={participant} ownEntry={ownNationalEntry} />
-        </div>
-        <div className="relative z-10 mx-auto mt-4 max-w-7xl px-4 sm:px-6">
+        <div className="relative z-10 mx-auto mt-3 max-w-7xl px-4 sm:px-6 lg:mt-4">
           <UserProfileCard participant={participant} ownEntry={ownEntry} scope={scope} />
         </div>
-        <div className="mx-auto mt-9 max-w-7xl px-4 pb-16 sm:px-6">
+        <div className="mx-auto mt-10 max-w-7xl px-4 pb-16 sm:px-6">
           <div className="grid gap-6 lg:grid-cols-3">
             <div className="min-w-0 lg:col-span-2" id="peringkat">
               <Leaderboard
