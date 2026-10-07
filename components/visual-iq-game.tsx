@@ -416,7 +416,7 @@ export function VisualIqGame(){
         <p className="mt-4 text-sm leading-6 text-slate-300">20 soal dipilih dari bank yang lebih besar. Setiap percobaan mencampur matriks, analogi, rotasi, lipat kertas, cermin, pola, klasifikasi, dan spasial.</p>
         <div className="mt-5 grid grid-cols-3 gap-2 text-center text-[10px] font-bold text-slate-300">
           <div className="rounded-xl border border-white/10 bg-white/[.04] p-3"><BrainCircuit className="mx-auto mb-1 h-5 w-5 text-cyan-300"/>20 Soal</div>
-          <div className="rounded-xl border border-white/10 bg-white/[.04] p-3"><Clock3 className="mx-auto mb-1 h-5 w-5 text-violet-300"/>±10 Menit</div>
+          <div className="rounded-xl border border-white/10 bg-white/[.04] p-3"><Clock3 className="mx-auto mb-1 h-5 w-5 text-violet-300"/>±12 Menit</div>
           <div className="rounded-xl border border-white/10 bg-white/[.04] p-3"><Trophy className="mx-auto mb-1 h-5 w-5 text-amber-300"/>Maks. 150</div>
         </div>
       </div>
