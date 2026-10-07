@@ -58,6 +58,13 @@ const QUESTIONS:Question[]=[
   {id:"symmetry-dot",stage:"Simetri",title:"Simetri vertikal",hint:"Pilih bentuk yang tetap sama jika dilipat tepat pada sumbu vertikal.",layout:"odd",difficulty:3,cells:[],options:[g("diamond",0,false,"l"),g("triangle",0,false,"c"),g("square",0,false,"tr"),g("pentagon",0,false,"r")],answer:1},
   {id:"mirror-compound",stage:"Cermin",title:"Cermin bentuk bertanda",hint:"Pantulkan bentuk dan posisi titik dari kiri ke kanan.",layout:"single",difficulty:3,cells:[g("corner",0,false,"br")],options:[g("corner",180,false,"tl"),g("corner",90,false,"bl"),g("corner",270,false,"tr"),g("corner",0,false,"bl")],answer:1},
 
+  {id:"matrix-add-side",stage:"Matriks",title:"Transformasi jumlah sisi",hint:"Hubungan pada baris atas juga berlaku pada baris bawah.",layout:"matrix2",difficulty:3,cells:[g("triangle"),g("square"),g("pentagon")],options:[g("circle"),g("hexagon"),g("diamond"),g("pentagon")],answer:1},
+  {id:"analogy-180-dot",stage:"Analogi",title:"Rotasi 180° bertanda",hint:"Putar bentuk dan titik dengan transformasi yang sama.",layout:"analogy",difficulty:3,cells:[g("square",0,false,"tl"),g("square",180,false,"br"),g("triangle",90,false,"tr")],options:[g("triangle",180,false,"bl"),g("triangle",270,false,"bl"),g("triangle",270,false,"tr"),g("triangle",90,false,"br")],answer:1},
+
+  {id:"matrix-rotation-180",stage:"Matriks",title:"Rotasi dan posisi titik",hint:"Setiap gambar di kanan adalah hasil putaran 180° dari gambar di kiri.",layout:"matrix2",difficulty:4,cells:[g("arrow",0,false,"l"),g("arrow",180,false,"r"),g("triangle",90,false,"t")],options:[g("triangle",270,false,"b"),g("triangle",90,false,"b"),g("triangle",0,false,"l"),g("triangle",180,false,"t")],answer:0},
+  {id:"matrix3-rotation",stage:"Matriks",title:"Rotasi lintas baris",hint:"Arah maju 90° di setiap kolom dan juga bergeser 90° pada baris berikutnya.",layout:"matrix3",difficulty:4,cells:[g("arrow",0),g("arrow",90),g("arrow",180),g("arrow",90),g("arrow",180),g("arrow",270),g("arrow",180),g("arrow",270)],options:[g("arrow",90),g("arrow",180),g("arrow",0),g("arrow",270)],answer:2},
+  {id:"hard-fill-rotation",stage:"Logika Visual",title:"Rotasi, isi, dan titik",hint:"Arah berputar 90°, isi berganti, dan titik melompat ke sudut berlawanan.",layout:"sequence",difficulty:4,cells:[g("diamond",0,false,"tl"),g("diamond",90,true,"br"),g("diamond",180,false,"tr")],options:[g("diamond",270,true,"tr"),g("diamond",270,true,"bl"),g("diamond",0,true,"bl"),g("diamond",180,true,"tl")],answer:1},
+
   {id:"matrix3-overlay",stage:"Matriks",title:"Matriks gabungan 3 × 3",hint:"Kotak ketiga pada setiap baris adalah gabungan dua kotak sebelumnya.",layout:"matrix3",difficulty:4,cells:[g("bar",0),g("bar",90),g("plus"),g("bar",45),g("bar",135),g("x"),g("plus"),g("x")],options:[g("plus"),g("x"),g("star"),g("bar",0)],answer:2},
   {id:"fold-two",stage:"Lipat Kertas",title:"Dua lipatan",hint:"Kertas dilipat pada sumbu vertikal dan horizontal sebelum dilubangi.",layout:"single",difficulty:4,cells:[g("fold",0,false,undefined,["br"],2)],options:[g("holes",0,false,undefined,["tl","tr"]),g("holes",0,false,undefined,["tl","tr","bl","br"]),g("holes",0,false,undefined,["l","r"]),g("holes",0,false,undefined,["tl","br"])],answer:1},
   {id:"analogy-complex",stage:"Analogi",title:"Transformasi majemuk",hint:"Rotasi, isi, dan posisi titik berubah dengan aturan yang sama.",layout:"analogy",difficulty:4,cells:[g("square",0,false,"tl"),g("square",90,true,"br"),g("pentagon",180,false,"tr")],options:[g("pentagon",270,true,"bl"),g("pentagon",90,true,"tl"),g("pentagon",270,false,"bl"),g("pentagon",0,true,"br")],answer:0},
@@ -111,10 +118,20 @@ function shuffle<T>(items:T[]){
 }
 function pick<T>(items:T[],count:number){return shuffle(items).slice(0,count)}
 function makeSet(){
-  const d2=QUESTIONS.filter(q=>q.difficulty===2)
-  const d3=QUESTIONS.filter(q=>q.difficulty===3)
-  const d4=QUESTIONS.filter(q=>q.difficulty===4)
-  return shuffle([...pick(d2,3),...pick(d3,7),...pick(d4,5)])
+  let previous:string[]=[]
+  try{previous=JSON.parse(localStorage.getItem("alzava.visual-iq.last-set")||"[]")}catch{}
+  const fresh=QUESTIONS.filter(q=>!previous.includes(q.id))
+  const source=fresh.length>=15?fresh:QUESTIONS
+  const d2=source.filter(q=>q.difficulty===2)
+  const d3=source.filter(q=>q.difficulty===3)
+  const d4=source.filter(q=>q.difficulty===4)
+  const selected=shuffle([...pick(d2,3),...pick(d3,7),...pick(d4,5)])
+  if(selected.length<15){
+    const used=new Set(selected.map(q=>q.id))
+    selected.push(...shuffle(source.filter(q=>!used.has(q.id))).slice(0,15-selected.length))
+  }
+  try{localStorage.setItem("alzava.visual-iq.last-set",JSON.stringify(selected.map(q=>q.id)))}catch{}
+  return selected.slice(0,15)
 }
 function resultFor(questions:Question[],answers:number[]){
   let correct=0,earned=0,total=0
@@ -476,7 +493,7 @@ export function VisualIqGame(){
         {current.layout==="matrix3"&&<div className="mx-auto grid min-h-[260px] max-w-[280px] grid-cols-3 place-items-center gap-1.5">{current.cells.map((x,i)=><GlyphView key={i} glyph={x} small/>)}<div className="grid h-14 w-14 place-items-center rounded-[14px] border border-dashed border-cyan-300/35 bg-cyan-300/[.04] text-2xl font-black text-cyan-300">?</div></div>}
         {current.layout==="single"&&<div className="flex min-h-[170px] items-center justify-center"><GlyphView glyph={current.cells[0]}/></div>}
         {current.layout==="combine"&&<div className="flex min-h-[170px] items-center justify-center gap-2"><GlyphView glyph={current.cells[0]}/><span className="text-2xl font-black text-slate-500">+</span><GlyphView glyph={current.cells[1]}/><span className="text-2xl font-black text-slate-500">=</span><div className="grid h-20 w-20 place-items-center rounded-[18px] border border-dashed border-cyan-300/35 bg-cyan-300/[.04] text-3xl font-black text-cyan-300">?</div></div>}
-        {current.layout==="odd"&&<div className="flex min-h-[115px] items-center justify-center text-center"><div><BrainCircuit className="mx-auto h-9 w-9 text-violet-300"/><p className="mt-3 text-sm font-black">Bandingkan hubungan pada keempat pilihan.</p><p className="mt-1 text-xs text-slate-500">Cari satu pilihan yang tidak mengikuti aturan.</p></div></div>}
+        {current.layout==="odd"&&<div className="flex min-h-[76px] items-center justify-center text-center"><p className="max-w-xs text-xs font-bold leading-5 text-slate-500">Amati keempat pilihan di bawah dan gunakan petunjuk soal untuk menentukan jawaban.</p></div>}
       </div>
 
       <div className="mt-5 grid grid-cols-2 gap-3">
