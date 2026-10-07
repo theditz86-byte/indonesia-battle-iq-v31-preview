@@ -121,17 +121,17 @@ function makeSet(){
   let previous:string[]=[]
   try{previous=JSON.parse(localStorage.getItem("alzava.visual-iq.last-set")||"[]")}catch{}
   const fresh=QUESTIONS.filter(q=>!previous.includes(q.id))
-  const source=fresh.length>=15?fresh:QUESTIONS
+  const source=fresh.length>=20?fresh:QUESTIONS
   const d2=source.filter(q=>q.difficulty===2)
   const d3=source.filter(q=>q.difficulty===3)
   const d4=source.filter(q=>q.difficulty===4)
-  const selected=shuffle([...pick(d2,3),...pick(d3,7),...pick(d4,5)])
-  if(selected.length<15){
+  const selected=shuffle([...pick(d2,3),...pick(d3,9),...pick(d4,8)])
+  if(selected.length<20){
     const used=new Set(selected.map(q=>q.id))
-    selected.push(...shuffle(source.filter(q=>!used.has(q.id))).slice(0,15-selected.length))
+    selected.push(...shuffle(source.filter(q=>!used.has(q.id))).slice(0,20-selected.length))
   }
   try{localStorage.setItem("alzava.visual-iq.last-set",JSON.stringify(selected.map(q=>q.id)))}catch{}
-  return selected.slice(0,15)
+  return selected.slice(0,20)
 }
 function resultFor(questions:Question[],answers:number[]){
   let correct=0,earned=0,total=0
@@ -186,7 +186,7 @@ export function VisualIqGame(){
       .catch(()=>setAuth("guest"))
   },[])
 
-  const started=questions.length===15
+  const started=questions.length===20
   const done=started&&index>=questions.length
   const current=questions[index]
   const elapsed=Math.max(0,Math.round(((finishedAt||Date.now())-startedAt)/1000))
@@ -237,7 +237,7 @@ export function VisualIqGame(){
           question_ids:questions.map(q=>q.id),
           answers,
           correct_count:result.correct,
-          question_count:15,
+          question_count:20,
           iq_estimate:result.iq,
           duration_ms:elapsed*1000,
           breakdown:result.breakdown
@@ -329,7 +329,7 @@ export function VisualIqGame(){
     ctx.font="900 34px Arial"
     ctx.fillText("± 5 POIN  •  "+tier,540,635)
 
-    const statValues=[result.correct+"/15",accuracy+"%",Math.floor(elapsed/60)+":"+String(elapsed%60).padStart(2,"0")]
+    const statValues=[result.correct+"/20",accuracy+"%",Math.floor(elapsed/60)+":"+String(elapsed%60).padStart(2,"0")]
     const statLabels=["BENAR","AKURASI","WAKTU"]
     statValues.forEach((value,i)=>{
       const x=250+i*290
@@ -352,7 +352,7 @@ export function VisualIqGame(){
     ctx.fillText("BERANI KALAHKAN HASILKU?",540,1040)
     ctx.fillStyle="#e2e8f0"
     ctx.font="700 28px Arial"
-    ctx.fillText("15 soal figural & spasial • ALZAVA",540,1100)
+    ctx.fillText("20 soal figural & spasial • ALZAVA",540,1100)
     ctx.fillStyle="#67e8f9"
     ctx.font="800 25px Arial"
     ctx.fillText("alzava-battle-iq.pages.dev/visual-iq",540,1160)
@@ -365,7 +365,7 @@ export function VisualIqGame(){
 
   async function shareResult(){
     const url=window.location.origin+"/visual-iq/"
-    const text="🧠 Hasil Tes IQ Visual ALZAVA\nEstimasi IQ Visual: "+result.iq+" ± 5\n"+result.correct+"/15 benar • "+accuracy+"% akurasi • "+Math.floor(elapsed/60)+":"+String(elapsed%60).padStart(2,"0")+"\n\nBerani kalahkan hasilku? "+url
+    const text="🧠 Hasil Tes IQ Visual ALZAVA\nEstimasi IQ Visual: "+result.iq+" ± 5\n"+result.correct+"/20 benar • "+accuracy+"% akurasi • "+Math.floor(elapsed/60)+":"+String(elapsed%60).padStart(2,"0")+"\n\nBerani kalahkan hasilku? "+url
     setShareMessage("")
     try{
       const blob=await makeShareImage()
@@ -413,9 +413,9 @@ export function VisualIqGame(){
       <div className="rounded-[28px] border border-cyan-300/20 bg-slate-950/55 p-5 shadow-[0_24px_70px_rgba(0,0,0,.35)] backdrop-blur-xl">
         <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[.16em] text-cyan-300"><Sparkles className="h-4 w-4"/>Tes Visual Interaktif</div>
         <h1 className="mt-3 text-4xl font-black leading-[.98]">Ketahui <span className="bg-gradient-to-r from-cyan-300 via-violet-300 to-fuchsia-300 bg-clip-text text-transparent">IQ-mu</span></h1>
-        <p className="mt-4 text-sm leading-6 text-slate-300">15 soal dipilih dari bank yang lebih besar. Setiap percobaan mencampur matriks, analogi, rotasi, lipat kertas, cermin, pola, klasifikasi, dan spasial.</p>
+        <p className="mt-4 text-sm leading-6 text-slate-300">20 soal dipilih dari bank yang lebih besar. Setiap percobaan mencampur matriks, analogi, rotasi, lipat kertas, cermin, pola, klasifikasi, dan spasial.</p>
         <div className="mt-5 grid grid-cols-3 gap-2 text-center text-[10px] font-bold text-slate-300">
-          <div className="rounded-xl border border-white/10 bg-white/[.04] p-3"><BrainCircuit className="mx-auto mb-1 h-5 w-5 text-cyan-300"/>15 Soal</div>
+          <div className="rounded-xl border border-white/10 bg-white/[.04] p-3"><BrainCircuit className="mx-auto mb-1 h-5 w-5 text-cyan-300"/>20 Soal</div>
           <div className="rounded-xl border border-white/10 bg-white/[.04] p-3"><Clock3 className="mx-auto mb-1 h-5 w-5 text-violet-300"/>±10 Menit</div>
           <div className="rounded-xl border border-white/10 bg-white/[.04] p-3"><Trophy className="mx-auto mb-1 h-5 w-5 text-amber-300"/>Maks. 150</div>
         </div>
@@ -424,7 +424,7 @@ export function VisualIqGame(){
         <div className="text-xs font-black uppercase tracking-[.14em] text-cyan-300">Halo, {participant?.nickname||"Peserta"}</div>
         <div className="mt-2 text-3xl font-black">Mulai Tes IQ Visual</div>
         <div className="mt-1 text-sm text-slate-300">Hasil otomatis tersimpan ke akun dan Riwayat Tes.</div>
-        <div className="mt-4 inline-flex items-center gap-2 rounded-xl bg-cyan-300 px-4 py-2.5 text-sm font-black text-slate-950"><Play className="h-4 w-4"/>MULAI 15 SOAL</div>
+        <div className="mt-4 inline-flex items-center gap-2 rounded-xl bg-cyan-300 px-4 py-2.5 text-sm font-black text-slate-950"><Play className="h-4 w-4"/>MULAI 20 SOAL</div>
       </button>
       <p className="mt-4 text-center text-[11px] leading-5 text-slate-500">Estimasi IQ Visual adalah indikasi kemampuan figural-spasial, bukan diagnosis atau hasil psikotes klinis resmi.</p>
     </main>
@@ -441,7 +441,7 @@ export function VisualIqGame(){
         <div className="mt-2 inline-flex rounded-full border border-amber-300/20 bg-amber-300/10 px-3 py-1 text-[10px] font-black tracking-[.12em] text-amber-200">{tier}</div>
 
         <div className="mt-5 grid grid-cols-3 gap-2">
-          <div className="rounded-xl border border-white/10 bg-white/[.04] p-3"><div className="text-xl font-black">{result.correct}/15</div><div className="mt-1 text-[9px] font-bold text-slate-500">BENAR</div></div>
+          <div className="rounded-xl border border-white/10 bg-white/[.04] p-3"><div className="text-xl font-black">{result.correct}/20</div><div className="mt-1 text-[9px] font-bold text-slate-500">BENAR</div></div>
           <div className="rounded-xl border border-white/10 bg-white/[.04] p-3"><div className="text-xl font-black">{accuracy}%</div><div className="mt-1 text-[9px] font-bold text-slate-500">AKURASI</div></div>
           <div className="rounded-xl border border-white/10 bg-white/[.04] p-3"><div className="text-xl font-black">{Math.floor(elapsed/60)}:{String(elapsed%60).padStart(2,"0")}</div><div className="mt-1 text-[9px] font-bold text-slate-500">WAKTU</div></div>
         </div>
@@ -464,7 +464,7 @@ export function VisualIqGame(){
         <a href="/account/results#riwayat-iq" className="grid min-h-12 place-items-center rounded-xl border border-white/10 bg-white/[.06] text-sm font-black">Lihat Riwayat</a>
       </div>
       <a href="/battle" className="mt-3 flex min-h-11 items-center justify-center text-sm font-bold text-slate-400 hover:text-white"><ArrowLeft className="mr-2 h-4 w-4"/>Kembali ke Battle Point</a>
-      <p className="mt-2 text-center text-[10px] leading-4 text-slate-600">Estimasi indikatif dari 15 soal visual; bukan hasil psikotes klinis.</p>
+      <p className="mt-2 text-center text-[10px] leading-4 text-slate-600">Estimasi indikatif dari 20 soal visual; bukan hasil psikotes klinis.</p>
     </main>
   </div>
 
