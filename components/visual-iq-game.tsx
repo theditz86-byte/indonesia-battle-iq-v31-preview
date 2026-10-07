@@ -8,7 +8,7 @@ const ACCOUNT_API = "https://efndozplpwyemzgqfnep.supabase.co/functions/v1/battl
 const VISUAL_IQ_API = "https://efndozplpwyemzgqfnep.supabase.co/functions/v1/battle-visual-iq"
 
 type Pos = "tl"|"tr"|"bl"|"br"|"c"|"t"|"r"|"b"|"l"
-type GlyphKind = "triangle"|"square"|"circle"|"diamond"|"pentagon"|"arrow"|"corner"|"hook"|"plus"|"x"|"star"|"notch"|"bar"|"fold"|"holes"
+type GlyphKind = "triangle"|"square"|"circle"|"diamond"|"pentagon"|"hexagon"|"arrow"|"corner"|"hook"|"plus"|"x"|"star"|"notch"|"bar"|"fold"|"holes"
 type Glyph = {
   kind: GlyphKind
   rotation?: number
@@ -43,11 +43,11 @@ const QUESTIONS:Question[]=[
   {id:"count-dots",stage:"Pola",title:"Pertambahan elemen",hint:"Jumlah titik mengikuti pertambahan teratur.",layout:"sequence",difficulty:2,cells:[g("circle",0,false,undefined,["c"]),g("circle",0,false,undefined,["l","r"]),g("circle",0,false,undefined,["t","bl","br"])],options:[g("circle",0,false,undefined,["tl","tr","bl","br","c"]),g("circle",0,false,undefined,["l","r"]),g("circle",0,false,undefined,["t","b","l","r","c"]),g("circle",0,false,undefined,["tl","tr","bl","br"])],answer:3},
   {id:"mirror-corner",stage:"Cermin",title:"Pantulan mendatar",hint:"Bayangkan bentuk dipantulkan dari kiri ke kanan.",layout:"single",difficulty:2,cells:[g("corner",0,false,"tl")],options:[g("corner",90,false,"tr"),g("corner",0,false,"tr"),g("corner",180,false,"br"),g("corner",270,false,"bl")],answer:1},
   {id:"matrix-position",stage:"Matriks",title:"Perpindahan posisi",hint:"Hubungan kiri-ke-kanan pada baris atas juga berlaku pada baris bawah.",layout:"matrix2",difficulty:2,cells:[g("square",0,false,"tl"),g("square",0,false,"tr"),g("square",0,false,"br")],options:[g("square",0,false,"tr"),g("square",0,false,"c"),g("square",0,false,"bl"),g("square",0,false,"tl")],answer:2},
-  {id:"shape-sides",stage:"Pola",title:"Jumlah sisi",hint:"Bentuk bertambah satu sisi setiap langkah.",layout:"sequence",difficulty:2,cells:[g("triangle"),g("square"),g("pentagon")],options:[g("diamond"),g("circle"),g("pentagon"),g("star")],answer:1},
+  {id:"shape-sides",stage:"Pola",title:"Jumlah sisi",hint:"Bentuk bertambah satu sisi setiap langkah.",layout:"sequence",difficulty:2,cells:[g("triangle"),g("square"),g("pentagon")],options:[g("diamond"),g("circle"),g("hexagon"),g("star")],answer:2},
 
   {id:"analogy-arrow-dot",stage:"Analogi",title:"Rotasi dan titik",hint:"Gunakan perubahan pada pasangan pertama untuk menyelesaikan pasangan kedua.",layout:"analogy",difficulty:3,cells:[g("arrow",0,false,"r"),g("arrow",90,false,"b"),g("triangle",180,false,"l")],options:[g("triangle",270,false,"t"),g("triangle",90,false,"b"),g("triangle",270,false,"r"),g("triangle",0,false,"t")],answer:0},
   {id:"overlay-lines",stage:"Matriks",title:"Gabungan garis",hint:"Dua gambar pertama digabung tanpa menghilangkan garis.",layout:"analogy",difficulty:3,cells:[g("bar",0),g("bar",90),g("bar",45)],options:[g("x"),g("bar",135),g("plus"),g("star")],answer:1},
-  {id:"double-rotation",stage:"Pola",title:"Rotasi bertingkat",hint:"Besar putaran bertambah pada setiap langkah.",layout:"sequence",difficulty:3,cells:[g("arrow",0),g("arrow",90),g("arrow",270)],options:[g("arrow",180),g("arrow",90),g("arrow",270),g("arrow",0)],answer:2},
+  {id:"double-rotation",stage:"Pola",title:"Rotasi bertingkat",hint:"Besar putaran bertambah: +90°, lalu +180°, lalu +270°.",layout:"sequence",difficulty:3,cells:[g("arrow",0),g("arrow",90),g("arrow",270)],options:[g("arrow",180),g("arrow",90),g("arrow",270),g("arrow",0)],answer:0},
   {id:"shape-fill-analogy",stage:"Analogi",title:"Bentuk, isi, dan rotasi",hint:"Cari transformasi yang mengubah ketiga ciri sekaligus.",layout:"analogy",difficulty:3,cells:[g("triangle",0,false,"t"),g("triangle",90,true,"r"),g("diamond",180,false,"b")],options:[g("diamond",270,false,"l"),g("diamond",270,true,"l"),g("diamond",90,true,"r"),g("diamond",180,true,"b")],answer:1},
   {id:"fold-one",stage:"Lipat Kertas",title:"Satu lipatan",hint:"Kertas dilipat ke kanan lalu satu lubang dibuat. Bagaimana hasil setelah dibuka?",layout:"single",difficulty:3,cells:[g("fold",0,false,undefined,["r"],1)],options:[g("holes",0,false,undefined,["t","b"]),g("holes",0,false,undefined,["tl","br"]),g("holes",0,false,undefined,["l","r"]),g("holes",0,false,undefined,["c"])],answer:2},
   {id:"notch-rotation",stage:"Spasial",title:"Rotasi potongan",hint:"Pilih bentuk yang sama setelah diputar 180°.",layout:"single",difficulty:3,cells:[g("notch",0)],options:[g("notch",90),g("notch",270),g("notch",0),g("notch",180)],answer:3},
@@ -56,7 +56,7 @@ const QUESTIONS:Question[]=[
   {id:"sequence-two-rule",stage:"Logika Visual",title:"Dua aturan sekaligus",hint:"Arah berputar 90°, sementara titik bergerak berlawanan arah.",layout:"sequence",difficulty:3,cells:[g("arrow",0,false,"r"),g("arrow",90,false,"t"),g("arrow",180,false,"l")],options:[g("arrow",270,false,"b"),g("arrow",270,false,"r"),g("arrow",0,false,"b"),g("arrow",90,false,"b")],answer:0},
   {id:"combine-plus-x",stage:"Gabungan",title:"Tumpuk kedua bentuk",hint:"Gabungkan seluruh garis pada dua kotak pertama.",layout:"combine",difficulty:3,cells:[g("plus"),g("x")],options:[g("plus"),g("x"),g("star"),g("bar",45)],answer:2},
   {id:"symmetry-dot",stage:"Simetri",title:"Simetri vertikal",hint:"Pilih bentuk yang tetap sama jika dilipat tepat pada sumbu vertikal.",layout:"odd",difficulty:3,cells:[],options:[g("diamond",0,false,"l"),g("triangle",0,false,"c"),g("square",0,false,"tr"),g("pentagon",0,false,"r")],answer:1},
-  {id:"mirror-compound",stage:"Cermin",title:"Cermin bentuk bertanda",hint:"Pantulkan bentuk dan posisi titiknya secara bersamaan.",layout:"single",difficulty:3,cells:[g("hook",0,false,"tr")],options:[g("hook",0,false,"tl"),g("hook",180,false,"bl"),g("hook",90,false,"br"),g("hook",270,false,"tl")],answer:0},
+  {id:"mirror-compound",stage:"Cermin",title:"Cermin bentuk bertanda",hint:"Pantulkan bentuk dan posisi titik dari kiri ke kanan.",layout:"single",difficulty:3,cells:[g("corner",0,false,"br")],options:[g("corner",180,false,"tl"),g("corner",90,false,"bl"),g("corner",270,false,"tr"),g("corner",0,false,"bl")],answer:1},
 
   {id:"matrix3-overlay",stage:"Matriks",title:"Matriks gabungan 3 × 3",hint:"Kotak ketiga pada setiap baris adalah gabungan dua kotak sebelumnya.",layout:"matrix3",difficulty:4,cells:[g("bar",0),g("bar",90),g("plus"),g("bar",45),g("bar",135),g("x"),g("plus"),g("x")],options:[g("plus"),g("x"),g("star"),g("bar",0)],answer:2},
   {id:"fold-two",stage:"Lipat Kertas",title:"Dua lipatan",hint:"Kertas dilipat pada sumbu vertikal dan horizontal sebelum dilubangi.",layout:"single",difficulty:4,cells:[g("fold",0,false,undefined,["br"],2)],options:[g("holes",0,false,undefined,["tl","tr"]),g("holes",0,false,undefined,["tl","tr","bl","br"]),g("holes",0,false,undefined,["l","r"]),g("holes",0,false,undefined,["tl","br"])],answer:1},
@@ -83,6 +83,7 @@ function GlyphView({glyph,small=false}:{glyph:Glyph;small?:boolean}){
       case "circle": return <circle cx="50" cy="50" r="23" fill={fill} stroke="currentColor" strokeWidth="5"/>
       case "diamond": return <rect x="32" y="32" width="36" height="36" rx="4" transform="rotate(45 50 50)" fill={fill} stroke="currentColor" strokeWidth="5"/>
       case "pentagon": return <polygon points="50,20 76,40 66,72 34,72 24,40" fill={fill} stroke="currentColor" strokeWidth="5"/>
+      case "hexagon": return <polygon points="34,22 66,22 80,50 66,78 34,78 20,50" fill={fill} stroke="currentColor" strokeWidth="5"/>
       case "arrow": return <path d="M50 76V30M50 30L37 44M50 30l13 14" fill="none" stroke="currentColor" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round"/>
       case "corner": return <path d="M30 68V32h36" fill="none" stroke="currentColor" strokeWidth="7" strokeLinecap="round"/>
       case "hook": return <path d="M32 70V34h28c10 0 15 6 15 15s-5 15-15 15H48" fill="none" stroke="currentColor" strokeWidth="7" strokeLinecap="round"/>
@@ -113,7 +114,7 @@ function makeSet(){
   const d2=QUESTIONS.filter(q=>q.difficulty===2)
   const d3=QUESTIONS.filter(q=>q.difficulty===3)
   const d4=QUESTIONS.filter(q=>q.difficulty===4)
-  return shuffle([...pick(d2,4),...pick(d3,7),...pick(d4,4)])
+  return shuffle([...pick(d2,3),...pick(d3,7),...pick(d4,5)])
 }
 function resultFor(questions:Question[],answers:number[]){
   let correct=0,earned=0,total=0
