@@ -66,6 +66,12 @@ function messageText(error: unknown) {
   return error instanceof Error ? error.message : "Terjadi kesalahan. Silakan coba lagi."
 }
 
+function requestedNext() {
+  if (typeof window === "undefined") return ""
+  const next = new URLSearchParams(window.location.search).get("next") || ""
+  return next.startsWith("/") && !next.startsWith("//") ? next : ""
+}
+
 export default function AccountPage() {
   const [loading, setLoading] = useState(true)
   const [busy, setBusy] = useState(false)
@@ -168,6 +174,8 @@ export default function AccountPage() {
       localStorage.setItem(PARTICIPANT_TOKEN_KEY, data.token)
       setToken(data.token); setParticipant(data.participant || null)
       setEditNickname(data.participant?.nickname || ""); setRecoveryEmail(data.participant?.email || "")
+      const next = requestedNext()
+      if (next) { window.location.href = next; return }
       setNotice("Berhasil masuk. Akun Battle Point Anda sudah aktif.")
     } catch (e) { setError(messageText(e)) } finally { setBusy(false) }
   }
@@ -181,6 +189,8 @@ export default function AccountPage() {
       localStorage.setItem(PARTICIPANT_TOKEN_KEY, data.token)
       setToken(data.token); setParticipant(data.participant || null)
       setEditNickname(data.participant?.nickname || ""); setRecoveryEmail(data.participant?.email || "")
+      const next = requestedNext()
+      if (next) { window.location.href = next; return }
       setNotice("Pendaftaran berhasil. Wilayah akun sudah dikunci dari daftar resmi dan Anda mendapat 3 Ranked Battle gratis pada season ini. Verifikasi email agar pemulihan password aktif.")
     } catch (e) { setError(messageText(e)) } finally { setBusy(false) }
   }
