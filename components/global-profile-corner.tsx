@@ -18,6 +18,7 @@ const excludedPrefixes = [
   "/simulasi-tiu",
   "/daily-training",
   "/quick-battle",
+  "/visual-iq",
 ]
 
 export function GlobalProfileCorner() {
