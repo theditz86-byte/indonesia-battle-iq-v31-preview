@@ -15,18 +15,21 @@ type Puzzle = {
 }
 
 const puzzles: Puzzle[] = [
-  { id:"rot-1", stage:"Rotation Lab", title:"Rotasi berikutnya", hint:"Cari perubahan arah yang konsisten.", sequence:["tri-up","tri-right","tri-down"], options:["tri-left","tri-up","tri-right","tri-down"], answer:0 },
-  { id:"rot-2", stage:"Rotation Lab", title:"Dua langkah sekaligus", hint:"Perhatikan arah dan jumlah titik.", sequence:["pair-up-1","pair-right-2","pair-down-3"], options:["pair-left-4","pair-up-4","pair-left-2","pair-right-4"], answer:0 },
-  { id:"pattern-1", stage:"Pattern Gate", title:"Lengkapi pola", hint:"Jumlah elemen bertambah dengan aturan tetap.", sequence:["dots-1","dots-2","dots-3"], options:["dots-4","dots-5","dots-2","dots-6"], answer:0 },
-  { id:"pattern-2", stage:"Pattern Gate", title:"Urutan bentuk", hint:"Bentuk dan isi berubah bergantian.", sequence:["ring-open","square-fill","ring-fill"], options:["square-open","ring-open","square-fill","diamond-open"], answer:0 },
-  { id:"mirror-1", stage:"Mirror Zone", title:"Cerminan horizontal", hint:"Bayangkan bentuk dibalik kiri ke kanan.", sequence:["corner-tl"], options:["corner-tr","corner-bl","corner-br","corner-tl"], answer:0 },
-  { id:"mirror-2", stage:"Mirror Zone", title:"Refleksi diagonal", hint:"Cari hasil pantulan terhadap diagonal.", sequence:["diag-a"], options:["diag-b","diag-a","diag-c","diag-d"], answer:0 },
-  { id:"matrix-1", stage:"Matrix Core", title:"Aturan gabungan", hint:"Baris pertama menunjukkan cara dua pola digabung.", sequence:["bar-h","bar-v","cross-plus"], options:["cross-plus","cross-x","bar-h","ring-open"], answer:0 },
-  { id:"matrix-2", stage:"Matrix Core", title:"Transformasi 2 × 2", hint:"Posisi titik berpindah mengikuti sudut.", sequence:["dot-tl","dot-tr","dot-br"], options:["dot-bl","dot-tl","dot-center","dot-tr"], answer:0 },
-  { id:"spatial-1", stage:"Spatial Core", title:"Potongan yang cocok", hint:"Cari bentuk yang melengkapi ruang kosong.", sequence:["notch-left"], options:["notch-right","notch-left","notch-top","notch-bottom"], answer:0 },
-  { id:"spatial-2", stage:"Spatial Core", title:"Orientasi objek", hint:"Objek diputar 180°.", sequence:["hook-up"], options:["hook-down","hook-left","hook-up","hook-right"], answer:0 },
-  { id:"boss-1", stage:"Boss Matrix", title:"Boss Puzzle: pola ganda", hint:"Dua aturan berjalan bersamaan: arah dan jumlah.", sequence:["boss-a","boss-b","boss-c"], options:["boss-d","boss-a","boss-c","boss-b"], answer:0 },
-  { id:"boss-2", stage:"Boss Matrix", title:"Final Core", hint:"Gunakan hubungan antarposisi, bukan kemiripan visual semata.", sequence:["final-a","final-b","final-c"], options:["final-d","final-c","final-a","final-b"], answer:0 },
+  { id:"rot-1", stage:"Rotasi", title:"Rotasi berikutnya", hint:"Cari perubahan arah yang konsisten.", sequence:["tri-up","tri-right","tri-down"], options:["tri-left","tri-up","tri-right","tri-down"], answer:0 },
+  { id:"rot-2", stage:"Rotasi", title:"Dua langkah sekaligus", hint:"Perhatikan arah dan jumlah titik.", sequence:["pair-up-1","pair-right-2","pair-down-3"], options:["pair-left-4","pair-up-4","pair-left-2","pair-right-4"], answer:0 },
+  { id:"pattern-1", stage:"Pola", title:"Lengkapi pola", hint:"Jumlah elemen bertambah dengan aturan tetap.", sequence:["dots-1","dots-2","dots-3"], options:["dots-4","dots-5","dots-2","dots-6"], answer:0 },
+  { id:"pattern-2", stage:"Pola", title:"Urutan bentuk", hint:"Bentuk dan isi berubah bergantian.", sequence:["ring-open","square-fill","ring-fill"], options:["square-open","ring-open","square-fill","diamond-open"], answer:0 },
+  { id:"mirror-1", stage:"Cermin", title:"Cerminan horizontal", hint:"Bayangkan bentuk dibalik kiri ke kanan.", sequence:["corner-tl"], options:["corner-tr","corner-bl","corner-br","corner-tl"], answer:0 },
+  { id:"mirror-2", stage:"Cermin", title:"Refleksi diagonal", hint:"Cari hasil pantulan terhadap diagonal.", sequence:["diag-a"], options:["diag-b","diag-a","diag-c","diag-d"], answer:0 },
+  { id:"matrix-1", stage:"Matriks", title:"Aturan gabungan", hint:"Baris pertama menunjukkan cara dua pola digabung.", sequence:["bar-h","bar-v","cross-plus"], options:["cross-plus","cross-x","bar-h","ring-open"], answer:0 },
+  { id:"matrix-2", stage:"Matriks", title:"Transformasi 2 × 2", hint:"Posisi titik berpindah mengikuti sudut.", sequence:["dot-tl","dot-tr","dot-br"], options:["dot-bl","dot-tl","dot-center","dot-tr"], answer:0 },
+  { id:"spatial-1", stage:"Spasial", title:"Potongan yang cocok", hint:"Cari bentuk yang melengkapi ruang kosong.", sequence:["notch-left"], options:["notch-right","notch-left","notch-top","notch-bottom"], answer:0 },
+  { id:"spatial-2", stage:"Spasial", title:"Orientasi objek", hint:"Objek diputar 180°.", sequence:["hook-up"], options:["hook-down","hook-left","hook-up","hook-right"], answer:0 },
+  { id:"boss-1", stage:"Tantangan Akhir", title:"Pola ganda", hint:"Dua aturan berjalan bersamaan: arah dan jumlah.", sequence:["boss-a","boss-b","boss-c"], options:["boss-d","boss-a","boss-c","boss-b"], answer:0 },
+  { id:"boss-2", stage:"Tantangan Akhir", title:"Tantangan terakhir", hint:"Gunakan hubungan antarposisi, bukan kemiripan visual semata.", sequence:["final-a","final-b","final-c"], options:["final-d","final-c","final-a","final-b"], answer:0 },
+  { id:"extra-1", stage:"Rotasi", title:"Rotasi lanjutan", hint:"Perhatikan perubahan arah objek secara berurutan.", sequence:["hook-up","hook-right","hook-down"], options:["hook-left","hook-up","hook-right","hook-down"], answer:0 },
+  { id:"extra-2", stage:"Pola", title:"Pola garis", hint:"Garis di dalam kotak berganti orientasi mengikuti pola.", sequence:["final-a","final-b","final-c"], options:["final-d","final-c","final-a","final-b"], answer:0 },
+  { id:"extra-3", stage:"Logika Visual", title:"Arah dan jumlah", hint:"Arah berubah sekaligus dengan pertambahan jumlah titik.", sequence:["pair-up-1","pair-right-2","pair-down-3"], options:["pair-left-4","pair-up-4","pair-left-2","pair-right-4"], answer:0 },
 ]
 
 function Shape({ code, small=false }: { code:string; small?:boolean }) {
@@ -98,12 +101,12 @@ function Shape({ code, small=false }: { code:string; small?:boolean }) {
 }
 
 function tierFor(score:number){
-  if(score>=900) return "MASTER"
-  if(score>=800) return "DIAMOND"
+  if(score>=900) return "MAESTRO"
+  if(score>=800) return "BERLIAN"
   if(score>=700) return "PLATINUM"
-  if(score>=600) return "GOLD"
-  if(score>=450) return "SILVER"
-  return "BRONZE"
+  if(score>=600) return "EMAS"
+  if(score>=450) return "PERAK"
+  return "PERUNGGU"
 }
 
 export function VisualIqGame(){
@@ -115,12 +118,12 @@ export function VisualIqGame(){
   const [locked,setLocked]=useState(false)
   const timerRef=useRef<number|null>(null)
 
-  const activePuzzles=useMemo(()=>mode==="quick"?puzzles.slice(0,8):puzzles,[mode])
+  const activePuzzles=useMemo(()=>puzzles,[])
   const current=activePuzzles[index]
   const done=Boolean(mode)&&index>=activePuzzles.length
   const elapsed=Math.max(0,Math.round(((finishedAt||Date.now())-startedAt)/1000))
   const correct=done?answers.reduce((n,a,i)=>n+(a===activePuzzles[i]?.answer?1:0),0):0
-  const speedBonus=done?Math.max(0,Math.round(200-elapsed*(mode==="quick"?1.8:1.1))):0
+  const speedBonus=done?Math.max(0,Math.round(180-elapsed*1.2)):0
   const score=done?Math.max(0,Math.min(1000,Math.round((correct/activePuzzles.length)*800+speedBonus))):0
   const tier=tierFor(score)
 
@@ -152,37 +155,30 @@ export function VisualIqGame(){
 
   if(!mode){
     return <div className="min-h-screen bg-[radial-gradient(circle_at_50%_0%,rgba(67,56,202,.22),transparent_32%),linear-gradient(180deg,#020617,#061126_55%,#020617)] text-white">
-      <header className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
-        <a href="/battle" className="inline-flex items-center gap-2 text-sm font-black text-slate-300 hover:text-white"><ArrowLeft className="h-4 w-4"/>Battle Point</a>
-        <div className="flex items-center gap-2"><img src="/brand/alvaza-logo-new.svg" alt="ALZAVA" className="h-9 w-9"/><span className="text-sm font-black">ALZAVA <span className="text-cyan-300">Visual IQ</span></span></div>
+      <header className="mx-auto flex max-w-md items-center justify-between gap-3 px-4 py-4">
+        <a href="/battle" className="inline-flex min-w-0 items-center gap-2 text-sm font-black text-slate-300 hover:text-white"><ArrowLeft className="h-4 w-4 shrink-0"/>Battle Point</a>
+        <div className="flex shrink-0 items-center gap-2"><img src="/brand/alvaza-logo-new.svg" alt="ALZAVA" className="h-8 w-8"/><span className="text-xs font-black sm:text-sm">ALZAVA <span className="text-cyan-300">Tes IQ</span></span></div>
       </header>
-      <main className="mx-auto max-w-md px-4 pb-14 pt-4">
+      <main className="mx-auto max-w-md px-4 pb-14 pt-3">
         <div className="rounded-[28px] border border-cyan-300/20 bg-slate-950/55 p-5 shadow-[0_24px_70px_rgba(0,0,0,.35)] backdrop-blur-xl">
-          <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[.18em] text-cyan-300"><Sparkles className="h-4 w-4"/>Interactive Visual Challenge</div>
-          <h1 className="mt-3 text-4xl font-black leading-[.95]">Think.<br/><span className="bg-gradient-to-r from-cyan-300 via-violet-300 to-fuchsia-300 bg-clip-text text-transparent">Rotate. Solve.</span></h1>
-          <p className="mt-4 text-sm leading-6 text-slate-300">Tes figural dan spasial bergaya game. Dirancang portrait-first untuk dimainkan nyaman dari HP.</p>
+          <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[.16em] text-cyan-300"><Sparkles className="h-4 w-4"/>Tes Visual Interaktif</div>
+          <h1 className="mt-3 text-4xl font-black leading-[.98]">Ketahui <span className="bg-gradient-to-r from-cyan-300 via-violet-300 to-fuchsia-300 bg-clip-text text-transparent">IQ-mu</span></h1>
+          <p className="mt-4 text-sm leading-6 text-slate-300">Uji kemampuan figural dan spasialmu melalui tantangan visual bergaya game yang nyaman dimainkan dari HP.</p>
           <div className="mt-5 grid grid-cols-3 gap-2 text-center text-[10px] font-bold text-slate-300">
             <div className="rounded-xl border border-white/10 bg-white/[.04] p-3"><BrainCircuit className="mx-auto mb-1 h-5 w-5 text-cyan-300"/>Figural</div>
-            <div className="rounded-xl border border-white/10 bg-white/[.04] p-3"><RotateCcw className="mx-auto mb-1 h-5 w-5 text-violet-300"/>Spatial</div>
-            <div className="rounded-xl border border-white/10 bg-white/[.04] p-3"><Trophy className="mx-auto mb-1 h-5 w-5 text-amber-300"/>Tier</div>
+            <div className="rounded-xl border border-white/10 bg-white/[.04] p-3"><RotateCcw className="mx-auto mb-1 h-5 w-5 text-violet-300"/>Spasial</div>
+            <div className="rounded-xl border border-white/10 bg-white/[.04] p-3"><Trophy className="mx-auto mb-1 h-5 w-5 text-amber-300"/>15 Soal</div>
           </div>
         </div>
 
-        <button type="button" onClick={()=>start("quick")} className="mt-4 w-full rounded-2xl border border-cyan-300/35 bg-gradient-to-r from-cyan-500/18 to-indigo-500/18 p-4 text-left shadow-[0_0_30px_rgba(34,211,238,.10)] transition hover:border-cyan-300/55">
-          <div className="flex items-center justify-between"><span className="text-xs font-black uppercase tracking-[.14em] text-cyan-300">Quick Challenge</span><Zap className="h-5 w-5 text-cyan-300"/></div>
-          <div className="mt-1 text-2xl font-black text-white">8 Visual Puzzle</div>
-          <div className="mt-1 text-xs text-slate-400">±5 menit · tanpa login · hasil langsung</div>
-          <div className="mt-3 inline-flex items-center gap-2 text-sm font-black text-cyan-100"><Play className="h-4 w-4"/>PLAY NOW</div>
+        <button type="button" onClick={()=>start("full")} className="mt-4 w-full rounded-2xl border border-cyan-300/35 bg-gradient-to-r from-cyan-500/18 via-indigo-500/18 to-violet-500/18 p-5 text-left shadow-[0_0_30px_rgba(34,211,238,.10)] transition hover:border-cyan-300/55">
+          <div className="flex items-center justify-between"><span className="text-xs font-black uppercase tracking-[.14em] text-cyan-300">Tes IQ Visual</span><Zap className="h-5 w-5 text-cyan-300"/></div>
+          <div className="mt-2 text-3xl font-black text-white">15 Soal Figural</div>
+          <div className="mt-1 text-sm text-slate-300">Sekitar 8–10 menit · hasil langsung · satu tantangan penuh</div>
+          <div className="mt-4 inline-flex items-center gap-2 rounded-xl bg-cyan-300 px-4 py-2.5 text-sm font-black text-slate-950"><Play className="h-4 w-4"/>MULAI TES</div>
         </button>
 
-        <button type="button" onClick={()=>start("full")} className="mt-3 w-full rounded-2xl border border-violet-300/30 bg-gradient-to-r from-violet-500/16 to-fuchsia-500/16 p-4 text-left transition hover:border-violet-300/50">
-          <div className="flex items-center justify-between"><span className="text-xs font-black uppercase tracking-[.14em] text-violet-300">Full IQ Run · Beta</span><BrainCircuit className="h-5 w-5 text-violet-300"/></div>
-          <div className="mt-1 text-2xl font-black text-white">12 Visual Puzzle</div>
-          <div className="mt-1 text-xs text-slate-400">Rotation · Pattern · Mirror · Spatial · Boss Matrix</div>
-          <div className="mt-3 inline-flex items-center gap-2 text-sm font-black text-violet-100"><Play className="h-4 w-4"/>START RUN</div>
-        </button>
-
-        <p className="mt-4 px-2 text-center text-[11px] leading-5 text-slate-500">V1 memakai Visual Point sebagai skor game, bukan diagnosis atau hasil IQ klinis.</p>
+        <p className="mt-4 px-2 text-center text-[11px] leading-5 text-slate-500">Hasil berupa skor dan gambaran kemampuan visual, bukan diagnosis IQ klinis resmi.</p>
       </main>
     </div>
   }
@@ -193,10 +189,10 @@ export function VisualIqGame(){
       <main className="mx-auto max-w-md px-4 pb-14 pt-8">
         <div className="text-center">
           <div className="mx-auto grid h-20 w-20 place-items-center rounded-3xl border border-amber-300/30 bg-amber-300/10 shadow-[0_0_40px_rgba(251,191,36,.16)]"><Trophy className="h-10 w-10 text-amber-300"/></div>
-          <div className="mt-4 text-xs font-black uppercase tracking-[.22em] text-violet-300">{mode==="quick"?"Quick Challenge":"Full IQ Run"} Complete</div>
+          <div className="mt-4 text-xs font-black uppercase tracking-[.22em] text-violet-300">Tes IQ Visual Selesai</div>
           <h2 className="mt-2 text-4xl font-black">{tier}</h2>
           <div className="mt-2 text-6xl font-black tabular-nums text-cyan-300">{score}</div>
-          <div className="text-sm font-black text-slate-400">VISUAL POINT</div>
+          <div className="text-sm font-black text-slate-400">SKOR VISUAL</div>
         </div>
 
         <div className="mt-6 grid grid-cols-3 gap-2">
@@ -206,7 +202,7 @@ export function VisualIqGame(){
         </div>
 
         <div className="mt-5 rounded-2xl border border-cyan-300/15 bg-cyan-300/[.05] p-4">
-          <div className="text-xs font-black uppercase tracking-[.14em] text-cyan-300">Visual Profile</div>
+          <div className="text-xs font-black uppercase tracking-[.14em] text-cyan-300">Gambaran Kemampuan</div>
           <p className="mt-2 text-sm leading-6 text-slate-300">{accuracy>=85?"Kamu sangat cepat mengenali transformasi visual dan pola spasial.":accuracy>=65?"Kemampuan visualmu cukup kuat, terutama saat aturan pola mulai kompleks.":"Masih ada ruang besar untuk meningkatkan rotasi mental, pola, dan refleksi visual."}</p>
         </div>
 
