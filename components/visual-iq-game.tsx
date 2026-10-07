@@ -4,7 +4,7 @@ import { ArrowLeft, BrainCircuit, Clock3, Play, RotateCcw, Share2, Sparkles, Tro
 import { useMemo, useRef, useState } from "react"
 
 type Mode = "quick" | "full"
-type PuzzleLayout = "sequence" | "analogy" | "matrix" | "single" | "odd"
+type PuzzleLayout = "sequence" | "analogy" | "matrix" | "single" | "odd" | "combine"
 
 type Puzzle = {
   id: string
@@ -30,7 +30,7 @@ const puzzles: Puzzle[] = [
   { id:"sequence-reflect", stage:"Pola", title:"Perpindahan garis dan titik", hint:"Garis serta lingkaran bergerak mengikuti urutan yang sama.", layout:"sequence", sequence:["diag-a","diag-b","diag-c"], options:["diag-c","diag-d","diag-a","diag-b"], answer:1 },
   { id:"fold-1", stage:"Lipat Kertas", title:"Lipat dan lubangi", hint:"Kertas dilipat ke kanan lalu dilubangi. Bayangkan hasil saat dibuka kembali.", layout:"single", sequence:["fold-sheet"], options:["holes-top","holes-diag","holes-horizontal","holes-vertical"], answer:2 },
   { id:"symmetry", stage:"Simetri", title:"Cari bentuk simetris", hint:"Pilih satu bentuk yang memiliki simetri vertikal sempurna.", layout:"odd", sequence:[], options:["asym-left","kite-sym","asym-right","hook-up"], answer:1 },
-  { id:"matrix-combine", stage:"Matriks", title:"Gabungan bentuk", hint:"Kotak ketiga pada setiap baris merupakan gabungan dua kotak sebelumnya.", layout:"matrix", sequence:["bar-h","bar-v","cross-plus"], options:["bar-v","cross-x","cross-plus","bar-h"], answer:2 },
+  { id:"matrix-combine", stage:"Matriks", title:"Gabungan bentuk", hint:"Gabungkan kedua garis tanpa menghilangkan bagian apa pun.", layout:"combine", sequence:["bar-h","bar-v"], options:["bar-v","cross-x","cross-plus","bar-h"], answer:2 },
   { id:"boss-direction", stage:"Logika Visual", title:"Arah dan jumlah", hint:"Dua aturan berjalan bersama: arah berubah dan jumlah titik bertambah.", layout:"sequence", sequence:["pair-up-1","pair-right-2","pair-down-3"], options:["pair-right-4","pair-left-4","pair-up-4","pair-left-2"], answer:1 },
   { id:"final-matrix", stage:"Tantangan Akhir", title:"Matriks 3 × 3", hint:"Setiap baris menggabungkan dua garis menjadi bentuk di kolom ketiga.", layout:"matrix", sequence:["bar-h","bar-v","cross-plus","diag-slash","diag-backslash","cross-x","cross-plus","cross-x"], options:["cross-plus","diag-backslash","star-eight","bar-h"], answer:2 },
 ]
@@ -305,6 +305,10 @@ export function VisualIqGame(){
 
         {current.layout==="single" && <div className="flex min-h-[170px] items-center justify-center">
           <Shape code={current.sequence[0]}/>
+        </div>}
+
+        {current.layout==="combine" && <div className="flex min-h-[170px] items-center justify-center gap-2">
+          <Shape code={current.sequence[0]}/><span className="text-2xl font-black text-slate-500">+</span><Shape code={current.sequence[1]}/><span className="text-2xl font-black text-slate-500">=</span><div className="grid h-20 w-20 place-items-center rounded-[18px] border border-dashed border-cyan-300/35 bg-cyan-300/[.04] text-3xl font-black text-cyan-300">?</div>
         </div>}
 
         {current.layout==="odd" && <div className="flex min-h-[116px] flex-col items-center justify-center text-center">
