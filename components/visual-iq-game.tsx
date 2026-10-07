@@ -171,6 +171,7 @@ export function VisualIqGame(){
   const [saveState,setSaveState]=useState<SaveState>("idle")
   const [saveMessage,setSaveMessage]=useState("")
   const [shareMessage,setShareMessage]=useState("")
+  const [exitConfirm,setExitConfirm]=useState(false)
   const timerRef=useRef<number|null>(null)
   const savedRef=useRef(false)
 
@@ -207,18 +208,29 @@ export function VisualIqGame(){
     setSaveState("idle")
     setSaveMessage("")
     setShareMessage("")
+    setExitConfirm(false)
   }
 
   function choose(option:number){
     if(locked||!current)return
     setLocked(true)
-    const next=[...answers,option]
+    const next=[...answers]
+    next[index]=option
     setAnswers(next)
     timerRef.current=window.setTimeout(()=>{
       if(index+1>=questions.length){setFinishedAt(Date.now());setIndex(questions.length)}
       else setIndex(index+1)
       setLocked(false)
     },240)
+  }
+
+  function goBack(){
+    if(locked)return
+    if(index<=0){
+      setExitConfirm(true)
+      return
+    }
+    setIndex(value=>Math.max(0,value-1))
   }
 
   async function saveAttempt(force=false){
@@ -271,6 +283,7 @@ export function VisualIqGame(){
     setSaveState("idle")
     setSaveMessage("")
     setShareMessage("")
+    setExitConfirm(false)
     savedRef.current=false
   }
 
@@ -473,7 +486,7 @@ export function VisualIqGame(){
   return <div className="min-h-screen bg-[radial-gradient(circle_at_50%_0%,rgba(14,165,233,.13),transparent_30%),linear-gradient(180deg,#020617,#071426_52%,#020617)] text-white">
     <header className="mx-auto max-w-md px-4 pt-4">
       <div className="flex items-center justify-between">
-        <button type="button" onClick={reset} className="grid h-10 w-10 place-items-center rounded-xl border border-white/10 bg-white/[.04] text-slate-300"><ArrowLeft className="h-5 w-5"/></button>
+        <button type="button" onClick={goBack} aria-label={index===0?"Kembali ke halaman awal":"Kembali ke soal sebelumnya"} className="grid h-10 w-10 place-items-center rounded-xl border border-white/10 bg-white/[.04] text-slate-300 transition hover:bg-white/[.08]"><ArrowLeft className="h-5 w-5"/></button>
         <div className="text-center"><div className="text-[10px] font-black uppercase tracking-[.18em] text-cyan-300">{current.stage}</div><div className="text-xs font-bold text-slate-500">{index+1} / {questions.length} · Level {current.difficulty===4?"Sulit":current.difficulty===3?"Menengah":"Dasar"}</div></div>
         <div className="grid h-10 min-w-10 place-items-center rounded-xl border border-white/10 bg-white/[.04] px-2 text-slate-300"><Clock3 className="h-4 w-4"/></div>
       </div>
@@ -497,10 +510,25 @@ export function VisualIqGame(){
       </div>
 
       <div className="mt-5 grid grid-cols-2 gap-3">
-        {current.options.map((x,i)=><button key={i} type="button" disabled={locked} onClick={()=>choose(i)} className="group min-h-[118px] rounded-2xl border border-white/10 bg-white/[.04] p-3 transition active:scale-[.98] disabled:opacity-70 hover:border-cyan-300/35 hover:bg-cyan-300/[.06]"><div className="flex items-center justify-between text-[10px] font-black text-slate-500"><span>{String.fromCharCode(65+i)}</span><span className="opacity-0 transition group-hover:opacity-100">PILIH</span></div><div className="mt-1 flex justify-center"><GlyphView glyph={x} small/></div></button>)}
+        {current.options.map((x,i)=>{
+          const selected=answers[index]===i
+          return <button key={i} type="button" disabled={locked} onClick={()=>choose(i)} className={`group min-h-[118px] rounded-2xl border p-3 transition active:scale-[.98] disabled:opacity-70 ${selected?"border-cyan-300/60 bg-cyan-300/[.10] shadow-[0_0_22px_rgba(34,211,238,.10)]":"border-white/10 bg-white/[.04] hover:border-cyan-300/35 hover:bg-cyan-300/[.06]"}`}><div className="flex items-center justify-between text-[10px] font-black text-slate-500"><span>{String.fromCharCode(65+i)}</span><span className={selected?"text-cyan-300":"opacity-0 transition group-hover:opacity-100"}>{selected?"DIPILIH":"PILIH"}</span></div><div className="mt-1 flex justify-center"><GlyphView glyph={x} small/></div></button>
+        })}
       </div>
 
-      <div className="mt-5 flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-[.12em] text-slate-600"><Sparkles className="h-3.5 w-3.5"/>Jawaban dikunci setelah dipilih</div>
+      <div className="mt-5 flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-[.12em] text-slate-600"><Sparkles className="h-3.5 w-3.5"/>Jawaban tersimpan · bisa diubah dengan tombol kembali</div>
     </main>
+
+    {exitConfirm&&<div className="fixed inset-0 z-[200] grid place-items-center bg-slate-950/75 px-5 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="visual-iq-exit-title">
+      <div className="w-full max-w-sm rounded-[24px] border border-white/10 bg-[#071329] p-5 shadow-[0_30px_90px_rgba(0,0,0,.55)]">
+        <div className="mx-auto grid h-12 w-12 place-items-center rounded-2xl border border-amber-300/20 bg-amber-300/10"><ArrowLeft className="h-5 w-5 text-amber-300"/></div>
+        <h2 id="visual-iq-exit-title" className="mt-4 text-center text-xl font-black text-white">Kembali ke halaman awal?</h2>
+        <p className="mt-2 text-center text-sm leading-6 text-slate-400">Tes yang sedang berjalan akan dibatalkan dan jawaban pada percobaan ini tidak akan disimpan.</p>
+        <div className="mt-5 grid grid-cols-2 gap-3">
+          <button type="button" onClick={()=>setExitConfirm(false)} className="min-h-12 rounded-xl border border-white/10 bg-white/[.06] text-sm font-black text-white hover:bg-white/[.10]">Lanjut Tes</button>
+          <button type="button" onClick={reset} className="min-h-12 rounded-xl bg-gradient-to-r from-amber-300 to-orange-400 px-3 text-sm font-black text-slate-950">Ke Halaman Awal</button>
+        </div>
+      </div>
+    </div>}
   </div>
 }
