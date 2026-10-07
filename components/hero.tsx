@@ -21,7 +21,21 @@ export function Hero({ season, entries, participant }: { season: BattleSeason | 
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_12%_25%,rgba(56,189,248,0.14),transparent_45%)]" />
       </div>
 
-      <div className="relative mx-auto max-w-7xl px-4 pb-5 pt-8 sm:px-6 lg:pb-6 lg:pt-10">
+      <div className="relative mx-auto max-w-7xl px-4 pb-5 pt-5 sm:px-6 lg:pb-6 lg:pt-7">
+        <a href="/visual-iq" className="group mb-4 flex w-full items-center gap-3 rounded-2xl border border-cyan-300/35 bg-gradient-to-r from-cyan-400/12 via-indigo-500/10 to-violet-500/12 px-4 py-3 shadow-[0_0_26px_rgba(34,211,238,.10)] backdrop-blur-md transition-all hover:border-cyan-300/55 hover:bg-white/[.07]">
+          <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-cyan-300/25 bg-cyan-300/10">
+            <BrainCircuit className="h-5 w-5 text-cyan-200" />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="flex flex-wrap items-center gap-2">
+              <span className="rounded-full bg-cyan-300 px-2 py-0.5 text-[9px] font-black uppercase tracking-[.12em] text-slate-950">Baru</span>
+              <span className="text-sm font-black text-white sm:text-base">Ketahui IQ-mu</span>
+            </span>
+            <span className="mt-0.5 block text-[11px] font-bold text-slate-300 sm:text-xs">Tes IQ Visual · 15 soal figural & spasial · nyaman dimainkan dari HP</span>
+          </span>
+          <span className="hidden shrink-0 items-center gap-1 rounded-xl bg-white/[.07] px-3 py-2 text-xs font-black text-cyan-100 sm:flex">Mulai <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" /></span>
+          <ArrowRight className="h-5 w-5 shrink-0 text-cyan-300 sm:hidden" />
+        </a>
         <div className="grid items-center gap-6 lg:grid-cols-[minmax(0,335px)_minmax(0,1fr)_minmax(0,305px)]">
           <div className="flex flex-col items-start text-left lg:-translate-y-6 lg:self-start">
             <div className="group relative w-full max-w-[21rem] overflow-hidden rounded-2xl border border-cyan-300/50 bg-gradient-to-r from-cyan-400/16 via-sky-500/10 to-indigo-500/12 px-4 py-3.5 shadow-[0_0_34px_rgba(34,211,238,.16)] ring-1 ring-cyan-200/10 backdrop-blur-md">
