@@ -7,7 +7,6 @@ import { PathToTop, PromoBanner } from "@/components/sidebar-cards"
 import { SiteFooter } from "@/components/site-footer"
 import { SiteNavbar } from "@/components/site-navbar"
 import { UserProfileCard } from "@/components/user-profile-card"
-import { QuickBattleWelcomeModal } from "@/components/quick-battle-welcome-modal"
 import {
   BattleEntry,
   BattleParticipant,
@@ -94,7 +93,6 @@ export function BattleDashboard() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">
-      <QuickBattleWelcomeModal />
       <SiteNavbar participant={participant} />
       <main>
         <Hero season={season} entries={heroEntries} participant={participant} />
