@@ -495,8 +495,7 @@ export function VisualIqGame(){
 
     <main className="mx-auto max-w-md px-4 pb-12 pt-6">
       <div className="text-center">
-        <div className="text-[11px] font-black uppercase tracking-[.15em] text-slate-500">{current.title}</div>
-        <p className="mt-2 text-sm font-medium leading-6 text-slate-300">{current.hint}</p>
+        <div className="text-[11px] font-black uppercase tracking-[.15em] text-slate-400">{current.title}</div>
       </div>
 
       <div className="mt-5 rounded-[28px] border border-white/10 bg-slate-950/50 p-4 backdrop-blur-xl">
