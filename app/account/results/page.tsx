@@ -2,9 +2,10 @@
 
 import { useEffect, useMemo, useState } from "react"
 import { BATTLE_API_URL, PARTICIPANT_TOKEN_KEY, formatDuration } from "@/lib/battle"
-import { ArrowLeft, CheckCircle2, Crown, History, Play, Settings, Trophy } from "lucide-react"
+import { ArrowLeft, BrainCircuit, CheckCircle2, Crown, History, Play, Settings, Trophy } from "lucide-react"
 
 const ACCOUNT_API = "https://efndozplpwyemzgqfnep.supabase.co/functions/v1/battle-account"
+const VISUAL_IQ_API = "https://efndozplpwyemzgqfnep.supabase.co/functions/v1/battle-visual-iq"
 
 type Participant = {
   nickname?: string
@@ -39,6 +40,16 @@ type ResultHistory = {
   selected_attempt_id?: string | null
 }
 
+type VisualIqItem = {
+  id?: string
+  iq_estimate?: number
+  correct_count?: number
+  question_count?: number
+  duration_ms?: number
+  breakdown?: Record<string, unknown>
+  created_at?: string
+}
+
 async function accountApi(token:string) {
   const response=await fetch(ACCOUNT_API,{
     method:"POST",
@@ -61,9 +72,21 @@ async function resultApi(token:string) {
   return data?.data as ResultHistory
 }
 
+async function visualIqHistoryApi(token:string) {
+  const response=await fetch(VISUAL_IQ_API,{
+    method:"POST",
+    headers:{"Content-Type":"application/json","X-Battle-Token":token},
+    body:JSON.stringify({action:"history",limit:40}),
+  })
+  const data=await response.json().catch(()=>({}))
+  if(!response.ok) throw new Error(data?.error || "Riwayat Tes IQ belum dapat dimuat.")
+  return Array.isArray(data?.items) ? data.items as VisualIqItem[] : []
+}
+
 export default function AccountResultsPage(){
   const [participant,setParticipant]=useState<Participant|null>(null)
   const [history,setHistory]=useState<ResultHistory|null>(null)
+  const [visualHistory,setVisualHistory]=useState<VisualIqItem[]>([])
   const [loading,setLoading]=useState(true)
   const [error,setError]=useState("")
 
@@ -73,10 +96,11 @@ export default function AccountResultsPage(){
       window.location.replace("/account")
       return
     }
-    Promise.all([accountApi(token),resultApi(token)])
-      .then(([account,result])=>{
+    Promise.all([accountApi(token),resultApi(token),visualIqHistoryApi(token).catch(()=>[])])
+      .then(([account,result,visualIq])=>{
         setParticipant(account?.participant || null)
         setHistory(result || null)
+        setVisualHistory(visualIq)
       })
       .catch((e)=>setError(e instanceof Error?e.message:"Riwayat tes belum dapat dimuat."))
       .finally(()=>setLoading(false))
@@ -84,6 +108,7 @@ export default function AccountResultsPage(){
 
   const attempts=useMemo(()=>[...(history?.attempts || [])].sort((a,b)=>Number(b.attempt_number||0)-Number(a.attempt_number||0)),[history?.attempts])
   const personalBest=attempts.find((item)=>item.is_personal_best) || attempts.slice().sort((a,b)=>Number(b.battle_score||0)-Number(a.battle_score||0))[0]
+  const visualBest=visualHistory.slice().sort((a,b)=>Number(b.iq_estimate||0)-Number(a.iq_estimate||0))[0]
   const used=Math.max(0,Number(participant?.attempts_used)||attempts.length)
   const freeRemaining=Math.max(0,Number(participant?.free_attempts_remaining ?? 3-used)||0)
   const active=Boolean(participant?.active_attempt_id)
@@ -129,6 +154,47 @@ export default function AccountResultsPage(){
             <div className="rounded-2xl border border-cyan-300/15 bg-cyan-300/[.06] p-4"><span className="text-xs text-cyan-100/70">Sisa gratis</span><strong className="mt-1 block text-3xl font-black">{freeRemaining}x</strong></div>
             <div className="rounded-2xl border border-violet-300/15 bg-violet-300/[.06] p-4"><span className="text-xs text-violet-100/70">Kuota Ranked</span><strong className="mt-1 block text-3xl font-black">3x</strong></div>
           </div>
+        </section>
+
+        <section id="riwayat-iq" className="mt-7 rounded-[2rem] border border-cyan-300/15 bg-gradient-to-br from-cyan-400/[.06] via-violet-400/[.04] to-slate-950/45 p-5 shadow-xl sm:p-6">
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <div className="flex items-center gap-2 text-cyan-300"><BrainCircuit className="h-5 w-5"/><p className="text-[10px] font-black uppercase tracking-[.18em]">Riwayat Tes IQ Visual</p></div>
+              <h2 className="mt-2 text-2xl font-black">Estimasi IQ Visual tersimpan di akun</h2>
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-400">Setiap tes selesai direkam bersama jumlah benar, waktu, dan tanggal. Nilai tertinggi Tes IQ Visual dibatasi maksimal 150.</p>
+            </div>
+            <div className="flex items-center gap-2">
+              {visualBest?.iq_estimate ? <span className="rounded-full border border-amber-300/20 bg-amber-300/10 px-3 py-1.5 text-xs font-black text-amber-200">Best IQ {visualBest.iq_estimate}</span> : null}
+              <a href="/visual-iq" className="rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1.5 text-xs font-black text-cyan-100">Tes lagi</a>
+            </div>
+          </div>
+
+          {visualHistory.length ? (
+            <div className="mt-5 flex snap-x snap-mandatory gap-4 overflow-x-auto pb-3 [scrollbar-color:rgba(148,163,184,.35)_transparent] [scrollbar-width:thin]">
+              {visualHistory.map((item,index)=>{
+                const accuracy=Number(item.question_count||0)>0?Math.round((Number(item.correct_count||0)/Number(item.question_count||1))*100):0
+                return <article key={item.id || index} className="min-w-[260px] max-w-[300px] flex-[0_0_78vw] snap-start rounded-2xl border border-cyan-300/15 bg-[#07162f]/90 p-5 sm:flex-basis-[290px]">
+                  <div className="flex items-start justify-between gap-3">
+                    <div><p className="text-[10px] font-black uppercase tracking-[.14em] text-cyan-300">Tes IQ Visual</p><p className="mt-1 text-xs font-bold text-slate-500">Percobaan {visualHistory.length-index}</p></div>
+                    {Number(item.iq_estimate||0)===Number(visualBest?.iq_estimate||-1) ? <span className="inline-flex items-center gap-1 rounded-full border border-amber-300/20 bg-amber-300/10 px-2 py-1 text-[9px] font-black uppercase text-amber-200"><Trophy className="h-3 w-3"/>TERBAIK</span> : null}
+                  </div>
+                  <div className="mt-4 text-sm font-bold text-slate-400">Estimasi IQ Visual</div>
+                  <div className="mt-1 bg-gradient-to-r from-cyan-300 to-violet-300 bg-clip-text text-5xl font-black text-transparent">{item.iq_estimate ?? "—"}</div>
+                  <div className="mt-4 grid grid-cols-2 gap-2 text-xs">
+                    <span className="rounded-lg bg-white/5 px-3 py-2 text-slate-300">{item.correct_count ?? 0}/{item.question_count ?? 15} benar · {accuracy}%</span>
+                    <span className="rounded-lg bg-white/5 px-3 py-2 text-slate-300">{formatDuration(item.duration_ms)}</span>
+                  </div>
+                  <p className="mt-4 text-xs text-slate-500">{item.created_at ? new Date(item.created_at).toLocaleString("id-ID",{day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"}) : ""}</p>
+                </article>
+              })}
+            </div>
+          ) : (
+            <div className="mt-5 rounded-2xl border border-dashed border-cyan-300/15 bg-white/[.025] p-7 text-center">
+              <BrainCircuit className="mx-auto h-8 w-8 text-cyan-300/60"/>
+              <p className="mt-3 font-black">Belum ada riwayat Tes IQ Visual</p>
+              <p className="mt-1 text-sm text-slate-500">Mulai tes pertama; hasil akan otomatis tersimpan setelah selesai.</p>
+            </div>
+          )}
         </section>
 
         <section id="riwayat-hasil" className="mt-7 rounded-[2rem] border border-white/10 bg-slate-950/40 p-5 shadow-xl sm:p-6">
