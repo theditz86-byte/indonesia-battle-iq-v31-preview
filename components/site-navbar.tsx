@@ -13,6 +13,7 @@ const links = [
   { label: "Beranda", href: "/battle" },
   { label: "Ranking", href: "/battle#peringkat" },
   { label: "Latihan SKD", href: "/latihan-skd" },
+  { label: "Visual IQ", href: "/visual-iq" },
   { label: "Battle PVP", href: "/pvp" },
   { label: "History Ranking", href: "/history-ranking" },
   { label: "Chat Global", href: "/global-chat" },
@@ -34,6 +35,7 @@ export function SiteNavbar({ participant }: { participant: BattleParticipant | n
     else if (path.startsWith("/messages") || path.startsWith("/friends")) setActive("")
     else if (path.startsWith("/player")) setActive("")
     else if (path.startsWith("/latihan-skd") || path.startsWith("/latihan-tiu") || path.startsWith("/simulasi-tiu") || path.startsWith("/daily-training")) setActive("Latihan SKD")
+    else if (path.startsWith("/visual-iq")) setActive("Visual IQ")
     else if (path.startsWith("/history-ranking")) setActive("History Ranking")
     else if (path.startsWith("/battle-test")) setActive("")
     else if (path.startsWith("/pvp")) setActive("Battle PVP")
