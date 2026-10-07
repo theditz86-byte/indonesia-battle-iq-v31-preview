@@ -55,7 +55,7 @@ export function Hero({ season, entries, participant }: { season: BattleSeason | 
                   <span className="text-[12px] font-black text-white">Tes IQ Visual</span>
                   <span className="rounded-full bg-cyan-300 px-1.5 py-0.5 text-[8px] font-black uppercase tracking-[.1em] text-slate-950">Baru</span>
                 </span>
-                <span className="mt-0.5 block truncate text-[10px] font-bold text-slate-400">Ketahui IQ-mu · 15 soal figural & spasial</span>
+                <span className="mt-0.5 block truncate text-[10px] font-bold text-slate-400">Ketahui IQ-mu · 20 soal figural & spasial</span>
               </span>
               <ArrowRight className="h-4 w-4 shrink-0 text-cyan-300 transition-transform group-hover:translate-x-0.5" />
             </a>
