@@ -13,7 +13,7 @@ const links = [
   { label: "Beranda", href: "/battle" },
   { label: "Ranking", href: "/battle#peringkat" },
   { label: "Latihan SKD", href: "/latihan-skd" },
-  { label: "Visual IQ", href: "/visual-iq" },
+  { label: "Tes IQ Visual", href: "/visual-iq" },
   { label: "Battle PVP", href: "/pvp" },
   { label: "History Ranking", href: "/history-ranking" },
   { label: "Chat Global", href: "/global-chat" },
@@ -35,7 +35,7 @@ export function SiteNavbar({ participant }: { participant: BattleParticipant | n
     else if (path.startsWith("/messages") || path.startsWith("/friends")) setActive("")
     else if (path.startsWith("/player")) setActive("")
     else if (path.startsWith("/latihan-skd") || path.startsWith("/latihan-tiu") || path.startsWith("/simulasi-tiu") || path.startsWith("/daily-training")) setActive("Latihan SKD")
-    else if (path.startsWith("/visual-iq")) setActive("Visual IQ")
+    else if (path.startsWith("/visual-iq")) setActive("Tes IQ Visual")
     else if (path.startsWith("/history-ranking")) setActive("History Ranking")
     else if (path.startsWith("/battle-test")) setActive("")
     else if (path.startsWith("/pvp")) setActive("Battle PVP")
@@ -111,10 +111,10 @@ export function SiteNavbar({ participant }: { participant: BattleParticipant | n
 
   return (
     <header className="sticky top-0 z-[100] overflow-visible border-b border-white/10 bg-slate-950/75 backdrop-blur-xl">
-      <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between gap-3 px-4 sm:px-6">
-        <a href="/battle" className="flex min-w-0 items-center gap-2.5 sm:gap-3">
+      <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between gap-2 px-3 sm:gap-3 sm:px-6">
+        <a href="/battle" className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3">
           <img src="/brand/alvaza-logo-new.svg" alt="ALZAVA Battle Point" className="h-10 w-10 shrink-0 object-contain drop-shadow-[0_0_10px_rgba(212,175,55,.28)] sm:h-12 sm:w-12" />
-          <div className="min-w-0 leading-tight">
+          <div className="hidden min-w-0 leading-tight min-[400px]:block">
             <p className="truncate text-[13px] font-extrabold tracking-[.01em] text-white sm:text-[15px]">ALZAVA <span className="text-[#D4AF37]">Battle Point</span></p>
             <p className="hidden text-[10px] font-medium uppercase tracking-[.13em] text-slate-400 sm:block">Raih Poin. Taklukkan Peringkat.</p>
           </div>
@@ -128,7 +128,7 @@ export function SiteNavbar({ participant }: { participant: BattleParticipant | n
           ))}
         </nav>
 
-        <div className="flex shrink-0 items-center gap-2">
+        <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
           <button type="button" onClick={() => setMobileOpen((value) => !value)} aria-label={mobileOpen ? "Tutup menu" : "Buka menu"} className="grid h-10 w-10 place-items-center rounded-xl border border-white/10 bg-white/5 text-slate-200 hover:bg-white/10 xl:hidden">
             {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
@@ -141,7 +141,7 @@ export function SiteNavbar({ participant }: { participant: BattleParticipant | n
                 {friendBadge > 0 && <span className="absolute -right-1.5 -top-1.5 grid h-5 min-w-5 place-items-center rounded-full bg-rose-500 px-1 text-[10px] font-black text-white ring-2 ring-slate-950">{friendBadge > 99 ? "99+" : friendBadge}</span>}
               </a>
               <NotificationCenter />
-              <div ref={profileMenuRef} data-alzava-profile-menu="controlled" className="relative z-[120]">
+              <div ref={profileMenuRef} data-alzava-profile-menu="native" className="relative z-[120]">
                 <button
                   type="button"
                   aria-haspopup="menu"
