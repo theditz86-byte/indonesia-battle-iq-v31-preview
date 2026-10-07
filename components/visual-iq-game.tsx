@@ -1,35 +1,38 @@
 "use client"
 
-import { ArrowLeft, BrainCircuit, Clock3, Play, RotateCcw, Sparkles, Trophy, Zap } from "lucide-react"
+import { ArrowLeft, BrainCircuit, Clock3, Play, RotateCcw, Share2, Sparkles, Trophy, Zap } from "lucide-react"
 import { useMemo, useRef, useState } from "react"
 
 type Mode = "quick" | "full"
+type PuzzleLayout = "sequence" | "analogy" | "matrix" | "single" | "odd"
+
 type Puzzle = {
   id: string
   stage: string
   title: string
   hint: string
+  layout: PuzzleLayout
   sequence: string[]
   options: string[]
   answer: number
 }
 
 const puzzles: Puzzle[] = [
-  { id:"rot-1", stage:"Rotasi", title:"Rotasi berikutnya", hint:"Cari perubahan arah yang konsisten.", sequence:["tri-up","tri-right","tri-down"], options:["tri-left","tri-up","tri-right","tri-down"], answer:0 },
-  { id:"rot-2", stage:"Rotasi", title:"Dua langkah sekaligus", hint:"Perhatikan arah dan jumlah titik.", sequence:["pair-up-1","pair-right-2","pair-down-3"], options:["pair-left-4","pair-up-4","pair-left-2","pair-right-4"], answer:0 },
-  { id:"pattern-1", stage:"Pola", title:"Lengkapi pola", hint:"Jumlah elemen bertambah dengan aturan tetap.", sequence:["dots-1","dots-2","dots-3"], options:["dots-4","dots-5","dots-2","dots-6"], answer:0 },
-  { id:"pattern-2", stage:"Pola", title:"Urutan bentuk", hint:"Bentuk dan isi berubah bergantian.", sequence:["ring-open","square-fill","ring-fill"], options:["square-open","ring-open","square-fill","diamond-open"], answer:0 },
-  { id:"mirror-1", stage:"Cermin", title:"Cerminan horizontal", hint:"Bayangkan bentuk dibalik kiri ke kanan.", sequence:["corner-tl"], options:["corner-tr","corner-bl","corner-br","corner-tl"], answer:0 },
-  { id:"mirror-2", stage:"Cermin", title:"Refleksi diagonal", hint:"Cari hasil pantulan terhadap diagonal.", sequence:["diag-a"], options:["diag-b","diag-a","diag-c","diag-d"], answer:0 },
-  { id:"matrix-1", stage:"Matriks", title:"Aturan gabungan", hint:"Baris pertama menunjukkan cara dua pola digabung.", sequence:["bar-h","bar-v","cross-plus"], options:["cross-plus","cross-x","bar-h","ring-open"], answer:0 },
-  { id:"matrix-2", stage:"Matriks", title:"Transformasi 2 × 2", hint:"Posisi titik berpindah mengikuti sudut.", sequence:["dot-tl","dot-tr","dot-br"], options:["dot-bl","dot-tl","dot-center","dot-tr"], answer:0 },
-  { id:"spatial-1", stage:"Spasial", title:"Potongan yang cocok", hint:"Cari bentuk yang melengkapi ruang kosong.", sequence:["notch-left"], options:["notch-right","notch-left","notch-top","notch-bottom"], answer:0 },
-  { id:"spatial-2", stage:"Spasial", title:"Orientasi objek", hint:"Objek diputar 180°.", sequence:["hook-up"], options:["hook-down","hook-left","hook-up","hook-right"], answer:0 },
-  { id:"boss-1", stage:"Tantangan Akhir", title:"Pola ganda", hint:"Dua aturan berjalan bersamaan: arah dan jumlah.", sequence:["boss-a","boss-b","boss-c"], options:["boss-d","boss-a","boss-c","boss-b"], answer:0 },
-  { id:"boss-2", stage:"Tantangan Akhir", title:"Tantangan terakhir", hint:"Gunakan hubungan antarposisi, bukan kemiripan visual semata.", sequence:["final-a","final-b","final-c"], options:["final-d","final-c","final-a","final-b"], answer:0 },
-  { id:"extra-1", stage:"Rotasi", title:"Rotasi lanjutan", hint:"Perhatikan perubahan arah objek secara berurutan.", sequence:["hook-up","hook-right","hook-down"], options:["hook-left","hook-up","hook-right","hook-down"], answer:0 },
-  { id:"extra-2", stage:"Pola", title:"Pola garis", hint:"Garis di dalam kotak berganti orientasi mengikuti pola.", sequence:["final-a","final-b","final-c"], options:["final-d","final-c","final-a","final-b"], answer:0 },
-  { id:"extra-3", stage:"Logika Visual", title:"Arah dan jumlah", hint:"Arah berubah sekaligus dengan pertambahan jumlah titik.", sequence:["pair-up-1","pair-right-2","pair-down-3"], options:["pair-left-4","pair-up-4","pair-left-2","pair-right-4"], answer:0 },
+  { id:"rot-1", stage:"Rotasi", title:"Rotasi berurutan", hint:"Bentuk berputar 90° ke arah yang sama.", layout:"sequence", sequence:["tri-up","tri-right","tri-down"], options:["tri-up","tri-left","tri-down","tri-right"], answer:1 },
+  { id:"pattern-fill", stage:"Pola", title:"Bentuk dan isi", hint:"Perhatikan pergantian bentuk serta isi kosong/penuh.", layout:"sequence", sequence:["ring-open","square-fill","ring-fill"], options:["ring-open","diamond-open","square-open","square-fill"], answer:2 },
+  { id:"count-dots", stage:"Pola", title:"Pertambahan elemen", hint:"Jumlah elemen bertambah mengikuti aturan tetap.", layout:"sequence", sequence:["dots-1","dots-2","dots-3"], options:["dots-5","dots-2","dots-6","dots-4"], answer:3 },
+  { id:"analogy-corner", stage:"Analogi", title:"Analogi posisi", hint:"Perubahan pada pasangan pertama berlaku juga pada pasangan kedua.", layout:"analogy", sequence:["corner-tl","corner-tr","dot-tl"], options:["dot-center","dot-bl","dot-tr","dot-tl"], answer:2 },
+  { id:"mirror-diag", stage:"Cermin", title:"Refleksi diagonal", hint:"Bayangkan bentuk dipantulkan terhadap garis diagonal.", layout:"single", sequence:["diag-a"], options:["diag-d","diag-a","diag-b","diag-c"], answer:2 },
+  { id:"matrix-dot", stage:"Matriks", title:"Matriks 2 × 2", hint:"Posisi pada kolom kanan merupakan cerminan horizontal kolom kiri.", layout:"matrix", sequence:["dot-tl","dot-tr","dot-br"], options:["dot-center","dot-tr","dot-tl","dot-bl"], answer:3 },
+  { id:"odd-fill", stage:"Klasifikasi", title:"Yang berbeda", hint:"Tiga bentuk mengikuti satu aturan yang sama. Pilih pengecualian.", layout:"odd", sequence:[], options:["square-open","ring-open","square-fill","diamond-open"], answer:2 },
+  { id:"spatial-notch", stage:"Spasial", title:"Potongan pelengkap", hint:"Cari potongan yang paling tepat untuk menjadi pasangan bentuk ini.", layout:"single", sequence:["notch-left"], options:["notch-top","notch-right","notch-left","notch-bottom"], answer:1 },
+  { id:"analogy-hook", stage:"Analogi", title:"Rotasi analogi", hint:"Gunakan perubahan arah pada pasangan pertama untuk menyelesaikan pasangan kedua.", layout:"analogy", sequence:["hook-up","hook-right","hook-down"], options:["hook-right","hook-up","hook-left","hook-down"], answer:2 },
+  { id:"sequence-reflect", stage:"Pola", title:"Perpindahan garis dan titik", hint:"Garis serta lingkaran bergerak mengikuti urutan yang sama.", layout:"sequence", sequence:["diag-a","diag-b","diag-c"], options:["diag-c","diag-d","diag-a","diag-b"], answer:1 },
+  { id:"fold-1", stage:"Lipat Kertas", title:"Lipat dan lubangi", hint:"Kertas dilipat ke kanan lalu dilubangi. Bayangkan hasil saat dibuka kembali.", layout:"single", sequence:["fold-sheet"], options:["holes-top","holes-diag","holes-horizontal","holes-vertical"], answer:2 },
+  { id:"symmetry", stage:"Simetri", title:"Cari bentuk simetris", hint:"Pilih satu bentuk yang memiliki simetri vertikal sempurna.", layout:"odd", sequence:[], options:["asym-left","kite-sym","asym-right","hook-up"], answer:1 },
+  { id:"matrix-combine", stage:"Matriks", title:"Gabungan bentuk", hint:"Kotak ketiga pada setiap baris merupakan gabungan dua kotak sebelumnya.", layout:"matrix", sequence:["bar-h","bar-v","cross-plus"], options:["bar-v","cross-x","cross-plus","bar-h"], answer:2 },
+  { id:"boss-direction", stage:"Logika Visual", title:"Arah dan jumlah", hint:"Dua aturan berjalan bersama: arah berubah dan jumlah titik bertambah.", layout:"sequence", sequence:["pair-up-1","pair-right-2","pair-down-3"], options:["pair-right-4","pair-left-4","pair-up-4","pair-left-2"], answer:1 },
+  { id:"final-matrix", stage:"Tantangan Akhir", title:"Matriks 3 × 3", hint:"Setiap baris menggabungkan dua garis menjadi bentuk di kolom ketiga.", layout:"matrix", sequence:["bar-h","bar-v","cross-plus","diag-slash","diag-backslash","cross-x","cross-plus","cross-x"], options:["cross-plus","diag-backslash","star-eight","bar-h"], answer:2 },
 ]
 
 function Shape({ code, small=false }: { code:string; small?:boolean }) {
@@ -95,6 +98,17 @@ function Shape({ code, small=false }: { code:string; small?:boolean }) {
     case "final-b": body=<><rect x="26" y="26" width="48" height="48" rx="8" fill="none" strokeWidth="5"/><path d="M50 26v48" strokeWidth="4"/></>; break
     case "final-c": body=<><rect x="26" y="26" width="48" height="48" rx="8" fill="none" strokeWidth="5"/><path d="M30 30l40 40" strokeWidth="4"/></>; break
     case "final-d": body=<><rect x="26" y="26" width="48" height="48" rx="8" fill="none" strokeWidth="5"/><path d="M70 30L30 70" strokeWidth="4"/></>; break
+    case "diag-slash": body=<path d="M28 72L72 28" fill="none" strokeWidth="7" strokeLinecap="round"/>; break
+    case "diag-backslash": body=<path d="M28 28L72 72" fill="none" strokeWidth="7" strokeLinecap="round"/>; break
+    case "star-eight": body=<path d="M24 50h52M50 24v52M30 30l40 40M70 30L30 70" fill="none" strokeWidth="5.5" strokeLinecap="round"/>; break
+    case "fold-sheet": body=<><rect x="24" y="20" width="52" height="60" rx="4" fill="rgba(34,211,238,.08)" strokeWidth="4"/><path d="M50 20v60" strokeDasharray="5 5" strokeWidth="3"/><path d="M35 50h30" strokeWidth="3"/>{dot(62,50,5)}</>; break
+    case "holes-top": body=<><rect x="24" y="20" width="52" height="60" rx="4" fill="none" strokeWidth="4"/>{dot(38,34,5)}{dot(62,34,5)}</>; break
+    case "holes-diag": body=<><rect x="24" y="20" width="52" height="60" rx="4" fill="none" strokeWidth="4"/>{dot(38,36,5)}{dot(62,64,5)}</>; break
+    case "holes-horizontal": body=<><rect x="24" y="20" width="52" height="60" rx="4" fill="none" strokeWidth="4"/>{dot(38,50,5)}{dot(62,50,5)}</>; break
+    case "holes-vertical": body=<><rect x="24" y="20" width="52" height="60" rx="4" fill="none" strokeWidth="4"/>{dot(50,36,5)}{dot(50,64,5)}</>; break
+    case "kite-sym": body=<polygon points="50,20 72,50 50,80 28,50" fill="rgba(34,211,238,.16)" strokeWidth="5"/>; break
+    case "asym-left": body=<polygon points="38,20 72,42 62,78 24,62" fill="rgba(34,211,238,.12)" strokeWidth="5"/>; break
+    case "asym-right": body=<polygon points="62,20 76,62 38,78 28,42" fill="rgba(34,211,238,.12)" strokeWidth="5"/>; break
   }
 
   return <svg viewBox="0 0 100 100" className={cls+" "+base} aria-hidden="true">{common}{body}</svg>
@@ -109,6 +123,12 @@ function tierFor(score:number){
   return "PERUNGGU"
 }
 
+function estimateVisualIq(correct:number, elapsed:number){
+  const base=[75,78,82,86,90,94,98,102,106,110,114,118,123,128,134,140][Math.max(0,Math.min(15,correct))]
+  const speed=correct>=10 ? (elapsed<=180?2:elapsed<=300?1:elapsed>=600?-1:0) : 0
+  return Math.max(75,Math.min(142,base+speed))
+}
+
 export function VisualIqGame(){
   const [mode,setMode]=useState<Mode|null>(null)
   const [index,setIndex]=useState(0)
@@ -116,6 +136,7 @@ export function VisualIqGame(){
   const [startedAt,setStartedAt]=useState(0)
   const [finishedAt,setFinishedAt]=useState(0)
   const [locked,setLocked]=useState(false)
+  const [shareStatus,setShareStatus]=useState("")
   const timerRef=useRef<number|null>(null)
 
   const activePuzzles=useMemo(()=>puzzles,[])
@@ -129,7 +150,7 @@ export function VisualIqGame(){
 
   function start(next:Mode){
     if(timerRef.current) window.clearTimeout(timerRef.current)
-    setMode(next); setIndex(0); setAnswers([]); setStartedAt(Date.now()); setFinishedAt(0); setLocked(false)
+    setMode(next); setIndex(0); setAnswers([]); setStartedAt(Date.now()); setFinishedAt(0); setLocked(false); setShareStatus("")
   }
 
   function choose(option:number){
@@ -150,7 +171,28 @@ export function VisualIqGame(){
 
   function reset(){
     if(timerRef.current) window.clearTimeout(timerRef.current)
-    setMode(null); setIndex(0); setAnswers([]); setStartedAt(0); setFinishedAt(0); setLocked(false)
+    setMode(null); setIndex(0); setAnswers([]); setStartedAt(0); setFinishedAt(0); setLocked(false); setShareStatus("")
+  }
+
+  async function shareResult(iq:number, accuracy:number){
+    const url=`${window.location.origin}/visual-iq/`
+    const text=`🧠 Hasil Tes IQ Visual ALZAVA\nEstimasi IQ Visual: ${iq} ± 5\nBenar: ${correct}/15 · Akurasi: ${accuracy}% · Waktu: ${Math.floor(elapsed/60)}:${String(elapsed%60).padStart(2,"0")}\n\nBerani kalahkan hasilku? Coba di ${url}`
+    try{
+      if(navigator.share){
+        await navigator.share({title:"Hasil Tes IQ Visual ALZAVA",text,url})
+        setShareStatus("Hasil siap dibagikan.")
+        return
+      }
+      await navigator.clipboard.writeText(text)
+      setShareStatus("Hasil disalin. Tempelkan ke WhatsApp atau media sosial.")
+    }catch{
+      try{
+        await navigator.clipboard.writeText(text)
+        setShareStatus("Hasil disalin. Tempelkan ke WhatsApp atau media sosial.")
+      }catch{
+        setShareStatus("Bagikan tautan halaman ini ke temanmu.")
+      }
+    }
   }
 
   if(!mode){
@@ -185,14 +227,16 @@ export function VisualIqGame(){
 
   if(done){
     const accuracy=Math.round((correct/activePuzzles.length)*100)
+    const iq=estimateVisualIq(correct,elapsed)
     return <div className="min-h-screen bg-[radial-gradient(circle_at_50%_0%,rgba(124,58,237,.24),transparent_34%),linear-gradient(180deg,#020617,#071427_55%,#020617)] text-white">
       <main className="mx-auto max-w-md px-4 pb-14 pt-8">
         <div className="text-center">
           <div className="mx-auto grid h-20 w-20 place-items-center rounded-3xl border border-amber-300/30 bg-amber-300/10 shadow-[0_0_40px_rgba(251,191,36,.16)]"><Trophy className="h-10 w-10 text-amber-300"/></div>
           <div className="mt-4 text-xs font-black uppercase tracking-[.22em] text-violet-300">Tes IQ Visual Selesai</div>
-          <h2 className="mt-2 text-4xl font-black">{tier}</h2>
-          <div className="mt-2 text-6xl font-black tabular-nums text-cyan-300">{score}</div>
-          <div className="text-sm font-black text-slate-400">SKOR VISUAL</div>
+          <div className="mt-2 text-sm font-black uppercase tracking-[.12em] text-slate-400">Estimasi IQ Visual</div>
+          <div className="mt-1 text-7xl font-black tabular-nums text-cyan-300">{iq}</div>
+          <div className="mt-1 text-sm font-black text-slate-300">± 5 poin · {tier}</div>
+          <p className="mx-auto mt-2 max-w-xs text-[11px] leading-5 text-slate-500">Estimasi indikatif dari tes visual 15 soal, bukan hasil psikotes klinis atau diagnosis profesional.</p>
         </div>
 
         <div className="mt-6 grid grid-cols-3 gap-2">
@@ -203,12 +247,17 @@ export function VisualIqGame(){
 
         <div className="mt-5 rounded-2xl border border-cyan-300/15 bg-cyan-300/[.05] p-4">
           <div className="text-xs font-black uppercase tracking-[.14em] text-cyan-300">Gambaran Kemampuan</div>
-          <p className="mt-2 text-sm leading-6 text-slate-300">{accuracy>=85?"Kamu sangat cepat mengenali transformasi visual dan pola spasial.":accuracy>=65?"Kemampuan visualmu cukup kuat, terutama saat aturan pola mulai kompleks.":"Masih ada ruang besar untuk meningkatkan rotasi mental, pola, dan refleksi visual."}</p>
+          <p className="mt-2 text-sm leading-6 text-slate-300">{accuracy>=87?"Kemampuan penalaran visual-spasialmu sangat kuat. Kamu cepat menangkap pola, rotasi, hubungan bentuk, dan transformasi visual.":accuracy>=67?"Kemampuan visualmu cukup kuat. Latihan pada matriks, analogi bentuk, dan rotasi mental akan membantu meningkatkan konsistensi.":"Masih ada ruang besar untuk meningkatkan rotasi mental, pola, matriks, dan refleksi visual."}</p>
         </div>
 
-        <div className="mt-5 grid grid-cols-2 gap-3">
+        <button type="button" onClick={()=>void shareResult(iq,accuracy)} className="mt-5 flex min-h-14 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-cyan-400 via-sky-400 to-violet-500 px-5 text-base font-black text-slate-950 shadow-[0_0_34px_rgba(34,211,238,.20)]">
+          <Share2 className="h-5 w-5"/> Bagikan Hasil & Tantang Teman
+        </button>
+        {shareStatus && <p className="mt-2 text-center text-[11px] font-bold text-cyan-200">{shareStatus}</p>}
+
+        <div className="mt-3 grid grid-cols-2 gap-3">
           <button type="button" onClick={()=>start(mode)} className="min-h-12 rounded-xl border border-white/10 bg-white/[.06] text-sm font-black text-white hover:bg-white/[.10]"><RotateCcw className="mr-2 inline h-4 w-4"/>Ulangi</button>
-          <button type="button" onClick={reset} className="min-h-12 rounded-xl bg-gradient-to-r from-cyan-400 to-violet-500 text-sm font-black text-slate-950">Menu Utama</button>
+          <button type="button" onClick={reset} className="min-h-12 rounded-xl border border-white/10 bg-white/[.06] text-sm font-black text-white hover:bg-white/[.10]">Menu Utama</button>
         </div>
         <a href="/battle" className="mt-3 flex min-h-11 items-center justify-center text-sm font-bold text-slate-400 hover:text-white"><ArrowLeft className="mr-2 h-4 w-4"/>Kembali ke Battle Point</a>
       </main>
@@ -235,10 +284,34 @@ export function VisualIqGame(){
       </div>
 
       <div className="mt-5 rounded-[28px] border border-white/10 bg-slate-950/50 p-4 backdrop-blur-xl">
-        <div className="flex min-h-[116px] items-center justify-center gap-2">
-          {current.sequence.map((code,i)=><div key={code+"-"+i} className="flex items-center gap-2"><Shape code={code}/>{i<current.sequence.length-1&&<span className="text-xl font-black text-slate-600">→</span>}</div>)}
+        {current.layout==="sequence" && <div className="flex min-h-[116px] items-center justify-center gap-1.5">
+          {current.sequence.map((code,i)=><div key={code+"-"+i} className="flex items-center gap-1.5"><Shape code={code}/>{i<current.sequence.length-1&&<span className="text-xl font-black text-slate-600">→</span>}</div>)}
           <div className="ml-1 grid h-20 w-20 place-items-center rounded-[18px] border border-dashed border-cyan-300/35 bg-cyan-300/[.04] text-3xl font-black text-cyan-300">?</div>
-        </div>
+        </div>}
+
+        {current.layout==="analogy" && <div className="grid min-h-[220px] grid-cols-[1fr_auto_1fr] items-center gap-2">
+          <div className="flex justify-center"><Shape code={current.sequence[0]}/></div><span className="text-2xl font-black text-slate-500">:</span><div className="flex justify-center"><Shape code={current.sequence[1]}/></div>
+          <div className="flex justify-center"><Shape code={current.sequence[2]}/></div><span className="text-2xl font-black text-slate-500">:</span><div className="flex justify-center"><div className="grid h-20 w-20 place-items-center rounded-[18px] border border-dashed border-cyan-300/35 bg-cyan-300/[.04] text-3xl font-black text-cyan-300">?</div></div>
+        </div>}
+
+        {current.layout==="matrix" && current.sequence.length===3 && <div className="mx-auto grid min-h-[210px] max-w-[190px] grid-cols-2 place-items-center gap-3">
+          <Shape code={current.sequence[0]}/><Shape code={current.sequence[1]}/><Shape code={current.sequence[2]}/><div className="grid h-20 w-20 place-items-center rounded-[18px] border border-dashed border-cyan-300/35 bg-cyan-300/[.04] text-3xl font-black text-cyan-300">?</div>
+        </div>}
+
+        {current.layout==="matrix" && current.sequence.length===8 && <div className="mx-auto grid min-h-[260px] max-w-[280px] grid-cols-3 place-items-center gap-1.5">
+          {current.sequence.map((code,i)=><Shape key={code+"-"+i} code={code} small/>)}
+          <div className="grid h-14 w-14 place-items-center rounded-[14px] border border-dashed border-cyan-300/35 bg-cyan-300/[.04] text-2xl font-black text-cyan-300">?</div>
+        </div>}
+
+        {current.layout==="single" && <div className="flex min-h-[170px] items-center justify-center">
+          <Shape code={current.sequence[0]}/>
+        </div>}
+
+        {current.layout==="odd" && <div className="flex min-h-[116px] flex-col items-center justify-center text-center">
+          <BrainCircuit className="h-10 w-10 text-violet-300"/>
+          <div className="mt-3 text-sm font-black text-white">Pilih satu bentuk yang berbeda</div>
+          <div className="mt-1 text-xs text-slate-500">Bandingkan aturan yang sama pada keempat pilihan.</div>
+        </div>}
       </div>
 
       <div className="mt-5 grid grid-cols-2 gap-3">
