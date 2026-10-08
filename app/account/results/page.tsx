@@ -159,9 +159,9 @@ export default function AccountResultsPage(){
         <section id="riwayat-iq" className="mt-7 rounded-[2rem] border border-cyan-300/15 bg-gradient-to-br from-cyan-400/[.06] via-violet-400/[.04] to-slate-950/45 p-5 shadow-xl sm:p-6">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
-              <div className="flex items-center gap-2 text-cyan-300"><BrainCircuit className="h-5 w-5"/><p className="text-[10px] font-black uppercase tracking-[.18em]">Riwayat Tes IQ Visual</p></div>
-              <h2 className="mt-2 text-2xl font-black">Estimasi IQ Visual tersimpan di akun</h2>
-              <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-400">Setiap tes selesai direkam bersama jumlah benar, waktu, dan tanggal. Nilai tertinggi Tes IQ Visual dibatasi maksimal 150.</p>
+              <div className="flex items-center gap-2 text-cyan-300"><BrainCircuit className="h-5 w-5"/><p className="text-[10px] font-black uppercase tracking-[.18em]">Riwayat Tes IQ</p></div>
+              <h2 className="mt-2 text-2xl font-black">Estimasi IQ tersimpan di akun</h2>
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-400">Setiap tes selesai direkam bersama jumlah benar, waktu, dan tanggal. Nilai tertinggi Tes IQ dibatasi maksimal 150.</p>
             </div>
             <div className="flex items-center gap-2">
               {visualBest?.iq_estimate ? <span className="rounded-full border border-amber-300/20 bg-amber-300/10 px-3 py-1.5 text-xs font-black text-amber-200">Best IQ {visualBest.iq_estimate}</span> : null}
@@ -175,10 +175,10 @@ export default function AccountResultsPage(){
                 const accuracy=Number(item.question_count||0)>0?Math.round((Number(item.correct_count||0)/Number(item.question_count||1))*100):0
                 return <article key={item.id || index} className="min-w-[260px] max-w-[300px] flex-[0_0_78vw] snap-start rounded-2xl border border-cyan-300/15 bg-[#07162f]/90 p-5 sm:flex-basis-[290px]">
                   <div className="flex items-start justify-between gap-3">
-                    <div><p className="text-[10px] font-black uppercase tracking-[.14em] text-cyan-300">Tes IQ Visual</p><p className="mt-1 text-xs font-bold text-slate-500">Percobaan {visualHistory.length-index}</p></div>
+                    <div><p className="text-[10px] font-black uppercase tracking-[.14em] text-cyan-300">Tes IQ</p><p className="mt-1 text-xs font-bold text-slate-500">Percobaan {visualHistory.length-index}</p></div>
                     {Number(item.iq_estimate||0)===Number(visualBest?.iq_estimate||-1) ? <span className="inline-flex items-center gap-1 rounded-full border border-amber-300/20 bg-amber-300/10 px-2 py-1 text-[9px] font-black uppercase text-amber-200"><Trophy className="h-3 w-3"/>TERBAIK</span> : null}
                   </div>
-                  <div className="mt-4 text-sm font-bold text-slate-400">Estimasi IQ Visual</div>
+                  <div className="mt-4 text-sm font-bold text-slate-400">Estimasi IQ</div>
                   <div className="mt-1 bg-gradient-to-r from-cyan-300 to-violet-300 bg-clip-text text-5xl font-black text-transparent">{item.iq_estimate ?? "—"}</div>
                   <div className="mt-4 grid grid-cols-2 gap-2 text-xs">
                     <span className="rounded-lg bg-white/5 px-3 py-2 text-slate-300">{item.correct_count ?? 0}/{item.question_count ?? 30} benar · {accuracy}%</span>
@@ -191,7 +191,7 @@ export default function AccountResultsPage(){
           ) : (
             <div className="mt-5 rounded-2xl border border-dashed border-cyan-300/15 bg-white/[.025] p-7 text-center">
               <BrainCircuit className="mx-auto h-8 w-8 text-cyan-300/60"/>
-              <p className="mt-3 font-black">Belum ada riwayat Tes IQ Visual</p>
+              <p className="mt-3 font-black">Belum ada riwayat Tes IQ</p>
               <p className="mt-1 text-sm text-slate-500">Mulai tes pertama; hasil akan otomatis tersimpan setelah selesai.</p>
             </div>
           )}
