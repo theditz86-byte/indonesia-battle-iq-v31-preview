@@ -20,6 +20,7 @@ type Glyph = {
 type Layout = "sequence"|"analogy"|"matrix2"|"matrix3"|"single"|"odd"|"combine"
 type Question = {
   id: string
+  family: string
   stage: string
   title: string
   hint: string
@@ -37,44 +38,446 @@ type SaveState = "idle"|"saving"|"saved"|"error"
 
 const g=(kind:GlyphKind,rotation=0,filled=false,dot?:Pos,dots?:Pos[],variant?:number):Glyph=>({kind,rotation,filled,dot,dots,variant})
 
-const QUESTIONS:Question[]=[
-  {id:"rot-triangle-90",stage:"Rotasi",title:"Rotasi tetap",hint:"Arah berubah dengan besar sudut yang sama.",layout:"sequence",difficulty:2,cells:[g("triangle",0),g("triangle",90),g("triangle",180)],options:[g("triangle",0),g("triangle",270),g("triangle",180),g("triangle",90)],answer:1},
-  {id:"fill-alternate",stage:"Pola",title:"Bentuk dan isi",hint:"Perhatikan dua aturan sekaligus: jenis bentuk dan isi.",layout:"sequence",difficulty:2,cells:[g("circle",0,false),g("square",0,true),g("circle",0,true)],options:[g("circle",0,false),g("diamond",0,false),g("square",0,false),g("square",0,true)],answer:2},
-  {id:"count-dots",stage:"Pola",title:"Pertambahan elemen",hint:"Jumlah titik mengikuti pertambahan teratur.",layout:"sequence",difficulty:2,cells:[g("circle",0,false,undefined,["c"]),g("circle",0,false,undefined,["l","r"]),g("circle",0,false,undefined,["t","bl","br"])],options:[g("circle",0,false,undefined,["tl","tr","bl","br","c"]),g("circle",0,false,undefined,["l","r"]),g("circle",0,false,undefined,["t","b","l","r","c"]),g("circle",0,false,undefined,["tl","tr","bl","br"])],answer:3},
-  {id:"mirror-corner",stage:"Cermin",title:"Cermin Vertikal",hint:"Bayangkan bentuk dipantulkan dari kiri ke kanan.",layout:"single",difficulty:2,cells:[g("corner",0,false,"tl")],options:[g("corner",90,false,"tr"),g("corner",0,false,"tr"),g("corner",180,false,"br"),g("corner",270,false,"bl")],answer:0},
-  {id:"matrix-position",stage:"Matriks",title:"Perpindahan posisi",hint:"Hubungan kiri-ke-kanan pada baris atas juga berlaku pada baris bawah.",layout:"matrix2",difficulty:2,cells:[g("square",0,false,"tl"),g("square",0,false,"tr"),g("square",0,false,"br")],options:[g("square",0,false,"tr"),g("square",0,false,"c"),g("square",0,false,"bl"),g("square",0,false,"tl")],answer:2},
-  {id:"shape-sides",stage:"Pola",title:"Jumlah sisi",hint:"Bentuk bertambah satu sisi setiap langkah.",layout:"sequence",difficulty:2,cells:[g("triangle"),g("square"),g("pentagon")],options:[g("diamond"),g("circle"),g("hexagon"),g("star")],answer:2},
 
-  {id:"analogy-arrow-dot",stage:"Analogi",title:"Rotasi dan titik",hint:"Gunakan perubahan pada pasangan pertama untuk menyelesaikan pasangan kedua.",layout:"analogy",difficulty:3,cells:[g("arrow",0,false,"r"),g("arrow",90,false,"b"),g("triangle",180,false,"l")],options:[g("triangle",270,false,"t"),g("triangle",90,false,"b"),g("triangle",270,false,"r"),g("triangle",0,false,"t")],answer:0},
-  {id:"overlay-lines",stage:"Matriks",title:"Gabungan garis",hint:"Dua gambar pertama digabung tanpa menghilangkan garis.",layout:"analogy",difficulty:3,cells:[g("bar",0),g("bar",90),g("bar",45)],options:[g("x"),g("bar",135),g("plus"),g("star")],answer:1},
-  {id:"double-rotation",stage:"Pola",title:"Rotasi bertingkat",hint:"Besar putaran bertambah: +90°, lalu +180°, lalu +270°.",layout:"sequence",difficulty:3,cells:[g("arrow",0),g("arrow",90),g("arrow",270)],options:[g("arrow",180),g("arrow",90),g("arrow",270),g("arrow",0)],answer:0},
-  {id:"shape-fill-analogy",stage:"Analogi",title:"Bentuk, isi, dan rotasi",hint:"Cari transformasi yang mengubah ketiga ciri sekaligus.",layout:"analogy",difficulty:3,cells:[g("triangle",0,false,"t"),g("triangle",90,true,"r"),g("diamond",180,false,"b")],options:[g("diamond",270,false,"l"),g("diamond",270,true,"l"),g("diamond",90,true,"r"),g("diamond",180,true,"b")],answer:1},
-  {id:"fold-one",stage:"Lipat Kertas",title:"Satu lipatan",hint:"Kertas dilipat ke kanan lalu satu lubang dibuat. Bagaimana hasil setelah dibuka?",layout:"single",difficulty:3,cells:[g("fold",0,false,undefined,["r"],1)],options:[g("holes",0,false,undefined,["t","b"]),g("holes",0,false,undefined,["tl","br"]),g("holes",0,false,undefined,["l","r"]),g("holes",0,false,undefined,["c"])],answer:2},
-  {id:"notch-rotation",stage:"Spasial",title:"Manakah Hasil Rotasi 180°?",hint:"Putar bentuk 180° lalu pilih hasil yang sama.",layout:"single",difficulty:3,cells:[g("notch",0)],options:[g("notch",90),g("notch",270),g("notch",0),g("notch",180)],answer:3},
-  {id:"odd-dot-rule",stage:"Klasifikasi",title:"Pilih Pola Arah-Titik yang Berbeda",hint:"Tiga pilihan mengikuti hubungan arah panah dan posisi titik yang sama. Pilih satu yang tidak mengikuti aturan.",layout:"odd",difficulty:3,cells:[],options:[g("arrow",0,false,"r"),g("arrow",90,false,"b"),g("arrow",180,false,"r"),g("arrow",270,false,"t")],answer:2},
-  {id:"matrix-fill",stage:"Matriks",title:"Isi bergantian",hint:"Bentuk tetap, tetapi posisi isi mengikuti hubungan baris dan kolom.",layout:"matrix2",difficulty:3,cells:[g("diamond",0,false),g("diamond",0,true),g("square",0,true)],options:[g("square",0,true),g("circle",0,false),g("square",0,false),g("diamond",0,false)],answer:2},
-  {id:"sequence-two-rule",stage:"Logika Visual",title:"Dua aturan sekaligus",hint:"Arah berputar 90°, sementara titik bergerak berlawanan arah.",layout:"sequence",difficulty:3,cells:[g("arrow",0,false,"r"),g("arrow",90,false,"t"),g("arrow",180,false,"l")],options:[g("arrow",270,false,"b"),g("arrow",270,false,"r"),g("arrow",0,false,"b"),g("arrow",90,false,"b")],answer:0},
-  {id:"combine-plus-x",stage:"Gabungan",title:"Tumpuk kedua bentuk",hint:"Gabungkan seluruh garis pada dua kotak pertama.",layout:"combine",difficulty:3,cells:[g("plus"),g("x")],options:[g("plus"),g("x"),g("star"),g("bar",45)],answer:2},
-  {id:"symmetry-dot",stage:"Simetri",title:"Pilih Bentuk yang Simetris Vertikal",hint:"Pilih bentuk yang tetap sama jika dilipat tepat pada sumbu vertikal.",layout:"odd",difficulty:3,cells:[],options:[g("diamond",0,false,"l"),g("triangle",0,false,"c"),g("square",0,false,"tr"),g("pentagon",0,false,"r")],answer:1},
-  {id:"mirror-compound",stage:"Cermin",title:"Cermin Vertikal · Bentuk Bertanda",hint:"Pantulkan bentuk dan posisi titik dari kiri ke kanan.",layout:"single",difficulty:3,cells:[g("corner",0,false,"br")],options:[g("corner",180,false,"tl"),g("corner",90,false,"bl"),g("corner",270,false,"tr"),g("corner",0,false,"bl")],answer:1},
+const ROTATABLE:GlyphKind[]=["arrow","triangle","corner","notch","hook"]
+const SHAPES:GlyphKind[]=["triangle","square","diamond","pentagon","hexagon","circle"]
+const DOT_SHAPES:GlyphKind[]=["circle","square","diamond","pentagon"]
+const CARDINAL:Pos[]=["t","r","b","l"]
+const CORNERS:Pos[]=["tl","tr","br","bl"]
 
-  {id:"mirror-horizontal",stage:"Cermin",title:"Cermin Horizontal",hint:"Pantulkan bentuk dari atas ke bawah.",layout:"single",difficulty:3,cells:[g("corner",0,false,"tl")],options:[g("corner",180,false,"bl"),g("corner",270,false,"bl"),g("corner",90,false,"tr"),g("corner",0,false,"br")],answer:1},
+function normAngle(value:number){
+  return ((value%360)+360)%360
+}
+function rotatePos(pos:Pos,turns:number):Pos{
+  const rings:Pos[][]=[CARDINAL,CORNERS]
+  for(const ring of rings){
+    const index=ring.indexOf(pos)
+    if(index>=0)return ring[(index+turns%4+4)%4]
+  }
+  return pos
+}
+function mirrorPosVertical(pos:Pos):Pos{
+  const map:Partial<Record<Pos,Pos>>={tl:"tr",tr:"tl",bl:"br",br:"bl",l:"r",r:"l",t:"t",b:"b",c:"c"}
+  return map[pos]||pos
+}
+function mirrorPosHorizontal(pos:Pos):Pos{
+  const map:Partial<Record<Pos,Pos>>={tl:"bl",bl:"tl",tr:"br",br:"tr",t:"b",b:"t",l:"l",r:"r",c:"c"}
+  return map[pos]||pos
+}
+function glyphKey(x:Glyph){
+  return JSON.stringify([x.kind,normAngle(x.rotation||0),Boolean(x.filled),x.dot||"",[...(x.dots||[])].sort(),x.variant||0])
+}
+function optionized(
+  base:Omit<Question,"options"|"answer">,
+  correct:Glyph,
+  distractors:Glyph[],
+  seed:number,
+):Question{
+  const unique:Glyph[]=[]
+  const seen=new Set<string>()
+  for(const item of [correct,...distractors]){
+    const key=glyphKey(item)
+    if(!seen.has(key)){seen.add(key);unique.push(item)}
+  }
+  if(unique.length<4)throw new Error("visual_iq_option_collision:"+base.id)
+  let options=unique.slice(0,4)
+  const shift=Math.abs(seed)%4
+  options=[...options.slice(shift),...options.slice(0,shift)]
+  const answer=options.findIndex(item=>glyphKey(item)===glyphKey(correct))
+  return {...base,options,answer}
+}
+function qbase(
+  id:string,family:string,stage:string,title:string,hint:string,
+  layout:Layout,difficulty:2|3|4,cells:Glyph[],
+):Omit<Question,"options"|"answer">{
+  return {id,family,stage,title,hint,layout,difficulty,cells}
+}
+function questionValid(q:Question){
+  if(!q.id||!q.family||!q.title||q.options.length!==4)return false
+  if(q.answer<0||q.answer>3)return false
+  if(new Set(q.options.map(glyphKey)).size!==4)return false
+  if(q.layout==="sequence"&&q.cells.length<3)return false
+  if(q.layout==="analogy"&&q.cells.length!==3)return false
+  if(q.layout==="matrix2"&&q.cells.length!==3)return false
+  if(q.layout==="matrix3"&&q.cells.length!==8)return false
+  if(q.layout==="single"&&q.cells.length!==1)return false
+  if(q.layout==="combine"&&q.cells.length!==2)return false
+  if((q.layout==="single"||q.layout==="odd")&&q.hint.trim().length<12)return false
+  return true
+}
 
-  {id:"matrix-add-side",stage:"Matriks",title:"Transformasi jumlah sisi",hint:"Hubungan pada baris atas juga berlaku pada baris bawah.",layout:"matrix2",difficulty:3,cells:[g("triangle"),g("square"),g("pentagon")],options:[g("circle"),g("hexagon"),g("diamond"),g("pentagon")],answer:1},
-  {id:"analogy-180-dot",stage:"Analogi",title:"Rotasi 180° bertanda",hint:"Putar bentuk dan titik dengan transformasi yang sama.",layout:"analogy",difficulty:3,cells:[g("square",0,false,"tl"),g("square",180,false,"br"),g("triangle",90,false,"tr")],options:[g("triangle",180,false,"bl"),g("triangle",270,false,"bl"),g("triangle",270,false,"tr"),g("triangle",90,false,"br")],answer:1},
+function buildQuestionBank(){
+  const bank:Question[]=[]
+  const push=(item:Question)=>{if(questionValid(item))bank.push(item)}
 
-  {id:"matrix-rotation-180",stage:"Matriks",title:"Rotasi dan posisi titik",hint:"Setiap gambar di kanan adalah hasil putaran 180° dari gambar di kiri.",layout:"matrix2",difficulty:4,cells:[g("arrow",0,false,"l"),g("arrow",180,false,"r"),g("triangle",90,false,"t")],options:[g("triangle",270,false,"b"),g("triangle",90,false,"b"),g("triangle",0,false,"l"),g("triangle",180,false,"t")],answer:0},
-  {id:"matrix3-rotation",stage:"Matriks",title:"Rotasi lintas baris",hint:"Arah maju 90° di setiap kolom dan juga bergeser 90° pada baris berikutnya.",layout:"matrix3",difficulty:4,cells:[g("arrow",0),g("arrow",90),g("arrow",180),g("arrow",90),g("arrow",180),g("arrow",270),g("arrow",180),g("arrow",270)],options:[g("arrow",90),g("arrow",180),g("arrow",0),g("arrow",270)],answer:2},
-  {id:"hard-fill-rotation",stage:"Logika Visual",title:"Rotasi, isi, dan titik",hint:"Arah berputar 90°, isi berganti, dan titik melompat ke sudut berlawanan.",layout:"sequence",difficulty:4,cells:[g("diamond",0,false,"tl"),g("diamond",90,true,"br"),g("diamond",180,false,"tr")],options:[g("diamond",270,true,"tr"),g("diamond",270,true,"bl"),g("diamond",0,true,"bl"),g("diamond",180,true,"tl")],answer:1},
+  for(const kind of ROTATABLE){
+    for(const start of [0,90,180,270]){
+      for(const step of [45,90,135]){
+        const correct=g(kind,normAngle(start+step*3))
+        push(optionized(
+          qbase("rot-fixed-"+kind+"-"+start+"-"+step,"rotasi-tetap","Rotasi","Lanjutkan Rotasi","","sequence",step===90?2:3,[
+            g(kind,start),g(kind,normAngle(start+step)),g(kind,normAngle(start+step*2)),
+          ]),
+          correct,
+          [g(kind,normAngle((correct.rotation||0)+45)),g(kind,normAngle((correct.rotation||0)+90)),g(kind,normAngle((correct.rotation||0)+180))],
+          start+step
+        ))
+      }
+    }
+  }
 
-  {id:"matrix3-overlay",stage:"Matriks",title:"Matriks gabungan 3 × 3",hint:"Kotak ketiga pada setiap baris adalah gabungan dua kotak sebelumnya.",layout:"matrix3",difficulty:4,cells:[g("bar",0),g("bar",90),g("plus"),g("bar",45),g("bar",135),g("x"),g("plus"),g("x")],options:[g("plus"),g("x"),g("star"),g("bar",0)],answer:2},
-  {id:"fold-two",stage:"Lipat Kertas",title:"Dua lipatan",hint:"Kertas dilipat pada sumbu vertikal dan horizontal sebelum dilubangi.",layout:"single",difficulty:4,cells:[g("fold",0,false,undefined,["br"],2)],options:[g("holes",0,false,undefined,["tl","tr"]),g("holes",0,false,undefined,["tl","tr","bl","br"]),g("holes",0,false,undefined,["l","r"]),g("holes",0,false,undefined,["tl","br"])],answer:1},
-  {id:"analogy-complex",stage:"Analogi",title:"Transformasi majemuk",hint:"Rotasi, isi, dan posisi titik berubah dengan aturan yang sama.",layout:"analogy",difficulty:4,cells:[g("square",0,false,"tl"),g("square",90,true,"br"),g("pentagon",180,false,"tr")],options:[g("pentagon",270,true,"bl"),g("pentagon",90,true,"tl"),g("pentagon",270,false,"bl"),g("pentagon",0,true,"br")],answer:0},
-  {id:"matrix3-position",stage:"Matriks",title:"Matriks posisi 3 × 3",hint:"Titik bergeser satu sudut ke kanan pada tiap langkah; baris berikutnya melanjutkan urutan.",layout:"matrix3",difficulty:4,cells:[g("circle",0,false,"tl"),g("circle",0,false,"tr"),g("circle",0,false,"br"),g("circle",0,false,"bl"),g("circle",0,false,"tl"),g("circle",0,false,"tr"),g("circle",0,false,"br"),g("circle",0,false,"bl")],options:[g("circle",0,false,"br"),g("circle",0,false,"tr"),g("circle",0,false,"tl"),g("circle",0,false,"c")],answer:2},
-  {id:"odd-rotation-equivalent",stage:"Klasifikasi",title:"Pilih Bentuk yang Tidak Setara Setelah Diputar",hint:"Tiga pilihan merupakan bentuk yang sama setelah rotasi. Pilih satu yang tidak setara.",layout:"odd",difficulty:4,cells:[],options:[g("corner",0,false,"tr"),g("corner",90,false,"br"),g("corner",180,false,"bl"),g("corner",270,false,"tr")],answer:3},
-  {id:"sequence-135",stage:"Rotasi",title:"Pola sudut tidak biasa",hint:"Perhatikan selisih sudut antar langkah, bukan hanya arah akhirnya.",layout:"sequence",difficulty:4,cells:[g("arrow",0),g("arrow",45),g("arrow",135)],options:[g("arrow",180),g("arrow",270),g("arrow",225),g("arrow",90)],answer:1},
-  {id:"matrix-shape-cycle",stage:"Matriks",title:"Siklus bentuk dan isi",hint:"Bentuk bergeser satu posisi, sedangkan isi penuh bergerak mengikuti kolom.",layout:"matrix3",difficulty:4,cells:[g("triangle",0,true),g("square",0,false),g("circle",0,false),g("square",0,false),g("circle",0,true),g("triangle",0,false),g("circle",0,false),g("triangle",0,false)],options:[g("circle",0,true),g("square",0,true),g("triangle",0,true),g("square",0,false)],answer:1},
-]
+  for(const kind of ["arrow","triangle","corner","hook"] as GlyphKind[]){
+    for(const start of [0,90,180,270]){
+      for(const baseStep of [45,90]){
+        const a=start
+        const b=normAngle(a+baseStep)
+        const c1=normAngle(b+baseStep+45)
+        const correct=g(kind,normAngle(c1+baseStep+90))
+        push(optionized(
+          qbase("rot-progressive-"+kind+"-"+start+"-"+baseStep,"rotasi-progresif","Rotasi","Rotasi Bertingkat","","sequence",4,[g(kind,a),g(kind,b),g(kind,c1)]),
+          correct,
+          [g(kind,normAngle((correct.rotation||0)+45)),g(kind,normAngle((correct.rotation||0)+90)),g(kind,normAngle((correct.rotation||0)+180))],
+          start+baseStep+7
+        ))
+      }
+    }
+  }
+
+  for(const kind of DOT_SHAPES){
+    for(let start=0;start<4;start++){
+      for(const dir of [-1,1]){
+        const pos=(n:number)=>CORNERS[(start+n*dir+16)%4]
+        const correct=g(kind,0,false,pos(3))
+        push(optionized(
+          qbase("dot-orbit-"+kind+"-"+start+"-"+dir,"orbit-titik","Pola","Perpindahan Titik","","sequence",2,[g(kind,0,false,pos(0)),g(kind,0,false,pos(1)),g(kind,0,false,pos(2))]),
+          correct,
+          CORNERS.filter(p=>p!==pos(3)).map(p=>g(kind,0,false,p)),
+          start+(dir<0?13:3)
+        ))
+      }
+    }
+  }
+
+  const shapePairs:[GlyphKind,GlyphKind][]=[
+    ["circle","square"],["triangle","diamond"],["pentagon","hexagon"],["square","diamond"],
+    ["circle","pentagon"],["triangle","hexagon"],
+  ]
+  shapePairs.forEach(([a,b],i)=>{
+    for(const invert of [false,true]){
+      const correct=g(b,0,invert)
+      push(optionized(
+        qbase("shape-fill-cycle-"+i+"-"+(invert?1:0),"bentuk-isi","Pola","Bentuk dan Isi","","sequence",3,[
+          g(a,0,invert),g(b,0,!invert),g(a,0,!invert),
+        ]),
+        correct,
+        [g(b,0,!invert),g(a,0,invert),g(a,0,!invert)],
+        i+(invert?11:2)
+      ))
+    }
+  })
+
+  const dotSets:Pos[][]=[["c"],["l","r"],["t","bl","br"],["tl","tr","bl","br"],["t","b","l","r","c"]]
+  SHAPES.forEach((kind,i)=>{
+    for(const offset of [0,1]){
+      const correctIndex=3+offset
+      const cells=[0,1,2].map(n=>g(kind,0,false,undefined,dotSets[n+offset]))
+      const correct=g(kind,0,false,undefined,dotSets[correctIndex])
+      const distractorSets=dotSets.filter((_,idx)=>idx!==correctIndex).slice(0,3)
+      push(optionized(
+        qbase("count-elements-"+kind+"-"+offset,"jumlah-elemen","Pola","Pertambahan Elemen","","sequence",offset===0?2:3,cells),
+        correct,
+        distractorSets.map(s=>g(kind,0,false,undefined,s)),
+        i*5+offset
+      ))
+    }
+  })
+
+  for(const kind of ["arrow","triangle","corner","hook"] as GlyphKind[]){
+    for(let start=0;start<4;start++){
+      for(const turns of [1,2]){
+        const aAngle=start*90
+        const aDot=CARDINAL[start]
+        const bAngle=normAngle(aAngle+turns*90)
+        const bDot=rotatePos(aDot,turns)
+        const cAngle=normAngle(aAngle+180)
+        const cDot=rotatePos(aDot,2)
+        const correctAngle=normAngle(cAngle+turns*90)
+        const correctDot=rotatePos(cDot,turns)
+        const correct=g(kind,correctAngle,false,correctDot)
+        push(optionized(
+          qbase("analogy-rot-dot-"+kind+"-"+start+"-"+turns,"analogi-rotasi","Analogi","Analogi Rotasi dan Titik","","analogy",3,[
+            g(kind,aAngle,false,aDot),g(kind,bAngle,false,bDot),g(kind,cAngle,false,cDot),
+          ]),
+          correct,
+          [
+            g(kind,correctAngle,false,cDot),
+            g(kind,cAngle,false,correctDot),
+            g(kind,normAngle(correctAngle+90),false,correctDot),
+          ],
+          start*7+turns
+        ))
+      }
+    }
+  }
+
+  for(let i=0;i<SHAPES.length;i++){
+    const a=SHAPES[i]
+    const b=SHAPES[(i+2)%SHAPES.length]
+    for(const turn of [90,180]){
+      const correct=g(b,turn,true)
+      push(optionized(
+        qbase("analogy-fill-"+a+"-"+b+"-"+turn,"analogi-isi","Analogi","Analogi Bentuk dan Isi","","analogy",3,[g(a,0,false),g(a,turn,true),g(b,0,false)]),
+        correct,
+        [g(b,turn,false),g(b,0,true),g(a,turn,true)],
+        i+turn
+      ))
+    }
+  }
+
+  for(const kind of DOT_SHAPES){
+    for(let p=0;p<4;p++){
+      for(const turns of [1,2]){
+        const a=CORNERS[p]
+        const b=rotatePos(a,turns)
+        const cPos=CORNERS[(p+2)%4]
+        const correctPos=rotatePos(cPos,turns)
+        push(optionized(
+          qbase("matrix2-pos-"+kind+"-"+p+"-"+turns,"matrix-posisi","Matriks","Matriks Perpindahan Posisi","","matrix2",3,[
+            g(kind,0,false,a),g(kind,0,false,b),g(kind,0,false,cPos),
+          ]),
+          g(kind,0,false,correctPos),
+          CORNERS.filter(x=>x!==correctPos).map(x=>g(kind,0,false,x)),
+          p*9+turns
+        ))
+      }
+    }
+  }
+
+  for(let i=0;i<SHAPES.length;i++){
+    const a=SHAPES[i], b=SHAPES[(i+1)%SHAPES.length]
+    for(const filled of [false,true]){
+      push(optionized(
+        qbase("matrix2-fill-"+a+"-"+b+"-"+(filled?1:0),"matrix-isi","Matriks","Matriks Perubahan Isi","","matrix2",2,[
+          g(a,0,filled),g(a,0,!filled),g(b,0,filled),
+        ]),
+        g(b,0,!filled),
+        [g(b,0,filled),g(a,0,!filled),g(SHAPES[(i+2)%SHAPES.length],0,!filled)],
+        i+(filled?19:5)
+      ))
+    }
+  }
+
+  for(const kind of ["arrow","triangle","corner","notch"] as GlyphKind[]){
+    for(const start of [0,90,180,270]){
+      for(const step of [90,-90]){
+        const cells:Glyph[]=[]
+        for(let row=0;row<3;row++){
+          for(let col=0;col<3;col++){
+            if(row===2&&col===2)continue
+            cells.push(g(kind,normAngle(start+(row+col)*step)))
+          }
+        }
+        const correct=g(kind,normAngle(start+4*step))
+        push(optionized(
+          qbase("matrix3-rot-"+kind+"-"+start+"-"+step,"matrix3-rotasi","Matriks","Matriks Rotasi 3 × 3","","matrix3",4,cells),
+          correct,
+          [g(kind,normAngle((correct.rotation||0)+90)),g(kind,normAngle((correct.rotation||0)+180)),g(kind,normAngle((correct.rotation||0)+270))],
+          start+(step<0?31:17)
+        ))
+      }
+    }
+  }
+
+  for(const kind of DOT_SHAPES){
+    for(let start=0;start<4;start++){
+      for(const dir of [-1,1]){
+        const cells:Glyph[]=[]
+        for(let row=0;row<3;row++){
+          for(let col=0;col<3;col++){
+            if(row===2&&col===2)continue
+            cells.push(g(kind,0,false,CORNERS[(start+(row+col)*dir+24)%4]))
+          }
+        }
+        const correctPos=CORNERS[(start+4*dir+24)%4]
+        push(optionized(
+          qbase("matrix3-dot-"+kind+"-"+start+"-"+dir,"matrix3-titik","Matriks","Matriks Posisi Titik 3 × 3","","matrix3",4,cells),
+          g(kind,0,false,correctPos),
+          CORNERS.filter(x=>x!==correctPos).map(x=>g(kind,0,false,x)),
+          start+(dir<0?23:11)
+        ))
+      }
+    }
+  }
+
+  const triads:[GlyphKind,GlyphKind,GlyphKind][]=[
+    ["triangle","square","circle"],["diamond","pentagon","hexagon"],["square","circle","diamond"],
+    ["triangle","pentagon","circle"],["hexagon","diamond","square"],
+  ]
+  triads.forEach((set,offset)=>{
+    for(let phase=0;phase<3;phase++){
+      const cells:Glyph[]=[]
+      for(let row=0;row<3;row++){
+        for(let col=0;col<3;col++){
+          if(row===2&&col===2)continue
+          cells.push(g(set[(row+col+phase)%3],0,row===col))
+        }
+      }
+      const correctKind=set[(phase+1)%3]
+      push(optionized(
+        qbase("matrix3-shape-"+offset+"-"+phase,"matrix3-bentuk","Matriks","Matriks Siklus Bentuk 3 × 3","","matrix3",4,cells),
+        g(correctKind,0,true),
+        [g(set[(phase+2)%3],0,true),g(correctKind,0,false),g(set[phase%3],0,false)],
+        offset*7+phase
+      ))
+    }
+  })
+
+  for(const kind of ["arrow","triangle"] as GlyphKind[]){
+    for(const angle of [0,90,180,270]){
+      for(const dot of CORNERS){
+        const correctAngle=normAngle(-angle)
+        const correctDot=mirrorPosVertical(dot)
+        push(optionized(
+          qbase("mirror-v-"+kind+"-"+angle+"-"+dot,"cermin-vertikal","Cermin","Cermin Vertikal","Pantulkan bentuk dan titik dari kiri ke kanan.","single",3,[g(kind,angle,false,dot)]),
+          g(kind,correctAngle,false,correctDot),
+          [
+            g(kind,normAngle(correctAngle+90),false,correctDot),
+            g(kind,correctAngle,false,dot),
+            g(kind,normAngle(correctAngle+180),false,mirrorPosHorizontal(dot)),
+          ],
+          angle+CORNERS.indexOf(dot)
+        ))
+      }
+    }
+  }
+
+  for(const kind of ["arrow","triangle"] as GlyphKind[]){
+    for(const angle of [0,90,180,270]){
+      for(const dot of CORNERS){
+        const correctAngle=normAngle(180-angle)
+        const correctDot=mirrorPosHorizontal(dot)
+        push(optionized(
+          qbase("mirror-h-"+kind+"-"+angle+"-"+dot,"cermin-horizontal","Cermin","Cermin Horizontal","Pantulkan bentuk dan titik dari atas ke bawah.","single",3,[g(kind,angle,false,dot)]),
+          g(kind,correctAngle,false,correctDot),
+          [
+            g(kind,normAngle(correctAngle+90),false,correctDot),
+            g(kind,correctAngle,false,dot),
+            g(kind,normAngle(correctAngle+180),false,mirrorPosVertical(dot)),
+          ],
+          angle+CORNERS.indexOf(dot)+41
+        ))
+      }
+    }
+  }
+
+  const foldOneCases:{hole:Pos;correct:Pos[]}[]=[
+    {hole:"r",correct:["l","r"]},{hole:"tr",correct:["tl","tr"]},{hole:"br",correct:["bl","br"]},
+  ]
+  foldOneCases.forEach((item,i)=>{
+    push(optionized(
+      qbase("fold-one-"+item.hole,"lipat-satu","Lipat Kertas","Satu Lipatan Vertikal","Kertas dilipat pada garis vertikal. Pilih pola lubang setelah kertas dibuka.","single",3,[g("fold",0,false,item.hole,undefined,1)]),
+      g("holes",0,false,undefined,item.correct),
+      [g("holes",0,false,undefined,["t","b"]),g("holes",0,false,undefined,["tl","br"]),g("holes",0,false,undefined,["c"])],
+      i+7
+    ))
+  })
+  for(const hole of CORNERS){
+    push(optionized(
+      qbase("fold-two-"+hole,"lipat-dua","Lipat Kertas","Dua Lipatan","Kertas dilipat pada sumbu vertikal dan horizontal. Pilih pola lubang setelah dibuka.","single",4,[g("fold",0,false,hole,undefined,2)]),
+      g("holes",0,false,undefined,["tl","tr","bl","br"]),
+      [g("holes",0,false,undefined,["tl","tr"]),g("holes",0,false,undefined,["l","r"]),g("holes",0,false,undefined,["tl","br"])],
+      CORNERS.indexOf(hole)+19
+    ))
+  }
+
+  for(const offset of [-1,1]){
+    for(let anomaly=0;anomaly<4;anomaly++){
+      const options=CARDINAL.map((_,i)=>{
+        const normal=rotatePos(CARDINAL[i],offset)
+        const dot=i===anomaly?rotatePos(normal,2):normal
+        return g("arrow",i*90,false,dot)
+      })
+      push(optionized(
+        qbase("odd-relation-"+offset+"-"+anomaly,"klasifikasi-relasi","Klasifikasi","Pilih Hubungan Arah-Titik yang Berbeda","Tiga pilihan mengikuti hubungan arah panah dan posisi titik yang sama. Pilih satu yang berbeda.","odd",3,[]),
+        options[anomaly],
+        options.filter((_,i)=>i!==anomaly),
+        anomaly+(offset<0?29:3)
+      ))
+    }
+  }
+
+  const combos:{a:Glyph;b:Glyph;correct:Glyph;wrong:Glyph[]}[]=[
+    {a:g("bar",0),b:g("bar",90),correct:g("plus"),wrong:[g("x"),g("bar",45),g("star")]},
+    {a:g("bar",45),b:g("bar",135),correct:g("x"),wrong:[g("plus"),g("bar",0),g("star")]},
+    {a:g("plus"),b:g("x"),correct:g("star"),wrong:[g("plus"),g("x"),g("bar",90)]},
+  ]
+  combos.forEach((item,i)=>{
+    push(optionized(
+      qbase("combine-lines-"+i,"gabungan-bentuk","Gabungan","Gabungkan Kedua Bentuk","","combine",3,[item.a,item.b]),
+      item.correct,item.wrong,i*7
+    ))
+  })
+
+  for(const kind of ["notch","corner","hook"] as GlyphKind[]){
+    for(const start of [0,90,180,270]){
+      for(const turn of [90,180,270]){
+        const correctRotation=normAngle(start+turn)
+        const distractors=[0,90,180,270].filter(v=>v!==correctRotation).map(v=>g(kind,v))
+        push(optionized(
+          qbase("spatial-rotation-"+kind+"-"+start+"-"+turn,"rotasi-spasial","Spasial","Manakah Hasil Rotasi "+turn+"°?","Putar bentuk "+turn+"° searah jarum jam, lalu pilih hasil yang sama.","single",turn===180?3:4,[g(kind,start)]),
+          g(kind,correctRotation),
+          distractors,
+          start+turn+5
+        ))
+      }
+    }
+  }
+
+  for(const kind of ["triangle","square","diamond","pentagon","hexagon","circle"] as GlyphKind[]){
+    for(let variant=0;variant<3;variant++){
+      const correct=g(kind,0,false,variant===0?"c":variant===1?"t":"b")
+      push(optionized(
+        qbase("symmetry-v-"+kind+"-"+variant,"simetri","Simetri","Pilih Bentuk yang Simetris Vertikal","Perhitungkan bentuk dan posisi titik terhadap sumbu vertikal.","odd",3,[]),
+        correct,
+        [g(kind,0,false,"l"),g(kind,0,false,"tr"),g(kind,0,false,"br")],
+        variant+SHAPES.indexOf(kind)*5
+      ))
+    }
+  }
+
+  for(let i=0;i<SHAPES.length;i++){
+    const a=SHAPES[i]
+    const b=SHAPES[(i+3)%SHAPES.length]
+    for(const turns of [1,2]){
+      const startDot=CORNERS[i%4]
+      const cDot=CORNERS[(i+2)%4]
+      const correctDot=rotatePos(cDot,turns)
+      push(optionized(
+        qbase("analogy-complex-"+i+"-"+turns,"analogi-majemuk","Analogi","Transformasi Majemuk","","analogy",4,[
+          g(a,0,false,startDot),g(a,turns*90,true,rotatePos(startDot,turns)),g(b,0,false,cDot),
+        ]),
+        g(b,turns*90,true,correctDot),
+        [g(b,turns*90,false,correctDot),g(b,0,true,correctDot),g(b,turns*90,true,cDot)],
+        i*13+turns
+      ))
+    }
+  }
+
+  const ids=new Set<string>()
+  const structures=new Set<string>()
+  const clean:Question[]=[]
+  for(const item of bank){
+    const structure=JSON.stringify([item.family,item.layout,item.cells.map(glyphKey),item.options.map(glyphKey),item.answer])
+    if(ids.has(item.id)||structures.has(structure))continue
+    ids.add(item.id)
+    structures.add(structure)
+    clean.push(item)
+  }
+  if(clean.length<300)throw new Error("Visual IQ bank below 300 validated variants: "+clean.length)
+  return clean
+}
+
+const QUESTIONS=buildQuestionBank()
 
 const posXY:Record<Pos,[number,number]>={
   tl:[33,33],tr:[67,33],bl:[33,67],br:[67,67],c:[50,50],t:[50,28],r:[72,50],b:[50,72],l:[28,50]
@@ -119,22 +522,49 @@ function shuffle<T>(items:T[]){
   return arr
 }
 function pick<T>(items:T[],count:number){return shuffle(items).slice(0,count)}
+
 function makeSet(){
-  let previous:string[]=[]
-  try{previous=JSON.parse(localStorage.getItem("alzava.visual-iq.last-set")||"[]")}catch{}
-  const fresh=QUESTIONS.filter(q=>!previous.includes(q.id))
-  const source=fresh.length>=20?fresh:QUESTIONS
-  const d2=source.filter(q=>q.difficulty===2)
-  const d3=source.filter(q=>q.difficulty===3)
-  const d4=source.filter(q=>q.difficulty===4)
-  const selected=shuffle([...pick(d2,3),...pick(d3,9),...pick(d4,8)])
-  if(selected.length<20){
-    const used=new Set(selected.map(q=>q.id))
-    selected.push(...shuffle(source.filter(q=>!used.has(q.id))).slice(0,20-selected.length))
+  let recent:string[]=[]
+  try{recent=JSON.parse(localStorage.getItem("alzava.visual-iq.recent-questions")||"[]")}catch{}
+  const recentSet=new Set(recent.slice(0,180))
+  const fresh=QUESTIONS.filter(q=>!recentSet.has(q.id))
+  const selected:Question[]=[]
+  const familyCount=new Map<string,number>()
+
+  const addFrom=(pool:Question[],needed:number)=>{
+    for(const item of shuffle(pool)){
+      if(selected.length>=30||needed<=0)break
+      if(selected.some(x=>x.id===item.id))continue
+      if((familyCount.get(item.family)||0)>=2)continue
+      selected.push(item)
+      familyCount.set(item.family,(familyCount.get(item.family)||0)+1)
+      needed--
+    }
+    return needed
   }
-  try{localStorage.setItem("alzava.visual-iq.last-set",JSON.stringify(selected.map(q=>q.id)))}catch{}
-  return selected.slice(0,20)
+
+  const quotas:[2|3|4,number][]=[[2,5],[3,15],[4,10]]
+  for(const [difficulty,count] of quotas){
+    let left=addFrom(fresh.filter(q=>q.difficulty===difficulty),count)
+    if(left>0)addFrom(QUESTIONS.filter(q=>q.difficulty===difficulty),left)
+  }
+  if(selected.length<30)addFrom(fresh,30-selected.length)
+  if(selected.length<30){
+    for(const item of shuffle(QUESTIONS)){
+      if(selected.length>=30)break
+      if(!selected.some(x=>x.id===item.id))selected.push(item)
+    }
+  }
+
+  const finalSet=shuffle(selected.slice(0,30))
+  try{
+    const currentIds=new Set(finalSet.map(q=>q.id))
+    const nextRecent=[...finalSet.map(q=>q.id),...recent.filter(id=>!currentIds.has(id))].slice(0,180)
+    localStorage.setItem("alzava.visual-iq.recent-questions",JSON.stringify(nextRecent))
+  }catch{}
+  return finalSet
 }
+
 function resultFor(questions:Question[],answers:number[]){
   let correct=0,earned=0,total=0
   const breakdown:Record<string,{correct:number,total:number}>={}
@@ -189,7 +619,7 @@ export function VisualIqGame(){
       .catch(()=>setAuth("guest"))
   },[])
 
-  const started=questions.length===20
+  const started=questions.length===30
   const done=started&&index>=questions.length
   const current=questions[index]
   const elapsed=Math.max(0,Math.round(((finishedAt||Date.now())-startedAt)/1000))
@@ -251,7 +681,7 @@ export function VisualIqGame(){
           question_ids:questions.map(q=>q.id),
           answers,
           correct_count:result.correct,
-          question_count:20,
+          question_count:30,
           iq_estimate:result.iq,
           duration_ms:elapsed*1000,
           breakdown:result.breakdown
@@ -344,7 +774,7 @@ export function VisualIqGame(){
     ctx.font="900 34px Arial"
     ctx.fillText("± 5 POIN  •  "+tier,540,635)
 
-    const statValues=[result.correct+"/20",accuracy+"%",Math.floor(elapsed/60)+":"+String(elapsed%60).padStart(2,"0")]
+    const statValues=[result.correct+"/30",accuracy+"%",Math.floor(elapsed/60)+":"+String(elapsed%60).padStart(2,"0")]
     const statLabels=["BENAR","AKURASI","WAKTU"]
     statValues.forEach((value,i)=>{
       const x=250+i*290
@@ -367,7 +797,7 @@ export function VisualIqGame(){
     ctx.fillText("BERANI KALAHKAN HASILKU?",540,1040)
     ctx.fillStyle="#e2e8f0"
     ctx.font="700 28px Arial"
-    ctx.fillText("20 soal figural & spasial • ALZAVA",540,1100)
+    ctx.fillText("30 soal figural & spasial • ALZAVA",540,1100)
     ctx.fillStyle="#67e8f9"
     ctx.font="800 25px Arial"
     ctx.fillText("alzava-battle-iq.pages.dev/visual-iq",540,1160)
@@ -380,7 +810,7 @@ export function VisualIqGame(){
 
   async function shareResult(){
     const url=window.location.origin+"/visual-iq/"
-    const text="🧠 Hasil Tes IQ Visual ALZAVA\nEstimasi IQ Visual: "+result.iq+" ± 5\n"+result.correct+"/20 benar • "+accuracy+"% akurasi • "+Math.floor(elapsed/60)+":"+String(elapsed%60).padStart(2,"0")+"\n\nBerani kalahkan hasilku? "+url
+    const text="🧠 Hasil Tes IQ Visual ALZAVA\nEstimasi IQ Visual: "+result.iq+" ± 5\n"+result.correct+"/30 benar • "+accuracy+"% akurasi • "+Math.floor(elapsed/60)+":"+String(elapsed%60).padStart(2,"0")+"\n\nBerani kalahkan hasilku? "+url
     setShareMessage("")
     try{
       const blob=await makeShareImage()
@@ -428,10 +858,10 @@ export function VisualIqGame(){
       <div className="rounded-[28px] border border-cyan-300/20 bg-slate-950/55 p-5 shadow-[0_24px_70px_rgba(0,0,0,.35)] backdrop-blur-xl">
         <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[.16em] text-cyan-300"><Sparkles className="h-4 w-4"/>Tes Visual Interaktif</div>
         <h1 className="mt-3 text-4xl font-black leading-[.98]">Ketahui <span className="bg-gradient-to-r from-cyan-300 via-violet-300 to-fuchsia-300 bg-clip-text text-transparent">IQ-mu</span></h1>
-        <p className="mt-4 text-sm leading-6 text-slate-300">20 soal dipilih dari bank yang lebih besar. Setiap percobaan mencampur matriks, analogi, rotasi, lipat kertas, cermin, pola, klasifikasi, dan spasial.</p>
+        <p className="mt-4 text-sm leading-6 text-slate-300">30 soal dipilih dari bank lebih dari 300 varian tervalidasi. Setiap percobaan mencampur matriks, analogi, rotasi, lipat kertas, cermin, pola, klasifikasi, dan spasial.</p>
         <div className="mt-5 grid grid-cols-3 gap-2 text-center text-[10px] font-bold text-slate-300">
-          <div className="rounded-xl border border-white/10 bg-white/[.04] p-3"><BrainCircuit className="mx-auto mb-1 h-5 w-5 text-cyan-300"/>20 Soal</div>
-          <div className="rounded-xl border border-white/10 bg-white/[.04] p-3"><Clock3 className="mx-auto mb-1 h-5 w-5 text-violet-300"/>±12 Menit</div>
+          <div className="rounded-xl border border-white/10 bg-white/[.04] p-3"><BrainCircuit className="mx-auto mb-1 h-5 w-5 text-cyan-300"/>30 Soal</div>
+          <div className="rounded-xl border border-white/10 bg-white/[.04] p-3"><Clock3 className="mx-auto mb-1 h-5 w-5 text-violet-300"/>±18 Menit</div>
           <div className="rounded-xl border border-white/10 bg-white/[.04] p-3"><Trophy className="mx-auto mb-1 h-5 w-5 text-amber-300"/>Maks. 150</div>
         </div>
       </div>
@@ -439,7 +869,7 @@ export function VisualIqGame(){
         <div className="text-xs font-black uppercase tracking-[.14em] text-cyan-300">Halo, {participant?.nickname||"Peserta"}</div>
         <div className="mt-2 text-3xl font-black">Mulai Tes IQ Visual</div>
         <div className="mt-1 text-sm text-slate-300">Hasil otomatis tersimpan ke akun dan Riwayat Tes.</div>
-        <div className="mt-4 inline-flex items-center gap-2 rounded-xl bg-cyan-300 px-4 py-2.5 text-sm font-black text-slate-950"><Play className="h-4 w-4"/>MULAI 20 SOAL</div>
+        <div className="mt-4 inline-flex items-center gap-2 rounded-xl bg-cyan-300 px-4 py-2.5 text-sm font-black text-slate-950"><Play className="h-4 w-4"/>MULAI 30 SOAL</div>
       </button>
       <p className="mt-4 text-center text-[11px] leading-5 text-slate-500">Estimasi IQ Visual adalah indikasi kemampuan figural-spasial, bukan diagnosis atau hasil psikotes klinis resmi.</p>
     </main>
@@ -456,7 +886,7 @@ export function VisualIqGame(){
         <div className="mt-2 inline-flex rounded-full border border-amber-300/20 bg-amber-300/10 px-3 py-1 text-[10px] font-black tracking-[.12em] text-amber-200">{tier}</div>
 
         <div className="mt-5 grid grid-cols-3 gap-2">
-          <div className="rounded-xl border border-white/10 bg-white/[.04] p-3"><div className="text-xl font-black">{result.correct}/20</div><div className="mt-1 text-[9px] font-bold text-slate-500">BENAR</div></div>
+          <div className="rounded-xl border border-white/10 bg-white/[.04] p-3"><div className="text-xl font-black">{result.correct}/30</div><div className="mt-1 text-[9px] font-bold text-slate-500">BENAR</div></div>
           <div className="rounded-xl border border-white/10 bg-white/[.04] p-3"><div className="text-xl font-black">{accuracy}%</div><div className="mt-1 text-[9px] font-bold text-slate-500">AKURASI</div></div>
           <div className="rounded-xl border border-white/10 bg-white/[.04] p-3"><div className="text-xl font-black">{Math.floor(elapsed/60)}:{String(elapsed%60).padStart(2,"0")}</div><div className="mt-1 text-[9px] font-bold text-slate-500">WAKTU</div></div>
         </div>
@@ -479,7 +909,7 @@ export function VisualIqGame(){
         <a href="/account/results#riwayat-iq" className="grid min-h-12 place-items-center rounded-xl border border-white/10 bg-white/[.06] text-sm font-black">Lihat Riwayat</a>
       </div>
       <a href="/battle" className="mt-3 flex min-h-11 items-center justify-center text-sm font-bold text-slate-400 hover:text-white"><ArrowLeft className="mr-2 h-4 w-4"/>Kembali ke Battle Point</a>
-      <p className="mt-2 text-center text-[10px] leading-4 text-slate-600">Estimasi indikatif dari 20 soal visual; bukan hasil psikotes klinis.</p>
+      <p className="mt-2 text-center text-[10px] leading-4 text-slate-600">Estimasi indikatif dari 30 soal visual; bukan hasil psikotes klinis.</p>
     </main>
   </div>
 
@@ -508,13 +938,13 @@ export function VisualIqGame(){
         {current.layout==="analogy"&&<div className="grid min-h-[220px] grid-cols-[1fr_auto_1fr] items-center gap-2"><div className="flex justify-center"><GlyphView glyph={current.cells[0]}/></div><span className="text-2xl font-black text-slate-500">:</span><div className="flex justify-center"><GlyphView glyph={current.cells[1]}/></div><div className="flex justify-center"><GlyphView glyph={current.cells[2]}/></div><span className="text-2xl font-black text-slate-500">:</span><div className="flex justify-center"><div className="grid h-20 w-20 place-items-center rounded-[18px] border border-dashed border-cyan-300/35 bg-cyan-300/[.04] text-3xl font-black text-cyan-300">?</div></div></div>}
         {current.layout==="matrix2"&&<div className="mx-auto grid min-h-[210px] max-w-[200px] grid-cols-2 place-items-center gap-3"><GlyphView glyph={current.cells[0]}/><GlyphView glyph={current.cells[1]}/><GlyphView glyph={current.cells[2]}/><div className="grid h-20 w-20 place-items-center rounded-[18px] border border-dashed border-cyan-300/35 bg-cyan-300/[.04] text-3xl font-black text-cyan-300">?</div></div>}
         {current.layout==="matrix3"&&<div className="mx-auto grid min-h-[260px] max-w-[280px] grid-cols-3 place-items-center gap-1.5">{current.cells.map((x,i)=><GlyphView key={i} glyph={x} small/>)}<div className="grid h-14 w-14 place-items-center rounded-[14px] border border-dashed border-cyan-300/35 bg-cyan-300/[.04] text-2xl font-black text-cyan-300">?</div></div>}
-        {current.layout==="single"&&current.id==="notch-rotation"&&<div className="flex min-h-[170px] flex-col items-center justify-center">
+        {current.layout==="single"&&current.family==="rotasi-spasial"&&<div className="flex min-h-[170px] flex-col items-center justify-center">
           <GlyphView glyph={current.cells[0]}/>
           <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-violet-300/20 bg-violet-300/10 px-3 py-1.5 text-xs font-black text-violet-200">
-            <RotateCcw className="h-4 w-4"/> PUTAR 180°
+            <RotateCcw className="h-4 w-4"/> ROTASI SPASIAL
           </div>
         </div>}
-        {current.layout==="single"&&current.id!=="notch-rotation"&&<div className="flex min-h-[170px] items-center justify-center"><GlyphView glyph={current.cells[0]}/></div>}
+        {current.layout==="single"&&current.family!=="rotasi-spasial"&&<div className="flex min-h-[170px] items-center justify-center"><GlyphView glyph={current.cells[0]}/></div>}
         {current.layout==="combine"&&<div className="flex min-h-[170px] items-center justify-center gap-2"><GlyphView glyph={current.cells[0]}/><span className="text-2xl font-black text-slate-500">+</span><GlyphView glyph={current.cells[1]}/><span className="text-2xl font-black text-slate-500">=</span><div className="grid h-20 w-20 place-items-center rounded-[18px] border border-dashed border-cyan-300/35 bg-cyan-300/[.04] text-3xl font-black text-cyan-300">?</div></div>}
 
       </div>
