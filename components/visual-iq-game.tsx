@@ -202,13 +202,15 @@ function buildQuestionBank(){
         }
         const correctKind=set[(4+phase)%3]
         const correctFilled=diagMode===0
+        const wrongKindA=set[(phase+2)%3]
+        const wrongKindB=set[phase%3]
         push(optionized(
           baseQuestion("abs-m3-shape-"+ti+"-"+phase+"-"+diagMode,"matrix-bentuk","abstract","Abstrak","Matriks Bentuk dan Isi 3 × 3","","matrix3",4,cells),
           g(correctKind,0,correctFilled),
           [
             g(correctKind,0,!correctFilled),
-            g(set[(phase+1)%3],0,correctFilled),
-            g(set[(phase+2)%3],0,!correctFilled),
+            g(wrongKindA,0,correctFilled),
+            g(wrongKindB,0,!correctFilled),
           ],
           ti*11+phase*3+diagMode
         ))
