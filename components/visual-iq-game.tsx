@@ -500,8 +500,8 @@ function buildQuestionBank(){
 
   verbalItems.forEach((item,index)=>{
     push(textQuestion(
-      item[0],item[1],"verbal","Verbal",item[2],item[0].includes("log")||item[0].includes("cond")||item[0].includes("class")?4:item[0].includes("order")||item[0].includes("cause")||item[0].includes("ana-5")||item[0].includes("ana-6")||item[0].includes("ana-7")||item[0].includes("ana-8")?3:2,
-      item[3],item[4],[...item[5]],index*7+3
+      item[0],item[1],"verbal","Verbal",item[2],item[3],
+      item[4],item[5],[...item[6]],index*7+3
     ))
   })
 
