@@ -711,7 +711,7 @@ function resultFor(questions:Question[],answers:number[]){
     breakdown[label]=current
   })
   const ratio=total?earned/total:0
-  const iq=Math.max(70,Math.min(165,Math.round(70+95*ratio)))
+  const iq=Math.max(70,Math.min(160,Math.round(70+90*ratio)))
   return {correct,iq,breakdown}
 }
 function tierFor(iq:number){
@@ -1011,7 +1011,7 @@ export function VisualIqGame(){
         <div className="mt-5 grid grid-cols-3 gap-2 text-center text-[10px] font-bold text-slate-300">
           <div className="rounded-xl border border-white/10 bg-white/[.04] p-3"><BrainCircuit className="mx-auto mb-1 h-5 w-5 text-cyan-300"/>35 Soal</div>
           <div className="rounded-xl border border-white/10 bg-white/[.04] p-3"><Clock3 className="mx-auto mb-1 h-5 w-5 text-violet-300"/>±22 Menit</div>
-          <div className="rounded-xl border border-white/10 bg-white/[.04] p-3"><Trophy className="mx-auto mb-1 h-5 w-5 text-amber-300"/>Maks. 165</div>
+          <div className="rounded-xl border border-white/10 bg-white/[.04] p-3"><Trophy className="mx-auto mb-1 h-5 w-5 text-amber-300"/>Maks. 160</div>
         </div>
       </div>
       <button type="button" onClick={start} className="mt-4 w-full rounded-2xl border border-cyan-300/35 bg-gradient-to-r from-cyan-500/18 via-indigo-500/18 to-violet-500/18 p-5 text-left shadow-[0_0_30px_rgba(34,211,238,.10)]">
