@@ -76,6 +76,10 @@ export default function AccountPage() {
   const [loading, setLoading] = useState(true)
   const [busy, setBusy] = useState(false)
   const [tab, setTab] = useState<"login" | "register">("login")
+  useEffect(()=>{
+    const mode=new URLSearchParams(window.location.search).get("mode")
+    if(mode==="register")setTab("register")
+  },[])
   const [token, setToken] = useState("")
   const [participant, setParticipant] = useState<Participant | null>(null)
   const [notice, setNotice] = useState("")
