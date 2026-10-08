@@ -51,7 +51,8 @@ type VisualIqItem = {
 }
 
 function iqLevelFor(iq:number){
-  if(iq>=140)return "Sangat Tinggi"
+  if(iq>=160)return "Genius 160+"
+  if(iq>=145)return "Genius"
   if(iq>=130)return "Sangat Superior"
   if(iq>=120)return "Superior"
   if(iq>=110)return "Di Atas Rata-rata"
@@ -171,7 +172,7 @@ export default function AccountResultsPage(){
             <div>
               <div className="flex items-center gap-2 text-cyan-300"><BrainCircuit className="h-5 w-5"/><p className="text-[10px] font-black uppercase tracking-[.18em]">Riwayat Tes IQ</p></div>
               <h2 className="mt-2 text-2xl font-black">Estimasi IQ tersimpan di akun</h2>
-              <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-400">Setiap tes selesai direkam bersama jumlah benar, waktu, dan tanggal. Nilai tertinggi Tes IQ dibatasi maksimal 150.</p>
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-400">Setiap tes selesai direkam bersama jumlah benar, waktu, dan tanggal. Nilai tertinggi Tes IQ dibatasi maksimal 165.</p>
             </div>
             <div className="flex items-center gap-2">
               {visualBest?.iq_estimate ? <span className="rounded-full border border-amber-300/20 bg-amber-300/10 px-3 py-1.5 text-xs font-black text-amber-200">Best IQ {visualBest.iq_estimate}</span> : null}
@@ -192,7 +193,7 @@ export default function AccountResultsPage(){
                   <div className="mt-1 bg-gradient-to-r from-cyan-300 to-violet-300 bg-clip-text text-5xl font-black text-transparent">{item.iq_estimate ?? "—"}</div>
                   {item.iq_estimate ? <div className="mt-2 inline-flex rounded-full border border-cyan-300/15 bg-cyan-300/[.07] px-2.5 py-1 text-[10px] font-black text-cyan-100">Tingkat IQ · {iqLevelFor(Number(item.iq_estimate))}</div> : null}
                   <div className="mt-4 grid grid-cols-2 gap-2 text-xs">
-                    <span className="rounded-lg bg-white/5 px-3 py-2 text-slate-300">{item.correct_count ?? 0}/{item.question_count ?? 30} benar · {accuracy}%</span>
+                    <span className="rounded-lg bg-white/5 px-3 py-2 text-slate-300">{item.correct_count ?? 0}/{item.question_count ?? 35} benar · {accuracy}%</span>
                     <span className="rounded-lg bg-white/5 px-3 py-2 text-slate-300">{formatDuration(item.duration_ms)}</span>
                   </div>
                   <p className="mt-4 text-xs text-slate-500">{item.created_at ? new Date(item.created_at).toLocaleString("id-ID",{day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"}) : ""}</p>
