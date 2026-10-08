@@ -50,6 +50,16 @@ type VisualIqItem = {
   created_at?: string
 }
 
+function iqLevelFor(iq:number){
+  if(iq>=140)return "Sangat Tinggi"
+  if(iq>=130)return "Sangat Superior"
+  if(iq>=120)return "Superior"
+  if(iq>=110)return "Di Atas Rata-rata"
+  if(iq>=90)return "Rata-rata"
+  if(iq>=80)return "Rata-rata Rendah"
+  return "Di Bawah Rata-rata"
+}
+
 async function accountApi(token:string) {
   const response=await fetch(ACCOUNT_API,{
     method:"POST",
@@ -180,6 +190,7 @@ export default function AccountResultsPage(){
                   </div>
                   <div className="mt-4 text-sm font-bold text-slate-400">Estimasi IQ</div>
                   <div className="mt-1 bg-gradient-to-r from-cyan-300 to-violet-300 bg-clip-text text-5xl font-black text-transparent">{item.iq_estimate ?? "—"}</div>
+                  {item.iq_estimate ? <div className="mt-2 inline-flex rounded-full border border-cyan-300/15 bg-cyan-300/[.07] px-2.5 py-1 text-[10px] font-black text-cyan-100">Tingkat IQ · {iqLevelFor(Number(item.iq_estimate))}</div> : null}
                   <div className="mt-4 grid grid-cols-2 gap-2 text-xs">
                     <span className="rounded-lg bg-white/5 px-3 py-2 text-slate-300">{item.correct_count ?? 0}/{item.question_count ?? 30} benar · {accuracy}%</span>
                     <span className="rounded-lg bg-white/5 px-3 py-2 text-slate-300">{formatDuration(item.duration_ms)}</span>
