@@ -181,7 +181,7 @@ export default function AccountResultsPage(){
                   <div className="mt-4 text-sm font-bold text-slate-400">Estimasi IQ Visual</div>
                   <div className="mt-1 bg-gradient-to-r from-cyan-300 to-violet-300 bg-clip-text text-5xl font-black text-transparent">{item.iq_estimate ?? "—"}</div>
                   <div className="mt-4 grid grid-cols-2 gap-2 text-xs">
-                    <span className="rounded-lg bg-white/5 px-3 py-2 text-slate-300">{item.correct_count ?? 0}/{item.question_count ?? 20} benar · {accuracy}%</span>
+                    <span className="rounded-lg bg-white/5 px-3 py-2 text-slate-300">{item.correct_count ?? 0}/{item.question_count ?? 30} benar · {accuracy}%</span>
                     <span className="rounded-lg bg-white/5 px-3 py-2 text-slate-300">{formatDuration(item.duration_ms)}</span>
                   </div>
                   <p className="mt-4 text-xs text-slate-500">{item.created_at ? new Date(item.created_at).toLocaleString("id-ID",{day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"}) : ""}</p>
