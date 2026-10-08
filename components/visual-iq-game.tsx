@@ -69,8 +69,46 @@ function mirrorPosHorizontal(pos:Pos):Pos{
   const map:Partial<Record<Pos,Pos>>={tl:"bl",bl:"tl",tr:"br",br:"tr",t:"b",b:"t",l:"l",r:"r",c:"c"}
   return map[pos]||pos
 }
+function visualRotation(kind:GlyphKind,rotation:number){
+  const angle=normAngle(rotation)
+  const period:Partial<Record<GlyphKind,number>>={
+    circle:1,
+    square:90,
+    diamond:90,
+    triangle:120,
+    pentagon:72,
+    hexagon:60,
+    plus:90,
+    x:90,
+    star:45,
+    bar:180,
+    fold:180,
+    holes:180,
+  }
+  const p=period[kind]
+  return p ? angle%p : angle
+}
+
+function visibleFill(kind:GlyphKind,filled?:boolean){
+  const fillSensitive:GlyphKind[]=["triangle","square","circle","diamond","pentagon","hexagon","notch"]
+  return fillSensitive.includes(kind)?Boolean(filled):false
+}
+
+function visibleVariant(kind:GlyphKind,variant?:number){
+  return kind==="fold" ? (variant||0) : 0
+}
+
 function glyphKey(x:Glyph){
-  return JSON.stringify([x.kind,normAngle(x.rotation||0),Boolean(x.filled),x.dot||"",[...(x.dots||[])].sort(),x.variant||0])
+  // Compare what the player can actually see, not raw generator properties.
+  // Dots are drawn outside the rotated <g>, so their screen position is independent of shape rotation.
+  return JSON.stringify([
+    x.kind,
+    visualRotation(x.kind,x.rotation||0),
+    visibleFill(x.kind,x.filled),
+    x.dot||"",
+    [...(x.dots||[])].sort(),
+    visibleVariant(x.kind,x.variant),
+  ])
 }
 
 function baseQuestion(
