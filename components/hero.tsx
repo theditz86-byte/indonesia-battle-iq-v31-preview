@@ -55,7 +55,7 @@ export function Hero({ season, entries, participant }: { season: BattleSeason | 
                   <span className="text-[12px] font-black text-white">Tes IQ</span>
                   <span className="rounded-full bg-cyan-300 px-1.5 py-0.5 text-[8px] font-black uppercase tracking-[.1em] text-slate-950">Baru</span>
                 </span>
-                <span className="mt-0.5 block truncate text-[10px] font-bold text-slate-400">Ketahui IQ-mu · 30 soal IQ multi-domain</span>
+                <span className="mt-0.5 block truncate text-[10px] font-bold text-slate-400">Ketahui IQ-mu · 35 soal IQ multi-domain</span>
               </span>
               <ArrowRight className="h-4 w-4 shrink-0 text-cyan-300 transition-transform group-hover:translate-x-0.5" />
             </a>
@@ -85,7 +85,7 @@ export function Hero({ season, entries, participant }: { season: BattleSeason | 
             ) : (
               <>
                 <div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] font-extrabold text-cyan-100/90">
-                  <span>30 soal</span><span className="text-slate-500">•</span>
+                  <span>35 soal</span><span className="text-slate-500">•</span>
                   <span>20 menit</span><span className="text-slate-500">•</span>
                   <span>3 Ranked gratis/minggu</span><span className="text-slate-500">•</span>
                   <span>Best Score Ranking</span>
