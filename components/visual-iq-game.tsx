@@ -712,6 +712,15 @@ function tierFor(iq:number){
   if(iq>=100)return "PERAK"
   return "PERUNGGU"
 }
+function iqLevelFor(iq:number){
+  if(iq>=140)return "Sangat Tinggi"
+  if(iq>=130)return "Sangat Superior"
+  if(iq>=120)return "Superior"
+  if(iq>=110)return "Di Atas Rata-rata"
+  if(iq>=90)return "Rata-rata"
+  if(iq>=80)return "Rata-rata Rendah"
+  return "Di Bawah Rata-rata"
+}
 
 export function VisualIqGame(){
   const [auth,setAuth]=useState<"loading"|"ready"|"guest">("loading")
@@ -730,15 +739,23 @@ export function VisualIqGame(){
   const savedRef=useRef(false)
 
   useEffect(()=>{
+    const registerUrl="/account?next=%2Fvisual-iq&mode=register"
     const token=getParticipantToken()
-    if(!token){setAuth("guest");return}
+    if(!token){
+      window.location.replace(registerUrl)
+      return
+    }
     void fetch(ACCOUNT_API,{method:"POST",headers:{"Content-Type":"application/json","X-Battle-Token":token},body:JSON.stringify({action:"me"}),cache:"no-store"})
       .then(async r=>({ok:r.ok,data:await r.json().catch(()=>({}))}))
       .then(({ok,data})=>{
-        if(ok&&data?.participant?.account_ready){setParticipant(data.participant);setAuth("ready")}
-        else setAuth("guest")
+        if(ok&&data?.participant?.account_ready===true){
+          setParticipant(data.participant)
+          setAuth("ready")
+          return
+        }
+        window.location.replace(registerUrl)
       })
-      .catch(()=>setAuth("guest"))
+      .catch(()=>window.location.replace(registerUrl))
   },[])
 
   const started=questions.length===30
@@ -748,6 +765,7 @@ export function VisualIqGame(){
   const result=useMemo(()=>resultFor(questions,answers),[questions,answers])
   const accuracy=questions.length?Math.round((result.correct/questions.length)*100):0
   const tier=tierFor(result.iq)
+  const iqLevel=iqLevelFor(result.iq)
 
   function start(){
     if(auth!=="ready")return
@@ -894,7 +912,10 @@ export function VisualIqGame(){
 
     ctx.fillStyle="#f8fafc"
     ctx.font="900 34px Arial"
-    ctx.fillText("± 5 POIN  •  "+tier,540,635)
+    ctx.fillText("± 5 POIN  •  "+tier,540,625)
+    ctx.fillStyle="#cbd5e1"
+    ctx.font="800 25px Arial"
+    ctx.fillText("TINGKAT IQ: "+iqLevel.toUpperCase(),540,668)
 
     const statValues=[result.correct+"/30",accuracy+"%",Math.floor(elapsed/60)+":"+String(elapsed%60).padStart(2,"0")]
     const statLabels=["BENAR","AKURASI","WAKTU"]
@@ -932,7 +953,7 @@ export function VisualIqGame(){
 
   async function shareResult(){
     const url=window.location.origin+"/visual-iq/"
-    const text="🧠 Hasil Tes IQ ALZAVA\nEstimasi IQ: "+result.iq+" ± 5\n"+result.correct+"/30 benar • "+accuracy+"% akurasi • "+Math.floor(elapsed/60)+":"+String(elapsed%60).padStart(2,"0")+"\n\nBerani kalahkan hasilku? "+url
+    const text="🧠 Hasil Tes IQ ALZAVA\nEstimasi IQ: "+result.iq+" ± 5\nTingkat IQ: "+iqLevel+"\n"+result.correct+"/30 benar • "+accuracy+"% akurasi • "+Math.floor(elapsed/60)+":"+String(elapsed%60).padStart(2,"0")+"\n\nBerani kalahkan hasilku? "+url
     setShareMessage("")
     try{
       const blob=await makeShareImage()
@@ -958,18 +979,13 @@ export function VisualIqGame(){
 
   if(auth==="loading")return <main className="grid min-h-screen place-items-center bg-[#020817] text-sm font-bold text-slate-400">Memeriksa akun…</main>
 
-  if(auth!=="ready")return <div className="min-h-screen bg-[radial-gradient(circle_at_50%_0%,rgba(67,56,202,.20),transparent_32%),linear-gradient(180deg,#020617,#061126_55%,#020617)] text-white">
-    <main className="mx-auto grid min-h-screen max-w-md place-items-center px-4 py-10">
-      <div className="w-full rounded-[28px] border border-cyan-300/20 bg-slate-950/60 p-6 text-center shadow-2xl backdrop-blur-xl">
-        <div className="mx-auto grid h-16 w-16 place-items-center rounded-2xl border border-cyan-300/25 bg-cyan-300/10"><LockKeyhole className="h-7 w-7 text-cyan-300"/></div>
-        <p className="mt-5 text-[11px] font-black uppercase tracking-[.18em] text-cyan-300">Tes IQ ALZAVA</p>
-        <h1 className="mt-2 text-3xl font-black">Daftar dulu, hasilmu akan tersimpan.</h1>
-        <p className="mt-3 text-sm leading-6 text-slate-400">Tes IQ hanya untuk peserta terdaftar agar hasil, estimasi IQ, dan riwayat percobaan tidak hilang saat ganti perangkat.</p>
-        <a href="/account?next=/visual-iq" className="mt-6 flex min-h-13 items-center justify-center rounded-xl bg-gradient-to-r from-cyan-400 to-violet-500 px-5 py-3 text-sm font-black text-slate-950">Masuk / Daftar untuk Mulai</a>
-        <a href="/battle" className="mt-3 inline-flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-white"><ArrowLeft className="h-4 w-4"/>Kembali ke Battle Point</a>
-      </div>
-    </main>
-  </div>
+  if(auth!=="ready")return <main className="grid min-h-screen place-items-center bg-[#020817] px-6 text-center text-white">
+    <div>
+      <LockKeyhole className="mx-auto h-8 w-8 text-cyan-300"/>
+      <p className="mt-3 text-sm font-black">Mengarahkan ke pendaftaran akun…</p>
+      <p className="mt-1 text-xs text-slate-500">Akun wajib dibuat sebelum Tes IQ dapat dimulai.</p>
+    </div>
+  </main>
 
   if(!started)return <div className="min-h-screen bg-[radial-gradient(circle_at_50%_0%,rgba(67,56,202,.22),transparent_32%),linear-gradient(180deg,#020617,#061126_55%,#020617)] text-white">
     <header className="mx-auto flex max-w-md items-center justify-between gap-3 px-4 py-4">
@@ -1005,7 +1021,10 @@ export function VisualIqGame(){
         <div className="mt-3 text-xs font-black uppercase tracking-[.14em] text-slate-400">{participant?.nickname||"Peserta"}</div>
         <div className="mt-1 bg-gradient-to-r from-cyan-300 to-violet-300 bg-clip-text text-7xl font-black tabular-nums text-transparent">{result.iq}</div>
         <div className="mt-1 text-sm font-black">Estimasi IQ · ± 5</div>
-        <div className="mt-2 inline-flex rounded-full border border-amber-300/20 bg-amber-300/10 px-3 py-1 text-[10px] font-black tracking-[.12em] text-amber-200">{tier}</div>
+        <div className="mt-2 flex flex-wrap items-center justify-center gap-2">
+          <span className="inline-flex rounded-full border border-amber-300/20 bg-amber-300/10 px-3 py-1 text-[10px] font-black tracking-[.12em] text-amber-200">{tier}</span>
+          <span className="inline-flex rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1 text-[10px] font-black tracking-[.08em] text-cyan-100">TINGKAT IQ · {iqLevel}</span>
+        </div>
 
         <div className="mt-5 grid grid-cols-3 gap-2">
           <div className="rounded-xl border border-white/10 bg-white/[.04] p-3"><div className="text-xl font-black">{result.correct}/30</div><div className="mt-1 text-[9px] font-bold text-slate-500">BENAR</div></div>
@@ -1015,7 +1034,7 @@ export function VisualIqGame(){
 
         <div className="mt-5 rounded-2xl border border-cyan-300/15 bg-cyan-300/[.05] p-4 text-left">
           <div className="text-[10px] font-black uppercase tracking-[.14em] text-cyan-300">Gambaran Kemampuan</div>
-          <p className="mt-2 text-sm leading-6 text-slate-300">{result.iq>=135?"Penalaran visual-spasialmu sangat kuat, terutama pada hubungan bentuk yang kompleks.":result.iq>=115?"Kemampuan visualmu kuat. Matriks, analogi, dan rotasi mental menjadi area yang layak terus diasah.":"Fondasi visual-spasialmu sudah terbentuk, tetapi konsistensi pada matriks dan transformasi kompleks masih bisa ditingkatkan."}</p>
+          <p className="mt-2 text-sm leading-6 text-slate-300">{result.iq>=135?"Performa penalaranmu sangat kuat pada kombinasi abstrak, spasial, numerik, dan verbal.":result.iq>=115?"Performa penalaranmu berada di atas rata-rata. Pertahankan konsistensi pada matriks, numerik, verbal, dan rotasi spasial.":"Fondasi penalaran sudah terbentuk. Konsistensi pada matriks, numerik, verbal, dan transformasi spasial masih dapat ditingkatkan."}</p>
         </div>
 
         <div className={`mt-4 rounded-xl border px-3 py-2 text-xs font-bold ${saveState==="saved"?"border-emerald-300/20 bg-emerald-300/10 text-emerald-200":saveState==="error"?"border-rose-300/20 bg-rose-300/10 text-rose-200":"border-white/10 bg-white/[.04] text-slate-400"}`}>
