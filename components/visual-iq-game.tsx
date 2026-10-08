@@ -201,6 +201,11 @@ function questionValid(q:Question){
   if((q.layout==="single"||q.layout==="odd")&&q.hint.trim().length<12)return false
   return true
 }
+function questionSafeForDisplay(q:Question){
+  if(!questionValid(q))return false
+  if(q.layout==="text")return Boolean(q.textOptions&&new Set(q.textOptions.map(x=>x.trim().toLowerCase())).size===4)
+  return new Set(q.options.map(glyphKey)).size===4
+}
 
 function buildQuestionBank(){
   const bank:Question[]=[]
@@ -646,8 +651,9 @@ function pick<T>(items:T[],count:number){return shuffle(items).slice(0,count)}
 function makeSet(){
   let recent:string[]=[]
   try{recent=JSON.parse(localStorage.getItem("alzava.visual-iq.recent-questions")||"[]")}catch{}
-  const recentSet=new Set(recent.slice(0,210))
+  const recentSet=new Set(recent.slice(0,245))
   const selected:Question[]=[]
+  const safeBank=QUESTIONS.filter(questionSafeForDisplay)
 
   const pickDomain=(domain:Domain,count:number,maxPerFamily:number)=>{
     const familyCount=new Map<string,number>()
@@ -656,31 +662,35 @@ function makeSet(){
         if(selected.filter(x=>x.domain===domain).length>=count)break
         if(selected.some(x=>x.id===q.id))continue
         if((familyCount.get(q.family)||0)>=maxPerFamily)continue
+        if(!questionSafeForDisplay(q))continue
         selected.push(q)
         familyCount.set(q.family,(familyCount.get(q.family)||0)+1)
       }
     }
-    take(QUESTIONS.filter(q=>q.domain===domain&&!recentSet.has(q.id)))
-    if(selected.filter(x=>x.domain===domain).length<count)take(QUESTIONS.filter(q=>q.domain===domain))
+    take(safeBank.filter(q=>q.domain===domain&&!recentSet.has(q.id)))
+    if(selected.filter(x=>x.domain===domain).length<count)take(safeBank.filter(q=>q.domain===domain))
   }
 
-  pickDomain("abstract",18,3)
-  pickDomain("spatial",4,1)
-  pickDomain("numerical",4,1)
-  pickDomain("verbal",4,1)
+  pickDomain("abstract",20,3)
+  pickDomain("spatial",5,2)
+  pickDomain("numerical",5,1)
+  pickDomain("verbal",5,1)
 
-  const domainOrder:Domain[]=["abstract","abstract","numerical","abstract","spatial","abstract","verbal","abstract","abstract","numerical","abstract","spatial","abstract","verbal","abstract","abstract","numerical","abstract","spatial","abstract","verbal","abstract","abstract","numerical","abstract","spatial","abstract","verbal","abstract","abstract"]
+  const domainOrder:Domain[]=Array.from({length:5},()=>["abstract","abstract","numerical","abstract","spatial","abstract","verbal"] as Domain[]).flat()
   const queues:Record<Domain,Question[]>={
     abstract:shuffle(selected.filter(q=>q.domain==="abstract")),
     spatial:shuffle(selected.filter(q=>q.domain==="spatial")),
     numerical:shuffle(selected.filter(q=>q.domain==="numerical")),
     verbal:shuffle(selected.filter(q=>q.domain==="verbal")),
   }
-  const finalSet=domainOrder.map(domain=>queues[domain].shift()).filter((q):q is Question=>Boolean(q)).slice(0,30)
+  const finalSet=domainOrder.map(domain=>queues[domain].shift()).filter((q):q is Question=>Boolean(q)).slice(0,35)
+  if(finalSet.length!==35||finalSet.some(q=>!questionSafeForDisplay(q))){
+    throw new Error("visual_iq_session_quality_gate")
+  }
 
   try{
     const currentIds=new Set(finalSet.map(q=>q.id))
-    const nextRecent=[...finalSet.map(q=>q.id),...recent.filter(id=>!currentIds.has(id))].slice(0,210)
+    const nextRecent=[...finalSet.map(q=>q.id),...recent.filter(id=>!currentIds.has(id))].slice(0,245)
     localStorage.setItem("alzava.visual-iq.recent-questions",JSON.stringify(nextRecent))
   }catch{}
   return finalSet
@@ -701,7 +711,7 @@ function resultFor(questions:Question[],answers:number[]){
     breakdown[label]=current
   })
   const ratio=total?earned/total:0
-  const iq=Math.max(70,Math.min(150,Math.round(70+80*ratio)))
+  const iq=Math.max(70,Math.min(165,Math.round(70+95*ratio)))
   return {correct,iq,breakdown}
 }
 function tierFor(iq:number){
@@ -713,7 +723,8 @@ function tierFor(iq:number){
   return "PERUNGGU"
 }
 function iqLevelFor(iq:number){
-  if(iq>=140)return "Sangat Tinggi"
+  if(iq>=160)return "Genius 160+"
+  if(iq>=145)return "Genius"
   if(iq>=130)return "Sangat Superior"
   if(iq>=120)return "Superior"
   if(iq>=110)return "Di Atas Rata-rata"
@@ -758,7 +769,7 @@ export function VisualIqGame(){
       .catch(()=>window.location.replace(registerUrl))
   },[])
 
-  const started=questions.length===30
+  const started=questions.length===35
   const done=started&&index>=questions.length
   const current=questions[index]
   const elapsed=Math.max(0,Math.round(((finishedAt||Date.now())-startedAt)/1000))
@@ -821,7 +832,7 @@ export function VisualIqGame(){
           question_ids:questions.map(q=>q.id),
           answers,
           correct_count:result.correct,
-          question_count:30,
+          question_count:35,
           iq_estimate:result.iq,
           duration_ms:elapsed*1000,
           breakdown:result.breakdown
@@ -917,7 +928,7 @@ export function VisualIqGame(){
     ctx.font="800 25px Arial"
     ctx.fillText("TINGKAT IQ: "+iqLevel.toUpperCase(),540,668)
 
-    const statValues=[result.correct+"/30",accuracy+"%",Math.floor(elapsed/60)+":"+String(elapsed%60).padStart(2,"0")]
+    const statValues=[result.correct+"/35",accuracy+"%",Math.floor(elapsed/60)+":"+String(elapsed%60).padStart(2,"0")]
     const statLabels=["BENAR","AKURASI","WAKTU"]
     statValues.forEach((value,i)=>{
       const x=250+i*290
@@ -940,7 +951,7 @@ export function VisualIqGame(){
     ctx.fillText("BERANI KALAHKAN HASILKU?",540,1040)
     ctx.fillStyle="#e2e8f0"
     ctx.font="700 28px Arial"
-    ctx.fillText("30 soal figural & spasial • ALZAVA",540,1100)
+    ctx.fillText("35 soal IQ multi-domain • ALZAVA",540,1100)
     ctx.fillStyle="#67e8f9"
     ctx.font="800 25px Arial"
     ctx.fillText("alzava-battle-iq.pages.dev/visual-iq",540,1160)
@@ -958,7 +969,7 @@ export function VisualIqGame(){
     try{
       const blob=await makeShareImage()
       if(blob&&typeof File!=="undefined"&&navigator.share&&navigator.canShare){
-        const file=new File([blob],"hasil-iq-visual-alzava.png",{type:"image/png"})
+        const file=new File([blob],"hasil-iq-alzava.png",{type:"image/png"})
         if(navigator.canShare({files:[file]})){
           await navigator.share({title:"Hasil Tes IQ ALZAVA",text,files:[file]})
           setShareMessage("Kartu hasil siap dibagikan.")
@@ -996,18 +1007,18 @@ export function VisualIqGame(){
       <div className="rounded-[28px] border border-cyan-300/20 bg-slate-950/55 p-5 shadow-[0_24px_70px_rgba(0,0,0,.35)] backdrop-blur-xl">
         <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[.16em] text-cyan-300"><Sparkles className="h-4 w-4"/>Tes Visual Interaktif</div>
         <h1 className="mt-3 text-4xl font-black leading-[.98]">Ketahui <span className="bg-gradient-to-r from-cyan-300 via-violet-300 to-fuchsia-300 bg-clip-text text-transparent">IQ-mu</span></h1>
-        <p className="mt-4 text-sm leading-6 text-slate-300">30 soal original: 18 abstrak/matriks, 4 spasial, 4 numerik, dan 4 verbal. Setiap tes mengambil kombinasi berbeda dari bank tervalidasi lebih dari 300 item.</p>
+        <p className="mt-4 text-sm leading-6 text-slate-300">35 soal original: 20 abstrak/matriks, 5 spasial, 5 numerik, dan 5 verbal. Setiap tes mengambil kombinasi berbeda dari bank tervalidasi lebih dari 300 item.</p>
         <div className="mt-5 grid grid-cols-3 gap-2 text-center text-[10px] font-bold text-slate-300">
-          <div className="rounded-xl border border-white/10 bg-white/[.04] p-3"><BrainCircuit className="mx-auto mb-1 h-5 w-5 text-cyan-300"/>30 Soal</div>
-          <div className="rounded-xl border border-white/10 bg-white/[.04] p-3"><Clock3 className="mx-auto mb-1 h-5 w-5 text-violet-300"/>±18 Menit</div>
-          <div className="rounded-xl border border-white/10 bg-white/[.04] p-3"><Trophy className="mx-auto mb-1 h-5 w-5 text-amber-300"/>Maks. 150</div>
+          <div className="rounded-xl border border-white/10 bg-white/[.04] p-3"><BrainCircuit className="mx-auto mb-1 h-5 w-5 text-cyan-300"/>35 Soal</div>
+          <div className="rounded-xl border border-white/10 bg-white/[.04] p-3"><Clock3 className="mx-auto mb-1 h-5 w-5 text-violet-300"/>±22 Menit</div>
+          <div className="rounded-xl border border-white/10 bg-white/[.04] p-3"><Trophy className="mx-auto mb-1 h-5 w-5 text-amber-300"/>Maks. 165</div>
         </div>
       </div>
       <button type="button" onClick={start} className="mt-4 w-full rounded-2xl border border-cyan-300/35 bg-gradient-to-r from-cyan-500/18 via-indigo-500/18 to-violet-500/18 p-5 text-left shadow-[0_0_30px_rgba(34,211,238,.10)]">
         <div className="text-xs font-black uppercase tracking-[.14em] text-cyan-300">Halo, {participant?.nickname||"Peserta"}</div>
         <div className="mt-2 text-3xl font-black">Mulai Tes IQ</div>
         <div className="mt-1 text-sm text-slate-300">Hasil otomatis tersimpan ke akun dan Riwayat Tes.</div>
-        <div className="mt-4 inline-flex items-center gap-2 rounded-xl bg-cyan-300 px-4 py-2.5 text-sm font-black text-slate-950"><Play className="h-4 w-4"/>MULAI 30 SOAL</div>
+        <div className="mt-4 inline-flex items-center gap-2 rounded-xl bg-cyan-300 px-4 py-2.5 text-sm font-black text-slate-950"><Play className="h-4 w-4"/>MULAI 35 SOAL</div>
       </button>
       <p className="mt-4 text-center text-[11px] leading-5 text-slate-500">Estimasi IQ adalah indikasi kemampuan figural-spasial, bukan diagnosis atau hasil psikotes klinis resmi.</p>
     </main>
@@ -1027,14 +1038,14 @@ export function VisualIqGame(){
         </div>
 
         <div className="mt-5 grid grid-cols-3 gap-2">
-          <div className="rounded-xl border border-white/10 bg-white/[.04] p-3"><div className="text-xl font-black">{result.correct}/30</div><div className="mt-1 text-[9px] font-bold text-slate-500">BENAR</div></div>
+          <div className="rounded-xl border border-white/10 bg-white/[.04] p-3"><div className="text-xl font-black">{result.correct}/35</div><div className="mt-1 text-[9px] font-bold text-slate-500">BENAR</div></div>
           <div className="rounded-xl border border-white/10 bg-white/[.04] p-3"><div className="text-xl font-black">{accuracy}%</div><div className="mt-1 text-[9px] font-bold text-slate-500">AKURASI</div></div>
           <div className="rounded-xl border border-white/10 bg-white/[.04] p-3"><div className="text-xl font-black">{Math.floor(elapsed/60)}:{String(elapsed%60).padStart(2,"0")}</div><div className="mt-1 text-[9px] font-bold text-slate-500">WAKTU</div></div>
         </div>
 
         <div className="mt-5 rounded-2xl border border-cyan-300/15 bg-cyan-300/[.05] p-4 text-left">
           <div className="text-[10px] font-black uppercase tracking-[.14em] text-cyan-300">Gambaran Kemampuan</div>
-          <p className="mt-2 text-sm leading-6 text-slate-300">{result.iq>=135?"Performa penalaranmu sangat kuat pada kombinasi abstrak, spasial, numerik, dan verbal.":result.iq>=115?"Performa penalaranmu berada di atas rata-rata. Pertahankan konsistensi pada matriks, numerik, verbal, dan rotasi spasial.":"Fondasi penalaran sudah terbentuk. Konsistensi pada matriks, numerik, verbal, dan transformasi spasial masih dapat ditingkatkan."}</p>
+          <p className="mt-2 text-sm leading-6 text-slate-300">{result.iq>=145?"Hasil berada pada tingkat Genius dalam estimasi ALZAVA. Konsistensi sangat tinggi pada kombinasi abstrak, spasial, numerik, dan verbal.":result.iq>=130?"Performa penalaran sangat superior pada kombinasi abstrak, spasial, numerik, dan verbal.":result.iq>=115?"Performa penalaran berada di atas rata-rata. Pertahankan konsistensi pada matriks, numerik, verbal, dan rotasi spasial.":"Fondasi penalaran sudah terbentuk. Konsistensi pada matriks, numerik, verbal, dan transformasi spasial masih dapat ditingkatkan."}</p>
         </div>
 
         <div className={`mt-4 rounded-xl border px-3 py-2 text-xs font-bold ${saveState==="saved"?"border-emerald-300/20 bg-emerald-300/10 text-emerald-200":saveState==="error"?"border-rose-300/20 bg-rose-300/10 text-rose-200":"border-white/10 bg-white/[.04] text-slate-400"}`}>
@@ -1050,7 +1061,7 @@ export function VisualIqGame(){
         <a href="/account/results#riwayat-iq" className="grid min-h-12 place-items-center rounded-xl border border-white/10 bg-white/[.06] text-sm font-black">Lihat Riwayat</a>
       </div>
       <a href="/battle" className="mt-3 flex min-h-11 items-center justify-center text-sm font-bold text-slate-400 hover:text-white"><ArrowLeft className="mr-2 h-4 w-4"/>Kembali ke Battle Point</a>
-      <p className="mt-2 text-center text-[10px] leading-4 text-slate-600">Estimasi indikatif dari 30 soal visual; bukan hasil psikotes klinis.</p>
+      <p className="mt-2 text-center text-[10px] leading-4 text-slate-600">Estimasi indikatif dari 35 soal multi-domain; bukan hasil psikotes klinis.</p>
     </main>
   </div>
 
