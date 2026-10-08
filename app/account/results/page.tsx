@@ -172,7 +172,7 @@ export default function AccountResultsPage(){
             <div>
               <div className="flex items-center gap-2 text-cyan-300"><BrainCircuit className="h-5 w-5"/><p className="text-[10px] font-black uppercase tracking-[.18em]">Riwayat Tes IQ</p></div>
               <h2 className="mt-2 text-2xl font-black">Estimasi IQ tersimpan di akun</h2>
-              <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-400">Setiap tes selesai direkam bersama jumlah benar, waktu, dan tanggal. Nilai tertinggi Tes IQ dibatasi maksimal 165.</p>
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-400">Setiap tes selesai direkam bersama jumlah benar, waktu, dan tanggal. Nilai tertinggi Tes IQ dibatasi maksimal 160.</p>
             </div>
             <div className="flex items-center gap-2">
               {visualBest?.iq_estimate ? <span className="rounded-full border border-amber-300/20 bg-amber-300/10 px-3 py-1.5 text-xs font-black text-amber-200">Best IQ {visualBest.iq_estimate}</span> : null}
