@@ -88,11 +88,42 @@ function optionized(
 ):Question{
   const unique:Glyph[]=[]
   const seen=new Set<string>()
-  for(const item of [correct,...distractors]){
+  const add=(item:Glyph)=>{
     const key=glyphKey(item)
     if(!seen.has(key)){seen.add(key);unique.push(item)}
   }
-  if(unique.length<4)throw new Error("visual_iq_option_collision:"+base.id)
+  add(correct)
+  distractors.forEach(add)
+
+  // Quality-safe fallback: keep distractors visually related to the target
+  // instead of allowing duplicate answers or unrelated anomaly options.
+  const fallback:Glyph[]=[]
+  if(ROTATABLE.includes(correct.kind)){
+    fallback.push(
+      g(correct.kind,normAngle((correct.rotation||0)+90),Boolean(correct.filled),correct.dot,correct.dots,correct.variant),
+      g(correct.kind,normAngle((correct.rotation||0)+180),Boolean(correct.filled),correct.dot,correct.dots,correct.variant),
+      g(correct.kind,normAngle((correct.rotation||0)+270),Boolean(correct.filled),correct.dot,correct.dots,correct.variant),
+    )
+  }
+  if(correct.dot){
+    fallback.push(
+      g(correct.kind,correct.rotation||0,Boolean(correct.filled),rotatePos(correct.dot,1),correct.dots,correct.variant),
+      g(correct.kind,correct.rotation||0,Boolean(correct.filled),rotatePos(correct.dot,2),correct.dots,correct.variant),
+      g(correct.kind,correct.rotation||0,Boolean(correct.filled),rotatePos(correct.dot,3),correct.dots,correct.variant),
+    )
+  }
+  fallback.push(g(correct.kind,correct.rotation||0,!Boolean(correct.filled),correct.dot,correct.dots,correct.variant))
+  for(const kind of [...SHAPES,...ROTATABLE,"plus","x","star","bar"] as GlyphKind[]){
+    if(kind!==correct.kind){
+      fallback.push(g(kind,correct.rotation||0,Boolean(correct.filled),correct.dot,correct.dots,correct.variant))
+    }
+  }
+  for(const item of fallback){
+    if(unique.length>=4)break
+    add(item)
+  }
+  if(unique.length<4)throw new Error("visual_iq_option_collision_unresolved:"+base.id)
+
   let options=unique.slice(0,4)
   const shift=Math.abs(seed)%4
   options=[...options.slice(shift),...options.slice(0,shift)]
