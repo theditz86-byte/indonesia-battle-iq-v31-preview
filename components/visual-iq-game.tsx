@@ -723,7 +723,6 @@ function tierFor(iq:number){
   return "PERUNGGU"
 }
 function iqLevelFor(iq:number){
-  if(iq>=160)return "Genius 160+"
   if(iq>=145)return "Genius"
   if(iq>=130)return "Sangat Superior"
   if(iq>=120)return "Superior"
