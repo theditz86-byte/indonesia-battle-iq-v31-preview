@@ -244,12 +244,13 @@ function buildQuestionBank(){
       if(i===j)continue
       const a=SHAPES[i],b=SHAPES[j]
       const filled=(i+j)%2===0
+      const otherShape=SHAPES.find(kind=>kind!==a&&kind!==b) || "circle"
       push(optionized(
         baseQuestion("abs-m2-fill-"+a+"-"+b,"matrix2-isi","abstract","Abstrak","Matriks Bentuk dan Isi","","matrix2",3,[
           g(a,0,filled),g(a,0,!filled),g(b,0,filled)
         ]),
         g(b,0,!filled),
-        [g(b,0,filled),g(a,0,!filled),g(SHAPES[(i+2)%SHAPES.length],0,!filled)],
+        [g(b,0,filled),g(a,0,!filled),g(otherShape,0,!filled)],
         i*17+j
       ))
     }
@@ -411,7 +412,7 @@ function buildQuestionBank(){
       push(textQuestion(
         "num-arith-"+start+"-"+step,"urutan-tetap","numerical","Numerik","Urutan Angka",2,
         "Angka berikutnya adalah: "+seq.join(", ") + ", __",
-        String(ans),[String(ans-step),String(ans+step),String(ans+2)],start+step
+        String(ans),[String(ans-step),String(ans+step),String(ans+step*2)],start+step
       ))
     }
   }
@@ -437,7 +438,7 @@ function buildQuestionBank(){
       push(textQuestion(
         "num-alt-"+a+"-"+b,"dua-urutan","numerical","Numerik","Dua Urutan Bergantian",3,
         "Tentukan angka berikutnya: "+seq.join(", ") + ", __",
-        String(ans),[String(ans-3),String(ans+3),String(a+8)],a+b
+        String(ans),[String(ans-3),String(ans+3),String(ans+6)],a+b
       ))
     }
   }
@@ -450,7 +451,7 @@ function buildQuestionBank(){
     push(textQuestion(
       "num-map-"+n+"-"+add,"aturan-transformasi","numerical","Numerik","Aturan Transformasi",4,
       "Sebuah aturan memberi "+mappings+". Dengan aturan yang sama, "+n+" → ?",
-      String(correct),[String(correct-add),String(correct+n),String(correct+2)],n*5+add
+      String(correct),[String(n*n),String(correct+n),String(correct+n+add)],n*5+add
     ))
   }
 
