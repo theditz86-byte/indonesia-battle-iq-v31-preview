@@ -46,20 +46,6 @@ export function Hero({ season, entries, participant }: { season: BattleSeason | 
               {challengeText}
             </p>
 
-            <a href="/visual-iq" className="group mt-3 flex w-full max-w-[21rem] items-center gap-3 rounded-xl border border-cyan-300/25 bg-slate-950/45 px-3 py-2.5 shadow-[0_0_20px_rgba(34,211,238,.08)] backdrop-blur-md transition-all hover:border-cyan-300/45 hover:bg-cyan-300/[.07]">
-              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg border border-cyan-300/20 bg-cyan-300/10">
-                <BrainCircuit className="h-[18px] w-[18px] text-cyan-200" />
-              </span>
-              <span className="min-w-0 flex-1">
-                <span className="flex items-center gap-2">
-                  <span className="text-[12px] font-black text-white">Tes IQ</span>
-                  <span className="rounded-full bg-cyan-300 px-1.5 py-0.5 text-[8px] font-black uppercase tracking-[.1em] text-slate-950">Baru</span>
-                </span>
-                <span className="mt-0.5 block truncate text-[10px] font-bold text-slate-400">Ketahui IQ-mu · 35 soal IQ multi-domain</span>
-              </span>
-              <ArrowRight className="h-4 w-4 shrink-0 text-cyan-300 transition-transform group-hover:translate-x-0.5" />
-            </a>
-
             {guest ? (
               <>
                 <div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] font-extrabold text-cyan-100/90">
@@ -116,16 +102,36 @@ export function Hero({ season, entries, participant }: { season: BattleSeason | 
             )}
           </div>
 
-          <div className="flex w-full flex-col items-stretch gap-3 lg:-translate-y-6 lg:self-start">
+          <div className="flex w-full flex-col items-stretch gap-3 lg:translate-y-1 lg:self-start">
             <div className="flex justify-end">
               <div className="flex items-center gap-2 rounded-full border border-emerald-300/20 bg-emerald-400/10 px-3 py-1.5 text-[11px] font-black text-emerald-200 backdrop-blur-sm">
                 <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-400" /> Leaderboard diperbarui otomatis
               </div>
             </div>
             <p className="max-w-xs self-end text-right text-[13px] italic leading-relaxed text-cyan-100/80">&ldquo;Berapa Battle Point-mu—dan siapa yang bisa mengejarnya?&rdquo;</p>
+
+            <a href="/visual-iq" className="group relative flex min-h-[116px] w-full items-center gap-4 overflow-hidden rounded-2xl border border-cyan-300/45 bg-gradient-to-br from-cyan-400/[.18] via-sky-500/[.11] to-violet-500/[.15] px-4 py-4 text-left shadow-[0_0_34px_rgba(34,211,238,.18)] ring-1 ring-cyan-200/10 backdrop-blur-md transition-all hover:-translate-y-0.5 hover:border-cyan-200/70 hover:shadow-[0_0_44px_rgba(34,211,238,.28)]">
+              <div className="pointer-events-none absolute -right-10 -top-12 h-36 w-36 rounded-full bg-cyan-300/15 blur-3xl" />
+              <div className="pointer-events-none absolute -bottom-16 left-10 h-28 w-44 rounded-full bg-violet-400/10 blur-3xl" />
+              <span className="relative grid h-14 w-14 shrink-0 place-items-center rounded-2xl border border-cyan-200/30 bg-cyan-300/[.12] shadow-[0_0_24px_rgba(34,211,238,.18)] transition-transform group-hover:scale-105">
+                <BrainCircuit className="h-7 w-7 text-cyan-100" />
+              </span>
+              <span className="relative min-w-0 flex-1">
+                <span className="flex flex-wrap items-center gap-2">
+                  <span className="text-lg font-black tracking-tight text-white">Tes IQ</span>
+                  <span className="rounded-full bg-cyan-300 px-2 py-1 text-[9px] font-black uppercase tracking-[.12em] text-slate-950">Baru</span>
+                </span>
+                <span className="mt-1.5 block text-[12px] font-bold leading-5 text-cyan-50/80">Ketahui IQ-mu melalui 35 soal multi-domain: abstrak, spasial, numerik, dan verbal.</span>
+                <span className="mt-2 inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[.12em] text-cyan-300">Mulai Tes IQ <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" /></span>
+              </span>
+              <span className="relative grid h-9 w-9 shrink-0 place-items-center rounded-full border border-cyan-200/20 bg-slate-950/25">
+                <ArrowRight className="h-4 w-4 text-cyan-200 transition-transform group-hover:translate-x-0.5" />
+              </span>
+            </a>
+
             <CountdownCard season={season} />
 
-            <a href="/latihan-skd" className="group flex w-full items-center gap-3 rounded-2xl border border-emerald-300/45 bg-gradient-to-r from-emerald-500/18 via-cyan-500/15 to-sky-500/18 px-4 py-3.5 text-left shadow-[0_0_28px_rgba(16,185,129,.16)] ring-1 ring-emerald-200/10 backdrop-blur-md transition-all hover:-translate-y-0.5 hover:border-emerald-300/65 hover:shadow-[0_0_36px_rgba(16,185,129,.24)]">
+            <a href="/latihan-skd" className="group mt-3 flex w-full items-center gap-3 rounded-2xl border border-emerald-300/45 bg-gradient-to-r from-emerald-500/18 via-cyan-500/15 to-sky-500/18 px-4 py-3.5 text-left shadow-[0_0_28px_rgba(16,185,129,.16)] ring-1 ring-emerald-200/10 backdrop-blur-md transition-all hover:-translate-y-0.5 hover:border-emerald-300/65 hover:shadow-[0_0_36px_rgba(16,185,129,.24)]">
               <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-emerald-400/15 ring-1 ring-emerald-300/25 transition-transform group-hover:scale-105">
                 <BrainCircuit className="h-5 w-5 text-emerald-200" />
               </span>
