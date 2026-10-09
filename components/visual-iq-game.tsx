@@ -447,7 +447,7 @@ function buildQuestionBank(){
       for(const turn of [90,180,270]){
         const correct=normAngle(start+turn)
         push(optionized(
-          baseQuestion("spa-rot-"+kind+"-"+start+"-"+turn,"rotasi-spasial","spatial","Spasial","Manakah Hasil Rotasi "+turn+"°?","Putar bentuk "+turn+"° searah jarum jam, lalu pilih hasil yang sama.","single",turn===180?3:4,[g(kind,start)]),
+          baseQuestion("spa-rot-"+kind+"-"+start+"-"+turn,"rotasi-spasial","spatial","Spasial","Manakah Hasil Rotasi "+turn+"°?","Putar bentuk "+turn+"° searah jarum jam, lalu pilih hasil yang sama.","single",3,[g(kind,start)]),
           g(kind,correct),
           [0,90,180,270].filter(v=>v!==correct).map(v=>g(kind,v)),
           start+turn
@@ -566,7 +566,7 @@ function buildQuestionBank(){
     const mappings=samples.map(x=>x+" → "+(x*x+add)).join(", ")
     const correct=n*n+add
     push(textQuestion(
-      "num-map-"+n+"-"+add,"aturan-transformasi","numerical","Numerik","Aturan Transformasi",4,
+      "num-map-"+n+"-"+add,"aturan-transformasi","numerical","Numerik","Aturan Transformasi",3,
       "Sebuah aturan memberi "+mappings+". Dengan aturan yang sama, "+n+" → ?",
       String(correct),[String(n*n),String(correct+n),String(correct+n+add)],n*5+add
     ))
@@ -576,7 +576,7 @@ function buildQuestionBank(){
     const seq=[base,base*2+1,(base*2+1)*2+2,((base*2+1)*2+2)*2+3]
     const correct=seq[3]*2+4
     push(textQuestion(
-      "num-muladd-"+base,"kali-tambah","numerical","Numerik","Pola Kali-Tambah",4,
+      "num-muladd-"+base,"kali-tambah","numerical","Numerik","Pola Kali-Tambah",3,
       "Tentukan angka berikutnya: "+seq.join(", ") + ", __",
       String(correct),[String(correct-4),String(correct+4),String(seq[3]*2+3)],base*11
     ))
@@ -603,19 +603,19 @@ function buildQuestionBank(){
     ["ver-order-3","urutan-logis","Urutan Logis",3,"Kotak P lebih berat dari Q. Q lebih berat dari R. Kotak mana yang paling ringan?","R",["P","Q","P dan Q sama"]],
     ["ver-order-4","urutan-logis","Urutan Logis",3,"Nia lebih muda dari Sari. Sari lebih muda dari Tika. Siapa yang paling tua?","Tika",["Nia","Sari","Tidak dapat ditentukan"]],
 
-    ["ver-cond-1","implikasi","Logika Kondisional",4,"Jika lampu merah menyala maka mesin berhenti. Lampu merah menyala. Apa yang dapat disimpulkan?","Mesin berhenti.",["Mesin pasti rusak.","Lampu hijau juga menyala.","Mesin bergerak lebih cepat."]],
-    ["ver-cond-2","implikasi","Logika Kondisional",4,"Jika data lengkap maka laporan dapat diproses. Laporan belum dapat diproses. Kesimpulan yang paling tepat adalah ...","Kelengkapan data perlu diperiksa.",["Data pasti lengkap.","Laporan pasti salah.","Tidak ada hubungan dengan data."]],
-    ["ver-cause-1","sebab-akibat","Hubungan Sebab-Akibat",4,"Hujan deras menyebabkan debit sungai meningkat. Jika hujan deras berlangsung lama, akibat yang paling logis adalah ...","Risiko sungai meluap meningkat.",["Debit sungai pasti turun.","Air sungai berubah menjadi asin.","Sungai berhenti mengalir."]],
-    ["ver-cause-2","sebab-akibat","Hubungan Sebab-Akibat",4,"Sebuah baterai kehilangan daya saat terus digunakan. Jika perangkat dipakai lebih lama tanpa pengisian, apa yang paling mungkin terjadi?","Daya baterai semakin rendah.",["Kapasitas baterai bertambah.","Perangkat menjadi lebih ringan.","Baterai menghasilkan lebih banyak energi."]],
+    ["ver-cond-1","implikasi","Logika Kondisional",3,"Jika lampu merah menyala maka mesin berhenti. Lampu merah menyala. Apa yang dapat disimpulkan?","Mesin berhenti.",["Mesin pasti rusak.","Lampu hijau juga menyala.","Mesin bergerak lebih cepat."]],
+    ["ver-cond-2","implikasi","Logika Kondisional",3,"Jika data lengkap maka laporan dapat diproses. Laporan belum dapat diproses. Kesimpulan yang paling tepat adalah ...","Kelengkapan data perlu diperiksa.",["Data pasti lengkap.","Laporan pasti salah.","Tidak ada hubungan dengan data."]],
+    ["ver-cause-1","sebab-akibat","Hubungan Sebab-Akibat",3,"Hujan deras menyebabkan debit sungai meningkat. Jika hujan deras berlangsung lama, akibat yang paling logis adalah ...","Risiko sungai meluap meningkat.",["Debit sungai pasti turun.","Air sungai berubah menjadi asin.","Sungai berhenti mengalir."]],
+    ["ver-cause-2","sebab-akibat","Hubungan Sebab-Akibat",3,"Sebuah baterai kehilangan daya saat terus digunakan. Jika perangkat dipakai lebih lama tanpa pengisian, apa yang paling mungkin terjadi?","Daya baterai semakin rendah.",["Kapasitas baterai bertambah.","Perangkat menjadi lebih ringan.","Baterai menghasilkan lebih banyak energi."]],
 
     ["ver-ana-5","analogi-konsep","Analogi Konsep",3,"Akar bagi pohon seperti fondasi bagi ...","bangunan",["atap","jendela","cat"]],
     ["ver-ana-6","analogi-konsep","Analogi Konsep",3,"Editor bagi naskah seperti mekanik bagi ...","kendaraan",["jalan","bensin","rambu"]],
     ["ver-ana-7","analogi-konsep","Analogi Konsep",3,"Peta bagi wilayah seperti diagram bagi ...","data",["pena","warna","kertas"]],
     ["ver-ana-8","analogi-konsep","Analogi Konsep",3,"Resep bagi masakan seperti denah bagi ...","bangunan",["bahan","koki","meja"]],
-    ["ver-class-1","hubungan-konsep","Hubungan Konsep",4,"Semua X adalah Y. Tidak ada Y yang Z. Pernyataan mana yang pasti benar?","Tidak ada X yang Z.",["Semua X adalah Z.","Sebagian X adalah Z.","Semua Z adalah X."]],
-    ["ver-class-2","hubungan-konsep","Hubungan Konsep",4,"Tidak ada P yang Q. Semua R adalah P. Pernyataan mana yang pasti benar?","Tidak ada R yang Q.",["Semua Q adalah R.","Sebagian R adalah Q.","Semua P adalah R."]],
-    ["ver-class-3","hubungan-konsep","Hubungan Konsep",4,"Semua M adalah N. Tidak ada N yang O. Apa yang pasti benar?","Tidak ada M yang O.",["Semua O adalah M.","Sebagian M adalah O.","Tidak ada M yang N."]],
-    ["ver-class-4","hubungan-konsep","Hubungan Konsep",4,"Sebagian A adalah B. Semua B adalah C. Kesimpulan yang benar adalah ...","Sebagian A adalah C.",["Semua A adalah C.","Tidak ada A yang C.","Semua C adalah A."]],
+    ["ver-class-1","hubungan-konsep","Hubungan Konsep",3,"Semua X adalah Y. Tidak ada Y yang Z. Pernyataan mana yang pasti benar?","Tidak ada X yang Z.",["Semua X adalah Z.","Sebagian X adalah Z.","Semua Z adalah X."]],
+    ["ver-class-2","hubungan-konsep","Hubungan Konsep",3,"Tidak ada P yang Q. Semua R adalah P. Pernyataan mana yang pasti benar?","Tidak ada R yang Q.",["Semua Q adalah R.","Sebagian R adalah Q.","Semua P adalah R."]],
+    ["ver-class-3","hubungan-konsep","Hubungan Konsep",3,"Semua M adalah N. Tidak ada N yang O. Apa yang pasti benar?","Tidak ada M yang O.",["Semua O adalah M.","Sebagian M adalah O.","Tidak ada M yang N."]],
+    ["ver-class-4","hubungan-konsep","Hubungan Konsep",3,"Sebagian A adalah B. Semua B adalah C. Kesimpulan yang benar adalah ...","Sebagian A adalah C.",["Semua A adalah C.","Tidak ada A yang C.","Semua C adalah A."]],
   ] as const
 
   verbalItems.forEach((item,index)=>{
@@ -707,7 +707,7 @@ function pick<T>(items:T[],count:number){return shuffle(items).slice(0,count)}
 function difficultyWeightedOrder(items:Question[]){
   return items
     .map(q=>{
-      const weight=q.difficulty===2?0.5:1
+      const weight=q.difficulty===2?0.5:q.difficulty===4?1.35:1
       const random=Math.max(Number.EPSILON,Math.random())
       return {q,key:-Math.log(random)/weight}
     })
@@ -778,7 +778,15 @@ function resultFor(questions:Question[],answers:number[]){
     breakdown[label]=current
   })
   const ratio=total?earned/total:0
-  const iq=Math.max(70,Math.min(150,Math.round(70+80*ratio)))
+  const accuracy=questions.length?correct/questions.length:0
+
+  // Upper-end calibration is intentionally non-linear:
+  // - difficulty-weighted performance still matters;
+  // - raw accuracy acts as a ceiling so a few easy/high-weight items cannot inflate IQ.
+  // With 35 questions, IQ 140+ requires at least 32 correct.
+  const weightedEstimate=Math.round(70+80*Math.pow(ratio,1.6))
+  const accuracyCeiling=Math.round(70+80*Math.pow(accuracy,1.5))
+  const iq=Math.max(70,Math.min(150,weightedEstimate,accuracyCeiling))
   return {correct,iq,breakdown}
 }
 function tierFor(iq:number){
