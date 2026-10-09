@@ -125,8 +125,6 @@ export function Hero({ season, entries, participant }: { season: BattleSeason | 
               <ArrowRight className="relative h-4 w-4 shrink-0 text-cyan-200 transition-transform group-hover:translate-x-0.5" />
             </a>
 
-            <CountdownCard season={season} />
-
             <a href="/latihan-skd" className="group mt-3 flex w-full items-center gap-3 rounded-2xl border border-emerald-300/45 bg-gradient-to-r from-emerald-500/18 via-cyan-500/15 to-sky-500/18 px-4 py-3.5 text-left shadow-[0_0_28px_rgba(16,185,129,.16)] ring-1 ring-emerald-200/10 backdrop-blur-md transition-all hover:-translate-y-0.5 hover:border-emerald-300/65 hover:shadow-[0_0_36px_rgba(16,185,129,.24)]">
               <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-emerald-400/15 ring-1 ring-emerald-300/25 transition-transform group-hover:scale-105">
                 <BrainCircuit className="h-5 w-5 text-emerald-200" />
@@ -138,6 +136,7 @@ export function Hero({ season, entries, participant }: { season: BattleSeason | 
               <ArrowRight className="h-4 w-4 shrink-0 text-emerald-200 transition-transform group-hover:translate-x-0.5" />
             </a>
 
+            <CountdownCard season={season} />
           </div>
         </div>
       </div>
