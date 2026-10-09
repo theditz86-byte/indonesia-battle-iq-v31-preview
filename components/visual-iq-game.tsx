@@ -441,6 +441,61 @@ function buildQuestionBank(){
     }
   })
 
+  // 9) Sequence: position orbit + alternating fill.
+  for(const kind of ["triangle","square","diamond","pentagon","hexagon"] as GlyphKind[]){
+    for(let start=0;start<4;start++){
+      for(const dir of [-1,1]){
+        const p0=CORNERS[start]
+        const p1=rotatePos(p0,dir)
+        const p2=rotatePos(p1,dir)
+        const correctPos=rotatePos(p2,dir)
+        const cells=[
+          g(kind,0,false,p0),
+          g(kind,0,true,p1),
+          g(kind,0,false,p2),
+        ]
+        push(optionized(
+          baseQuestion("abs-seq-orbit-fill-"+kind+"-"+start+"-"+dir,"orbit-posisi-isi","abstract","Abstrak","Orbit Posisi dan Isi","","sequence",3,cells),
+          g(kind,0,true,correctPos),
+          [
+            g(kind,0,false,correctPos),
+            g(kind,0,true,p2),
+            g(kind,0,false,p1),
+          ],
+          start*37+(dir<0?13:7)
+        ))
+      }
+    }
+  }
+
+  // 10) Matrix: rotation and fill both change across row/column.
+  for(const kind of ["arrow","triangle","corner","notch"] as GlyphKind[]){
+    for(const start of [0,90,180,270]){
+      for(const step of [90,-90]){
+        const cells:Glyph[]=[]
+        for(let row=0;row<3;row++){
+          for(let col=0;col<3;col++){
+            if(row===2&&col===2)continue
+            const angle=normAngle(start+(row+col)*step)
+            const filled=(row+col)%2===0
+            cells.push(g(kind,angle,filled))
+          }
+        }
+        const correctAngle=normAngle(start+4*step)
+        push(optionized(
+          baseQuestion("abs-m3-rot-fill-"+kind+"-"+start+"-"+step,"matrix-rotasi-isi","abstract","Abstrak","Matriks Rotasi dan Isi 3 × 3","","matrix3",4,cells),
+          g(kind,correctAngle,true),
+          [
+            g(kind,correctAngle,false),
+            g(kind,normAngle(correctAngle+90),true),
+            g(kind,normAngle(correctAngle+180),false),
+          ],
+          start+(step<0?73:47)
+        ))
+      }
+    }
+  }
+
   // SPATIAL REASONING — rotasi, cermin, lipat, simetri.
   for(const kind of ["notch","corner","hook"] as GlyphKind[]){
     for(const start of [0,90,180,270]){
@@ -519,6 +574,28 @@ function buildQuestionBank(){
     }
   }
 
+  // Combined spatial transform: rotate, then mirror.
+  for(const kind of ["arrow","triangle","corner","hook"] as GlyphKind[]){
+    for(const angle of [0,90,180,270]){
+      for(const dot of CORNERS){
+        const rotatedAngle=normAngle(angle+90)
+        const rotatedDot=rotatePos(dot,1)
+        const correctAngle=normAngle(-rotatedAngle)
+        const correctDot=mirrorPosVertical(rotatedDot)
+        push(optionized(
+          baseQuestion("spa-rot-mirror-"+kind+"-"+angle+"-"+dot,"rotasi-cermin","spatial","Spasial","Rotasi lalu Cermin","Putar 90° searah jarum jam, lalu cerminkan kiri ke kanan.","single",4,[g(kind,angle,false,dot)]),
+          g(kind,correctAngle,false,correctDot),
+          [
+            g(kind,rotatedAngle,false,rotatedDot),
+            g(kind,correctAngle,false,rotatedDot),
+            g(kind,normAngle(correctAngle+180),false,correctDot),
+          ],
+          angle+CORNERS.indexOf(dot)*17+5
+        ))
+      }
+    }
+  }
+
   // NUMERICAL REASONING — original, rule-based.
   for(let start=1;start<=12;start++){
     for(let step=2;step<=7;step++){
@@ -582,6 +659,37 @@ function buildQuestionBank(){
     ))
   }
 
+  // Increasing square differences: +1², +2², +3², ...
+  for(let base=3;base<=14;base++){
+    const seq=[base]
+    let current=base
+    for(let k=1;k<=4;k++){current+=k*k;seq.push(current)}
+    const correct=current+25
+    push(textQuestion(
+      "num-square-gap-"+base,"selisih-kuadrat","numerical","Numerik","Selisih Kuadrat",4,
+      "Tentukan angka berikutnya: "+seq.join(", ") + ", __",
+      String(correct),[String(correct-9),String(correct-16),String(correct+11)],base*19
+    ))
+  }
+
+  // Alternating × / + operations, requiring two interleaved rules.
+  for(let base=2;base<=9;base++){
+    for(const add of [2,3,4]){
+      const a=base
+      const b=a*2
+      const d=b+add
+      const e=d*2
+      const f=e+add
+      const correct=f*2
+      const seq=[a,b,d,e,f]
+      push(textQuestion(
+        "num-alt-op-"+base+"-"+add,"operasi-selang-seling","numerical","Numerik","Operasi Selang-seling",4,
+        "Tentukan angka berikutnya: "+seq.join(", ") + ", __",
+        String(correct),[String(correct-add),String(f+add),String(correct+add)],base*23+add
+      ))
+    }
+  }
+
   // VERBAL REASONING — original Indonesian items, deliberately separate from MyIQTested wording.
   const verbalItems=[
     ["ver-ana-1","analogi-fungsi","Analogi Kata",2,"Kompas berhubungan dengan arah seperti termometer berhubungan dengan ...","suhu",["waktu","tekanan","jarak"]],
@@ -616,6 +724,10 @@ function buildQuestionBank(){
     ["ver-class-2","hubungan-konsep","Hubungan Konsep",3,"Tidak ada P yang Q. Semua R adalah P. Pernyataan mana yang pasti benar?","Tidak ada R yang Q.",["Semua Q adalah R.","Sebagian R adalah Q.","Semua P adalah R."]],
     ["ver-class-3","hubungan-konsep","Hubungan Konsep",3,"Semua M adalah N. Tidak ada N yang O. Apa yang pasti benar?","Tidak ada M yang O.",["Semua O adalah M.","Sebagian M adalah O.","Tidak ada M yang N."]],
     ["ver-class-4","hubungan-konsep","Hubungan Konsep",3,"Sebagian A adalah B. Semua B adalah C. Kesimpulan yang benar adalah ...","Sebagian A adalah C.",["Semua A adalah C.","Tidak ada A yang C.","Semua C adalah A."]],
+    ["ver-chain-1","deduksi-berantai","Deduksi Berantai",4,"Semua analis teliti. Semua orang teliti memeriksa ulang pekerjaannya. Dira adalah analis. Kesimpulan yang pasti benar adalah ...","Dira memeriksa ulang pekerjaannya.",["Dira tidak pernah salah.","Semua yang memeriksa ulang adalah analis.","Dira adalah satu-satunya analis."]],
+    ["ver-chain-2","deduksi-berantai","Deduksi Berantai",4,"Tidak ada benda cair yang memiliki bentuk tetap. Semua zat dalam wadah X adalah cair. Maka ...","Zat dalam wadah X tidak memiliki bentuk tetap.",["Wadah X tidak memiliki bentuk tetap.","Semua benda tanpa bentuk tetap adalah cair.","Zat dalam wadah X selalu berwarna bening."]],
+    ["ver-order-5","urutan-majemuk","Urutan Majemuk",4,"Lima orang P, Q, R, S, T berdiri berurutan. P di depan Q. R di belakang Q. S di depan P. T di belakang R. Siapa yang pasti paling depan?","S",["P","Q","Tidak dapat ditentukan"]],
+    ["ver-order-6","urutan-majemuk","Urutan Majemuk",4,"K lebih cepat dari L. M lebih lambat dari L. N lebih cepat dari K. O lebih lambat dari M. Siapa yang pasti paling cepat?","N",["K","L","Tidak dapat ditentukan"]],
   ] as const
 
   verbalItems.forEach((item,index)=>{
@@ -702,12 +814,30 @@ function shuffle<T>(items:T[]){
 }
 function pick<T>(items:T[],count:number){return shuffle(items).slice(0,count)}
 
-// Soal Dasar tetap tersedia, tetapi peluang masuk sesi dipotong 50%
-// dibanding pemilihan acak rata sebelumnya. Menengah & Sulit tetap berbobot 1.
+function stableHash(value:string){
+  let hash=2166136261
+  for(let i=0;i<value.length;i++){
+    hash^=value.charCodeAt(i)
+    hash=Math.imul(hash,16777619)
+  }
+  return hash>>>0
+}
+
+function dailyFamilyMultiplier(family:string){
+  const now=new Date()
+  const dayKey=`${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`
+  const bucket=stableHash(dayKey+"|"+family)%61
+  return 0.75+bucket/100 // 0.75× sampai 1.35×, berubah otomatis tiap hari.
+}
+
+// Dasar tetap tersedia dengan bobot 0,5×, Sulit 1,35×.
+// Di atas itu ada rotasi family harian agar pola dominan berubah setiap hari
+// tanpa deploy baru atau mengorbankan quality gate.
 function difficultyWeightedOrder(items:Question[]){
   return items
     .map(q=>{
-      const weight=q.difficulty===2?0.5:q.difficulty===4?1.35:1
+      const difficultyWeight=q.difficulty===2?0.5:q.difficulty===4?1.35:1
+      const weight=difficultyWeight*dailyFamilyMultiplier(q.family)
       const random=Math.max(Number.EPSILON,Math.random())
       return {q,key:-Math.log(random)/weight}
     })
@@ -1118,7 +1248,7 @@ export function VisualIqGame(){
         <div className="rounded-[28px] border border-cyan-300/20 bg-slate-950/55 p-5 shadow-[0_24px_70px_rgba(0,0,0,.35)] backdrop-blur-xl">
           <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[.16em] text-cyan-300"><Sparkles className="h-4 w-4"/>Tes IQ Multi-Domain</div>
           <h1 className="mt-3 text-4xl font-black leading-[.98]">Ketahui <span className="bg-gradient-to-r from-cyan-300 via-violet-300 to-fuchsia-300 bg-clip-text text-transparent">IQ-mu</span></h1>
-          <p className="mt-4 text-sm leading-6 text-slate-300">35 soal original: 20 abstrak/matriks, 5 spasial, 5 numerik, dan 5 verbal. Setiap tes mengambil kombinasi berbeda dari bank tervalidasi lebih dari 300 item.</p>
+          <p className="mt-4 text-sm leading-6 text-slate-300">35 soal original: 20 abstrak/matriks, 5 spasial, 5 numerik, dan 5 verbal. Bank tervalidasi memiliki ratusan item dengan variasi family yang diprioritaskan berbeda setiap hari.</p>
           <div className="mt-5 grid grid-cols-3 gap-2 text-center text-[10px] font-bold text-slate-300">
             <div className="rounded-xl border border-white/10 bg-white/[.04] p-3"><BrainCircuit className="mx-auto mb-1 h-5 w-5 text-cyan-300"/>35 Soal</div>
             <div className="rounded-xl border border-white/10 bg-white/[.04] p-3"><Clock3 className="mx-auto mb-1 h-5 w-5 text-violet-300"/>±22 Menit</div>
