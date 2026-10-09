@@ -740,7 +740,7 @@ function tierFor(iq:number){
   return "PERUNGGU"
 }
 function iqLevelFor(iq:number){
-  if(iq>=145)return "Genius"
+  if(iq>=140)return "Genius"
   if(iq>=130)return "Sangat Superior"
   if(iq>=120)return "Superior"
   if(iq>=110)return "Di Atas Rata-rata"
@@ -1100,7 +1100,7 @@ export function VisualIqGame(){
 
         <div className="mt-5 rounded-2xl border border-cyan-300/15 bg-cyan-300/[.05] p-4 text-left">
           <div className="text-[10px] font-black uppercase tracking-[.14em] text-cyan-300">Gambaran Kemampuan</div>
-          <p className="mt-2 text-sm leading-6 text-slate-300">{result.iq>=145?"Hasil berada pada tingkat Genius dalam estimasi ALZAVA. Konsistensi sangat tinggi pada kombinasi abstrak, spasial, numerik, dan verbal.":result.iq>=130?"Performa penalaran sangat superior pada kombinasi abstrak, spasial, numerik, dan verbal.":result.iq>=115?"Performa penalaran berada di atas rata-rata. Pertahankan konsistensi pada matriks, numerik, verbal, dan rotasi spasial.":"Fondasi penalaran sudah terbentuk. Konsistensi pada matriks, numerik, verbal, dan transformasi spasial masih dapat ditingkatkan."}</p>
+          <p className="mt-2 text-sm leading-6 text-slate-300">{result.iq>=140?"Hasil berada pada tingkat Genius dalam estimasi ALZAVA. Konsistensi sangat tinggi pada kombinasi abstrak, spasial, numerik, dan verbal.":result.iq>=130?"Performa penalaran sangat superior pada kombinasi abstrak, spasial, numerik, dan verbal.":result.iq>=115?"Performa penalaran berada di atas rata-rata. Pertahankan konsistensi pada matriks, numerik, verbal, dan rotasi spasial.":"Fondasi penalaran sudah terbentuk. Konsistensi pada matriks, numerik, verbal, dan transformasi spasial masih dapat ditingkatkan."}</p>
         </div>
 
         <div className={`mt-4 rounded-xl border px-3 py-2 text-xs font-bold ${saveState==="saved"?"border-emerald-300/20 bg-emerald-300/10 text-emerald-200":saveState==="error"?"border-rose-300/20 bg-rose-300/10 text-rose-200":"border-white/10 bg-white/[.04] text-slate-400"}`}>
