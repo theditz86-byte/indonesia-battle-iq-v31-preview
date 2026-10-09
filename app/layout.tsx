@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next"
+import { Cinzel, Lora } from "next/font/google"
 import "./globals.css"
 import "./attempt-history.css"
 import "./pvp-result-trophy.css"
@@ -18,6 +19,9 @@ import { AdminControlCenterV2 } from "@/components/admin-control-center-v2"
 import { PretestLifecycleBridge } from "@/components/pretest-lifecycle-bridge"
 import { PretestHistoryCard } from "@/components/pretest-history-card"
 import { PlayerUiHardening } from "@/components/player-ui-hardening"
+
+const certificateCinzel = Cinzel({ subsets: ["latin"], variable: "--font-cinzel", display: "swap" })
+const certificateLora = Lora({ subsets: ["latin"], style: ["normal", "italic"], variable: "--font-lora", display: "swap" })
 
 const BRAND_ICON = "/brand/alvaza-logo-new.svg?v=20260925-2"
 
@@ -77,7 +81,7 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="id">
-      <body className="antialiased">
+      <body className={`${certificateCinzel.variable} ${certificateLora.variable} antialiased`}>
         <MaintenanceBanner />
         <TrafficTracker />
         <PvpGlobalPresence />
