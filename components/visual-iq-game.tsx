@@ -525,7 +525,9 @@ function buildQuestionBank(){
 
   for(let n=2;n<=18;n++){
     const add=(n%4)+2
-    const samples=[2,3,5]
+    // Target tidak boleh muncul di contoh; jika muncul, jawaban akan bocor di stimulus.
+    const samplePool=[2,3,4,5,6,7,8,9]
+    const samples=samplePool.filter(x=>x!==n).slice(0,3)
     const mappings=samples.map(x=>x+" → "+(x*x+add)).join(", ")
     const correct=n*n+add
     push(textQuestion(
@@ -587,6 +589,15 @@ function buildQuestionBank(){
       item[4],item[5],[...item[6]],index*7+3
     ))
   })
+
+  for(const q of bank){
+    if(q.family==="aturan-transformasi"&&q.layout==="text"){
+      const match=q.prompt?.match(/yang sama,\s*(\d+)\s*→\s*\?/)
+      if(match&&q.prompt?.includes(match[1]+" → "+q.textOptions?.[q.answer])){
+        throw new Error("visual_iq_answer_leak:"+q.id)
+      }
+    }
+  }
 
   const ids=new Set<string>()
   const structures=new Set<string>()
