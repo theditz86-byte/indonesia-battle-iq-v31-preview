@@ -13,12 +13,14 @@ const links = [
   { label: "Beranda", href: "/battle" },
   { label: "Ranking", href: "/battle#peringkat" },
   { label: "Latihan SKD", href: "/latihan-skd" },
-  { label: "Tes IQ Visual", href: "/visual-iq" },
+  { label: "Tes IQ", href: "/visual-iq" },
   { label: "Battle PVP", href: "/pvp" },
   { label: "History Ranking", href: "/history-ranking" },
   { label: "Chat Global", href: "/global-chat" },
   { label: "Bantuan", href: "/help" },
 ]
+
+const desktopLinks = links.filter((link) => !["Chat Global", "Bantuan"].includes(link.label))
 
 export function SiteNavbar({ participant }: { participant: BattleParticipant | null }) {
   const [active, setActive] = useState("Beranda")
@@ -35,7 +37,7 @@ export function SiteNavbar({ participant }: { participant: BattleParticipant | n
     else if (path.startsWith("/messages") || path.startsWith("/friends")) setActive("")
     else if (path.startsWith("/player")) setActive("")
     else if (path.startsWith("/latihan-skd") || path.startsWith("/latihan-tiu") || path.startsWith("/simulasi-tiu") || path.startsWith("/daily-training")) setActive("Latihan SKD")
-    else if (path.startsWith("/visual-iq")) setActive("Tes IQ Visual")
+    else if (path.startsWith("/visual-iq")) setActive("Tes IQ")
     else if (path.startsWith("/history-ranking")) setActive("History Ranking")
     else if (path.startsWith("/battle-test")) setActive("")
     else if (path.startsWith("/pvp")) setActive("Battle PVP")
@@ -121,7 +123,7 @@ export function SiteNavbar({ participant }: { participant: BattleParticipant | n
         </a>
 
         <nav className="hidden items-center gap-1 rounded-full border border-white/10 bg-white/5 p-1 backdrop-blur-lg xl:flex">
-          {links.map((link) => (
+          {desktopLinks.map((link) => (
             <a key={link.label} href={link.href} onClick={() => selectLink(link.label)} className={`relative rounded-full px-2.5 py-1.5 text-[12px] font-medium transition-all ${active === link.label ? "bg-white text-slate-900 shadow-[0_0_16px_rgba(255,255,255,0.25)]" : "text-slate-300 hover:text-white"}`}>
               {link.label}
             </a>
@@ -135,11 +137,6 @@ export function SiteNavbar({ participant }: { participant: BattleParticipant | n
 
           {participant ? (
             <>
-              <a href="/friends" className="relative hidden h-10 items-center gap-2 rounded-xl border border-cyan-300/15 bg-cyan-300/[.055] px-3 text-xs font-black text-cyan-100 transition hover:border-cyan-300/30 hover:bg-cyan-300/10 sm:inline-flex" title="Cari & tambah teman">
-                <Users className="h-4 w-4 text-cyan-300" />
-                <span className="hidden 2xl:inline">Teman</span>
-                {friendBadge > 0 && <span className="absolute -right-1.5 -top-1.5 grid h-5 min-w-5 place-items-center rounded-full bg-rose-500 px-1 text-[10px] font-black text-white ring-2 ring-slate-950">{friendBadge > 99 ? "99+" : friendBadge}</span>}
-              </a>
               <NotificationCenter />
               <div ref={profileMenuRef} data-alzava-profile-menu="native" className="relative z-[120]">
                 <button
