@@ -1,4 +1,4 @@
-import { ArrowRight, BarChart3, BrainCircuit, Share2, Sparkles, Swords, Trophy, Zap } from "lucide-react"
+import { ArrowRight, BarChart3, BrainCircuit, Sparkles, Swords, Trophy, Zap } from "lucide-react"
 import type { BattleEntry, BattleParticipant, BattleSeason } from "@/lib/battle"
 import { CountdownCard } from "./countdown-card"
 import { Podium } from "./podium"
@@ -110,23 +110,19 @@ export function Hero({ season, entries, participant }: { season: BattleSeason | 
             </div>
             <p className="max-w-xs self-end text-right text-[13px] italic leading-relaxed text-cyan-100/80">&ldquo;Berapa Battle Point-mu—dan siapa yang bisa mengejarnya?&rdquo;</p>
 
-            <a href="/visual-iq" className="group relative flex min-h-[116px] w-full items-center gap-4 overflow-hidden rounded-2xl border border-cyan-300/45 bg-gradient-to-br from-cyan-400/[.18] via-sky-500/[.11] to-violet-500/[.15] px-4 py-4 text-left shadow-[0_0_34px_rgba(34,211,238,.18)] ring-1 ring-cyan-200/10 backdrop-blur-md transition-all hover:-translate-y-0.5 hover:border-cyan-200/70 hover:shadow-[0_0_44px_rgba(34,211,238,.28)]">
-              <div className="pointer-events-none absolute -right-10 -top-12 h-36 w-36 rounded-full bg-cyan-300/15 blur-3xl" />
-              <div className="pointer-events-none absolute -bottom-16 left-10 h-28 w-44 rounded-full bg-violet-400/10 blur-3xl" />
-              <span className="relative grid h-14 w-14 shrink-0 place-items-center rounded-2xl border border-cyan-200/30 bg-cyan-300/[.12] shadow-[0_0_24px_rgba(34,211,238,.18)] transition-transform group-hover:scale-105">
-                <BrainCircuit className="h-7 w-7 text-cyan-100" />
+            <a href="/visual-iq" className="group relative flex w-full items-center gap-3 overflow-hidden rounded-2xl border border-cyan-300/45 bg-gradient-to-r from-cyan-500/18 via-sky-500/15 to-violet-500/18 px-4 py-3.5 text-left shadow-[0_0_28px_rgba(34,211,238,.16)] ring-1 ring-cyan-200/10 backdrop-blur-md transition-all hover:-translate-y-0.5 hover:border-cyan-300/65 hover:shadow-[0_0_36px_rgba(34,211,238,.24)]">
+              <div className="pointer-events-none absolute -right-8 -top-10 h-24 w-24 rounded-full bg-cyan-300/12 blur-2xl" />
+              <span className="relative grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-cyan-300/15 ring-1 ring-cyan-200/25 transition-transform group-hover:scale-105">
+                <BrainCircuit className="h-5 w-5 text-cyan-100" />
               </span>
               <span className="relative min-w-0 flex-1">
-                <span className="flex flex-wrap items-center gap-2">
-                  <span className="text-lg font-black tracking-tight text-white">Tes IQ</span>
-                  <span className="rounded-full bg-cyan-300 px-2 py-1 text-[9px] font-black uppercase tracking-[.12em] text-slate-950">Baru</span>
+                <span className="flex items-center gap-2">
+                  <span className="block text-sm font-black text-white">Tes IQ</span>
+                  <span className="rounded-full bg-cyan-300 px-1.5 py-0.5 text-[8px] font-black uppercase tracking-[.1em] text-slate-950">Baru</span>
                 </span>
-                <span className="mt-1.5 block text-[12px] font-bold leading-5 text-cyan-50/80">Ketahui IQ-mu melalui 35 soal multi-domain: abstrak, spasial, numerik, dan verbal.</span>
-                <span className="mt-2 inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[.12em] text-cyan-300">Mulai Tes IQ <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" /></span>
+                <span className="mt-0.5 block text-[10px] font-bold text-cyan-100/70">35 soal multi-domain · ketahui estimasi IQ-mu</span>
               </span>
-              <span className="relative grid h-9 w-9 shrink-0 place-items-center rounded-full border border-cyan-200/20 bg-slate-950/25">
-                <ArrowRight className="h-4 w-4 text-cyan-200 transition-transform group-hover:translate-x-0.5" />
-              </span>
+              <ArrowRight className="relative h-4 w-4 shrink-0 text-cyan-200 transition-transform group-hover:translate-x-0.5" />
             </a>
 
             <CountdownCard season={season} />
@@ -142,12 +138,6 @@ export function Hero({ season, entries, participant }: { season: BattleSeason | 
               <ArrowRight className="h-4 w-4 shrink-0 text-emerald-200 transition-transform group-hover:translate-x-0.5" />
             </a>
 
-            <div className="grid w-full grid-cols-2 gap-2 text-[11px] font-extrabold">
-              <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-slate-950/45 px-3 py-2.5 text-slate-200 backdrop-blur-sm"><Sparkles className="h-3.5 w-3.5 text-cyan-300"/>Battle Point</div>
-              <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-slate-950/45 px-3 py-2.5 text-slate-200 backdrop-blur-sm"><BarChart3 className="h-3.5 w-3.5 text-violet-300"/>Statistik</div>
-              <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-slate-950/45 px-3 py-2.5 text-slate-200 backdrop-blur-sm"><Trophy className="h-3.5 w-3.5 text-amber-300"/>Rank Nasional</div>
-              <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-slate-950/45 px-3 py-2.5 text-slate-200 backdrop-blur-sm"><Share2 className="h-3.5 w-3.5 text-emerald-300"/>Share Card</div>
-            </div>
           </div>
         </div>
       </div>
