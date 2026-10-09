@@ -31,7 +31,7 @@ type ParticipantLite={
 type Payload={scope?:Scope;total?:number;items?:VisualIqRankItem[];me?:VisualIqRankItem|null}
 
 export function iqLevelForRank(iq:number){
-  if(iq>=145)return "Genius"
+  if(iq>=140)return "Genius"
   if(iq>=130)return "Sangat Superior"
   if(iq>=120)return "Superior"
   if(iq>=110)return "Di Atas Rata-rata"
