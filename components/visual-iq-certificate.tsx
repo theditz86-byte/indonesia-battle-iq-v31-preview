@@ -169,24 +169,59 @@ export function VisualIqCertificate({data,svgRef}:{data:VisualIqCertificateData;
   </svg>
 }
 
-async function svgToPng(svg:SVGSVGElement){
-  const xml=new XMLSerializer().serializeToString(svg)
-  const blob=new Blob([xml],{type:"image/svg+xml;charset=utf-8"})
-  const url=URL.createObjectURL(blob)
-  try{
+async function loadImage(src:string){
+  return await new Promise<HTMLImageElement>((resolve,reject)=>{
     const image=new Image()
     image.decoding="async"
-    await new Promise<void>((resolve,reject)=>{image.onload=()=>resolve();image.onerror=()=>reject(new Error("image_load_failed"));image.src=url})
-    const canvas=document.createElement("canvas")
-    canvas.width=1495
-    canvas.height=1052
-    const ctx=canvas.getContext("2d")
-    if(!ctx)throw new Error("canvas_unavailable")
-    ctx.drawImage(image,0,0,1495,1052)
-    return await new Promise<Blob>((resolve,reject)=>canvas.toBlob(value=>value?resolve(value):reject(new Error("png_failed")),"image/png",.96))
+    image.onload=()=>resolve(image)
+    image.onerror=()=>reject(new Error("image_load_failed"))
+    image.src=src
+  })
+}
+
+function serializeCertificateOverlay(svg:SVGSVGElement){
+  const clone=svg.cloneNode(true) as SVGSVGElement
+  clone.querySelectorAll("image").forEach(node=>node.remove())
+  clone.setAttribute("width","1495")
+  clone.setAttribute("height","1052")
+  clone.style.width="1495px"
+  clone.style.height="1052px"
+  return new XMLSerializer().serializeToString(clone)
+}
+
+async function svgToPng(svg:SVGSVGElement){
+  await document.fonts?.ready?.catch?.(()=>undefined)
+
+  const scale=2
+  const width=1495
+  const height=1052
+  const canvas=document.createElement("canvas")
+  canvas.width=width*scale
+  canvas.height=height*scale
+  const ctx=canvas.getContext("2d",{alpha:false})
+  if(!ctx)throw new Error("canvas_unavailable")
+
+  ctx.imageSmoothingEnabled=true
+  ctx.imageSmoothingQuality="high"
+  ctx.fillStyle="#020713"
+  ctx.fillRect(0,0,canvas.width,canvas.height)
+
+  const shell=await loadImage(CERTIFICATE_SHELL)
+  ctx.drawImage(shell,0,0,canvas.width,canvas.height)
+
+  const overlayXml=serializeCertificateOverlay(svg)
+  const overlayBlob=new Blob([overlayXml],{type:"image/svg+xml;charset=utf-8"})
+  const overlayUrl=URL.createObjectURL(overlayBlob)
+  try{
+    const overlay=await loadImage(overlayUrl)
+    ctx.drawImage(overlay,0,0,canvas.width,canvas.height)
   }finally{
-    URL.revokeObjectURL(url)
+    URL.revokeObjectURL(overlayUrl)
   }
+
+  return await new Promise<Blob>((resolve,reject)=>{
+    canvas.toBlob(value=>value?resolve(value):reject(new Error("png_failed")),"image/png",1)
+  })
 }
 
 export function VisualIqCertificateModal({
@@ -208,49 +243,94 @@ export function VisualIqCertificateModal({
     return await svgToPng(svgRef.current)
   }
   async function download(){
-    setMessage("")
+    setMessage("Menyiapkan PNG HD…")
     try{
       const blob=await makePng()
       const url=URL.createObjectURL(blob)
       const a=document.createElement("a")
       a.href=url
       a.download=safeFileName(data.participantName)
-      document.body.appendChild(a);a.click();a.remove()
-      window.setTimeout(()=>URL.revokeObjectURL(url),1500)
-      setMessage("Sertifikat PNG siap.")
-    }catch{setMessage("Sertifikat belum dapat dibuat. Coba lagi.")}
+      a.rel="noopener"
+      a.style.display="none"
+      document.body.appendChild(a)
+      a.click()
+      a.remove()
+      window.setTimeout(()=>URL.revokeObjectURL(url),10000)
+      setMessage("Sertifikat HD berhasil dibuat dan diunduh.")
+    }catch(error){
+      console.error("certificate_download_failed",error)
+      setMessage("Sertifikat belum dapat dibuat. Muat ulang halaman lalu coba lagi.")
+    }
   }
   async function share(){
-    setMessage("")
+    setMessage("Menyiapkan sertifikat HD…")
     try{
       const blob=await makePng()
       const file=new File([blob],safeFileName(data.participantName),{type:"image/png"})
+
       if(navigator.share&&navigator.canShare?.({files:[file]})){
-        await navigator.share({title:"Sertifikat Tes IQ ALZAVA",text:shareText,files:[file]})
-        setMessage("Sertifikat siap dibagikan.")
+        await navigator.share({
+          title:"Sertifikat Tes IQ ALZAVA",
+          text:shareText,
+          files:[file],
+        })
+        setMessage("Sertifikat berhasil dibagikan.")
         return
       }
+
+      const url=URL.createObjectURL(blob)
+      const a=document.createElement("a")
+      a.href=url
+      a.download=safeFileName(data.participantName)
+      a.rel="noopener"
+      a.style.display="none"
+      document.body.appendChild(a)
+      a.click()
+      a.remove()
+      window.setTimeout(()=>URL.revokeObjectURL(url),10000)
+
       if(navigator.share){
-        await navigator.share({title:"Sertifikat Tes IQ ALZAVA",text:shareText,url:window.location.origin+"/visual-iq/"})
-        setMessage("Tautan hasil siap dibagikan.")
+        try{
+          await navigator.share({
+            title:"Sertifikat Tes IQ ALZAVA",
+            text:shareText+"\nFile PNG HD sudah diunduh ke perangkatmu.",
+            url:window.location.origin+"/visual-iq/",
+          })
+        }catch{}
+      }
+      setMessage("Browser ini tidak mendukung share file langsung. PNG HD sudah diunduh agar bisa dibagikan.")
+    }catch(error){
+      if(error instanceof DOMException&&error.name==="AbortError"){
+        setMessage("")
         return
       }
-      await download()
-    }catch{setMessage("")}
+      console.error("certificate_share_failed",error)
+      setMessage("Sertifikat belum dapat dibagikan. Coba Unduh PNG lalu bagikan dari galeri/file.")
+    }
   }
-  function printCertificate(){
-    setMessage("")
+  async function printCertificate(){
+    setMessage("Menyiapkan versi cetak HD…")
     if(!svgRef.current){setMessage("Sertifikat belum siap dicetak.");return}
     try{
-      const svg=new XMLSerializer().serializeToString(svgRef.current)
+      const blob=await makePng()
+      const url=URL.createObjectURL(blob)
       const printWindow=window.open("","_blank","width=1200,height=900")
-      if(!printWindow){setMessage("Izinkan pop-up untuk mencetak sertifikat.");return}
+      if(!printWindow){
+        URL.revokeObjectURL(url)
+        setMessage("Izinkan pop-up untuk mencetak sertifikat.")
+        return
+      }
       try{printWindow.opener=null}catch{}
       printWindow.document.open()
-      printWindow.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Sertifikat Tes IQ ALZAVA</title><style>@page{size:A4 landscape;margin:0}html,body{margin:0;background:#fff}body{display:grid;place-items:center;min-height:100vh}svg{width:100%;height:auto;max-height:100vh;display:block}@media print{html,body{width:297mm;height:210mm}svg{width:297mm;height:209mm}}</style></head><body>${svg}<script>window.addEventListener('load',()=>setTimeout(()=>window.print(),180));<\/script></body></html>`)
-      printWindow.document.close();printWindow.focus()
-      setMessage("Jendela cetak sertifikat dibuka.")
-    }catch{setMessage("Sertifikat belum dapat dicetak. Coba lagi.")}
+      printWindow.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Sertifikat Tes IQ ALZAVA</title><style>@page{size:A4 landscape;margin:0}html,body{margin:0;background:#fff}body{display:grid;place-items:center;min-height:100vh}img{display:block;width:100%;height:auto;max-height:100vh;object-fit:contain}@media print{html,body{width:297mm;height:210mm}img{width:297mm;height:210mm;object-fit:contain}}</style></head><body><img src="${url}" alt="Sertifikat Tes IQ ALZAVA"/><script>window.addEventListener('load',()=>setTimeout(()=>window.print(),250));window.addEventListener('afterprint',()=>window.close());<\/script></body></html>`)
+      printWindow.document.close()
+      printWindow.focus()
+      window.setTimeout(()=>URL.revokeObjectURL(url),60000)
+      setMessage("Versi cetak HD dibuka.")
+    }catch(error){
+      console.error("certificate_print_failed",error)
+      setMessage("Sertifikat belum dapat dicetak. Coba lagi.")
+    }
   }
   async function shareResult(){
     if(!onShareResult)return
