@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react"
 import { BATTLE_API_URL, PARTICIPANT_TOKEN_KEY, formatDuration } from "@/lib/battle"
-import { ArrowLeft, Award, BrainCircuit, CheckCircle2, Crown, History, Play, Settings, Trophy } from "lucide-react"
+import { ArrowLeft, BrainCircuit, CheckCircle2, Crown, History, Play, Settings, Share2, Trophy } from "lucide-react"
 import { VisualIqCertificateModal } from "@/components/visual-iq-certificate"
 import type { VisualIqRankItem } from "@/components/visual-iq-leaderboard"
 
@@ -141,6 +141,36 @@ export default function AccountResultsPage(){
   const testHref=active || freeRemaining>0 ? "/battle-test" : "/battle#peringkat"
   const testLabel=active ? "Lanjutkan Ranked" : freeRemaining>0 ? `Mulai Ranked · sisa ${freeRemaining}x` : "3 Ranked season ini sudah digunakan"
 
+  async function shareVisualResult(item:VisualIqItem){
+    const iq=Number(item.iq_estimate||0)
+    const correct=Number(item.correct_count||0)
+    const total=Number(item.question_count||35)
+    const accuracy=total>0?Math.round((correct/total)*100):0
+    const level=iqLevelFor(iq)
+    const when=item.created_at?new Date(item.created_at).toLocaleDateString("id-ID",{day:"2-digit",month:"long",year:"numeric"}):""
+    const url=window.location.origin+"/visual-iq/"
+    const text=[
+      "🧠 Hasil Tes IQ ALZAVA",
+      `Estimasi IQ: ${iq}`,
+      `Tingkat IQ: ${level}`,
+      `${correct}/${total} benar · ${accuracy}% akurasi · ${formatDuration(item.duration_ms)}`,
+      when?`Tanggal: ${when}`:"",
+      "",
+      "Berani kalahkan hasilku?",
+      url,
+    ].filter(Boolean).join("\n")
+
+    if(navigator.share){
+      await navigator.share({title:"Hasil Tes IQ ALZAVA",text,url})
+      return "Hasil siap dibagikan."
+    }
+    if(navigator.clipboard){
+      await navigator.clipboard.writeText(text)
+      return "Hasil disalin. Tempelkan ke WhatsApp atau media sosial."
+    }
+    return "Bagikan hasil dari perangkat yang mendukung fitur berbagi."
+  }
+
   if(loading) return <main className="grid min-h-screen place-items-center bg-[#020817] text-slate-300">Memuat riwayat tes…</main>
 
   return (
@@ -200,7 +230,7 @@ export default function AccountResultsPage(){
             <div className="mt-5 flex snap-x snap-mandatory gap-4 overflow-x-auto pb-3 [scrollbar-color:rgba(148,163,184,.35)_transparent] [scrollbar-width:thin]">
               {visualHistory.map((item,index)=>{
                 const accuracy=Number(item.question_count||0)>0?Math.round((Number(item.correct_count||0)/Number(item.question_count||1))*100):0
-                return <article key={item.id || index} className="min-w-[260px] max-w-[300px] flex-[0_0_78vw] snap-start rounded-2xl border border-cyan-300/15 bg-[#07162f]/90 p-5 sm:flex-basis-[290px]">
+                return <button type="button" key={item.id || index} onClick={()=>setCertificateItem(item)} className="group min-w-[260px] max-w-[300px] flex-[0_0_78vw] snap-start rounded-2xl border border-cyan-300/15 bg-[#07162f]/90 p-5 text-left transition hover:border-cyan-300/35 hover:bg-[#0a1b39] focus:outline-none focus:ring-2 focus:ring-cyan-300/45 sm:flex-basis-[290px]">
                   <div className="flex items-start justify-between gap-3">
                     <div><p className="text-[10px] font-black uppercase tracking-[.14em] text-cyan-300">Tes IQ</p><p className="mt-1 text-xs font-bold text-slate-500">Percobaan {visualHistory.length-index}</p></div>
                     {Number(item.iq_estimate||0)===Number(visualBest?.iq_estimate||-1) ? <span className="inline-flex items-center gap-1 rounded-full border border-amber-300/20 bg-amber-300/10 px-2 py-1 text-[9px] font-black uppercase text-amber-200"><Trophy className="h-3 w-3"/>TERBAIK</span> : null}
@@ -213,8 +243,11 @@ export default function AccountResultsPage(){
                     <span className="rounded-lg bg-white/5 px-3 py-2 text-slate-300">{formatDuration(item.duration_ms)}</span>
                   </div>
                   <p className="mt-4 text-xs text-slate-500">{item.created_at ? new Date(item.created_at).toLocaleString("id-ID",{day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"}) : ""}</p>
-                  <button type="button" onClick={()=>setCertificateItem(item)} className="mt-4 flex min-h-10 w-full items-center justify-center gap-2 rounded-xl border border-amber-300/20 bg-amber-300/[.08] px-3 text-xs font-black text-amber-100"><Award className="h-4 w-4"/>Lihat & Bagikan Sertifikat</button>
-                </article>
+                  <div className="mt-4 flex items-center justify-between gap-3 border-t border-white/10 pt-3 text-[10px] font-black uppercase tracking-[.08em] text-cyan-300">
+                    <span>Klik untuk detail</span>
+                    <span className="inline-flex items-center gap-1 text-slate-400 transition group-hover:text-cyan-200"><Share2 className="h-3.5 w-3.5"/>Bagikan</span>
+                  </div>
+                </button>
               })}
             </div>
           ) : (
@@ -277,6 +310,7 @@ export default function AccountResultsPage(){
       {certificateItem&&<VisualIqCertificateModal
         open={Boolean(certificateItem)}
         onClose={()=>setCertificateItem(null)}
+        onShareResult={()=>shareVisualResult(certificateItem)}
         data={{
           participantName:participant?.nickname||"Peserta ALZAVA",
           iqScore:Number(certificateItem.iq_estimate||70),
