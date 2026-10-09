@@ -111,53 +111,53 @@ export function VisualIqCertificate({data,svgRef}:{data:VisualIqCertificateData;
     {/* ALZAVA brand — exact ZIP hierarchy */}
     <Flank y={110} leftStart={340} leftEnd={574} rightStart={921} rightEnd={1155}/>
     <Diamond x={590} y={110} size={9}/><Diamond x={905} y={110} size={9}/>
-    <text x="747.5" y="137" textAnchor="middle" style={{fontFamily:"var(--font-cinzel), Georgia, 'Times New Roman', serif"}} fontSize="62" fontWeight="600" letterSpacing="3" fill="url(#zipGold)" filter="url(#zipGoldShadow)">Alzava</text>
-    <text x="747.5" y="169" textAnchor="middle" style={{fontFamily:"var(--font-cinzel), Georgia, serif"}} fontSize="19" fontWeight="600" letterSpacing="8.5" fill="#e4c66d">BATTLE POINT</text>
+    <text x="747.5" y="137" textAnchor="middle" style={{fontFamily:"var(--font-cinzel, Georgia), 'Times New Roman', serif"}} fontSize="62" fontWeight="600" letterSpacing="3" fill="url(#zipGold)" filter="url(#zipGoldShadow)">Alzava</text>
+    <text x="747.5" y="169" textAnchor="middle" style={{fontFamily:"var(--font-cinzel, Georgia), serif"}} fontSize="19" fontWeight="600" letterSpacing="8.5" fill="#e4c66d">BATTLE POINT</text>
 
     {/* Main title */}
-    <text x="747.5" y="249" textAnchor="middle" style={{fontFamily:"var(--font-cinzel), Georgia, 'Times New Roman', serif"}} fontSize="72" fontWeight="700" letterSpacing=".7" fill="url(#zipGold)" filter="url(#zipGoldShadow)">Sertifikat Penilaian Kognitif</text>
+    <text x="747.5" y="249" textAnchor="middle" style={{fontFamily:"var(--font-cinzel, Georgia), 'Times New Roman', serif"}} fontSize="72" fontWeight="700" letterSpacing=".7" fill="url(#zipGold)" filter="url(#zipGoldShadow)">Sertifikat Penilaian Kognitif</text>
     <Flank y={280} leftStart={182} leftEnd={351} rightStart={1144} rightEnd={1313}/>
-    <text x="747.5" y="287" textAnchor="middle" style={{fontFamily:"var(--font-cinzel), Georgia, serif"}} fontSize="20" fontWeight="600" letterSpacing="7.2" fill="#f6e3b1">CERTIFICATE OF COGNITIVE ASSESSMENT</text>
+    <text x="747.5" y="287" textAnchor="middle" style={{fontFamily:"var(--font-cinzel, Georgia), serif"}} fontSize="20" fontWeight="600" letterSpacing="7.2" fill="#f6e3b1">CERTIFICATE OF COGNITIVE ASSESSMENT</text>
 
     {/* Awarded row */}
     <Flank y={333} leftStart={350} leftEnd={541} rightStart={954} rightEnd={1145}/>
     <Diamond x={558} y={333}/><Diamond x={937} y={333}/>
-    <text x="747.5" y="341" textAnchor="middle" style={{fontFamily:"var(--font-lora), Georgia, serif"}} fontSize="20" fill="#f9f6e9">Diberikan kepada / Awarded to</text>
+    <text x="747.5" y="341" textAnchor="middle" style={{fontFamily:"var(--font-lora, Georgia), serif"}} fontSize="20" fill="#f9f6e9">Diberikan kepada / Awarded to</text>
 
     {/* Participant */}
-    <text x="747.5" y="432" textAnchor="middle" style={{fontFamily:"var(--font-cinzel), Georgia, 'Times New Roman', serif"}} fontSize={nameSize(name)} fontWeight="700" letterSpacing="1.2" fill="url(#zipGold)" filter="url(#zipGoldShadow)">{name}</text>
+    <text x="747.5" y="432" textAnchor="middle" style={{fontFamily:"var(--font-cinzel, Georgia), 'Times New Roman', serif"}} fontSize={nameSize(name)} fontWeight="700" letterSpacing="1.2" fill="url(#zipGold)" filter="url(#zipGoldShadow)">{name}</text>
     <line x1="330" y1="458" x2="1165" y2="458" stroke="url(#zipLine)" strokeWidth="1.5"/>
     <Diamond x={747.5} y={458} size={10}/>
 
     {/* Description */}
-    <text x="747.5" y="501" textAnchor="middle" style={{fontFamily:"var(--font-lora), Georgia, serif"}} fontSize="21" fill="#f9f6e9">Telah menyelesaikan Tes IQ ALZAVA dan memperoleh hasil</text>
+    <text x="747.5" y="501" textAnchor="middle" style={{fontFamily:"var(--font-lora, Georgia), serif"}} fontSize="21" fill="#f9f6e9">Telah menyelesaikan Tes IQ ALZAVA dan memperoleh hasil</text>
 
     {/* Score */}
-    <text x="747.5" y="648" textAnchor="middle" style={{fontFamily:"var(--font-cinzel), Georgia, 'Times New Roman', serif"}} fontSize="140" fontWeight="700" letterSpacing="-2" fill="url(#zipGold)" filter="url(#zipGoldShadow)">{data.iqScore} IQ</text>
+    <text x="747.5" y="648" textAnchor="middle" style={{fontFamily:"var(--font-cinzel, Georgia), 'Times New Roman', serif"}} fontSize="140" fontWeight="700" letterSpacing="-2" fill="url(#zipGold)" filter="url(#zipGoldShadow)">{data.iqScore} IQ</text>
 
     {/* Text over original ZIP plaque */}
-    <text x="747.5" y="704" textAnchor="middle" style={{fontFamily:"var(--font-lora), Georgia, serif"}} fontSize="22" fill="#f9f6e9">Tingkat IQ: <tspan fontWeight="700" fill="#f2d478">{data.iqLevel}</tspan></text>
-    <text x="747.5" y="735" textAnchor="middle" style={{fontFamily:"var(--font-lora), Georgia, serif"}} fontSize="18" letterSpacing=".7" fill="#f2eee2">Rentang Kepercayaan: {confidence(data.iqScore)}</text>
+    <text x="747.5" y="704" textAnchor="middle" style={{fontFamily:"var(--font-lora, Georgia), serif"}} fontSize="22" fill="#f9f6e9">Tingkat IQ: <tspan fontWeight="700" fill="#f2d478">{data.iqLevel}</tspan></text>
+    <text x="747.5" y="735" textAnchor="middle" style={{fontFamily:"var(--font-lora, Georgia), serif"}} fontSize="18" letterSpacing=".7" fill="#f2eee2">Rentang Kepercayaan: {confidence(data.iqScore)}</text>
 
     {/* Rank row */}
     <Flank y={794} leftStart={452} leftEnd={562} rightStart={933} rightEnd={1043}/>
     <Diamond x={584} y={794} size={8}/><Diamond x={911} y={794} size={8}/>
-    <text x="747.5" y="804" textAnchor="middle" style={{fontFamily:"var(--font-cinzel), Georgia, serif"}} fontSize="25" fontWeight="700" letterSpacing="5.2" fill="url(#zipGold)">{achievementText} • {data.iqLevel.toUpperCase()}</text>
+    <text x="747.5" y="804" textAnchor="middle" style={{fontFamily:"var(--font-cinzel, Georgia), serif"}} fontSize="25" fontWeight="700" letterSpacing="5.2" fill="url(#zipGold)">{achievementText} • {data.iqLevel.toUpperCase()}</text>
 
     {/* Date */}
-    <text x="290" y="859" textAnchor="middle" style={{fontFamily:"var(--font-lora), Georgia, serif"}} fontSize="18" fill="#f9f6e9">Tanggal: {date}</text>
+    <text x="290" y="859" textAnchor="middle" style={{fontFamily:"var(--font-lora, Georgia), serif"}} fontSize="18" fill="#f9f6e9">Tanggal: {date}</text>
     <line x1="150" y1="881" x2="280" y2="881" stroke="url(#zipLine)" strokeWidth="1.5"/>
     <Diamond x={290} y={881} size={9}/>
     <line x1="300" y1="881" x2="430" y2="881" stroke="url(#zipLine)" strokeWidth="1.5"/>
 
     {/* Powered by; actual HN crest is baked from ZIP asset in the shell */}
-    <text x="645" y="858" textAnchor="middle" style={{fontFamily:"var(--font-lora), Georgia, serif"}} fontSize="18" fill="#f9f6e9">Powered by:</text>
-    <text x="645" y="902" textAnchor="middle" style={{fontFamily:"var(--font-lora), Georgia, serif"}} fontSize="40" fontWeight="700" fill="#f9f6e9">HN FC</text>
+    <text x="645" y="858" textAnchor="middle" style={{fontFamily:"var(--font-lora, Georgia), serif"}} fontSize="18" fill="#f9f6e9">Powered by:</text>
+    <text x="645" y="902" textAnchor="middle" style={{fontFamily:"var(--font-lora, Georgia), serif"}} fontSize="40" fontWeight="700" fill="#f9f6e9">HN FC</text>
     <line x1="752" y1="832" x2="752" y2="947" stroke="#d4af37" strokeOpacity=".7" strokeWidth="1"/>
     <Diamond x={752} y={889} size={8}/>
 
     {/* Certificate ID */}
-    <text x="1205" y="859" textAnchor="middle" style={{fontFamily:"var(--font-lora), Georgia, serif"}} fontSize="18" fill="#f9f6e9">ID Sertifikat: {id}</text>
+    <text x="1205" y="859" textAnchor="middle" style={{fontFamily:"var(--font-lora, Georgia), serif"}} fontSize="18" fill="#f9f6e9">ID Sertifikat: {id}</text>
     <line x1="1065" y1="881" x2="1195" y2="881" stroke="url(#zipLine)" strokeWidth="1.5"/>
     <Diamond x={1205} y={881} size={9}/>
     <line x1="1215" y1="881" x2="1345" y2="881" stroke="url(#zipLine)" strokeWidth="1.5"/>
@@ -165,7 +165,7 @@ export function VisualIqCertificate({data,svgRef}:{data:VisualIqCertificateData;
     {/* Motto */}
     <Flank y={990} leftStart={378} leftEnd={548} rightStart={947} rightEnd={1117}/>
     <Diamond x={566} y={990} size={7}/><Diamond x={929} y={990} size={7}/>
-    <text x="747.5" y="995" textAnchor="middle" style={{fontFamily:"var(--font-cinzel), Georgia, serif"}} fontSize="13" fontWeight="600" letterSpacing="4.2" fill="#f6e3b1">LEBIH TAJAM PIKIRAN, LEBIH TINGGI POTENSI</text>
+    <text x="747.5" y="995" textAnchor="middle" style={{fontFamily:"var(--font-cinzel, Georgia), serif"}} fontSize="13" fontWeight="600" letterSpacing="4.2" fill="#f6e3b1">LEBIH TAJAM PIKIRAN, LEBIH TINGGI POTENSI</text>
   </svg>
 }
 
