@@ -32,9 +32,6 @@ function certificateId(data:VisualIqCertificateData){
 function certificateDate(value?:string){
   return new Intl.DateTimeFormat("id-ID",{day:"2-digit",month:"long",year:"numeric"}).format(value?new Date(value):new Date())
 }
-function confidence(iq:number){
-  return `${Math.max(70,iq-5)} – ${Math.min(160,iq+5)}`
-}
 function displayName(value:string){
   const clean=value.trim()||"Peserta ALZAVA"
   return clean.toLowerCase().replace(/(^|\s)(\S)/g,(_,space:string,char:string)=>space+char.toUpperCase())
@@ -128,8 +125,7 @@ export function VisualIqCertificate({data,svgRef}:{data:VisualIqCertificateData;
     <text x="747.5" y="648" textAnchor="middle" style={{fontFamily:"var(--font-cinzel, Georgia), 'Times New Roman', serif"}} fontSize="140" fontWeight="700" letterSpacing="-2" fill="url(#zipGold)" filter="url(#zipGoldShadow)">{data.iqScore} IQ</text>
 
     {/* Text over original ZIP plaque */}
-    <text x="747.5" y="704" textAnchor="middle" style={{fontFamily:"var(--font-lora, Georgia), serif"}} fontSize="22" fill="#f9f6e9">Tingkat IQ: <tspan fontWeight="700" fill="#f2d478">{data.iqLevel}</tspan></text>
-    <text x="747.5" y="742" textAnchor="middle" style={{fontFamily:"var(--font-lora, Georgia), serif"}} fontSize="18" letterSpacing=".7" fill="#f2eee2">Rentang Kepercayaan: {confidence(data.iqScore)}</text>
+    <text x="747.5" y="724" textAnchor="middle" style={{fontFamily:"var(--font-lora, Georgia), serif"}} fontSize="30" fontWeight="700" fill="#f9f6e9">Tingkat IQ: <tspan fontWeight="800" fill="#f2d478">{data.iqLevel}</tspan></text>
 
     {/* Date */}
     <text x="290" y="859" textAnchor="middle" style={{fontFamily:"var(--font-lora, Georgia), serif"}} fontSize="18" fill="#f9f6e9">Tanggal: {date}</text>
@@ -342,8 +338,7 @@ async function renderCertificatePng(data:VisualIqCertificateData){
   drawCenteredText(ctx,"Telah menyelesaikan Tes IQ ALZAVA dan memperoleh hasil",747.5,516,`400 21px ${lora}, Georgia, serif`,"#f9f6e9")
   drawCenteredText(ctx,`${data.iqScore} IQ`,747.5,648,`700 140px ${cinzel}, Georgia, serif`,canvasGold(ctx,648,140),true)
 
-  drawMixedCenteredText(ctx,"Tingkat IQ: ",data.iqLevel,747.5,704,`400 22px ${lora}, Georgia, serif`)
-  drawCenteredText(ctx,`Rentang Kepercayaan: ${confidence(data.iqScore)}`,747.5,742,`400 18px ${lora}, Georgia, serif`,"#f2eee2")
+  drawMixedCenteredText(ctx,"Tingkat IQ: ",data.iqLevel,747.5,724,`700 30px ${lora}, Georgia, serif`)
 
   drawCenteredText(ctx,`Tanggal: ${date}`,290,859,`400 18px ${lora}, Georgia, serif`,"#f9f6e9")
   drawCanvasFlanks(ctx,881,150,280,300,430);drawCanvasDiamond(ctx,290,881,9)
