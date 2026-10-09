@@ -664,6 +664,18 @@ function shuffle<T>(items:T[]){
 }
 function pick<T>(items:T[],count:number){return shuffle(items).slice(0,count)}
 
+// Soal Dasar tetap tersedia, tetapi peluang masuk sesi dipotong 50%
+// dibanding pemilihan acak rata sebelumnya. Menengah & Sulit tetap berbobot 1.
+function difficultyWeightedOrder(items:Question[]){
+  return items
+    .map(q=>{
+      const weight=q.difficulty===2?0.5:1
+      const random=Math.max(Number.EPSILON,Math.random())
+      return {q,key:-Math.log(random)/weight}
+    })
+    .sort((a,b)=>a.key-b.key)
+    .map(item=>item.q)
+}
 
 function makeSet(){
   let recent:string[]=[]
@@ -675,7 +687,7 @@ function makeSet(){
   const pickDomain=(domain:Domain,count:number,maxPerFamily:number)=>{
     const familyCount=new Map<string,number>()
     const take=(pool:Question[])=>{
-      for(const q of shuffle(pool)){
+      for(const q of difficultyWeightedOrder(pool)){
         if(selected.filter(x=>x.domain===domain).length>=count)break
         if(selected.some(x=>x.id===q.id))continue
         if((familyCount.get(q.family)||0)>=maxPerFamily)continue
