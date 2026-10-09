@@ -778,6 +778,10 @@ export function VisualIqGame(){
       .catch(()=>window.location.replace(registerUrl))
   },[])
 
+  useEffect(()=>{
+    if(new URLSearchParams(window.location.search).get("view")==="ranking")setHomeView("ranking")
+  },[])
+
   const started=questions.length===35
   const done=started&&index>=questions.length
   const current=questions[index]
