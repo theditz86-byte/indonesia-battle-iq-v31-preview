@@ -3,6 +3,8 @@
 import { ArrowLeft, BrainCircuit, Clock3, LockKeyhole, Play, RotateCcw, Share2, Sparkles, Trophy } from "lucide-react"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { getParticipantToken } from "@/lib/battle"
+import { VisualIqLeaderboard, type VisualIqRankItem } from "@/components/visual-iq-leaderboard"
+import { VisualIqCertificateModal } from "@/components/visual-iq-certificate"
 
 const ACCOUNT_API = "https://efndozplpwyemzgqfnep.supabase.co/functions/v1/battle-account"
 const VISUAL_IQ_API = "https://efndozplpwyemzgqfnep.supabase.co/functions/v1/battle-visual-iq"
@@ -37,6 +39,10 @@ type Question = {
 type Participant = {
   nickname?: string
   account_ready?: boolean
+  public_id?: string
+  avatar_url?: string
+  province_name?: string
+  regency_name?: string
 }
 type SaveState = "idle"|"saving"|"saved"|"error"
 
@@ -745,6 +751,10 @@ export function VisualIqGame(){
   const [saveMessage,setSaveMessage]=useState("")
   const [shareMessage,setShareMessage]=useState("")
   const [exitConfirm,setExitConfirm]=useState(false)
+  const [homeView,setHomeView]=useState<"test"|"ranking">("test")
+  const [savedAttempt,setSavedAttempt]=useState<{id?:string;created_at?:string}|null>(null)
+  const [rankingMe,setRankingMe]=useState<VisualIqRankItem|null>(null)
+  const [certificateOpen,setCertificateOpen]=useState(false)
   const timerRef=useRef<number|null>(null)
   const savedRef=useRef(false)
 
@@ -791,6 +801,9 @@ export function VisualIqGame(){
     setSaveMessage("")
     setShareMessage("")
     setExitConfirm(false)
+    setSavedAttempt(null)
+    setRankingMe(null)
+    setCertificateOpen(false)
   }
 
   function choose(option:number){
@@ -813,6 +826,21 @@ export function VisualIqGame(){
       return
     }
     setIndex(value=>Math.max(0,value-1))
+  }
+
+  async function loadNationalRanking(){
+    const token=getParticipantToken()
+    if(!token)return
+    try{
+      const response=await fetch(VISUAL_IQ_API,{
+        method:"POST",
+        headers:{"Content-Type":"application/json","X-Battle-Token":token},
+        body:JSON.stringify({action:"leaderboard",scope:"national",limit:50}),
+        cache:"no-store",
+      })
+      const data=await response.json().catch(()=>({}))
+      if(response.ok&&data?.me)setRankingMe(data.me as VisualIqRankItem)
+    }catch{}
   }
 
   async function saveAttempt(force=false){
@@ -839,8 +867,10 @@ export function VisualIqGame(){
       })
       const data=await response.json().catch(()=>({}))
       if(!response.ok)throw new Error(data?.error||"Hasil belum tersimpan.")
+      if(data?.result)setSavedAttempt({id:data.result.id,created_at:data.result.created_at})
       setSaveState("saved")
       setSaveMessage("✓ Hasil tersimpan di Riwayat Tes akunmu.")
+      await loadNationalRanking()
     }catch(e){
       savedRef.current=false
       setSaveState("error")
@@ -866,6 +896,9 @@ export function VisualIqGame(){
     setSaveMessage("")
     setShareMessage("")
     setExitConfirm(false)
+    setSavedAttempt(null)
+    setRankingMe(null)
+    setCertificateOpen(false)
     savedRef.current=false
   }
 
@@ -963,7 +996,7 @@ export function VisualIqGame(){
 
   async function shareResult(){
     const url=window.location.origin+"/visual-iq/"
-    const text="🧠 Hasil Tes IQ ALZAVA\nEstimasi IQ: "+result.iq+" ± 5\nTingkat IQ: "+iqLevel+"\n"+result.correct+"/30 benar • "+accuracy+"% akurasi • "+Math.floor(elapsed/60)+":"+String(elapsed%60).padStart(2,"0")+"\n\nBerani kalahkan hasilku? "+url
+    const text="🧠 Hasil Tes IQ ALZAVA\nEstimasi IQ: "+result.iq+" ± 5\nTingkat IQ: "+iqLevel+"\n"+result.correct+"/35 benar • "+accuracy+"% akurasi • "+Math.floor(elapsed/60)+":"+String(elapsed%60).padStart(2,"0")+"\n\nBerani kalahkan hasilku? "+url
     setShareMessage("")
     try{
       const blob=await makeShareImage()
@@ -1003,23 +1036,30 @@ export function VisualIqGame(){
       <div className="text-xs font-black">ALZAVA <span className="text-cyan-300">Tes IQ</span></div>
     </header>
     <main className="mx-auto max-w-md px-4 pb-14 pt-3">
-      <div className="rounded-[28px] border border-cyan-300/20 bg-slate-950/55 p-5 shadow-[0_24px_70px_rgba(0,0,0,.35)] backdrop-blur-xl">
-        <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[.16em] text-cyan-300"><Sparkles className="h-4 w-4"/>Tes Visual Interaktif</div>
-        <h1 className="mt-3 text-4xl font-black leading-[.98]">Ketahui <span className="bg-gradient-to-r from-cyan-300 via-violet-300 to-fuchsia-300 bg-clip-text text-transparent">IQ-mu</span></h1>
-        <p className="mt-4 text-sm leading-6 text-slate-300">35 soal original: 20 abstrak/matriks, 5 spasial, 5 numerik, dan 5 verbal. Setiap tes mengambil kombinasi berbeda dari bank tervalidasi lebih dari 300 item.</p>
-        <div className="mt-5 grid grid-cols-3 gap-2 text-center text-[10px] font-bold text-slate-300">
-          <div className="rounded-xl border border-white/10 bg-white/[.04] p-3"><BrainCircuit className="mx-auto mb-1 h-5 w-5 text-cyan-300"/>35 Soal</div>
-          <div className="rounded-xl border border-white/10 bg-white/[.04] p-3"><Clock3 className="mx-auto mb-1 h-5 w-5 text-violet-300"/>±22 Menit</div>
-          <div className="rounded-xl border border-white/10 bg-white/[.04] p-3"><Trophy className="mx-auto mb-1 h-5 w-5 text-amber-300"/>Maks. 160</div>
-        </div>
+      <div className="mb-4 grid grid-cols-2 gap-2 rounded-2xl border border-white/10 bg-slate-950/45 p-1.5">
+        <button type="button" onClick={()=>setHomeView("test")} className={`rounded-xl px-3 py-2.5 text-sm font-black transition ${homeView==="test"?"bg-white text-slate-950":"text-slate-400 hover:text-white"}`}>Tes IQ</button>
+        <button type="button" onClick={()=>setHomeView("ranking")} className={`rounded-xl px-3 py-2.5 text-sm font-black transition ${homeView==="ranking"?"bg-white text-slate-950":"text-slate-400 hover:text-white"}`}>Ranking IQ</button>
       </div>
-      <button type="button" onClick={start} className="mt-4 w-full rounded-2xl border border-cyan-300/35 bg-gradient-to-r from-cyan-500/18 via-indigo-500/18 to-violet-500/18 p-5 text-left shadow-[0_0_30px_rgba(34,211,238,.10)]">
-        <div className="text-xs font-black uppercase tracking-[.14em] text-cyan-300">Halo, {participant?.nickname||"Peserta"}</div>
-        <div className="mt-2 text-3xl font-black">Mulai Tes IQ</div>
-        <div className="mt-1 text-sm text-slate-300">Hasil otomatis tersimpan ke akun dan Riwayat Tes.</div>
-        <div className="mt-4 inline-flex items-center gap-2 rounded-xl bg-cyan-300 px-4 py-2.5 text-sm font-black text-slate-950"><Play className="h-4 w-4"/>MULAI 35 SOAL</div>
-      </button>
-      <p className="mt-4 text-center text-[11px] leading-5 text-slate-500">Estimasi IQ adalah indikasi kemampuan figural-spasial, bukan diagnosis atau hasil psikotes klinis resmi.</p>
+
+      {homeView==="ranking" ? <VisualIqLeaderboard participant={participant} onStart={()=>setHomeView("test")}/> : <>
+        <div className="rounded-[28px] border border-cyan-300/20 bg-slate-950/55 p-5 shadow-[0_24px_70px_rgba(0,0,0,.35)] backdrop-blur-xl">
+          <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[.16em] text-cyan-300"><Sparkles className="h-4 w-4"/>Tes IQ Multi-Domain</div>
+          <h1 className="mt-3 text-4xl font-black leading-[.98]">Ketahui <span className="bg-gradient-to-r from-cyan-300 via-violet-300 to-fuchsia-300 bg-clip-text text-transparent">IQ-mu</span></h1>
+          <p className="mt-4 text-sm leading-6 text-slate-300">35 soal original: 20 abstrak/matriks, 5 spasial, 5 numerik, dan 5 verbal. Setiap tes mengambil kombinasi berbeda dari bank tervalidasi lebih dari 300 item.</p>
+          <div className="mt-5 grid grid-cols-3 gap-2 text-center text-[10px] font-bold text-slate-300">
+            <div className="rounded-xl border border-white/10 bg-white/[.04] p-3"><BrainCircuit className="mx-auto mb-1 h-5 w-5 text-cyan-300"/>35 Soal</div>
+            <div className="rounded-xl border border-white/10 bg-white/[.04] p-3"><Clock3 className="mx-auto mb-1 h-5 w-5 text-violet-300"/>±22 Menit</div>
+            <div className="rounded-xl border border-white/10 bg-white/[.04] p-3"><Trophy className="mx-auto mb-1 h-5 w-5 text-amber-300"/>Maks. 160</div>
+          </div>
+        </div>
+        <button type="button" onClick={start} className="mt-4 w-full rounded-2xl border border-cyan-300/35 bg-gradient-to-r from-cyan-500/18 via-indigo-500/18 to-violet-500/18 p-5 text-left shadow-[0_0_30px_rgba(34,211,238,.10)]">
+          <div className="text-xs font-black uppercase tracking-[.14em] text-cyan-300">Halo, {participant?.nickname||"Peserta"}</div>
+          <div className="mt-2 text-3xl font-black">Mulai Tes IQ</div>
+          <div className="mt-1 text-sm text-slate-300">Hasil otomatis tersimpan ke akun, masuk ranking jika menjadi hasil terbaik, dan tersedia sebagai sertifikat.</div>
+          <div className="mt-4 inline-flex items-center gap-2 rounded-xl bg-cyan-300 px-4 py-2.5 text-sm font-black text-slate-950"><Play className="h-4 w-4"/>MULAI 35 SOAL</div>
+        </button>
+        <p className="mt-4 text-center text-[11px] leading-5 text-slate-500">Estimasi IQ adalah indikasi kemampuan penalaran multi-domain, bukan diagnosis atau hasil psikotes klinis resmi.</p>
+      </>}
     </main>
   </div>
 
@@ -1035,6 +1075,7 @@ export function VisualIqGame(){
           <span className="inline-flex rounded-full border border-amber-300/20 bg-amber-300/10 px-3 py-1 text-[10px] font-black tracking-[.12em] text-amber-200">{tier}</span>
           <span className="inline-flex rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1 text-[10px] font-black tracking-[.08em] text-cyan-100">TINGKAT IQ · {iqLevel}</span>
         </div>
+        {rankingMe&&<div className="mt-3 inline-flex rounded-full border border-violet-300/20 bg-violet-300/10 px-3 py-1.5 text-[10px] font-black text-violet-100">RANKING NASIONAL #{rankingMe.rank} · TOP {rankingMe.percentile}%</div>}
 
         <div className="mt-5 grid grid-cols-3 gap-2">
           <div className="rounded-xl border border-white/10 bg-white/[.04] p-3"><div className="text-xl font-black">{result.correct}/35</div><div className="mt-1 text-[9px] font-bold text-slate-500">BENAR</div></div>
@@ -1057,11 +1098,27 @@ export function VisualIqGame(){
       {shareMessage&&<p className="mt-2 text-center text-[11px] font-bold text-cyan-200">{shareMessage}</p>}
       <div className="mt-3 grid grid-cols-2 gap-3">
         <button type="button" onClick={start} className="min-h-12 rounded-xl border border-white/10 bg-white/[.06] text-sm font-black"><RotateCcw className="mr-2 inline h-4 w-4"/>Ulangi</button>
+        <button type="button" onClick={()=>{reset();setHomeView("ranking")}} className="min-h-12 rounded-xl border border-violet-300/20 bg-violet-300/[.07] text-sm font-black text-violet-100">Ranking IQ</button>
+        <button type="button" disabled={saveState!=="saved"} onClick={()=>setCertificateOpen(true)} className="min-h-12 rounded-xl border border-amber-300/25 bg-amber-300/[.08] text-sm font-black text-amber-100 disabled:cursor-not-allowed disabled:opacity-40">Sertifikat</button>
         <a href="/account/results#riwayat-iq" className="grid min-h-12 place-items-center rounded-xl border border-white/10 bg-white/[.06] text-sm font-black">Lihat Riwayat</a>
       </div>
       <a href="/battle" className="mt-3 flex min-h-11 items-center justify-center text-sm font-bold text-slate-400 hover:text-white"><ArrowLeft className="mr-2 h-4 w-4"/>Kembali ke Battle Point</a>
       <p className="mt-2 text-center text-[10px] leading-4 text-slate-600">Estimasi indikatif dari 35 soal multi-domain; bukan hasil psikotes klinis.</p>
     </main>
+    <VisualIqCertificateModal
+      open={certificateOpen}
+      onClose={()=>setCertificateOpen(false)}
+      data={{
+        participantName:participant?.nickname||"Peserta ALZAVA",
+        iqScore:result.iq,
+        iqLevel,
+        createdAt:savedAttempt?.created_at||(finishedAt?new Date(finishedAt).toISOString():undefined),
+        attemptId:savedAttempt?.id,
+        rank:rankingMe?.rank,
+        total:rankingMe?.total,
+        percentile:rankingMe?.percentile,
+      }}
+    />
   </div>
 
   const progress=(index/questions.length)*100
