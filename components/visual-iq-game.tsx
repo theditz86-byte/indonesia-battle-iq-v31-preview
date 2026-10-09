@@ -823,21 +823,48 @@ function stableHash(value:string){
   return hash>>>0
 }
 
-function dailyFamilyMultiplier(family:string){
+function localDayIndex(){
   const now=new Date()
-  const dayKey=`${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`
-  const bucket=stableHash(dayKey+"|"+family)%61
+  return Math.floor(Date.UTC(now.getFullYear(),now.getMonth(),now.getDate())/86400000)
+}
+
+function dailyFamilyMultiplier(family:string){
+  const day=localDayIndex()
+  const bucket=stableHash(day+"|"+family)%61
   return 0.75+bucket/100 // 0.75× sampai 1.35×, berubah otomatis tiap hari.
 }
 
+function dailyActiveFamilies(bank:Question[]){
+  const quota:Record<Domain,number>={abstract:7,spatial:3,numerical:5,verbal:5}
+  const stride:Record<Domain,number>={abstract:3,spatial:2,numerical:3,verbal:5}
+  const day=localDayIndex()
+  const result:Record<Domain,Set<string>>={
+    abstract:new Set<string>(),
+    spatial:new Set<string>(),
+    numerical:new Set<string>(),
+    verbal:new Set<string>(),
+  }
+
+  for(const domain of ["abstract","spatial","numerical","verbal"] as Domain[]){
+    const families=[...new Set(bank.filter(q=>q.domain===domain).map(q=>q.family))]
+      .sort((a,b)=>stableHash(domain+"|"+a)-stableHash(domain+"|"+b))
+    if(!families.length)continue
+    const start=(day*stride[domain])%families.length
+    for(let i=0;i<Math.min(quota[domain],families.length);i++){
+      result[domain].add(families[(start+i)%families.length])
+    }
+  }
+  return result
+}
+
 // Dasar tetap tersedia dengan bobot 0,5×, Sulit 1,35×.
-// Di atas itu ada rotasi family harian agar pola dominan berubah setiap hari
-// tanpa deploy baru atau mengorbankan quality gate.
-function difficultyWeightedOrder(items:Question[]){
+// Family aktif harian mendapat prioritas tambahan; set aktif sendiri berganti tiap hari.
+function difficultyWeightedOrder(items:Question[],activeFamilies?:Set<string>){
   return items
     .map(q=>{
       const difficultyWeight=q.difficulty===2?0.5:q.difficulty===4?1.35:1
-      const weight=difficultyWeight*dailyFamilyMultiplier(q.family)
+      const activeWeight=activeFamilies?.has(q.family)?1.5:1
+      const weight=difficultyWeight*dailyFamilyMultiplier(q.family)*activeWeight
       const random=Math.max(Number.EPSILON,Math.random())
       return {q,key:-Math.log(random)/weight}
     })
@@ -851,11 +878,14 @@ function makeSet(){
   const recentSet=new Set(recent.slice(0,245))
   const selected:Question[]=[]
   const safeBank=QUESTIONS.filter(questionSafeForDisplay)
+  const activeToday=dailyActiveFamilies(safeBank)
 
   const pickDomain=(domain:Domain,count:number,maxPerFamily:number)=>{
     const familyCount=new Map<string,number>()
-    const take=(pool:Question[])=>{
-      for(const q of difficultyWeightedOrder(pool)){
+    const take=(pool:Question[],activeOnly=false)=>{
+      const active=activeToday[domain]
+      const source=activeOnly?pool.filter(q=>active.has(q.family)):pool
+      for(const q of difficultyWeightedOrder(source,active)){
         if(selected.filter(x=>x.domain===domain).length>=count)break
         if(selected.some(x=>x.id===q.id))continue
         if((familyCount.get(q.family)||0)>=maxPerFamily)continue
@@ -864,7 +894,12 @@ function makeSet(){
         familyCount.set(q.family,(familyCount.get(q.family)||0)+1)
       }
     }
-    take(safeBank.filter(q=>q.domain===domain&&!recentSet.has(q.id)))
+
+    // Prioritas pertama: family paket harian + belum muncul di riwayat terbaru.
+    take(safeBank.filter(q=>q.domain===domain&&!recentSet.has(q.id)),true)
+    // Jika belum cukup, tetap di family paket harian tetapi abaikan recent.
+    if(selected.filter(x=>x.domain===domain).length<count)take(safeBank.filter(q=>q.domain===domain),true)
+    // Safety fallback: seluruh bank agar sesi tidak gagal jika family harian terkena quality gate.
     if(selected.filter(x=>x.domain===domain).length<count)take(safeBank.filter(q=>q.domain===domain))
   }
 
@@ -1248,7 +1283,7 @@ export function VisualIqGame(){
         <div className="rounded-[28px] border border-cyan-300/20 bg-slate-950/55 p-5 shadow-[0_24px_70px_rgba(0,0,0,.35)] backdrop-blur-xl">
           <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[.16em] text-cyan-300"><Sparkles className="h-4 w-4"/>Tes IQ Multi-Domain</div>
           <h1 className="mt-3 text-4xl font-black leading-[.98]">Ketahui <span className="bg-gradient-to-r from-cyan-300 via-violet-300 to-fuchsia-300 bg-clip-text text-transparent">IQ-mu</span></h1>
-          <p className="mt-4 text-sm leading-6 text-slate-300">35 soal original: 20 abstrak/matriks, 5 spasial, 5 numerik, dan 5 verbal. Bank tervalidasi memiliki ratusan item dengan variasi family yang diprioritaskan berbeda setiap hari.</p>
+          <p className="mt-4 text-sm leading-6 text-slate-300">35 soal original: 20 abstrak/matriks, 5 spasial, 5 numerik, dan 5 verbal. Bank tervalidasi memiliki ratusan item. Setiap hari 20 family aktif dicampur ulang otomatis agar pola tes terus berganti.</p>
           <div className="mt-5 grid grid-cols-3 gap-2 text-center text-[10px] font-bold text-slate-300">
             <div className="rounded-xl border border-white/10 bg-white/[.04] p-3"><BrainCircuit className="mx-auto mb-1 h-5 w-5 text-cyan-300"/>35 Soal</div>
             <div className="rounded-xl border border-white/10 bg-white/[.04] p-3"><Clock3 className="mx-auto mb-1 h-5 w-5 text-violet-300"/>±22 Menit</div>
