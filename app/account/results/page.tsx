@@ -53,7 +53,7 @@ type VisualIqItem = {
 }
 
 function iqLevelFor(iq:number){
-  if(iq>=145)return "Genius"
+  if(iq>=140)return "Genius"
   if(iq>=130)return "Sangat Superior"
   if(iq>=120)return "Superior"
   if(iq>=110)return "Di Atas Rata-rata"
