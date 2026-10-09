@@ -54,6 +54,8 @@ export function VisualIqCertificate({data,svgRef}:{data:VisualIqCertificateData;
   return <svg
     ref={svgRef}
     viewBox="0 0 1495 1052"
+    width="1495"
+    height="1052"
     xmlns="http://www.w3.org/2000/svg"
     role="img"
     aria-label={`Sertifikat Tes IQ ${data.participantName}`}
