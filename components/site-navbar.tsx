@@ -113,7 +113,7 @@ export function SiteNavbar({ participant }: { participant: BattleParticipant | n
 
   return (
     <header className="sticky top-0 z-[100] overflow-visible border-b border-white/10 bg-slate-950/75 backdrop-blur-xl">
-      <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between gap-2 px-3 sm:gap-3 sm:px-6">
+      <div className="relative mx-auto flex h-[72px] max-w-7xl items-center justify-between gap-2 px-3 sm:gap-3 sm:px-6">
         <a href="/battle" className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3">
           <img src="/brand/alvaza-logo-new.svg" alt="ALZAVA Battle Point" className="h-10 w-10 shrink-0 object-contain drop-shadow-[0_0_10px_rgba(212,175,55,.28)] sm:h-12 sm:w-12" />
           <div className="hidden min-w-0 leading-tight min-[400px]:block">
@@ -122,7 +122,7 @@ export function SiteNavbar({ participant }: { participant: BattleParticipant | n
           </div>
         </a>
 
-        <nav className="hidden items-center gap-1 rounded-full border border-white/10 bg-white/5 p-1 backdrop-blur-lg xl:flex">
+        <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-1 rounded-full border border-white/10 bg-white/5 p-1 backdrop-blur-lg xl:flex">
           {desktopLinks.map((link) => (
             <a key={link.label} href={link.href} onClick={() => selectLink(link.label)} className={`relative rounded-full px-2.5 py-1.5 text-[12px] font-medium transition-all ${active === link.label ? "bg-white text-slate-900 shadow-[0_0_16px_rgba(255,255,255,0.25)]" : "text-slate-300 hover:text-white"}`}>
               {link.label}
