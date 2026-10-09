@@ -283,9 +283,9 @@ export default function AccountResultsPage(){
           iqLevel:iqLevelFor(Number(certificateItem.iq_estimate||70)),
           createdAt:certificateItem.created_at,
           attemptId:certificateItem.id,
-          rank:visualRankingMe?.attempt_id===certificateItem.id?visualRankingMe.rank:null,
-          total:visualRankingMe?.attempt_id===certificateItem.id?visualRankingMe.total:null,
-          percentile:visualRankingMe?.attempt_id===certificateItem.id?visualRankingMe.percentile:null,
+          rank:visualRankingMe&&visualRankingMe.attempt_id===certificateItem.id?visualRankingMe.rank:null,
+          total:visualRankingMe&&visualRankingMe.attempt_id===certificateItem.id?visualRankingMe.total:null,
+          percentile:visualRankingMe&&visualRankingMe.attempt_id===certificateItem.id?visualRankingMe.percentile:null,
         }}
       />}
     </main>
