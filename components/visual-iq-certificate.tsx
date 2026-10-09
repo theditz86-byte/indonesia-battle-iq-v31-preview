@@ -35,13 +35,6 @@ function certificateDate(value?:string){
 function confidence(iq:number){
   return `${Math.max(70,iq-5)} – ${Math.min(160,iq+5)}`
 }
-function achievement(data:VisualIqCertificateData){
-  if(data.rank&&data.total){
-    if(data.total>=20&&data.percentile)return `TOP ${Math.max(1,data.percentile)}%`
-    return `RANK #${data.rank}/${data.total}`
-  }
-  return "HASIL TERSIMPAN"
-}
 function displayName(value:string){
   const clean=value.trim()||"Peserta ALZAVA"
   return clean.toLowerCase().replace(/(^|\s)(\S)/g,(_,space:string,char:string)=>space+char.toUpperCase())
@@ -70,7 +63,6 @@ export function VisualIqCertificate({data,svgRef}:{data:VisualIqCertificateData;
   const name=displayName(data.participantName)
   const id=certificateId(data)
   const date=certificateDate(data.createdAt)
-  const achievementText=achievement(data)
 
   return <svg
     ref={svgRef}
@@ -115,34 +107,29 @@ export function VisualIqCertificate({data,svgRef}:{data:VisualIqCertificateData;
     <text x="747.5" y="169" textAnchor="middle" style={{fontFamily:"var(--font-cinzel, Georgia), serif"}} fontSize="19" fontWeight="600" letterSpacing="8.5" fill="#e4c66d">BATTLE POINT</text>
 
     {/* Main title */}
-    <text x="747.5" y="249" textAnchor="middle" style={{fontFamily:"var(--font-cinzel, Georgia), 'Times New Roman', serif"}} fontSize="72" fontWeight="700" letterSpacing=".7" fill="url(#zipGold)" filter="url(#zipGoldShadow)">Sertifikat Penilaian Kognitif</text>
-    <Flank y={280} leftStart={182} leftEnd={351} rightStart={1144} rightEnd={1313}/>
-    <text x="747.5" y="287" textAnchor="middle" style={{fontFamily:"var(--font-cinzel, Georgia), serif"}} fontSize="20" fontWeight="600" letterSpacing="7.2" fill="#f6e3b1">CERTIFICATE OF COGNITIVE ASSESSMENT</text>
+    <text x="747.5" y="242" textAnchor="middle" style={{fontFamily:"var(--font-cinzel, Georgia), 'Times New Roman', serif"}} fontSize="72" fontWeight="700" letterSpacing=".7" fill="url(#zipGold)" filter="url(#zipGoldShadow)">Sertifikat Penilaian Kognitif</text>
+    <Flank y={286} leftStart={182} leftEnd={351} rightStart={1144} rightEnd={1313}/>
+    <text x="747.5" y="294" textAnchor="middle" style={{fontFamily:"var(--font-cinzel, Georgia), serif"}} fontSize="20" fontWeight="600" letterSpacing="7.2" fill="#f6e3b1">CERTIFICATE OF COGNITIVE ASSESSMENT</text>
 
     {/* Awarded row */}
-    <Flank y={333} leftStart={350} leftEnd={541} rightStart={954} rightEnd={1145}/>
-    <Diamond x={558} y={333}/><Diamond x={937} y={333}/>
-    <text x="747.5" y="341" textAnchor="middle" style={{fontFamily:"var(--font-lora, Georgia), serif"}} fontSize="20" fill="#f9f6e9">Diberikan kepada / Awarded to</text>
+    <Flank y={348} leftStart={350} leftEnd={541} rightStart={954} rightEnd={1145}/>
+    <Diamond x={558} y={348}/><Diamond x={937} y={348}/>
+    <text x="747.5" y="356" textAnchor="middle" style={{fontFamily:"var(--font-lora, Georgia), serif"}} fontSize="20" fill="#f9f6e9">Diberikan kepada / Awarded to</text>
 
     {/* Participant */}
-    <text x="747.5" y="432" textAnchor="middle" style={{fontFamily:"var(--font-cinzel, Georgia), 'Times New Roman', serif"}} fontSize={nameSize(name)} fontWeight="700" letterSpacing="1.2" fill="url(#zipGold)" filter="url(#zipGoldShadow)">{name}</text>
-    <line x1="330" y1="458" x2="1165" y2="458" stroke="url(#zipLine)" strokeWidth="1.5"/>
-    <Diamond x={747.5} y={458} size={10}/>
+    <text x="747.5" y="442" textAnchor="middle" style={{fontFamily:"var(--font-cinzel, Georgia), 'Times New Roman', serif"}} fontSize={nameSize(name)} fontWeight="700" letterSpacing="1.2" fill="url(#zipGold)" filter="url(#zipGoldShadow)">{name}</text>
+    <line x1="330" y1="474" x2="1165" y2="474" stroke="url(#zipLine)" strokeWidth="1.5"/>
+    <Diamond x={747.5} y={474} size={10}/>
 
     {/* Description */}
-    <text x="747.5" y="501" textAnchor="middle" style={{fontFamily:"var(--font-lora, Georgia), serif"}} fontSize="21" fill="#f9f6e9">Telah menyelesaikan Tes IQ ALZAVA dan memperoleh hasil</text>
+    <text x="747.5" y="516" textAnchor="middle" style={{fontFamily:"var(--font-lora, Georgia), serif"}} fontSize="21" fill="#f9f6e9">Telah menyelesaikan Tes IQ ALZAVA dan memperoleh hasil</text>
 
     {/* Score */}
     <text x="747.5" y="648" textAnchor="middle" style={{fontFamily:"var(--font-cinzel, Georgia), 'Times New Roman', serif"}} fontSize="140" fontWeight="700" letterSpacing="-2" fill="url(#zipGold)" filter="url(#zipGoldShadow)">{data.iqScore} IQ</text>
 
     {/* Text over original ZIP plaque */}
     <text x="747.5" y="704" textAnchor="middle" style={{fontFamily:"var(--font-lora, Georgia), serif"}} fontSize="22" fill="#f9f6e9">Tingkat IQ: <tspan fontWeight="700" fill="#f2d478">{data.iqLevel}</tspan></text>
-    <text x="747.5" y="735" textAnchor="middle" style={{fontFamily:"var(--font-lora, Georgia), serif"}} fontSize="18" letterSpacing=".7" fill="#f2eee2">Rentang Kepercayaan: {confidence(data.iqScore)}</text>
-
-    {/* Rank row */}
-    <Flank y={794} leftStart={452} leftEnd={562} rightStart={933} rightEnd={1043}/>
-    <Diamond x={584} y={794} size={8}/><Diamond x={911} y={794} size={8}/>
-    <text x="747.5" y="804" textAnchor="middle" style={{fontFamily:"var(--font-cinzel, Georgia), serif"}} fontSize="25" fontWeight="700" letterSpacing="5.2" fill="url(#zipGold)">{achievementText} • {data.iqLevel.toUpperCase()}</text>
+    <text x="747.5" y="742" textAnchor="middle" style={{fontFamily:"var(--font-lora, Georgia), serif"}} fontSize="18" letterSpacing=".7" fill="#f2eee2">Rentang Kepercayaan: {confidence(data.iqScore)}</text>
 
     {/* Date */}
     <text x="290" y="859" textAnchor="middle" style={{fontFamily:"var(--font-lora, Georgia), serif"}} fontSize="18" fill="#f9f6e9">Tanggal: {date}</text>
@@ -179,17 +166,136 @@ async function loadImage(src:string){
   })
 }
 
-function serializeCertificateOverlay(svg:SVGSVGElement){
-  const clone=svg.cloneNode(true) as SVGSVGElement
-  clone.querySelectorAll("image").forEach(node=>node.remove())
-  clone.setAttribute("width","1495")
-  clone.setAttribute("height","1052")
-  clone.style.width="1495px"
-  clone.style.height="1052px"
-  return new XMLSerializer().serializeToString(clone)
+function canvasFontVariable(name:string,fallback:string){
+  try{
+    const raw=getComputedStyle(document.body).getPropertyValue(name).trim()
+    return raw||fallback
+  }catch{
+    return fallback
+  }
 }
 
-async function svgToPng(svg:SVGSVGElement){
+function canvasGold(ctx:CanvasRenderingContext2D,y:number,height:number){
+  const gradient=ctx.createLinearGradient(0,y-height,0,y+8)
+  gradient.addColorStop(0,"#fff3cf")
+  gradient.addColorStop(.28,"#f7df99")
+  gradient.addColorStop(.60,"#d4af37")
+  gradient.addColorStop(1,"#f7e5ab")
+  return gradient
+}
+
+function withGoldShadow(ctx:CanvasRenderingContext2D){
+  ctx.shadowColor="rgba(0,0,0,.72)"
+  ctx.shadowBlur=5
+  ctx.shadowOffsetX=0
+  ctx.shadowOffsetY=3
+}
+
+function clearCanvasShadow(ctx:CanvasRenderingContext2D){
+  ctx.shadowColor="transparent"
+  ctx.shadowBlur=0
+  ctx.shadowOffsetX=0
+  ctx.shadowOffsetY=0
+}
+
+function drawCenteredText(
+  ctx:CanvasRenderingContext2D,
+  text:string,
+  x:number,
+  y:number,
+  font:string,
+  fill:string|CanvasGradient,
+  shadow=false,
+){
+  ctx.save()
+  ctx.font=font
+  ctx.textAlign="center"
+  ctx.textBaseline="alphabetic"
+  ctx.fillStyle=fill
+  if(shadow)withGoldShadow(ctx)
+  ctx.fillText(text,x,y)
+  ctx.restore()
+}
+
+function drawSpacedCenteredText(
+  ctx:CanvasRenderingContext2D,
+  text:string,
+  x:number,
+  y:number,
+  font:string,
+  fill:string|CanvasGradient,
+  spacing:number,
+){
+  ctx.save()
+  ctx.font=font
+  ctx.textAlign="left"
+  ctx.textBaseline="alphabetic"
+  ctx.fillStyle=fill
+  const chars=Array.from(text)
+  const widths=chars.map(char=>ctx.measureText(char).width)
+  const total=widths.reduce((sum,width)=>sum+width,0)+Math.max(0,chars.length-1)*spacing
+  let cursor=x-total/2
+  chars.forEach((char,index)=>{
+    ctx.fillText(char,cursor,y)
+    cursor+=widths[index]+spacing
+  })
+  ctx.restore()
+}
+
+function drawCanvasDiamond(ctx:CanvasRenderingContext2D,x:number,y:number,size=9){
+  ctx.save()
+  ctx.translate(x,y)
+  ctx.rotate(Math.PI/4)
+  ctx.fillStyle="#d4af37"
+  ctx.shadowColor="rgba(212,175,55,.45)"
+  ctx.shadowBlur=4
+  ctx.fillRect(-size/2,-size/2,size,size)
+  ctx.restore()
+}
+
+function drawCanvasFlanks(ctx:CanvasRenderingContext2D,y:number,leftStart:number,leftEnd:number,rightStart:number,rightEnd:number){
+  ctx.save()
+  const left=ctx.createLinearGradient(leftStart,0,leftEnd,0)
+  left.addColorStop(0,"rgba(139,101,27,0)")
+  left.addColorStop(.75,"#d4af37")
+  left.addColorStop(1,"#f6e3b1")
+  ctx.strokeStyle=left
+  ctx.lineWidth=1.5
+  ctx.beginPath();ctx.moveTo(leftStart,y);ctx.lineTo(leftEnd,y);ctx.stroke()
+
+  const right=ctx.createLinearGradient(rightStart,0,rightEnd,0)
+  right.addColorStop(0,"#f6e3b1")
+  right.addColorStop(.25,"#d4af37")
+  right.addColorStop(1,"rgba(139,101,27,0)")
+  ctx.strokeStyle=right
+  ctx.beginPath();ctx.moveTo(rightStart,y);ctx.lineTo(rightEnd,y);ctx.stroke()
+  ctx.restore()
+}
+
+function drawMixedCenteredText(
+  ctx:CanvasRenderingContext2D,
+  leftText:string,
+  rightText:string,
+  x:number,
+  y:number,
+  font:string,
+){
+  ctx.save()
+  ctx.font=font
+  ctx.textBaseline="alphabetic"
+  const leftWidth=ctx.measureText(leftText).width
+  const rightWidth=ctx.measureText(rightText).width
+  let cursor=x-(leftWidth+rightWidth)/2
+  ctx.textAlign="left"
+  ctx.fillStyle="#f9f6e9"
+  ctx.fillText(leftText,cursor,y)
+  cursor+=leftWidth
+  ctx.fillStyle="#f2d478"
+  ctx.fillText(rightText,cursor,y)
+  ctx.restore()
+}
+
+async function renderCertificatePng(data:VisualIqCertificateData){
   await document.fonts?.ready?.catch?.(()=>undefined)
 
   const scale=2
@@ -205,25 +311,82 @@ async function svgToPng(svg:SVGSVGElement){
   ctx.imageSmoothingQuality="high"
   ctx.fillStyle="#020713"
   ctx.fillRect(0,0,canvas.width,canvas.height)
+  ctx.scale(scale,scale)
 
   const shell=await loadImage(CERTIFICATE_SHELL)
-  ctx.drawImage(shell,0,0,canvas.width,canvas.height)
+  ctx.drawImage(shell,0,0,width,height)
 
-  const overlayXml=serializeCertificateOverlay(svg)
-  const overlayBlob=new Blob([overlayXml],{type:"image/svg+xml;charset=utf-8"})
-  const overlayUrl=URL.createObjectURL(overlayBlob)
-  try{
-    const overlay=await loadImage(overlayUrl)
-    ctx.drawImage(overlay,0,0,canvas.width,canvas.height)
-  }finally{
-    URL.revokeObjectURL(overlayUrl)
-  }
+  const cinzel=canvasFontVariable("--font-cinzel","Georgia")
+  const lora=canvasFontVariable("--font-lora","Georgia")
+  const name=displayName(data.participantName)
+  const id=certificateId(data)
+  const date=certificateDate(data.createdAt)
+
+  drawCanvasFlanks(ctx,110,340,574,921,1155)
+  drawCanvasDiamond(ctx,590,110,9);drawCanvasDiamond(ctx,905,110,9)
+  drawCenteredText(ctx,"Alzava",747.5,137,`600 62px ${cinzel}, Georgia, serif`,canvasGold(ctx,137,62),true)
+  drawSpacedCenteredText(ctx,"BATTLE POINT",747.5,169,`600 19px ${cinzel}, Georgia, serif`,"#e4c66d",8.5)
+
+  drawCenteredText(ctx,"Sertifikat Penilaian Kognitif",747.5,242,`700 72px ${cinzel}, Georgia, serif`,canvasGold(ctx,242,72),true)
+  drawCanvasFlanks(ctx,286,182,351,1144,1313)
+  drawSpacedCenteredText(ctx,"CERTIFICATE OF COGNITIVE ASSESSMENT",747.5,294,`600 20px ${cinzel}, Georgia, serif`,"#f6e3b1",7.2)
+
+  drawCanvasFlanks(ctx,348,350,541,954,1145)
+  drawCanvasDiamond(ctx,558,348,10);drawCanvasDiamond(ctx,937,348,10)
+  drawCenteredText(ctx,"Diberikan kepada / Awarded to",747.5,356,`400 20px ${lora}, Georgia, serif`,"#f9f6e9")
+
+  drawCenteredText(ctx,name,747.5,442,`700 ${nameSize(name)}px ${cinzel}, Georgia, serif`,canvasGold(ctx,442,nameSize(name)),true)
+  drawCanvasFlanks(ctx,474,330,735,760,1165)
+  drawCanvasDiamond(ctx,747.5,474,10)
+
+  drawCenteredText(ctx,"Telah menyelesaikan Tes IQ ALZAVA dan memperoleh hasil",747.5,516,`400 21px ${lora}, Georgia, serif`,"#f9f6e9")
+  drawCenteredText(ctx,`${data.iqScore} IQ`,747.5,648,`700 140px ${cinzel}, Georgia, serif`,canvasGold(ctx,648,140),true)
+
+  drawMixedCenteredText(ctx,"Tingkat IQ: ",data.iqLevel,747.5,704,`400 22px ${lora}, Georgia, serif`)
+  drawCenteredText(ctx,`Rentang Kepercayaan: ${confidence(data.iqScore)}`,747.5,742,`400 18px ${lora}, Georgia, serif`,"#f2eee2")
+
+  drawCenteredText(ctx,`Tanggal: ${date}`,290,859,`400 18px ${lora}, Georgia, serif`,"#f9f6e9")
+  drawCanvasFlanks(ctx,881,150,280,300,430);drawCanvasDiamond(ctx,290,881,9)
+
+  drawCenteredText(ctx,"Powered by:",645,858,`400 18px ${lora}, Georgia, serif`,"#f9f6e9")
+  drawCenteredText(ctx,"HN FC",645,902,`700 40px ${lora}, Georgia, serif`,"#f9f6e9")
+  ctx.save();ctx.strokeStyle="rgba(212,175,55,.7)";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(752,832);ctx.lineTo(752,947);ctx.stroke();ctx.restore()
+  drawCanvasDiamond(ctx,752,889,8)
+
+  drawCenteredText(ctx,`ID Sertifikat: ${id}`,1205,859,`400 18px ${lora}, Georgia, serif`,"#f9f6e9")
+  drawCanvasFlanks(ctx,881,1065,1195,1215,1345);drawCanvasDiamond(ctx,1205,881,9)
+
+  drawCanvasFlanks(ctx,990,378,548,947,1117)
+  drawCanvasDiamond(ctx,566,990,7);drawCanvasDiamond(ctx,929,990,7)
+  drawSpacedCenteredText(ctx,"LEBIH TAJAM PIKIRAN, LEBIH TINGGI POTENSI",747.5,995,`600 13px ${cinzel}, Georgia, serif`,"#f6e3b1",4.2)
+
+  clearCanvasShadow(ctx)
 
   return await new Promise<Blob>((resolve,reject)=>{
     canvas.toBlob(value=>value?resolve(value):reject(new Error("png_failed")),"image/png",1)
   })
 }
 
+async function saveBlob(blob:Blob,fileName:string){
+  const url=URL.createObjectURL(blob)
+  try{
+    const anchor=document.createElement("a")
+    anchor.href=url
+    anchor.download=fileName
+    anchor.rel="noopener"
+    anchor.style.display="none"
+    document.body.appendChild(anchor)
+    anchor.click()
+    anchor.remove()
+
+    const isiOS=/iPad|iPhone|iPod/.test(navigator.userAgent)
+    if(isiOS){
+      window.setTimeout(()=>window.open(url,"_blank","noopener,noreferrer"),150)
+    }
+  }finally{
+    window.setTimeout(()=>URL.revokeObjectURL(url),60000)
+  }
+}
 export function VisualIqCertificateModal({
   open,onClose,data,onShareResult
 }:{
@@ -239,23 +402,13 @@ export function VisualIqCertificateModal({
   if(!open)return null
 
   async function makePng(){
-    if(!svgRef.current)throw new Error("certificate_not_ready")
-    return await svgToPng(svgRef.current)
+    return await renderCertificatePng(data)
   }
   async function download(){
     setMessage("Menyiapkan PNG HD…")
     try{
       const blob=await makePng()
-      const url=URL.createObjectURL(blob)
-      const a=document.createElement("a")
-      a.href=url
-      a.download=safeFileName(data.participantName)
-      a.rel="noopener"
-      a.style.display="none"
-      document.body.appendChild(a)
-      a.click()
-      a.remove()
-      window.setTimeout(()=>URL.revokeObjectURL(url),10000)
+      await saveBlob(blob,safeFileName(data.participantName))
       setMessage("Sertifikat HD berhasil dibuat dan diunduh.")
     }catch(error){
       console.error("certificate_download_failed",error)
@@ -278,16 +431,7 @@ export function VisualIqCertificateModal({
         return
       }
 
-      const url=URL.createObjectURL(blob)
-      const a=document.createElement("a")
-      a.href=url
-      a.download=safeFileName(data.participantName)
-      a.rel="noopener"
-      a.style.display="none"
-      document.body.appendChild(a)
-      a.click()
-      a.remove()
-      window.setTimeout(()=>URL.revokeObjectURL(url),10000)
+      await saveBlob(blob,safeFileName(data.participantName))
 
       if(navigator.share){
         try{
