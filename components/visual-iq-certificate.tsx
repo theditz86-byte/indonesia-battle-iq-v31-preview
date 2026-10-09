@@ -1,6 +1,6 @@
 "use client"
 
-import { Download, Share2, X } from "lucide-react"
+import { Download, Printer, Share2, X } from "lucide-react"
 import { useMemo, useRef, useState } from "react"
 
 export type VisualIqCertificateData = {
@@ -197,7 +197,14 @@ async function svgToPng(svg:SVGSVGElement){
   }
 }
 
-export function VisualIqCertificateModal({open,onClose,data}:{open:boolean;onClose:()=>void;data:VisualIqCertificateData}){
+export function VisualIqCertificateModal({
+  open,onClose,data,onShareResult
+}:{
+  open:boolean
+  onClose:()=>void
+  data:VisualIqCertificateData
+  onShareResult?:()=>Promise<string|void>|string|void
+}){
   const svgRef=useRef<SVGSVGElement|null>(null)
   const [message,setMessage]=useState("")
   const shareText=useMemo(()=>`Sertifikat Tes IQ ALZAVA — ${data.participantName}, IQ ${data.iqScore} (${data.iqLevel}).`,[data])
@@ -240,6 +247,41 @@ export function VisualIqCertificateModal({open,onClose,data}:{open:boolean;onClo
     }catch{setMessage("")}
   }
 
+  function printCertificate(){
+    setMessage("")
+    if(!svgRef.current){
+      setMessage("Sertifikat belum siap dicetak.")
+      return
+    }
+    try{
+      const svg=new XMLSerializer().serializeToString(svgRef.current)
+      const printWindow=window.open("","_blank","width=1200,height=900")
+      if(!printWindow){
+        setMessage("Izinkan pop-up untuk mencetak sertifikat.")
+        return
+      }
+      try{printWindow.opener=null}catch{}
+      printWindow.document.open()
+      printWindow.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Sertifikat Tes IQ ALZAVA</title><style>@page{size:A4 landscape;margin:0}html,body{margin:0;background:#fff}body{display:grid;place-items:center;min-height:100vh}svg{width:100%;height:auto;max-height:100vh;display:block} @media print{html,body{width:297mm;height:210mm}svg{width:297mm;height:209mm}}</style></head><body>${svg}<script>window.addEventListener('load',()=>setTimeout(()=>window.print(),180));<\/script></body></html>`)
+      printWindow.document.close()
+      printWindow.focus()
+      setMessage("Jendela cetak sertifikat dibuka.")
+    }catch{
+      setMessage("Sertifikat belum dapat dicetak. Coba lagi.")
+    }
+  }
+
+  async function shareResult(){
+    if(!onShareResult)return
+    setMessage("")
+    try{
+      const result=await onShareResult()
+      setMessage(typeof result==="string"&&result?result:"Hasil siap dibagikan.")
+    }catch{
+      setMessage("Hasil belum dapat dibagikan.")
+    }
+  }
+
   return <div className="fixed inset-0 z-[250] overflow-y-auto bg-[#020617]/90 px-3 py-5 backdrop-blur-md" role="dialog" aria-modal="true" aria-label="Sertifikat Tes IQ">
     <div className="mx-auto max-w-6xl">
       <div className="mb-3 flex items-center justify-between gap-3">
@@ -249,8 +291,10 @@ export function VisualIqCertificateModal({open,onClose,data}:{open:boolean;onClo
       <div className="overflow-hidden rounded-2xl border border-amber-300/20 bg-slate-950 shadow-[0_30px_100px_rgba(0,0,0,.55)]">
         <VisualIqCertificate data={data} svgRef={svgRef}/>
       </div>
-      <div className="mt-4 grid grid-cols-2 gap-3">
+      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        {onShareResult&&<button type="button" onClick={()=>void shareResult()} className="flex min-h-12 items-center justify-center gap-2 rounded-xl border border-cyan-300/25 bg-cyan-300/[.08] px-4 text-sm font-black text-cyan-100"><Share2 className="h-4 w-4"/>Bagikan Hasil</button>}
         <button type="button" onClick={()=>void share()} className="flex min-h-12 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-300 to-yellow-500 px-4 text-sm font-black text-slate-950"><Share2 className="h-4 w-4"/>Bagikan Sertifikat</button>
+        <button type="button" onClick={printCertificate} className="flex min-h-12 items-center justify-center gap-2 rounded-xl border border-amber-300/25 bg-amber-300/[.07] px-4 text-sm font-black text-amber-100"><Printer className="h-4 w-4"/>Cetak Sertifikat</button>
         <button type="button" onClick={()=>void download()} className="flex min-h-12 items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[.06] px-4 text-sm font-black text-white"><Download className="h-4 w-4"/>Unduh PNG</button>
       </div>
       {message&&<p className="mt-2 text-center text-xs font-bold text-cyan-200">{message}</p>}
