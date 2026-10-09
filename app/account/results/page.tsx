@@ -2,7 +2,9 @@
 
 import { useEffect, useMemo, useState } from "react"
 import { BATTLE_API_URL, PARTICIPANT_TOKEN_KEY, formatDuration } from "@/lib/battle"
-import { ArrowLeft, BrainCircuit, CheckCircle2, Crown, History, Play, Settings, Trophy } from "lucide-react"
+import { ArrowLeft, Award, BrainCircuit, CheckCircle2, Crown, History, Play, Settings, Trophy } from "lucide-react"
+import { VisualIqCertificateModal } from "@/components/visual-iq-certificate"
+import type { VisualIqRankItem } from "@/components/visual-iq-leaderboard"
 
 const ACCOUNT_API = "https://efndozplpwyemzgqfnep.supabase.co/functions/v1/battle-account"
 const VISUAL_IQ_API = "https://efndozplpwyemzgqfnep.supabase.co/functions/v1/battle-visual-iq"
@@ -93,10 +95,23 @@ async function visualIqHistoryApi(token:string) {
   return Array.isArray(data?.items) ? data.items as VisualIqItem[] : []
 }
 
+async function visualIqRankingApi(token:string) {
+  const response=await fetch(VISUAL_IQ_API,{
+    method:"POST",
+    headers:{"Content-Type":"application/json","X-Battle-Token":token},
+    body:JSON.stringify({action:"leaderboard",scope:"national",limit:50}),
+  })
+  const data=await response.json().catch(()=>({}))
+  if(!response.ok) return null
+  return (data?.me || null) as VisualIqRankItem|null
+}
+
 export default function AccountResultsPage(){
   const [participant,setParticipant]=useState<Participant|null>(null)
   const [history,setHistory]=useState<ResultHistory|null>(null)
   const [visualHistory,setVisualHistory]=useState<VisualIqItem[]>([])
+  const [visualRankingMe,setVisualRankingMe]=useState<VisualIqRankItem|null>(null)
+  const [certificateItem,setCertificateItem]=useState<VisualIqItem|null>(null)
   const [loading,setLoading]=useState(true)
   const [error,setError]=useState("")
 
@@ -106,11 +121,12 @@ export default function AccountResultsPage(){
       window.location.replace("/account")
       return
     }
-    Promise.all([accountApi(token),resultApi(token),visualIqHistoryApi(token).catch(()=>[])])
-      .then(([account,result,visualIq])=>{
+    Promise.all([accountApi(token),resultApi(token),visualIqHistoryApi(token).catch(()=>[]),visualIqRankingApi(token).catch(()=>null)])
+      .then(([account,result,visualIq,visualRank])=>{
         setParticipant(account?.participant || null)
         setHistory(result || null)
         setVisualHistory(visualIq)
+        setVisualRankingMe(visualRank)
       })
       .catch((e)=>setError(e instanceof Error?e.message:"Riwayat tes belum dapat dimuat."))
       .finally(()=>setLoading(false))
@@ -175,6 +191,7 @@ export default function AccountResultsPage(){
             </div>
             <div className="flex items-center gap-2">
               {visualBest?.iq_estimate ? <span className="rounded-full border border-amber-300/20 bg-amber-300/10 px-3 py-1.5 text-xs font-black text-amber-200">Best IQ {visualBest.iq_estimate}</span> : null}
+              <a href="/visual-iq?view=ranking" className="rounded-full border border-violet-300/20 bg-violet-300/10 px-3 py-1.5 text-xs font-black text-violet-100">Ranking IQ</a>
               <a href="/visual-iq" className="rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1.5 text-xs font-black text-cyan-100">Tes lagi</a>
             </div>
           </div>
@@ -196,6 +213,7 @@ export default function AccountResultsPage(){
                     <span className="rounded-lg bg-white/5 px-3 py-2 text-slate-300">{formatDuration(item.duration_ms)}</span>
                   </div>
                   <p className="mt-4 text-xs text-slate-500">{item.created_at ? new Date(item.created_at).toLocaleString("id-ID",{day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"}) : ""}</p>
+                  <button type="button" onClick={()=>setCertificateItem(item)} className="mt-4 flex min-h-10 w-full items-center justify-center gap-2 rounded-xl border border-amber-300/20 bg-amber-300/[.08] px-3 text-xs font-black text-amber-100"><Award className="h-4 w-4"/>Lihat & Bagikan Sertifikat</button>
                 </article>
               })}
             </div>
@@ -256,6 +274,20 @@ export default function AccountResultsPage(){
           <a href="/latihan-skd" className="rounded-2xl border border-white/10 bg-white/[.035] p-5 hover:bg-white/[.06]"><Play className="h-5 w-5 text-emerald-300"/><p className="mt-3 font-black">Latihan SKD</p><p className="mt-1 text-sm text-slate-500">Latihan TWK, TIU, dan TKP serta simulasi Mini SKD tanpa memengaruhi Ranked Battle.</p></a>
         </section>
       </div>
+      {certificateItem&&<VisualIqCertificateModal
+        open={Boolean(certificateItem)}
+        onClose={()=>setCertificateItem(null)}
+        data={{
+          participantName:participant?.nickname||"Peserta ALZAVA",
+          iqScore:Number(certificateItem.iq_estimate||70),
+          iqLevel:iqLevelFor(Number(certificateItem.iq_estimate||70)),
+          createdAt:certificateItem.created_at,
+          attemptId:certificateItem.id,
+          rank:visualRankingMe?.attempt_id===certificateItem.id?visualRankingMe.rank:null,
+          total:visualRankingMe?.attempt_id===certificateItem.id?visualRankingMe.total:null,
+          percentile:visualRankingMe?.attempt_id===certificateItem.id?visualRankingMe.percentile:null,
+        }}
+      />}
     </main>
   )
 }
