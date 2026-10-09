@@ -191,11 +191,46 @@ function textQuestion(
   }
 }
 
+function normalizedQuestionText(value:string){
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9À-ÿ]+/g," ")
+    .replace(/\s+/g," ")
+    .trim()
+}
+
+function textAnswerLeaked(q:Question){
+  if(q.layout!=="text"||!q.prompt||!q.textOptions)return false
+  const correct=q.textOptions[q.answer]?.trim()
+  if(!correct)return false
+
+  const prompt=normalizedQuestionText(q.prompt)
+  const answer=normalizedQuestionText(correct)
+  if(!answer)return false
+
+  // Angka jawaban tidak boleh sudah tampil sebagai token di stimulus.
+  if(/^\d+$/.test(answer)){
+    return prompt.split(" ").includes(answer)
+  }
+
+  // Kalimat/frasa jawaban yang sudah tertulis verbatim membuat soal bocor.
+  // Jawaban pendek seperti nama/opsi A-B-C sengaja tidak diblok karena
+  // memang dapat disebut sebagai objek di premis tanpa membocorkan solusi.
+  return answer.length>=7&&prompt.includes(answer)
+}
+
 function questionValid(q:Question){
   if(!q.id||!q.family||!q.domain||!q.title)return false
   if(q.answer<0||q.answer>3)return false
   if(q.layout==="text"){
-    return Boolean(q.prompt&&q.prompt.trim().length>5&&q.textOptions&&q.textOptions.length===4&&new Set(q.textOptions).size===4)
+    return Boolean(
+      q.prompt&&
+      q.prompt.trim().length>5&&
+      q.textOptions&&
+      q.textOptions.length===4&&
+      new Set(q.textOptions).size===4&&
+      !textAnswerLeaked(q)
+    )
   }
   if(q.options.length!==4||new Set(q.options.map(glyphKey)).size!==4)return false
   if(q.layout==="sequence"&&q.cells.length<3)return false
@@ -577,7 +612,7 @@ function buildQuestionBank(){
     ["ver-ana-6","analogi-konsep","Analogi Konsep",3,"Editor bagi naskah seperti mekanik bagi ...","kendaraan",["jalan","bensin","rambu"]],
     ["ver-ana-7","analogi-konsep","Analogi Konsep",3,"Peta bagi wilayah seperti diagram bagi ...","data",["pena","warna","kertas"]],
     ["ver-ana-8","analogi-konsep","Analogi Konsep",3,"Resep bagi masakan seperti denah bagi ...","bangunan",["bahan","koki","meja"]],
-    ["ver-class-1","hubungan-konsep","Hubungan Konsep",4,"Semua X adalah Y. Sebagian Y adalah Z. Pernyataan mana yang pasti benar?","Semua X adalah Y.",["Semua X adalah Z.","Semua Z adalah X.","Tidak ada Y yang Z."]],
+    ["ver-class-1","hubungan-konsep","Hubungan Konsep",4,"Semua X adalah Y. Tidak ada Y yang Z. Pernyataan mana yang pasti benar?","Tidak ada X yang Z.",["Semua X adalah Z.","Sebagian X adalah Z.","Semua Z adalah X."]],
     ["ver-class-2","hubungan-konsep","Hubungan Konsep",4,"Tidak ada P yang Q. Semua R adalah P. Pernyataan mana yang pasti benar?","Tidak ada R yang Q.",["Semua Q adalah R.","Sebagian R adalah Q.","Semua P adalah R."]],
     ["ver-class-3","hubungan-konsep","Hubungan Konsep",4,"Semua M adalah N. Tidak ada N yang O. Apa yang pasti benar?","Tidak ada M yang O.",["Semua O adalah M.","Sebagian M adalah O.","Tidak ada M yang N."]],
     ["ver-class-4","hubungan-konsep","Hubungan Konsep",4,"Sebagian A adalah B. Semua B adalah C. Kesimpulan yang benar adalah ...","Sebagian A adalah C.",["Semua A adalah C.","Tidak ada A yang C.","Semua C adalah A."]],
@@ -591,6 +626,9 @@ function buildQuestionBank(){
   })
 
   for(const q of bank){
+    if(textAnswerLeaked(q)){
+      throw new Error("visual_iq_answer_leak:"+q.id)
+    }
     if(q.family==="aturan-transformasi"&&q.layout==="text"){
       const match=q.prompt?.match(/yang sama,\s*(\d+)\s*→\s*\?/)
       if(match&&q.prompt?.includes(match[1]+" → "+q.textOptions?.[q.answer])){
