@@ -2,6 +2,16 @@
 
 import { Download, Printer, Share2, X } from "lucide-react"
 import { useMemo, useRef, useState } from "react"
+import shell0 from "@/components/certificate-shell-data-0"
+import shell1 from "@/components/certificate-shell-data-1"
+import shell2 from "@/components/certificate-shell-data-2"
+import shell3 from "@/components/certificate-shell-data-3"
+import shell4 from "@/components/certificate-shell-data-4"
+import shell5 from "@/components/certificate-shell-data-5"
+import shell6 from "@/components/certificate-shell-data-6"
+import shell7 from "@/components/certificate-shell-data-7"
+
+const CERTIFICATE_SHELL="data:image/webp;base64,"+[shell0,shell1,shell2,shell3,shell4,shell5,shell6,shell7].join("")
 
 export type VisualIqCertificateData = {
   participantName: string
@@ -32,148 +42,130 @@ function achievement(data:VisualIqCertificateData){
   }
   return "HASIL TERSIMPAN"
 }
+function displayName(value:string){
+  const clean=value.trim()||"Peserta ALZAVA"
+  return clean.toLowerCase().replace(/(^|\s)(\S)/g,(_,space:string,char:string)=>space+char.toUpperCase())
+}
 function safeFileName(name:string){
   return "sertifikat-iq-"+name.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")+".png"
 }
+function nameSize(name:string){
+  if(name.length>30)return 56
+  if(name.length>24)return 64
+  if(name.length>18)return 74
+  return 88
+}
 
-function Laurel({mirror=false}:{mirror?:boolean}){
-  const leaves=[
-    [12,90,-48],[24,72,-38],[38,55,-27],[54,40,-17],[72,29,-8],[91,23,3],[111,22,15],[130,27,28]
-  ]
-  return <g transform={mirror?"translate(1495 0) scale(-1 1)":undefined}>
-    <path d="M365 710 C390 650 415 594 475 542" fill="none" stroke="url(#certGold)" strokeWidth="5" opacity=".95"/>
-    {leaves.map(([x,y,r],i)=><ellipse key={i} cx={350+x} cy={610+y} rx="9" ry="23" transform={`rotate(${r} ${350+x} ${610+y})`} fill="url(#certGold)" opacity=".96"/>)}
-  </g>
+function Diamond({x,y,size=10}:{x:number;y:number;size?:number}){
+  return <rect x={x-size/2} y={y-size/2} width={size} height={size} transform={`rotate(45 ${x} ${y})`} fill="url(#zipGold)" filter="url(#zipSoftGlow)"/>
+}
+function Flank({y,leftStart,leftEnd,rightStart,rightEnd}:{y:number;leftStart:number;leftEnd:number;rightStart:number;rightEnd:number}){
+  return <>
+    <line x1={leftStart} y1={y} x2={leftEnd} y2={y} stroke="url(#zipLine)" strokeWidth="1.8"/>
+    <line x1={rightStart} y1={y} x2={rightEnd} y2={y} stroke="url(#zipLine)" strokeWidth="1.8"/>
+  </>
 }
 
 export function VisualIqCertificate({data,svgRef}:{data:VisualIqCertificateData;svgRef?:React.RefObject<SVGSVGElement|null>}){
-  const nameSize=data.participantName.length>28?54:data.participantName.length>20?66:82
+  const name=displayName(data.participantName)
   const id=certificateId(data)
   const date=certificateDate(data.createdAt)
   const achievementText=achievement(data)
+
   return <svg
     ref={svgRef}
     viewBox="0 0 1495 1052"
     width="1495"
     height="1052"
     xmlns="http://www.w3.org/2000/svg"
+    xmlnsXlink="http://www.w3.org/1999/xlink"
     role="img"
     aria-label={`Sertifikat Tes IQ ${data.participantName}`}
     className="block h-auto w-full"
   >
     <defs>
-      <linearGradient id="certBg" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0" stopColor="#020713"/>
-        <stop offset=".45" stopColor="#07182a"/>
-        <stop offset="1" stopColor="#020711"/>
+      <linearGradient id="zipGold" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stopColor="#fff3cf"/>
+        <stop offset=".28" stopColor="#f7df99"/>
+        <stop offset=".60" stopColor="#d4af37"/>
+        <stop offset="1" stopColor="#f7e5ab"/>
       </linearGradient>
-      <radialGradient id="certGlow" cx="50%" cy="43%" r="58%">
-        <stop offset="0" stopColor="#153455" stopOpacity=".72"/>
-        <stop offset=".48" stopColor="#0a1c31" stopOpacity=".28"/>
-        <stop offset="1" stopColor="#020713" stopOpacity="0"/>
-      </radialGradient>
-      <linearGradient id="certGold" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stopColor="#fff2c4"/>
-        <stop offset=".28" stopColor="#e7c66e"/>
-        <stop offset=".62" stopColor="#b98226"/>
-        <stop offset="1" stopColor="#f1d68b"/>
+      <linearGradient id="zipLine" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stopColor="#8b651b" stopOpacity="0"/>
+        <stop offset=".22" stopColor="#d4af37"/>
+        <stop offset=".5" stopColor="#f6e3b1"/>
+        <stop offset=".78" stopColor="#d4af37"/>
+        <stop offset="1" stopColor="#8b651b" stopOpacity="0"/>
       </linearGradient>
-      <linearGradient id="certGoldLine" x1="0" y1="0" x2="1" y2="0">
-        <stop offset="0" stopColor="#8c641c" stopOpacity="0"/>
-        <stop offset=".18" stopColor="#d6af4e"/>
-        <stop offset=".5" stopColor="#fff0b7"/>
-        <stop offset=".82" stopColor="#d6af4e"/>
-        <stop offset="1" stopColor="#8c641c" stopOpacity="0"/>
-      </linearGradient>
-      <pattern id="certPattern" width="44" height="44" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-        <path d="M0 0H44M0 22H44" stroke="#86a4bc" strokeOpacity=".045" strokeWidth="1"/>
-        <path d="M0 0V44M22 0V44" stroke="#d0af57" strokeOpacity=".025" strokeWidth="1"/>
-      </pattern>
-      <filter id="certShadow" x="-30%" y="-30%" width="160%" height="160%">
-        <feDropShadow dx="0" dy="4" stdDeviation="5" floodColor="#000" floodOpacity=".68"/>
-        <feDropShadow dx="0" dy="0" stdDeviation="3" floodColor="#d4af37" floodOpacity=".18"/>
+      <filter id="zipGoldShadow" x="-30%" y="-30%" width="160%" height="160%">
+        <feDropShadow dx="0" dy="3" stdDeviation="3" floodColor="#000" floodOpacity=".65"/>
+        <feDropShadow dx="0" dy="0" stdDeviation="4" floodColor="#d4af37" floodOpacity=".18"/>
+      </filter>
+      <filter id="zipSoftGlow" x="-100%" y="-100%" width="300%" height="300%">
+        <feDropShadow dx="0" dy="0" stdDeviation="3" floodColor="#d4af37" floodOpacity=".35"/>
       </filter>
     </defs>
 
-    <rect width="1495" height="1052" fill="url(#certBg)"/>
-    <rect width="1495" height="1052" fill="url(#certGlow)"/>
-    <rect width="1495" height="1052" fill="url(#certPattern)"/>
+    <image href={CERTIFICATE_SHELL} xlinkHref={CERTIFICATE_SHELL} x="0" y="0" width="1495" height="1052" preserveAspectRatio="none"/>
 
-    <rect x="20" y="20" width="1455" height="1012" rx="4" fill="none" stroke="#e3c573" strokeWidth="2"/>
-    <rect x="29" y="29" width="1437" height="994" rx="3" fill="none" stroke="#9c7428" strokeWidth="1"/>
-    <rect x="43" y="43" width="1409" height="966" rx="2" fill="none" stroke="#efd792" strokeOpacity=".66" strokeWidth="1"/>
+    {/* ALZAVA brand — exact ZIP hierarchy */}
+    <Flank y={110} leftStart={340} leftEnd={574} rightStart={921} rightEnd={1155}/>
+    <Diamond x={590} y={110} size={9}/><Diamond x={905} y={110} size={9}/>
+    <text x="747.5" y="137" textAnchor="middle" fontFamily="Cinzel, Georgia, 'Times New Roman', serif" fontSize="62" fontWeight="600" letterSpacing="3" fill="url(#zipGold)" filter="url(#zipGoldShadow)">Alzava</text>
+    <text x="747.5" y="169" textAnchor="middle" fontFamily="Cinzel, Georgia, serif" fontSize="19" fontWeight="600" letterSpacing="8.5" fill="#e4c66d">BATTLE POINT</text>
 
-    <g fill="none" stroke="url(#certGold)" strokeWidth="2" opacity=".92">
-      <path d="M48 150C53 88 94 48 156 43M1339 43c62 5 103 45 108 107M48 902c5 62 46 103 108 107M1339 1009c62-4 103-45 108-107"/>
-      <path d="M57 119C70 76 97 53 137 44M1358 44c40 9 67 32 80 75M57 933c13 43 40 66 80 75M1358 1008c40-9 67-32 80-75" opacity=".48"/>
-    </g>
-    {[48,1447].map((x,i)=><g key={x} transform={`translate(${x} 52)`}>
-      <rect x="-13" y="-13" width="26" height="26" fill="#071426" stroke="#d6af4e" strokeWidth="2"/>
-      <rect x="-5" y="-5" width="10" height="10" transform="rotate(45)" fill="none" stroke="#f6e3b1"/>
-    </g>)}
+    {/* Main title */}
+    <text x="747.5" y="249" textAnchor="middle" fontFamily="Cinzel, Georgia, 'Times New Roman', serif" fontSize="72" fontWeight="700" letterSpacing=".7" fill="url(#zipGold)" filter="url(#zipGoldShadow)">Sertifikat Penilaian Kognitif</text>
+    <Flank y={280} leftStart={182} leftEnd={351} rightStart={1144} rightEnd={1313}/>
+    <text x="747.5" y="287" textAnchor="middle" fontFamily="Cinzel, Georgia, serif" fontSize="20" fontWeight="600" letterSpacing="7.2" fill="#f6e3b1">CERTIFICATE OF COGNITIVE ASSESSMENT</text>
 
-    <g filter="url(#certShadow)">
-      <path d="M731 67l13-18 13 18 17-13-4 27h-52l-4-27z" fill="url(#certGold)"/>
-      <circle cx="714" cy="52" r="3.5" fill="#f8e4aa"/><circle cx="744" cy="42" r="3.5" fill="#f8e4aa"/><circle cx="774" cy="52" r="3.5" fill="#f8e4aa"/>
-      <text x="747.5" y="128" textAnchor="middle" fontFamily="Georgia, 'Times New Roman', serif" fontSize="62" fontWeight="700" letterSpacing="8" fill="url(#certGold)">ALZAVA</text>
-      <text x="747.5" y="161" textAnchor="middle" fontFamily="Arial, sans-serif" fontSize="17" fontWeight="700" letterSpacing="9" fill="#dcb95d">BATTLE POINT</text>
-    </g>
-    <line x1="365" y1="105" x2="555" y2="105" stroke="url(#certGoldLine)" strokeWidth="2"/>
-    <line x1="940" y1="105" x2="1130" y2="105" stroke="url(#certGoldLine)" strokeWidth="2"/>
-    <rect x="560" y="100" width="9" height="9" transform="rotate(45 564.5 104.5)" fill="none" stroke="#e9cc74"/>
-    <rect x="926" y="100" width="9" height="9" transform="rotate(45 930.5 104.5)" fill="none" stroke="#e9cc74"/>
+    {/* Awarded row */}
+    <Flank y={333} leftStart={350} leftEnd={541} rightStart={954} rightEnd={1145}/>
+    <Diamond x={558} y={333}/><Diamond x={937} y={333}/>
+    <text x="747.5" y="341" textAnchor="middle" fontFamily="Lora, Georgia, serif" fontSize="20" fill="#f9f6e9">Diberikan kepada / Awarded to</text>
 
-    <text x="747.5" y="235" textAnchor="middle" fontFamily="Georgia, 'Times New Roman', serif" fontSize="67" fontWeight="700" letterSpacing="2" fill="url(#certGold)" filter="url(#certShadow)">SERTIFIKAT PENILAIAN KOGNITIF</text>
-    <line x1="160" y1="272" x2="365" y2="272" stroke="url(#certGoldLine)" strokeWidth="2"/>
-    <line x1="1130" y1="272" x2="1335" y2="272" stroke="url(#certGoldLine)" strokeWidth="2"/>
-    <text x="747.5" y="280" textAnchor="middle" fontFamily="Arial, sans-serif" fontSize="18" fontWeight="600" letterSpacing="8" fill="#f2e3ba">CERTIFICATE OF COGNITIVE ASSESSMENT</text>
+    {/* Participant */}
+    <text x="747.5" y="432" textAnchor="middle" fontFamily="Cinzel, Georgia, 'Times New Roman', serif" fontSize={nameSize(name)} fontWeight="700" letterSpacing="1.2" fill="url(#zipGold)" filter="url(#zipGoldShadow)">{name}</text>
+    <line x1="330" y1="458" x2="1165" y2="458" stroke="url(#zipLine)" strokeWidth="1.5"/>
+    <Diamond x={747.5} y={458} size={10}/>
 
-    <line x1="355" y1="330" x2="545" y2="330" stroke="url(#certGoldLine)" strokeWidth="1.5"/>
-    <line x1="950" y1="330" x2="1140" y2="330" stroke="url(#certGoldLine)" strokeWidth="1.5"/>
-    <text x="747.5" y="337" textAnchor="middle" fontFamily="Georgia, serif" fontSize="20" fill="#f7f1df">Diberikan kepada / Awarded to</text>
+    {/* Description */}
+    <text x="747.5" y="501" textAnchor="middle" fontFamily="Lora, Georgia, serif" fontSize="21" fill="#f9f6e9">Telah menyelesaikan Tes IQ ALZAVA dan memperoleh hasil</text>
 
-    <text x="747.5" y="427" textAnchor="middle" fontFamily="Georgia, 'Times New Roman', serif" fontSize={nameSize} fontWeight="700" fill="url(#certGold)" filter="url(#certShadow)">{data.participantName}</text>
-    <line x1="360" y1="458" x2="1135" y2="458" stroke="url(#certGoldLine)" strokeWidth="1.5"/>
-    <rect x="743" y="453" width="9" height="9" transform="rotate(45 747.5 457.5)" fill="#d8b458"/>
+    {/* Score */}
+    <text x="747.5" y="648" textAnchor="middle" fontFamily="Cinzel, Georgia, 'Times New Roman', serif" fontSize="140" fontWeight="700" letterSpacing="-2" fill="url(#zipGold)" filter="url(#zipGoldShadow)">{data.iqScore} IQ</text>
 
-    <text x="747.5" y="496" textAnchor="middle" fontFamily="Georgia, serif" fontSize="20" fill="#f7f1df">Telah menyelesaikan Tes IQ ALZAVA dan memperoleh hasil</text>
+    {/* Text over original ZIP plaque */}
+    <text x="747.5" y="704" textAnchor="middle" fontFamily="Lora, Georgia, serif" fontSize="22" fill="#f9f6e9">Tingkat IQ: <tspan fontWeight="700" fill="#f2d478">{data.iqLevel}</tspan></text>
+    <text x="747.5" y="735" textAnchor="middle" fontFamily="Lora, Georgia, serif" fontSize="18" letterSpacing=".7" fill="#f2eee2">Rentang Kepercayaan: {confidence(data.iqScore)}</text>
 
-    <Laurel/>
-    <Laurel mirror/>
-    <text x="747.5" y="641" textAnchor="middle" fontFamily="Georgia, 'Times New Roman', serif" fontSize="132" fontWeight="700" fill="url(#certGold)" filter="url(#certShadow)">{data.iqScore} IQ</text>
+    {/* Rank row */}
+    <Flank y={794} leftStart={452} leftEnd={562} rightStart={933} rightEnd={1043}/>
+    <Diamond x={584} y={794} size={8}/><Diamond x={911} y={794} size={8}/>
+    <text x="747.5" y="804" textAnchor="middle" fontFamily="Cinzel, Georgia, serif" fontSize="25" fontWeight="700" letterSpacing="5.2" fill="url(#zipGold)">{achievementText} • {data.iqLevel.toUpperCase()}</text>
 
-    <path d="M493 665H1002L1032 712 1002 759H493L463 712Z" fill="#061425" stroke="#d4af37" strokeWidth="3"/>
-    <path d="M502 674H993L1017 712 993 750H502L478 712Z" fill="none" stroke="#f1d98f" strokeOpacity=".62"/>
-    <text x="747.5" y="707" textAnchor="middle" fontFamily="Georgia, serif" fontSize="22" fill="#f7f1df">Tingkat IQ: <tspan fontWeight="700" fill="#e9c96b">{data.iqLevel}</tspan></text>
-    <text x="747.5" y="738" textAnchor="middle" fontFamily="Georgia, serif" fontSize="17" letterSpacing="1" fill="#e3dfd2">Rentang Kepercayaan: {confidence(data.iqScore)}</text>
+    {/* Date */}
+    <text x="290" y="859" textAnchor="middle" fontFamily="Lora, Georgia, serif" fontSize="18" fill="#f9f6e9">Tanggal: {date}</text>
+    <line x1="150" y1="881" x2="280" y2="881" stroke="url(#zipLine)" strokeWidth="1.5"/>
+    <Diamond x={290} y={881} size={9}/>
+    <line x1="300" y1="881" x2="430" y2="881" stroke="url(#zipLine)" strokeWidth="1.5"/>
 
-    <line x1="465" y1="795" x2="615" y2="795" stroke="url(#certGoldLine)" strokeWidth="1.5"/>
-    <line x1="880" y1="795" x2="1030" y2="795" stroke="url(#certGoldLine)" strokeWidth="1.5"/>
-    <text x="747.5" y="803" textAnchor="middle" fontFamily="Georgia, serif" fontSize="23" fontWeight="700" letterSpacing="7" fill="url(#certGold)">{achievementText} • {data.iqLevel.toUpperCase()}</text>
+    {/* Powered by; actual HN crest is baked from ZIP asset in the shell */}
+    <text x="645" y="858" textAnchor="middle" fontFamily="Lora, Georgia, serif" fontSize="18" fill="#f9f6e9">Powered by:</text>
+    <text x="645" y="902" textAnchor="middle" fontFamily="Lora, Georgia, serif" fontSize="40" fontWeight="700" fill="#f9f6e9">HN FC</text>
+    <line x1="752" y1="832" x2="752" y2="947" stroke="#d4af37" strokeOpacity=".7" strokeWidth="1"/>
+    <Diamond x={752} y={889} size={8}/>
 
-    <text x="150" y="862" fontFamily="Arial, sans-serif" fontSize="11" fontWeight="700" letterSpacing="3" fill="#c9a94f">TANGGAL</text>
-    <text x="150" y="892" fontFamily="Georgia, serif" fontSize="18" fill="#f7f1df">{date}</text>
-    <line x1="150" y1="908" x2="405" y2="908" stroke="url(#certGoldLine)"/>
+    {/* Certificate ID */}
+    <text x="1205" y="859" textAnchor="middle" fontFamily="Lora, Georgia, serif" fontSize="18" fill="#f9f6e9">ID Sertifikat: {id}</text>
+    <line x1="1065" y1="881" x2="1195" y2="881" stroke="url(#zipLine)" strokeWidth="1.5"/>
+    <Diamond x={1205} y={881} size={9}/>
+    <line x1="1215" y1="881" x2="1345" y2="881" stroke="url(#zipLine)" strokeWidth="1.5"/>
 
-    <g transform="translate(646 846)">
-      <text x="0" y="12" fontFamily="Georgia, serif" fontSize="15" fill="#d8d0b9">Powered by:</text>
-      <text x="0" y="53" fontFamily="Georgia, serif" fontSize="36" fontWeight="700" letterSpacing="2" fill="#f4e5bd">HN FC</text>
-      <line x1="122" y1="-8" x2="122" y2="92" stroke="#d4af37" strokeOpacity=".72"/>
-      <circle cx="196" cy="42" r="56" fill="#05090e" stroke="#f0deab" strokeWidth="3"/>
-      <circle cx="196" cy="42" r="47" fill="none" stroke="#c49a3d" strokeWidth="1.5"/>
-      <text x="196" y="12" textAnchor="middle" fontFamily="Arial, sans-serif" fontSize="8" fontWeight="700" letterSpacing="1.2" fill="#f8f0dc">HN FOOTBALL CLUB</text>
-      <path d="M177 27l8-11 11 10 11-10 8 11-4 13h-30z" fill="none" stroke="#f5edd9" strokeWidth="2"/>
-      <text x="196" y="62" textAnchor="middle" fontFamily="Georgia, serif" fontSize="30" fontWeight="700" fill="#f5edd9">HN</text>
-      <text x="196" y="82" textAnchor="middle" fontFamily="Arial, sans-serif" fontSize="8" letterSpacing="2" fill="#f5edd9">MMXXI</text>
-    </g>
-
-    <text x="1345" y="862" textAnchor="end" fontFamily="Arial, sans-serif" fontSize="11" fontWeight="700" letterSpacing="3" fill="#c9a94f">ID SERTIFIKAT</text>
-    <text x="1345" y="892" textAnchor="end" fontFamily="Georgia, serif" fontSize="18" fill="#f7f1df">{id}</text>
-    <line x1="1090" y1="908" x2="1345" y2="908" stroke="url(#certGoldLine)"/>
-
-    <line x1="360" y1="982" x2="535" y2="982" stroke="url(#certGoldLine)" strokeWidth="1"/>
-    <line x1="960" y1="982" x2="1135" y2="982" stroke="url(#certGoldLine)" strokeWidth="1"/>
-    <text x="747.5" y="988" textAnchor="middle" fontFamily="Arial, sans-serif" fontSize="11" fontWeight="700" letterSpacing="5" fill="#d9b967">LEBIH TAJAM PIKIRAN, LEBIH TINGGI POTENSI</text>
+    {/* Motto */}
+    <Flank y={990} leftStart={378} leftEnd={548} rightStart={947} rightEnd={1117}/>
+    <Diamond x={566} y={990} size={7}/><Diamond x={929} y={990} size={7}/>
+    <text x="747.5" y="995" textAnchor="middle" fontFamily="Cinzel, Georgia, serif" fontSize="13" fontWeight="600" letterSpacing="4.2" fill="#f6e3b1">LEBIH TAJAM PIKIRAN, LEBIH TINGGI POTENSI</text>
   </svg>
 }
 
@@ -246,40 +238,27 @@ export function VisualIqCertificateModal({
       await download()
     }catch{setMessage("")}
   }
-
   function printCertificate(){
     setMessage("")
-    if(!svgRef.current){
-      setMessage("Sertifikat belum siap dicetak.")
-      return
-    }
+    if(!svgRef.current){setMessage("Sertifikat belum siap dicetak.");return}
     try{
       const svg=new XMLSerializer().serializeToString(svgRef.current)
       const printWindow=window.open("","_blank","width=1200,height=900")
-      if(!printWindow){
-        setMessage("Izinkan pop-up untuk mencetak sertifikat.")
-        return
-      }
+      if(!printWindow){setMessage("Izinkan pop-up untuk mencetak sertifikat.");return}
       try{printWindow.opener=null}catch{}
       printWindow.document.open()
-      printWindow.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Sertifikat Tes IQ ALZAVA</title><style>@page{size:A4 landscape;margin:0}html,body{margin:0;background:#fff}body{display:grid;place-items:center;min-height:100vh}svg{width:100%;height:auto;max-height:100vh;display:block} @media print{html,body{width:297mm;height:210mm}svg{width:297mm;height:209mm}}</style></head><body>${svg}<script>window.addEventListener('load',()=>setTimeout(()=>window.print(),180));<\/script></body></html>`)
-      printWindow.document.close()
-      printWindow.focus()
+      printWindow.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Sertifikat Tes IQ ALZAVA</title><style>@page{size:A4 landscape;margin:0}html,body{margin:0;background:#fff}body{display:grid;place-items:center;min-height:100vh}svg{width:100%;height:auto;max-height:100vh;display:block}@media print{html,body{width:297mm;height:210mm}svg{width:297mm;height:209mm}}</style></head><body>${svg}<script>window.addEventListener('load',()=>setTimeout(()=>window.print(),180));<\/script></body></html>`)
+      printWindow.document.close();printWindow.focus()
       setMessage("Jendela cetak sertifikat dibuka.")
-    }catch{
-      setMessage("Sertifikat belum dapat dicetak. Coba lagi.")
-    }
+    }catch{setMessage("Sertifikat belum dapat dicetak. Coba lagi.")}
   }
-
   async function shareResult(){
     if(!onShareResult)return
     setMessage("")
     try{
       const result=await onShareResult()
       setMessage(typeof result==="string"&&result?result:"Hasil siap dibagikan.")
-    }catch{
-      setMessage("Hasil belum dapat dibagikan.")
-    }
+    }catch{setMessage("Hasil belum dapat dibagikan.")}
   }
 
   return <div className="fixed inset-0 z-[250] overflow-y-auto bg-[#020617]/90 px-3 py-5 backdrop-blur-md" role="dialog" aria-modal="true" aria-label="Sertifikat Tes IQ">
