@@ -145,10 +145,10 @@ export function VisualIqCertificate({data,svgRef}:{data:VisualIqCertificateData;
     <Diamond x={1205} y={881} size={9}/>
     <line x1="1215" y1="881" x2="1345" y2="881" stroke="url(#zipLine)" strokeWidth="1.5"/>
 
-    {/* Motto */}
-    <Flank y={990} leftStart={378} leftEnd={548} rightStart={947} rightEnd={1117}/>
-    <Diamond x={566} y={990} size={7}/><Diamond x={929} y={990} size={7}/>
-    <text x="747.5" y="995" textAnchor="middle" style={{fontFamily:"var(--font-cinzel, Georgia), serif"}} fontSize="13" fontWeight="600" letterSpacing="4.2" fill="#f6e3b1">LEBIH TAJAM PIKIRAN, LEBIH TINGGI POTENSI</text>
+    {/* Motto — raised for safe clearance from the bottom frame */}
+    <Flank y={970} leftStart={378} leftEnd={548} rightStart={947} rightEnd={1117}/>
+    <Diamond x={566} y={970} size={7}/><Diamond x={929} y={970} size={7}/>
+    <text x="747.5" y="975" textAnchor="middle" style={{fontFamily:"var(--font-cinzel, Georgia), serif"}} fontSize="13" fontWeight="600" letterSpacing="4.2" fill="#f6e3b1">LEBIH TAJAM PIKIRAN, LEBIH TINGGI POTENSI</text>
   </svg>
 }
 
@@ -351,9 +351,9 @@ async function renderCertificatePng(data:VisualIqCertificateData){
   drawCenteredText(ctx,`ID Sertifikat: ${id}`,1205,859,`400 18px ${lora}, Georgia, serif`,"#f9f6e9")
   drawCanvasFlanks(ctx,881,1065,1195,1215,1345);drawCanvasDiamond(ctx,1205,881,9)
 
-  drawCanvasFlanks(ctx,990,378,548,947,1117)
-  drawCanvasDiamond(ctx,566,990,7);drawCanvasDiamond(ctx,929,990,7)
-  drawSpacedCenteredText(ctx,"LEBIH TAJAM PIKIRAN, LEBIH TINGGI POTENSI",747.5,995,`600 13px ${cinzel}, Georgia, serif`,"#f6e3b1",4.2)
+  drawCanvasFlanks(ctx,970,378,548,947,1117)
+  drawCanvasDiamond(ctx,566,970,7);drawCanvasDiamond(ctx,929,970,7)
+  drawSpacedCenteredText(ctx,"LEBIH TAJAM PIKIRAN, LEBIH TINGGI POTENSI",747.5,975,`600 13px ${cinzel}, Georgia, serif`,"#f6e3b1",4.2)
 
   clearCanvasShadow(ctx)
 
