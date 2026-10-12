@@ -782,7 +782,7 @@ function buildQuestionBank(){
     push(textQuestion(
       "num-ratio-"+i,"rasio-total","numerical","Numerik","Rasio dan Total",3,
       "Jumlah dua nilai adalah "+total+" dengan rasio "+a+" : "+b+". Berapa nilai bagian pertama?",
-      String(correct),[String(b*unit),String(correct+unit),String(correct-unit)],i*31+7
+      String(correct),[String(correct+unit),String(correct+2*unit),String(Math.max(0,correct-unit))],i*31+7
     ))
   })
 
@@ -805,7 +805,7 @@ function buildQuestionBank(){
     push(textQuestion(
       "num-work-"+a+"-"+b,"kerja-bersama","numerical","Numerik","Kerja Bersama",4,
       "A menyelesaikan suatu pekerjaan sendiri dalam "+a+" jam dan B dalam "+b+" jam. Jika bekerja bersama dengan laju tetap, pekerjaan selesai dalam berapa jam?",
-      String(correct),[String(correct+1),String(Math.max(1,correct-1)),String(Math.min(a,b))],i*41+13
+      String(correct),[String(correct+1),String(correct+2),String(correct+3)],i*41+13
     ))
   })
 
@@ -840,7 +840,7 @@ function buildQuestionBank(){
     push(textQuestion(
       "num-algebra-"+coef+"-"+add+"-"+result,"relasi-aljabar","numerical","Numerik","Relasi Aljabar",3,
       "Jika "+coef+"x + "+add+" = "+result+", berapakah nilai x?",
-      String(correct),[String(correct+1),String(Math.max(0,correct-1)),String(coef+add)],i*53+23
+      String(correct),[String(correct+1),String(Math.max(0,correct-1)),String(correct+2)],i*53+23
     ))
   })
 
