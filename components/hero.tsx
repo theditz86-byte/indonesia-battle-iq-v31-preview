@@ -71,7 +71,7 @@ export function Hero({ season, entries, participant }: { season: BattleSeason | 
             ) : (
               <>
                 <div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] font-extrabold text-cyan-100/90">
-                  <span>35 soal</span><span className="text-slate-500">•</span>
+                  <span>30 soal</span><span className="text-slate-500">•</span>
                   <span>20 menit</span><span className="text-slate-500">•</span>
                   <span>1 Ranked gratis/minggu</span><span className="text-slate-500">•</span>
                   <span>{season?.label || "Season"} · Round {season?.round_number || 1}/{season?.season_rounds || 4}</span>
