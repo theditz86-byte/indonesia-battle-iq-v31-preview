@@ -1120,7 +1120,7 @@ function makeSet(){
     const choices=(["abstract","spatial","numerical","verbal"] as Domain[])
       .filter(d=>remaining[d]>0)
       .sort((a,b)=>remaining[b]-remaining[a])
-    let next=choices.find(d=>d!==previous) ?? choices[0]
+    const next=(choices.find(d=>d!==previous) ?? choices[0]) as Domain
     domainOrder.push(next)
     remaining[next]--
     previous=next
