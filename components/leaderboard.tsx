@@ -2,7 +2,7 @@
 
 import { ChevronLeft, ChevronRight, RefreshCw, Trophy } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
-import type { BattleEntry, BattleParticipant, Scope } from "@/lib/battle"
+import type { BattleEntry, BattleParticipant, BattleSeason, Scope } from "@/lib/battle"
 import { entryRank, formatDuration, formatScore, scopeLabel } from "@/lib/battle"
 
 const tabs: Array<{ label: string; scope: Scope }> = [
@@ -25,8 +25,10 @@ function initials(name?: string) {
   return (name || "BP").split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]).join("").toUpperCase() || "BP"
 }
 
-export function Leaderboard({ entries, participant, scope, loading, error, updatedAt, onScopeChange, onRefresh }: {
+export function Leaderboard({ entries, weeklyEntries, season, participant, scope, loading, error, updatedAt, onScopeChange, onRefresh }: {
   entries: BattleEntry[]
+  weeklyEntries: BattleEntry[]
+  season: BattleSeason | null
   participant: BattleParticipant | null
   scope: Scope
   loading: boolean
@@ -35,15 +37,17 @@ export function Leaderboard({ entries, participant, scope, loading, error, updat
   onScopeChange: (scope: Scope) => void
   onRefresh: () => void
 }) {
+  const [mode, setMode] = useState<"season"|"weekly">("season")
   const [pageSize, setPageSize] = useState<number>(10)
   const [page, setPage] = useState(1)
-  const totalPages = Math.max(1, Math.ceil(entries.length / pageSize))
+  const activeEntries = mode === "weekly" ? weeklyEntries : entries
+  const totalPages = Math.max(1, Math.ceil(activeEntries.length / pageSize))
   const startIndex = (page - 1) * pageSize
-  const visibleEntries = useMemo(() => entries.slice(startIndex, startIndex + pageSize), [entries, startIndex, pageSize])
+  const visibleEntries = useMemo(() => activeEntries.slice(startIndex, startIndex + pageSize), [activeEntries, startIndex, pageSize])
 
   useEffect(() => {
     setPage(1)
-  }, [scope, pageSize])
+  }, [scope, pageSize, mode])
 
   useEffect(() => {
     if (page > totalPages) setPage(totalPages)
@@ -63,18 +67,27 @@ export function Leaderboard({ entries, participant, scope, loading, error, updat
   return (
     <section className="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-lg shadow-[0_0_40px_rgba(0,50,150,0.1)]">
       <div className="mb-5 flex items-center justify-between">
-        <div className="flex items-center gap-3"><Trophy className="h-6 w-6 text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.6)]" /><div><h2 className="text-xl font-extrabold text-white">Peringkat {scopeLabel(scope, participant)}</h2><p className="mt-0.5 text-[11px] text-slate-400">Mulai dari wilayah terdekat, lalu kejar posisi Indonesia.</p></div></div>
+        <div className="flex items-center gap-3"><Trophy className="h-6 w-6 text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.6)]" /><div><h2 className="text-xl font-extrabold text-white">Peringkat {scopeLabel(scope, participant)}</h2><p className="mt-0.5 text-[11px] text-slate-400">{season?.label || "Season"} · Round {season?.round_number || 1}/{season?.season_rounds || 4}</p></div></div>
         <div className="flex items-center gap-2"><span className="flex items-center gap-1.5 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1 text-xs font-medium text-emerald-300"><span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />Live</span><button aria-label="Muat ulang" onClick={onRefresh} disabled={loading} className="flex h-8 w-8 items-center justify-center rounded-full border border-white/10 bg-white/5 text-slate-300 transition-colors hover:text-white disabled:opacity-60"><RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} /></button></div>
+      </div>
+      <div className="mb-3 grid grid-cols-2 gap-1 rounded-2xl border border-white/10 bg-slate-950/55 p-1">
+        <button type="button" onClick={()=>setMode("season")} className={`rounded-xl px-4 py-2.5 text-sm font-black transition ${mode==="season"?"bg-gradient-to-r from-amber-400/20 to-orange-400/20 text-amber-200 ring-1 ring-amber-300/25":"text-slate-400 hover:text-white"}`}>SEASON</button>
+        <button type="button" onClick={()=>setMode("weekly")} className={`rounded-xl px-4 py-2.5 text-sm font-black transition ${mode==="weekly"?"bg-gradient-to-r from-cyan-500/20 to-indigo-500/20 text-cyan-200 ring-1 ring-cyan-300/25":"text-slate-400 hover:text-white"}`}>MINGGU INI</button>
+      </div>
+      <div className="mb-4 rounded-xl border border-white/10 bg-white/[.035] px-4 py-3 text-xs leading-5 text-slate-400">
+        {mode==="season"
+          ? `Battle Point Season = jumlah skor terbaik dari setiap Round. ${season?.label || "Season aktif"} berlangsung 4 minggu.`
+          : `Round ${season?.round_number || 1}/${season?.season_rounds || 4}: hanya skor terbaik minggu ini yang dihitung.`}
       </div>
       <div className="mb-4 flex flex-wrap gap-1 rounded-2xl border border-white/10 bg-slate-950/40 p-1">
         {tabs.map((tab) => <button key={tab.scope} onClick={() => switchScope(tab.scope)} className={`flex-1 whitespace-nowrap rounded-xl px-4 py-2.5 text-sm font-semibold transition-all ${scope === tab.scope ? "bg-gradient-to-r from-indigo-600/80 to-violet-600/80 text-white shadow-[0_0_16px_rgba(99,102,241,0.4)]" : "text-slate-400 hover:text-white"}`}>{tab.label}</button>)}
       </div>
       {!participant && scope === "country" && <div className="mb-4 rounded-xl border border-cyan-300/15 bg-cyan-300/[.06] px-4 py-3 text-xs text-cyan-100">Masuk akun untuk membuka ranking Kecamatan, Kabupaten/Kota, dan Provinsi milikmu.</div>}
-      {error ? <div className="rounded-xl border border-rose-400/20 bg-rose-400/10 p-5 text-center text-sm text-rose-200">{error}</div> : loading && !entries.length ? <div className="flex min-h-56 items-center justify-center text-sm text-slate-400"><RefreshCw className="mr-2 h-4 w-4 animate-spin" />Memuat peringkat…</div> : (
+      {error ? <div className="rounded-xl border border-rose-400/20 bg-rose-400/10 p-5 text-center text-sm text-rose-200">{error}</div> : loading && !activeEntries.length ? <div className="flex min-h-56 items-center justify-center text-sm text-slate-400"><RefreshCw className="mr-2 h-4 w-4 animate-spin" />Memuat peringkat…</div> : (
         <>
           <div className="overflow-x-auto">
             <table className="w-full min-w-[560px] border-collapse">
-              <thead><tr className="text-left text-[11px] uppercase tracking-wider text-slate-500"><th className="px-3 py-3 font-semibold">#</th><th className="px-3 py-3 font-semibold">Peserta</th><th className="px-3 py-3 font-semibold">Wilayah</th><th className="px-3 py-3 font-semibold">Battle Point</th><th className="px-3 py-3 font-semibold">Ketepatan</th><th className="px-3 py-3 font-semibold">Waktu</th></tr></thead>
+              <thead><tr className="text-left text-[11px] uppercase tracking-wider text-slate-500"><th className="px-3 py-3 font-semibold">#</th><th className="px-3 py-3 font-semibold">Peserta</th><th className="px-3 py-3 font-semibold">Wilayah</th><th className="px-3 py-3 font-semibold">{mode==="season"?"Season BP":"Round BP"}</th><th className="px-3 py-3 font-semibold">Ketepatan</th><th className="px-3 py-3 font-semibold">Waktu</th></tr></thead>
               <tbody>
                 {visibleEntries.map((p, index) => {
                   const rank = entryRank(p, scope) || startIndex + index + 1
@@ -96,7 +109,7 @@ export function Leaderboard({ entries, participant, scope, loading, error, updat
             </table>
           </div>
 
-          {entries.length > 0 && (
+          {activeEntries.length > 0 && (
             <div className="mt-5 flex flex-col gap-3 border-t border-white/10 pt-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex flex-wrap items-center gap-2 text-xs text-slate-400">
                 <span>Menampilkan</span>
@@ -108,7 +121,7 @@ export function Leaderboard({ entries, participant, scope, loading, error, updat
                 >
                   {PAGE_SIZES.map((size) => <option key={size} value={size}>{size}</option>)}
                 </select>
-                <span>peserta · {startIndex + 1}–{Math.min(startIndex + pageSize, entries.length)} dari {entries.length}</span>
+                <span>peserta · {startIndex + 1}–{Math.min(startIndex + pageSize, activeEntries.length)} dari {activeEntries.length}</span>
               </div>
 
               {totalPages > 1 && (
