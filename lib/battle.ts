@@ -5,8 +5,14 @@ export type Scope = "country" | "province" | "regency" | "district"
 
 export type BattleSeason = {
   label?: string
+  season_number?: number
+  display_number?: number
   ends_at?: string
   starts_at?: string
+  round_number?: number
+  season_rounds?: number
+  round_starts_at?: string
+  round_ends_at?: string
 }
 
 export type BattleEntry = {
@@ -35,6 +41,10 @@ export type BattleParticipant = {
   is_qa?: boolean
   attempts_used?: number
   weekly_attempts_remaining?: number
+  bonus_attempts_available?: number
+  ranked_weekly_limit?: number
+  round_number?: number
+  season_rounds?: number
   open_beta?: boolean
   active_attempt_id?: string | null
 }
@@ -42,6 +52,7 @@ export type BattleParticipant = {
 export type BattleOverview = {
   season: BattleSeason | null
   entries: BattleEntry[]
+  weekly_entries: BattleEntry[]
   participant: BattleParticipant | null
   generated_at?: string
 }
@@ -89,6 +100,7 @@ export async function fetchOverview(scope: Scope, participant: BattleParticipant
   return {
     season: data.season ?? null,
     entries: Array.isArray(data.entries) ? data.entries : [],
+    weekly_entries: Array.isArray(data.weekly_entries) ? data.weekly_entries : [],
     participant: data.participant ?? null,
     generated_at: data.generated_at,
   }
