@@ -23,15 +23,18 @@ export function UserProfileCard({ participant, ownEntry, scope }: { participant:
   }
 
   const isQa = Boolean(participant.is_qa)
-  const used = Math.max(0, Math.min(3, Number(participant.attempts_used) || 0))
-  const remaining = Math.max(0, Number(participant.weekly_attempts_remaining ?? 3 - used) || 0)
+  const used = Math.max(0, Math.min(1, Number(participant.attempts_used) || 0))
+  const bonusAvailable = Math.max(0, Number(participant.bonus_attempts_available) || 0)
+  const freeRemaining = Math.max(0, 1 - used)
+  const remaining = freeRemaining + bonusAvailable
   const hasActive = Boolean(participant.active_attempt_id)
   const actionHref = "/battle-test"
   const actionLabel = isQa
     ? hasActive ? "Lanjutkan QA Test" : "Mulai QA Test · bebas percobaan"
     : hasActive ? "Lanjutkan Ranked Battle"
-      : remaining > 0 ? `Mulai Ranked · tersisa ${remaining}x`
-        : "3 Ranked minggu ini selesai"
+      : freeRemaining > 0 ? "Mulai Ranked · gratis minggu ini"
+        : bonusAvailable > 0 ? `Mulai Bonus Ranked · ${bonusAvailable}x tersedia`
+          : "Ranked gratis minggu ini selesai"
 
   return (
     <div className={`rounded-2xl border p-6 backdrop-blur-md shadow-[0_10px_40px_rgba(0,0,0,0.4)] ${isQa ? "border-amber-300/35 bg-amber-300/[.08]" : "border-white/20 bg-white/10"}`}>
@@ -70,8 +73,8 @@ export function UserProfileCard({ participant, ownEntry, scope }: { participant:
               </>
             ) : (
               <>
-                <p className="text-xs text-slate-400">Ranked resmi <span className="font-bold text-white">3x/season</span> · {used}/3 digunakan</p>
-                <p className="text-[11px] text-slate-500">{hasActive ? "Percobaan sedang berjalan" : remaining > 0 ? `${remaining} kesempatan tersisa dan bebas dipakai kapan saja selama season aktif` : "Skor terbaik dari 3 attempt masuk leaderboard"}</p>
+                <p className="text-xs text-slate-400">Round <span className="font-bold text-white">{participant.round_number || 1}/{participant.season_rounds || 4}</span> · Ranked gratis <span className="font-bold text-white">1x/minggu</span></p>
+                <p className="text-[11px] text-slate-500">{hasActive ? "Percobaan sedang berjalan" : freeRemaining > 0 ? "Kesempatan gratis minggu ini masih tersedia" : bonusAvailable > 0 ? `Jatah gratis selesai · ${bonusAvailable} Bonus Attempt tersedia` : "Jatah gratis Round ini selesai · reset pada Round berikutnya"}</p>
               </>
             )}
             <a href={actionHref} className={`mt-1 flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-bold text-white shadow-[0_0_24px_rgba(99,102,241,0.5)] transition-transform hover:scale-[1.02] ${isQa ? "bg-gradient-to-r from-amber-500 to-orange-500" : "bg-gradient-to-r from-indigo-600 to-violet-600"}`}><Unlock className="h-4 w-4" />{actionLabel}</a>
