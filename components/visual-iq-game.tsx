@@ -758,6 +758,92 @@ function buildQuestionBank(){
     }
   }
 
+  // Additional TIU-style numerical families to keep the 35-question set varied.
+  // These are different reasoning forms, not cosmetic rewrites of number sequences.
+
+  // Percentage change.
+  for(let base=120;base<=400;base+=40){
+    const pct=[10,15,20,25][(base/40)%4]
+    const correct=base+(base*pct/100)
+    push(textQuestion(
+      "num-pct-"+base+"-"+pct,"persentase-perubahan","numerical","Numerik","Persentase Perubahan",3,
+      "Nilai awal "+base+" meningkat "+pct+"%. Berapa nilai akhirnya?",
+      String(correct),[String(base),String(base+(base*(pct-5)/100)),String(base+(base*(pct+5)/100))],base+pct
+    ))
+  }
+
+  // Ratio and total.
+  const ratioCases:[[number,number,number]]|any=[
+    [2,3,75],[3,5,96],[4,7,121],[5,8,156],[3,7,150],[5,9,196],[7,8,225],[4,9,169]
+  ]
+  ratioCases.forEach(([a,b,total]:[number,number,number],i:number)=>{
+    const unit=total/(a+b)
+    const correct=a*unit
+    push(textQuestion(
+      "num-ratio-"+i,"rasio-total","numerical","Numerik","Rasio dan Total",3,
+      "Jumlah dua nilai adalah "+total+" dengan rasio "+a+" : "+b+". Berapa nilai bagian pertama?",
+      String(correct),[String(b*unit),String(correct+unit),String(correct-unit)],i*31+7
+    ))
+  })
+
+  // Speed-distance-time.
+  const speedCases=[[60,2],[72,3],[80,4],[90,2],[48,5],[75,4],[64,3],[84,5]] as const
+  speedCases.forEach(([speed,hours],i)=>{
+    const correct=speed*hours
+    push(textQuestion(
+      "num-speed-"+speed+"-"+hours,"kecepatan-jarak","numerical","Numerik","Kecepatan dan Jarak",3,
+      "Sebuah kendaraan melaju rata-rata "+speed+" km/jam selama "+hours+" jam. Berapa jarak yang ditempuh?",
+      String(correct),[String(correct-speed),String(correct+speed),String(speed+hours)],i*37+11
+    ))
+  })
+
+  // Combined work rate with integer-friendly cases.
+  const workCases=[[6,3],[8,8],[12,6],[10,5],[15,10],[18,9],[20,5],[24,8]] as const
+  workCases.forEach(([a,b],i)=>{
+    const correct=(a*b)/(a+b)
+    if(!Number.isInteger(correct))return
+    push(textQuestion(
+      "num-work-"+a+"-"+b,"kerja-bersama","numerical","Numerik","Kerja Bersama",4,
+      "A menyelesaikan suatu pekerjaan sendiri dalam "+a+" jam dan B dalam "+b+" jam. Jika bekerja bersama dengan laju tetap, pekerjaan selesai dalam berapa jam?",
+      String(correct),[String(correct+1),String(Math.max(1,correct-1)),String(Math.min(a,b))],i*41+13
+    ))
+  })
+
+  // Age relation.
+  const ageCases=[[4,3,24],[5,2,30],[6,4,42],[7,3,35],[8,5,52],[9,4,45],[10,6,64],[12,5,60]] as const
+  ageCases.forEach(([gap,years,youngerNow],i)=>{
+    const olderNow=youngerNow+gap
+    const correct=olderNow+years
+    push(textQuestion(
+      "num-age-"+gap+"-"+years+"-"+youngerNow,"usia-relasi","numerical","Numerik","Relasi Usia",3,
+      "Usia Rani sekarang "+gap+" tahun lebih tua daripada Dita. Jika usia Dita sekarang "+youngerNow+" tahun, berapa usia Rani "+years+" tahun lagi?",
+      String(correct),[String(olderNow),String(youngerNow+years),String(correct+gap)],i*43+17
+    ))
+  })
+
+  // Average after replacing one score.
+  const avgCases=[[70,5,60,80],[72,5,62,82],[75,4,66,86],[78,5,68,88],[80,4,70,90],[82,5,72,92],[84,4,74,94],[86,5,76,96]] as const
+  avgCases.forEach(([avg,count,oldValue,newValue],i)=>{
+    const correct=(avg*count-oldValue+newValue)/count
+    push(textQuestion(
+      "num-avg-"+i,"rata-rata-perubahan","numerical","Numerik","Rata-rata",4,
+      "Rata-rata "+count+" nilai adalah "+avg+". Salah satu nilai "+oldValue+" diganti menjadi "+newValue+". Berapa rata-rata barunya?",
+      String(correct),[String(avg),String(correct-2),String(correct+2)],i*47+19
+    ))
+  })
+
+  // Simple algebraic quantitative relation.
+  const algebraCases=[[3,7,34],[4,5,37],[5,6,51],[6,4,52],[7,3,59],[8,2,66],[9,5,86],[10,7,107]] as const
+  algebraCases.forEach(([coef,add,result],i)=>{
+    const correct=(result-add)/coef
+    if(!Number.isInteger(correct))return
+    push(textQuestion(
+      "num-algebra-"+coef+"-"+add+"-"+result,"relasi-aljabar","numerical","Numerik","Relasi Aljabar",3,
+      "Jika "+coef+"x + "+add+" = "+result+", berapakah nilai x?",
+      String(correct),[String(correct+1),String(Math.max(0,correct-1)),String(coef+add)],i*53+23
+    ))
+  })
+
   // VERBAL REASONING — original Indonesian items, deliberately separate from MyIQTested wording.
   const verbalItems=[
     ["ver-ana-1","analogi-fungsi","Analogi Kata",2,"Kompas berhubungan dengan arah seperti termometer berhubungan dengan ...","suhu",["waktu","tekanan","jarak"]],
@@ -846,7 +932,21 @@ const SIMPLE_VARIATION_FAMILIES=new Set<string>([
   "matrix-posisi",
   "matrix2-posisi",
   "orbit-posisi-isi",
-  "matrix-rotasi-isi",
+  "analogi-transformasi",
+  "pola-ganda",
+  "rotasi-spasial",
+])
+
+// Families below look different on screen but test almost the same easy idea:
+// move a dot / rotate one shape / repeat the same transformation.
+// Only ONE of these may appear in a 35-question test.
+const SIMPLE_GEOMETRIC_GROUP=new Set<string>([
+  "matrix-rotasi",
+  "matrix-posisi",
+  "matrix2-posisi",
+  "orbit-posisi-isi",
+  "analogi-transformasi",
+  "pola-ganda",
   "rotasi-spasial",
 ])
 
@@ -970,6 +1070,7 @@ function makeSet(){
         if(selected.some(x=>x.id===q.id))continue
         const familyLimit=(q.difficulty===2||SIMPLE_VARIATION_FAMILIES.has(q.family))?1:maxPerFamily
         if((familyCount.get(q.family)||0)>=familyLimit)continue
+        if(SIMPLE_GEOMETRIC_GROUP.has(q.family)&&selected.some(x=>SIMPLE_GEOMETRIC_GROUP.has(x.family)))continue
         if(!questionSafeForDisplay(q))continue
         selected.push(q)
         familyCount.set(q.family,(familyCount.get(q.family)||0)+1)
@@ -984,12 +1085,25 @@ function makeSet(){
     if(selected.filter(x=>x.domain===domain).length<count)take(safeBank.filter(q=>q.domain===domain))
   }
 
-  pickDomain("abstract",20,3)
-  pickDomain("spatial",5,2)
-  pickDomain("numerical",5,1)
-  pickDomain("verbal",5,1)
+  // Revised mix after live testing:
+  // fewer repetitive geometric items, much more TIU-style numerical/logical reasoning.
+  pickDomain("abstract",7,1)
+  pickDomain("spatial",4,1)
+  pickDomain("numerical",14,1)
+  pickDomain("verbal",10,1)
 
-  const domainOrder:Domain[]=Array.from({length:5},()=>["abstract","abstract","numerical","abstract","spatial","abstract","verbal"] as Domain[]).flat()
+  const remaining:Record<Domain,number>={abstract:7,spatial:4,numerical:14,verbal:10}
+  const domainOrder:Domain[]=[]
+  let previous:Domain|null=null
+  while(domainOrder.length<35){
+    const choices=(["abstract","spatial","numerical","verbal"] as Domain[])
+      .filter(d=>remaining[d]>0)
+      .sort((a,b)=>remaining[b]-remaining[a])
+    let next=choices.find(d=>d!==previous) ?? choices[0]
+    domainOrder.push(next)
+    remaining[next]--
+    previous=next
+  }
   const queues:Record<Domain,Question[]>={
     abstract:shuffle(selected.filter(q=>q.domain==="abstract")),
     spatial:shuffle(selected.filter(q=>q.domain==="spatial")),
@@ -1001,10 +1115,16 @@ function makeSet(){
     throw new Error("visual_iq_session_quality_gate")
   }
   const simpleFamilySeen=new Set<string>()
+  let simpleGeometricCount=0
   for(const q of finalSet){
-    if(q.difficulty!==2&&!SIMPLE_VARIATION_FAMILIES.has(q.family))continue
-    if(simpleFamilySeen.has(q.family))throw new Error("visual_iq_easy_family_repeat:"+q.family)
-    simpleFamilySeen.add(q.family)
+    if(q.difficulty===2||SIMPLE_VARIATION_FAMILIES.has(q.family)){
+      if(simpleFamilySeen.has(q.family))throw new Error("visual_iq_easy_family_repeat:"+q.family)
+      simpleFamilySeen.add(q.family)
+    }
+    if(SIMPLE_GEOMETRIC_GROUP.has(q.family)){
+      simpleGeometricCount++
+      if(simpleGeometricCount>1)throw new Error("visual_iq_simple_geometric_repeat")
+    }
   }
 
   try{
@@ -1370,7 +1490,7 @@ export function VisualIqGame(){
         <div className="rounded-[28px] border border-cyan-300/20 bg-slate-950/55 p-5 shadow-[0_24px_70px_rgba(0,0,0,.35)] backdrop-blur-xl">
           <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[.16em] text-cyan-300"><Sparkles className="h-4 w-4"/>Tes IQ Multi-Domain</div>
           <h1 className="mt-3 text-4xl font-black leading-[.98]">Ketahui <span className="bg-gradient-to-r from-cyan-300 via-violet-300 to-fuchsia-300 bg-clip-text text-transparent">IQ-mu</span></h1>
-          <p className="mt-4 text-sm leading-6 text-slate-300">35 soal original: 20 abstrak/matriks, 5 spasial, 5 numerik, dan 5 verbal. Bank tervalidasi terus diperluas. Paket berganti setiap hari; pola mudah seperti perpindahan titik dan rotasi sederhana dibatasi satu kali per variasi.</p>
+          <p className="mt-4 text-sm leading-6 text-slate-300">35 soal original: 7 abstrak, 4 spasial, 14 numerik, dan 10 verbal/logika. Bank terus diperluas setiap hari. Pola geometris sederhana seperti perpindahan titik, rotasi, dan analogi bentuk dibatasi hanya satu soal total per paket.</p>
           <div className="mt-5 grid grid-cols-3 gap-2 text-center text-[10px] font-bold text-slate-300">
             <div className="rounded-xl border border-white/10 bg-white/[.04] p-3"><BrainCircuit className="mx-auto mb-1 h-5 w-5 text-cyan-300"/>35 Soal</div>
             <div className="rounded-xl border border-white/10 bg-white/[.04] p-3"><Clock3 className="mx-auto mb-1 h-5 w-5 text-violet-300"/>±22 Menit</div>
