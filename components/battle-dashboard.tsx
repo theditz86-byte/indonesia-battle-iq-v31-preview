@@ -19,6 +19,7 @@ import {
 export function BattleDashboard() {
   const [season, setSeason] = useState<BattleSeason | null>(null)
   const [entries, setEntries] = useState<BattleEntry[]>([])
+  const [weeklyEntries, setWeeklyEntries] = useState<BattleEntry[]>([])
   const [heroEntries, setHeroEntries] = useState<BattleEntry[]>([])
   const [participant, setParticipant] = useState<BattleParticipant | null>(null)
   const [scope, setScope] = useState<Scope>("country")
@@ -47,6 +48,7 @@ export function BattleDashboard() {
       const data = await fetchOverview(targetScope, participantRef.current, controller.signal)
       setSeason(data.season)
       setEntries(data.entries)
+      setWeeklyEntries(data.weekly_entries)
       if (targetScope === "country") setHeroEntries(data.entries)
       setParticipant(data.participant)
       participantRef.current = data.participant
@@ -104,6 +106,8 @@ export function BattleDashboard() {
             <div className="min-w-0 lg:col-span-2" id="peringkat">
               <Leaderboard
                 entries={entries}
+                weeklyEntries={weeklyEntries}
+                season={season}
                 participant={participant}
                 scope={scope}
                 loading={loading}
