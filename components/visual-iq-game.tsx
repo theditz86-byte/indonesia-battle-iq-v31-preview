@@ -937,17 +937,25 @@ const SIMPLE_VARIATION_FAMILIES=new Set<string>([
   "rotasi-spasial",
 ])
 
-// Families below look different on screen but test almost the same easy idea:
-// move a dot / rotate one shape / repeat the same transformation.
-// Only ONE of these may appear in a 35-question test.
+// Families below may look different, but they still rely on a basic visual transformation:
+// move a dot, toggle fill, swap one shape, mirror one object, or rotate one object.
+// Across the whole 35-question package, at most ONE question from this easy-visual group is allowed.
 const SIMPLE_GEOMETRIC_GROUP=new Set<string>([
   "matrix-rotasi",
   "matrix-posisi",
+  "matrix-bentuk",
   "matrix2-posisi",
+  "matrix2-isi",
   "orbit-posisi-isi",
+  "matrix-rotasi-isi",
   "analogi-transformasi",
   "pola-ganda",
+  "komposisi-bentuk",
   "rotasi-spasial",
+  "cermin-vertikal",
+  "cermin-horizontal",
+  "simetri",
+  "lipat-kertas",
 ])
 
 const posXY:Record<Pos,[number,number]>={
@@ -1085,14 +1093,15 @@ function makeSet(){
     if(selected.filter(x=>x.domain===domain).length<count)take(safeBank.filter(q=>q.domain===domain))
   }
 
-  // Revised mix after live testing:
-  // fewer repetitive geometric items, much more TIU-style numerical/logical reasoning.
-  pickDomain("abstract",7,1)
-  pickDomain("spatial",4,1)
-  pickDomain("numerical",14,1)
-  pickDomain("verbal",10,1)
+  // Revised after live QA screenshots:
+  // visual questions are now a small minority; TIU-style reasoning dominates the test.
+  // Easy visual transformations are capped globally by SIMPLE_GEOMETRIC_GROUP.
+  pickDomain("abstract",3,2)
+  pickDomain("spatial",2,1)
+  pickDomain("numerical",18,2)
+  pickDomain("verbal",12,1)
 
-  const remaining:Record<Domain,number>={abstract:7,spatial:4,numerical:14,verbal:10}
+  const remaining:Record<Domain,number>={abstract:3,spatial:2,numerical:18,verbal:12}
   const domainOrder:Domain[]=[]
   let previous:Domain|null=null
   while(domainOrder.length<35){
@@ -1490,7 +1499,7 @@ export function VisualIqGame(){
         <div className="rounded-[28px] border border-cyan-300/20 bg-slate-950/55 p-5 shadow-[0_24px_70px_rgba(0,0,0,.35)] backdrop-blur-xl">
           <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[.16em] text-cyan-300"><Sparkles className="h-4 w-4"/>Tes IQ Multi-Domain</div>
           <h1 className="mt-3 text-4xl font-black leading-[.98]">Ketahui <span className="bg-gradient-to-r from-cyan-300 via-violet-300 to-fuchsia-300 bg-clip-text text-transparent">IQ-mu</span></h1>
-          <p className="mt-4 text-sm leading-6 text-slate-300">35 soal original: 7 abstrak, 4 spasial, 14 numerik, dan 10 verbal/logika. Bank terus diperluas setiap hari. Pola geometris sederhana seperti perpindahan titik, rotasi, dan analogi bentuk dibatasi hanya satu soal total per paket.</p>
+          <p className="mt-4 text-sm leading-6 text-slate-300">35 soal original: 3 abstrak, 2 spasial, 18 numerik, dan 12 verbal/logika. Bank terus diperluas setiap hari. Seluruh pola visual sederhana—perpindahan titik, isi/kosong, pergantian bentuk, cermin, dan rotasi dasar—dibatasi hanya satu soal total per paket.</p>
           <div className="mt-5 grid grid-cols-3 gap-2 text-center text-[10px] font-bold text-slate-300">
             <div className="rounded-xl border border-white/10 bg-white/[.04] p-3"><BrainCircuit className="mx-auto mb-1 h-5 w-5 text-cyan-300"/>35 Soal</div>
             <div className="rounded-xl border border-white/10 bg-white/[.04] p-3"><Clock3 className="mx-auto mb-1 h-5 w-5 text-violet-300"/>±22 Menit</div>
