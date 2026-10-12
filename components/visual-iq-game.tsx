@@ -958,6 +958,15 @@ const SIMPLE_GEOMETRIC_GROUP=new Set<string>([
   "lipat-kertas",
 ])
 
+// Normal Tes IQ no longer draws basic visual families at all.
+// Only high-complexity visual reasoning can enter the 35-question package.
+const ADVANCED_VISUAL_FAMILIES=new Set<string>([
+  "matrix-tiga-aturan",
+  "analogi-tiga-aturan",
+  "lipat-kertas-ganda",
+  "rotasi-cermin",
+])
+
 const posXY:Record<Pos,[number,number]>={
   tl:[33,33],tr:[67,33],bl:[33,67],br:[67,67],c:[50,50],t:[50,28],r:[72,50],b:[50,72],l:[28,50]
 }
@@ -1072,7 +1081,10 @@ function makeSet(){
     const familyCount=new Map<string,number>()
     const take=(pool:Question[],activeOnly=false)=>{
       const active=activeToday[domain]
-      const source=activeOnly?pool.filter(q=>active.has(q.family)):pool
+      const domainPool=(domain==="abstract"||domain==="spatial")
+        ? pool.filter(q=>ADVANCED_VISUAL_FAMILIES.has(q.family))
+        : pool
+      const source=activeOnly?domainPool.filter(q=>active.has(q.family)):domainPool
       for(const q of difficultyWeightedOrder(source,active)){
         if(selected.filter(x=>x.domain===domain).length>=count)break
         if(selected.some(x=>x.id===q.id))continue
@@ -1093,15 +1105,15 @@ function makeSet(){
     if(selected.filter(x=>x.domain===domain).length<count)take(safeBank.filter(q=>q.domain===domain))
   }
 
-  // Revised after live QA screenshots:
-  // visual questions are now a small minority; TIU-style reasoning dominates the test.
-  // Easy visual transformations are capped globally by SIMPLE_GEOMETRIC_GROUP.
-  pickDomain("abstract",3,2)
-  pickDomain("spatial",2,1)
-  pickDomain("numerical",18,2)
+  // Revised after repeated live QA screenshots:
+  // 32 of 35 questions are now text-based TIU/logical reasoning.
+  // Only three advanced visual questions remain, and basic shape/dot/fill patterns are excluded.
+  pickDomain("abstract",2,1)
+  pickDomain("spatial",1,1)
+  pickDomain("numerical",20,2)
   pickDomain("verbal",12,1)
 
-  const remaining:Record<Domain,number>={abstract:3,spatial:2,numerical:18,verbal:12}
+  const remaining:Record<Domain,number>={abstract:2,spatial:1,numerical:20,verbal:12}
   const domainOrder:Domain[]=[]
   let previous:Domain|null=null
   while(domainOrder.length<35){
@@ -1499,7 +1511,7 @@ export function VisualIqGame(){
         <div className="rounded-[28px] border border-cyan-300/20 bg-slate-950/55 p-5 shadow-[0_24px_70px_rgba(0,0,0,.35)] backdrop-blur-xl">
           <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[.16em] text-cyan-300"><Sparkles className="h-4 w-4"/>Tes IQ Multi-Domain</div>
           <h1 className="mt-3 text-4xl font-black leading-[.98]">Ketahui <span className="bg-gradient-to-r from-cyan-300 via-violet-300 to-fuchsia-300 bg-clip-text text-transparent">IQ-mu</span></h1>
-          <p className="mt-4 text-sm leading-6 text-slate-300">35 soal original: 3 abstrak, 2 spasial, 18 numerik, dan 12 verbal/logika. Bank terus diperluas setiap hari. Seluruh pola visual sederhana—perpindahan titik, isi/kosong, pergantian bentuk, cermin, dan rotasi dasar—dibatasi hanya satu soal total per paket.</p>
+          <p className="mt-4 text-sm leading-6 text-slate-300">35 soal original: 2 abstrak tingkat lanjut, 1 spasial tingkat lanjut, 20 numerik/TIU, dan 12 verbal/logika. Pola visual sederhana seperti perpindahan titik, isi/kosong, pergantian bentuk, dan rotasi dasar tidak lagi masuk paket Tes IQ normal.</p>
           <div className="mt-5 grid grid-cols-3 gap-2 text-center text-[10px] font-bold text-slate-300">
             <div className="rounded-xl border border-white/10 bg-white/[.04] p-3"><BrainCircuit className="mx-auto mb-1 h-5 w-5 text-cyan-300"/>35 Soal</div>
             <div className="rounded-xl border border-white/10 bg-white/[.04] p-3"><Clock3 className="mx-auto mb-1 h-5 w-5 text-violet-300"/>±22 Menit</div>
