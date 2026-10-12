@@ -33,10 +33,14 @@ type LatestResult = {
   district_name?: string
   premium_unlocked?: boolean
   leaderboard_total?: number
+  weekly_leaderboard_total?: number
+  season_label?: string
+  season_rounds?: number
   selected_attempt_id?: string | null
   attempts?: Array<{
     attempt_id?: string
     attempt_number?: number
+    round_number?: number
     battle_score?: number
     correct_count?: number
     question_count?: number
@@ -53,6 +57,7 @@ type LatestResult = {
   result?: {
     attempt_id?: string
     attempt_number?: number
+    round_number?: number
     ranked_attempt?: boolean
     paid_attempt?: boolean
     is_personal_best?: boolean
@@ -69,6 +74,9 @@ type LatestResult = {
     domain_scores?: Record<string,DomainDetail>
     submitted_at?: string
     best_score?: number
+    weekly_best_score?: number
+    season_score?: number
+    weekly_rank?: number
     national_rank?: number
     integrity_status?: string
     ranking_eligible?: boolean
@@ -370,7 +378,7 @@ export default function ResultPage() {
   async function share() {
     if(!data?.participant_public_id || !result) return
     const url=window.location.origin + "/challenge?id=" + encodeURIComponent(data.participant_public_id)
-    const text=(data.nickname || "Saya") + " meraih " + Number(result.battle_score||0).toLocaleString("id-ID") + " Battle Point dan peringkat nasional #" + (result.national_rank ?? "—") + " di ALZAVA Battle Point. Berani mengalahkan poin ini?"
+    const text=(data.nickname || "Saya") + " mengumpulkan " + Number(result.season_score ?? result.best_score ?? result.battle_score ?? 0).toLocaleString("id-ID") + " Battle Point Season dan berada di peringkat nasional #" + (result.national_rank ?? "—") + " di ALZAVA Battle Point. Berani mengejar?"
     void track("share_clicked",{attempt_id:result.attempt_id,national_rank:result.national_rank})
     try{
       if(navigator.share){
@@ -398,9 +406,10 @@ export default function ResultPage() {
   if(error || !data) return <main className="grid min-h-screen place-items-center bg-[#020817] px-5 text-white"><div className="max-w-xl rounded-3xl border border-rose-400/20 bg-rose-500/10 p-7 text-center"><p>{error || "Hasil belum tersedia."}</p><a href="/battle" className="mt-5 inline-flex rounded-xl bg-indigo-600 px-5 py-3 font-black">Kembali ke Battle</a></div></main>
 
   if(!result) return <main className="grid min-h-screen place-items-center bg-[#020817] px-5 text-white"><div className="max-w-xl rounded-3xl border border-white/10 bg-white/5 p-8 text-center"><Brain className="mx-auto h-10 w-10 text-cyan-300"/><h1 className="mt-4 text-2xl font-black">Belum ada hasil pada season ini</h1><p className="mt-2 text-slate-400">Selesaikan tes untuk melihat skor dan profil kognitif Anda.</p><a href="/battle-test" className="mt-6 inline-flex rounded-xl bg-indigo-600 px-5 py-3 font-black">Mulai Tes</a></div></main>
-  const battlePoint=Number(result.battle_score||0)
-  const battleProgress=clamp(battlePoint/10)
-  const rankText=result.is_personal_best===false ? "Bukan PB" : result.national_rank && data.leaderboard_total ? "#" + result.national_rank + " dari " + data.leaderboard_total : "#" + (result.national_rank ?? "—")
+  const attemptBattlePoint=Number(result.battle_score||0)
+  const battlePoint=Number(result.season_score ?? result.best_score ?? result.battle_score ?? 0)
+  const battleProgress=clamp(attemptBattlePoint/10)
+  const rankText=result.national_rank && data.leaderboard_total ? "#" + result.national_rank + " dari " + data.leaderboard_total : "#" + (result.national_rank ?? "—")
   const reportDate=result.submitted_at ? new Date(result.submitted_at) : new Date()
   const reportDateCode=[
     reportDate.getFullYear(),
@@ -422,7 +431,7 @@ export default function ResultPage() {
             <ResultShareCard
               nickname={data.nickname || "Pemain ALZAVA"}
               participantPublicId={data.participant_public_id}
-              battlePoint={Number(result.battle_score || 0)}
+              battlePoint={battlePoint}
               correctCount={Number(result.correct_count || 0)}
               questionCount={Number(result.question_count || 0)}
               durationMs={Number(result.duration_ms || 0)}
@@ -470,7 +479,7 @@ export default function ResultPage() {
                     className={`relative overflow-hidden rounded-2xl border p-4 text-left transition-all disabled:opacity-60 ${active?"border-cyan-300/45 bg-gradient-to-br from-cyan-400/12 via-indigo-500/12 to-violet-500/10 shadow-[0_0_0_1px_rgba(103,232,249,.08),0_18px_50px_rgba(0,0,0,.22)]":"border-white/10 bg-white/[.035] hover:border-white/20 hover:bg-white/[.06]"}`}
                   >
                     {active && <span className="absolute right-3 top-3 rounded-full bg-cyan-300/15 px-2 py-1 text-[9px] font-black uppercase tracking-wider text-cyan-200">Sedang dilihat</span>}
-                    <p className="text-[10px] font-black uppercase tracking-[.14em] text-slate-500">Percobaan #{item.attempt_number ?? "—"} {legacy?"· Arsip Lama":"· Ranked Resmi"}</p>
+                    <p className="text-[10px] font-black uppercase tracking-[.14em] text-slate-500">Round {item.round_number ?? "—"} · Percobaan #{item.attempt_number ?? "—"} {legacy?"· Arsip Lama":"· Ranked Resmi"}</p>
                     <div className="mt-3 flex items-end justify-between gap-3">
                       <div><span className="block text-xs text-slate-500">Jawaban benar</span><strong className="text-2xl font-black text-white">{item.correct_count ?? 0}/{item.question_count ?? 0}</strong></div>
                       <div className="text-right"><span className="block text-xs text-slate-500">Battle Point</span><strong className="text-xl font-black text-cyan-300">{Number(item.battle_score||0).toLocaleString("id-ID")}</strong></div>
@@ -512,10 +521,10 @@ export default function ResultPage() {
                 <div className="absolute inset-4 rounded-full p-[2px]" style={{background:"conic-gradient(#67e8f9 "+battleProgress+"%, rgba(255,255,255,.08) "+battleProgress+"%)"}}>
                   <div className="grid h-full w-full place-items-center rounded-full bg-[#061329]">
                     <div className="text-center">
-                      <p className="text-[11px] font-black uppercase tracking-[.18em] text-cyan-300">Battle Point</p>
+                      <p className="text-[11px] font-black uppercase tracking-[.18em] text-cyan-300">Battle Point Season</p>
                       <strong className="mt-2 block text-5xl font-black tracking-[-.06em] sm:text-6xl lg:text-7xl">{battlePoint.toLocaleString("id-ID")}</strong>
-                      <p className="mt-1 text-sm font-bold text-slate-300">Skor performa</p>
-                      <p className="mt-2 text-xs text-slate-500">{result.correct_count ?? 0}/{result.question_count ?? 0} benar</p>
+                      <p className="mt-1 text-sm font-bold text-slate-300">{data.season_label || "Season aktif"} · Round {result.round_number || 1}/{data.season_rounds || 4}</p>
+                      <p className="mt-2 text-xs text-slate-500">Skor percobaan ini {attemptBattlePoint.toLocaleString("id-ID")} BP · terbaik Round {Number(result.weekly_best_score ?? attemptBattlePoint).toLocaleString("id-ID")} BP</p>
                     </div>
                   </div>
                 </div>
@@ -525,7 +534,7 @@ export default function ResultPage() {
 
           <div className="grid gap-3 p-6 sm:grid-cols-2 sm:p-9 lg:grid-cols-5">
             {([
-              ["Battle Point",Number(result.battle_score||0).toLocaleString("id-ID"),Zap],
+              ["Skor Round",attemptBattlePoint.toLocaleString("id-ID"),Zap],
               ["Ketepatan",accuracy+"%",Target],
               ["Peringkat",rankText,Trophy],
               ["Waktu",formatDuration(result.duration_ms),Timer],
@@ -540,7 +549,7 @@ export default function ResultPage() {
               <p className="mt-4 text-[15px] leading-7 text-slate-300">{pace.text} {strength ? "Kekuatan relatif paling menonjol terlihat pada "+strength.label+"." : ""}</p>
             </article>
             <article className="rounded-3xl border border-white/10 bg-white/[.04] p-6">
-              <p className="text-[11px] font-black uppercase tracking-[.18em] text-slate-500">Benchmark Season Aktif</p>
+              <p className="text-[11px] font-black uppercase tracking-[.18em] text-slate-500">Benchmark {data.season_label || "Season Aktif"}</p>
               <div className="mt-4 flex items-end gap-2"><strong className="text-4xl font-black">#{result.national_rank ?? "—"}</strong>{data.leaderboard_total ? <span className="pb-1 text-sm text-slate-400">dari {data.leaderboard_total} peserta terverifikasi</span> : null}</div>
               {topPercent ? <p className="mt-4 text-sm leading-6 text-slate-400">Posisi saat ini berada pada <b className="text-white">Top {topPercent}%</b> dari leaderboard season yang sudah terbentuk. Persentase ini berubah ketika peserta baru masuk.</p> : <p className="mt-4 text-sm text-slate-400">Benchmark akan semakin stabil ketika jumlah peserta bertambah.</p>}
             </article>
@@ -694,10 +703,10 @@ export default function ResultPage() {
                   </div>
                 </div>
                 <div className="pdf-iq">
-                  <small>BATTLE POINT</small>
+                  <small>BATTLE POINT SEASON</small>
                   <strong>{battlePoint.toLocaleString("id-ID")}</strong>
-                  <b>Skor performa</b>
-                  <span>{result.correct_count ?? 0}/{result.question_count ?? 0} benar</span>
+                  <b>{data.season_label || "Season Aktif"} · Round {result.round_number || 1}/{data.season_rounds || 4}</b>
+                  <span>Skor Round: {attemptBattlePoint.toLocaleString("id-ID")} BP</span>
                 </div>
               </div>
 
