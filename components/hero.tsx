@@ -73,11 +73,11 @@ export function Hero({ season, entries, participant }: { season: BattleSeason | 
                 <div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] font-extrabold text-cyan-100/90">
                   <span>35 soal</span><span className="text-slate-500">•</span>
                   <span>20 menit</span><span className="text-slate-500">•</span>
-                  <span>3 Ranked gratis/minggu</span><span className="text-slate-500">•</span>
-                  <span>Best Score Ranking</span>
+                  <span>1 Ranked gratis/minggu</span><span className="text-slate-500">•</span>
+                  <span>{season?.label || "Season"} · Round {season?.round_number || 1}/{season?.season_rounds || 4}</span>
                 </div>
                 <p className="mt-4 max-w-[20.5rem] text-sm font-medium leading-6 text-slate-300">
-                  Gunakan hingga 3 Ranked Battle kapan saja selama season mingguan—bahkan di hari yang sama—ambil skor terbaikmu, lalu rebut posisi dari kecamatan hingga Indonesia.
+                  Setiap minggu kamu mendapat 1 Ranked gratis. Skor terbaik tiap Round dijumlahkan menjadi Battle Point Season selama 4 minggu, jadi posisi tidak lagi reset setiap Senin.
                 </p>
                 <div className="mt-5 flex flex-wrap gap-3">
                   <a href="/battle-test" className="flex min-h-14 items-center gap-2.5 rounded-2xl bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-600 px-6 py-3.5 text-base font-black text-white ring-1 ring-indigo-300/30 shadow-[0_0_38px_rgba(124,58,237,.58)] transition-all hover:-translate-y-0.5 hover:scale-[1.025] hover:shadow-[0_0_46px_rgba(124,58,237,.72)]">
