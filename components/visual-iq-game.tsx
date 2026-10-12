@@ -266,7 +266,7 @@ function buildQuestionBank(){
         }
         const correct=g(kind,normAngle(start+4*step))
         push(optionized(
-          baseQuestion("abs-m3-rot-"+kind+"-"+start+"-"+step,"matrix-rotasi","abstract","Abstrak","Matriks Rotasi 3 × 3","","matrix3",4,cells),
+          baseQuestion("abs-m3-rot-"+kind+"-"+start+"-"+step,"matrix-rotasi","abstract","Abstrak","Matriks Rotasi 3 × 3","","matrix3",2,cells),
           correct,
           [g(kind,normAngle((correct.rotation||0)+90)),g(kind,normAngle((correct.rotation||0)+180)),g(kind,normAngle((correct.rotation||0)+270))],
           start+(step<0?17:5)
@@ -288,7 +288,7 @@ function buildQuestionBank(){
         }
         const correctPos=CORNERS[(start+4*dir+24)%4]
         push(optionized(
-          baseQuestion("abs-m3-dot-"+kind+"-"+start+"-"+dir,"matrix-posisi","abstract","Abstrak","Matriks Posisi 3 × 3","","matrix3",4,cells),
+          baseQuestion("abs-m3-dot-"+kind+"-"+start+"-"+dir,"matrix-posisi","abstract","Abstrak","Matriks Posisi 3 × 3","","matrix3",2,cells),
           g(kind,0,false,correctPos),
           CORNERS.filter(p=>p!==correctPos).map(p=>g(kind,0,false,p)),
           start+(dir<0?29:7)
@@ -342,7 +342,7 @@ function buildQuestionBank(){
         const cPos=CORNERS[(start+2)%4]
         const correctPos=rotatePos(cPos,turns)
         push(optionized(
-          baseQuestion("abs-m2-pos-"+kind+"-"+start+"-"+turns,"matrix2-posisi","abstract","Abstrak","Matriks Transformasi Posisi","","matrix2",3,[
+          baseQuestion("abs-m2-pos-"+kind+"-"+start+"-"+turns,"matrix2-posisi","abstract","Abstrak","Matriks Transformasi Posisi","","matrix2",2,[
             g(kind,0,false,a),g(kind,0,false,b),g(kind,0,false,cPos)
           ]),
           g(kind,0,false,correctPos),
@@ -483,7 +483,7 @@ function buildQuestionBank(){
         }
         const correctAngle=normAngle(start+4*step)
         push(optionized(
-          baseQuestion("abs-m3-rot-fill-"+kind+"-"+start+"-"+step,"matrix-rotasi-isi","abstract","Abstrak","Matriks Rotasi dan Isi 3 × 3","","matrix3",4,cells),
+          baseQuestion("abs-m3-rot-fill-"+kind+"-"+start+"-"+step,"matrix-rotasi-isi","abstract","Abstrak","Matriks Rotasi dan Isi 3 × 3","","matrix3",3,cells),
           g(kind,correctAngle,true),
           [
             g(kind,correctAngle,false),
@@ -496,13 +496,81 @@ function buildQuestionBank(){
     }
   }
 
+  // 11) Hard matrix: three simultaneous rules (rotation + dot orbit + fill parity).
+  // This family is intentionally harder than plain rotation/position questions.
+  for(const start of [0,90,180,270]){
+    for(let dotStart=0;dotStart<4;dotStart++){
+      for(const dir of [-1,1]){
+        const cells:Glyph[]=[]
+        for(let row=0;row<3;row++){
+          for(let col=0;col<3;col++){
+            if(row===2&&col===2)continue
+            const angle=normAngle(start+(row*2+col)*dir*90)
+            const dot=CORNERS[(dotStart+row+2*col*dir+40)%4]
+            const filled=(row+col+dotStart)%2===0
+            cells.push(g("notch",angle,filled,dot))
+          }
+        }
+        const correctAngle=normAngle(start+(2*2+2)*dir*90)
+        const correctDot=CORNERS[(dotStart+2+2*2*dir+40)%4]
+        const correctFilled=(2+2+dotStart)%2===0
+        push(optionized(
+          baseQuestion("abs-m3-triple-"+start+"-"+dotStart+"-"+dir,"matrix-tiga-aturan","abstract","Abstrak","Matriks Tiga Aturan 3 × 3","","matrix3",4,cells),
+          g("notch",correctAngle,correctFilled,correctDot),
+          [
+            g("notch",correctAngle,!correctFilled,correctDot),
+            g("notch",normAngle(correctAngle+90),correctFilled,correctDot),
+            g("notch",correctAngle,correctFilled,rotatePos(correctDot,1)),
+          ],
+          start+dotStart*41+(dir<0?97:53)
+        ))
+      }
+    }
+  }
+
+  // 12) Hard analogy: apply rotation, dot movement, and fill toggle together.
+  for(let start=0;start<4;start++){
+    for(const turns of [1,2,3]){
+      for(const fillMode of [0,1]){
+        const aAngle=start*90
+        const aDot=CORNERS[start]
+        const aFilled=fillMode===1
+        const bAngle=normAngle(aAngle+turns*90)
+        const bDot=rotatePos(aDot,turns)
+        const bFilled=!aFilled
+
+        const cAngle=normAngle(aAngle+180)
+        const cDot=CORNERS[(start+2)%4]
+        const cFilled=!aFilled
+        const correctAngle=normAngle(cAngle+turns*90)
+        const correctDot=rotatePos(cDot,turns)
+        const correctFilled=!cFilled
+
+        push(optionized(
+          baseQuestion("abs-ana-triple-"+start+"-"+turns+"-"+fillMode,"analogi-tiga-aturan","abstract","Abstrak","Analogi Tiga Aturan","","analogy",4,[
+            g("notch",aAngle,aFilled,aDot),
+            g("notch",bAngle,bFilled,bDot),
+            g("notch",cAngle,cFilled,cDot),
+          ]),
+          g("notch",correctAngle,correctFilled,correctDot),
+          [
+            g("notch",correctAngle,!correctFilled,correctDot),
+            g("notch",cAngle,correctFilled,correctDot),
+            g("notch",correctAngle,correctFilled,cDot),
+          ],
+          start*43+turns*7+fillMode
+        ))
+      }
+    }
+  }
+
   // SPATIAL REASONING — rotasi, cermin, lipat, simetri.
   for(const kind of ["notch","corner","hook"] as GlyphKind[]){
     for(const start of [0,90,180,270]){
       for(const turn of [90,180,270]){
         const correct=normAngle(start+turn)
         push(optionized(
-          baseQuestion("spa-rot-"+kind+"-"+start+"-"+turn,"rotasi-spasial","spatial","Spasial","Manakah Hasil Rotasi "+turn+"°?","Putar bentuk "+turn+"° searah jarum jam, lalu pilih hasil yang sama.","single",3,[g(kind,start)]),
+          baseQuestion("spa-rot-"+kind+"-"+start+"-"+turn,"rotasi-spasial","spatial","Spasial","Manakah Hasil Rotasi "+turn+"°?","Putar bentuk "+turn+"° searah jarum jam, lalu pilih hasil yang sama.","single",2,[g(kind,start)]),
           g(kind,correct),
           [0,90,180,270].filter(v=>v!==correct).map(v=>g(kind,v)),
           start+turn
@@ -770,6 +838,18 @@ function buildQuestionBank(){
 
 const QUESTIONS=buildQuestionBank()
 
+// Easy-pattern exposure policy:
+// each simple variation may appear at most once in a single test package.
+// This prevents repeated dot moves / simple rotations from inflating high scores.
+const SIMPLE_VARIATION_FAMILIES=new Set<string>([
+  "matrix-rotasi",
+  "matrix-posisi",
+  "matrix2-posisi",
+  "orbit-posisi-isi",
+  "matrix-rotasi-isi",
+  "rotasi-spasial",
+])
+
 const posXY:Record<Pos,[number,number]>={
   tl:[33,33],tr:[67,33],bl:[33,67],br:[67,67],c:[50,50],t:[50,28],r:[72,50],b:[50,72],l:[28,50]
 }
@@ -888,7 +968,8 @@ function makeSet(){
       for(const q of difficultyWeightedOrder(source,active)){
         if(selected.filter(x=>x.domain===domain).length>=count)break
         if(selected.some(x=>x.id===q.id))continue
-        if((familyCount.get(q.family)||0)>=maxPerFamily)continue
+        const familyLimit=(q.difficulty===2||SIMPLE_VARIATION_FAMILIES.has(q.family))?1:maxPerFamily
+        if((familyCount.get(q.family)||0)>=familyLimit)continue
         if(!questionSafeForDisplay(q))continue
         selected.push(q)
         familyCount.set(q.family,(familyCount.get(q.family)||0)+1)
@@ -918,6 +999,12 @@ function makeSet(){
   const finalSet=domainOrder.map(domain=>queues[domain].shift()).filter((q):q is Question=>Boolean(q)).slice(0,35)
   if(finalSet.length!==35||finalSet.some(q=>!questionSafeForDisplay(q))){
     throw new Error("visual_iq_session_quality_gate")
+  }
+  const simpleFamilySeen=new Set<string>()
+  for(const q of finalSet){
+    if(q.difficulty!==2&&!SIMPLE_VARIATION_FAMILIES.has(q.family))continue
+    if(simpleFamilySeen.has(q.family))throw new Error("visual_iq_easy_family_repeat:"+q.family)
+    simpleFamilySeen.add(q.family)
   }
 
   try{
@@ -1283,7 +1370,7 @@ export function VisualIqGame(){
         <div className="rounded-[28px] border border-cyan-300/20 bg-slate-950/55 p-5 shadow-[0_24px_70px_rgba(0,0,0,.35)] backdrop-blur-xl">
           <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[.16em] text-cyan-300"><Sparkles className="h-4 w-4"/>Tes IQ Multi-Domain</div>
           <h1 className="mt-3 text-4xl font-black leading-[.98]">Ketahui <span className="bg-gradient-to-r from-cyan-300 via-violet-300 to-fuchsia-300 bg-clip-text text-transparent">IQ-mu</span></h1>
-          <p className="mt-4 text-sm leading-6 text-slate-300">35 soal original: 20 abstrak/matriks, 5 spasial, 5 numerik, dan 5 verbal. Bank tervalidasi memiliki ratusan item. Setiap hari 20 family aktif dicampur ulang otomatis agar pola tes terus berganti.</p>
+          <p className="mt-4 text-sm leading-6 text-slate-300">35 soal original: 20 abstrak/matriks, 5 spasial, 5 numerik, dan 5 verbal. Bank tervalidasi terus diperluas. Paket berganti setiap hari; pola mudah seperti perpindahan titik dan rotasi sederhana dibatasi satu kali per variasi.</p>
           <div className="mt-5 grid grid-cols-3 gap-2 text-center text-[10px] font-bold text-slate-300">
             <div className="rounded-xl border border-white/10 bg-white/[.04] p-3"><BrainCircuit className="mx-auto mb-1 h-5 w-5 text-cyan-300"/>35 Soal</div>
             <div className="rounded-xl border border-white/10 bg-white/[.04] p-3"><Clock3 className="mx-auto mb-1 h-5 w-5 text-violet-300"/>±22 Menit</div>
