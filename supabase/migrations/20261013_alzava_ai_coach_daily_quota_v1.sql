@@ -1,0 +1,91 @@
+-- ALZAVA AI Coach V1: private rate limits. Applied to project Indonesia Battle IQ.
+create table if not exists battle_private.ai_coach_daily_usage (
+  participant_id uuid not null references battle_private.participants(id) on delete cascade,
+  usage_day date not null,
+  request_count integer not null default 0 check (request_count >= 0),
+  updated_at timestamptz not null default now(),
+  primary key (participant_id, usage_day)
+);
+create table if not exists battle_private.ai_coach_global_usage (
+  usage_day date primary key,
+  request_count integer not null default 0 check (request_count >= 0),
+  updated_at timestamptz not null default now()
+);
+alter table battle_private.ai_coach_daily_usage enable row level security;
+alter table battle_private.ai_coach_global_usage enable row level security;
+
+create or replace function public.alzava_ai_claim(p_token_hash text)
+returns jsonb language plpgsql security definer
+set search_path = pg_catalog, battle_private, public
+as $$
+declare
+  v_id uuid;
+  v_day date := (now() at time zone 'Asia/Jakarta')::date;
+  v_user_count integer;
+  v_global_count integer;
+begin
+  if p_token_hash is null or length(p_token_hash) <> 64 then
+    return jsonb_build_object('ok',false,'reason','unauthorized');
+  end if;
+  select ps.participant_id into v_id
+  from battle_private.participant_sessions ps
+  join battle_private.participants p on p.id = ps.participant_id
+  where ps.token_hash = p_token_hash and ps.expires_at > now()
+    and coalesce(p.status,'active') not in ('blocked','banned','suspended')
+  limit 1;
+  if v_id is null then
+    return jsonb_build_object('ok',false,'reason','unauthorized');
+  end if;
+
+  insert into battle_private.ai_coach_global_usage(usage_day,request_count)
+  values (v_day,1)
+  on conflict (usage_day) do update
+    set request_count = battle_private.ai_coach_global_usage.request_count + 1,
+        updated_at = now()
+    where battle_private.ai_coach_global_usage.request_count < 120
+  returning request_count into v_global_count;
+  if v_global_count is null then
+    return jsonb_build_object('ok',false,'reason','global_limit');
+  end if;
+
+  insert into battle_private.ai_coach_daily_usage(participant_id,usage_day,request_count)
+  values(v_id,v_day,1)
+  on conflict (participant_id,usage_day) do update
+    set request_count = battle_private.ai_coach_daily_usage.request_count + 1,
+        updated_at = now()
+    where battle_private.ai_coach_daily_usage.request_count < 3
+  returning request_count into v_user_count;
+  if v_user_count is null then
+    update battle_private.ai_coach_global_usage
+      set request_count = greatest(0,request_count - 1)
+      where usage_day = v_day;
+    return jsonb_build_object('ok',false,'reason','daily_limit');
+  end if;
+  return jsonb_build_object('ok',true,'remaining',3 - v_user_count);
+end $$;
+
+create or replace function public.alzava_ai_refund(p_token_hash text)
+returns void language plpgsql security definer
+set search_path = pg_catalog,battle_private,public
+as $$
+declare
+  v_id uuid;
+  v_day date := (now() at time zone 'Asia/Jakarta')::date;
+begin
+  select participant_id into v_id
+    from battle_private.participant_sessions
+    where token_hash = p_token_hash and expires_at > now()
+    limit 1;
+  if v_id is null then return; end if;
+  update battle_private.ai_coach_daily_usage
+    set request_count = greatest(0,request_count - 1),updated_at = now()
+    where participant_id = v_id and usage_day = v_day;
+  update battle_private.ai_coach_global_usage
+    set request_count = greatest(0,request_count - 1),updated_at = now()
+    where usage_day = v_day;
+end $$;
+
+revoke all on function public.alzava_ai_claim(text) from public, anon, authenticated;
+revoke all on function public.alzava_ai_refund(text) from public, anon, authenticated;
+grant execute on function public.alzava_ai_claim(text) to service_role;
+grant execute on function public.alzava_ai_refund(text) to service_role;

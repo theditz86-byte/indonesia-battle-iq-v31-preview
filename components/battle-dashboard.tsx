@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { Hero } from "@/components/hero"
+import { AlzavaAiCoach } from "@/components/alzava-ai-coach"
 import { DailyMissionCard } from "@/components/daily-mission-card"
 import { Leaderboard } from "@/components/leaderboard"
 import { PathToTop, PromoBanner } from "@/components/sidebar-cards"
@@ -103,6 +104,7 @@ export function BattleDashboard() {
       <SiteNavbar participant={participant} />
       <main>
         <Hero season={season} entries={heroEntries} previousChampions={previousChampions} previousSeasonLabel={previousSeasonLabel} participant={participant} />
+        <div className="relative mx-auto mt-5 max-w-7xl px-4 sm:px-6"><AlzavaAiCoach participant={participant} /></div>
         <div className="relative z-10 mx-auto mt-3 max-w-7xl px-4 sm:px-6 lg:mt-4">
           <UserProfileCard participant={participant} ownEntry={ownEntry} scope={scope} />
           <div className="mt-4"><DailyMissionCard participant={participant} /></div>
