@@ -3,7 +3,9 @@ import type { BattleEntry, BattleParticipant, BattleSeason } from "@/lib/battle"
 import { CountdownCard } from "./countdown-card"
 import { Podium } from "./podium"
 
-export function Hero({ season, entries, participant }: { season: BattleSeason | null; entries: BattleEntry[]; participant?: BattleParticipant | null }) {
+export function Hero({ season, entries, previousChampions, previousSeasonLabel, participant }: { season: BattleSeason | null; entries: BattleEntry[]; previousChampions?: BattleEntry[]; previousSeasonLabel?: string; participant?: BattleParticipant | null }) {
+  const currentSeasonHasEntries = entries.length > 0
+  const podiumEntries = currentSeasonHasEntries ? entries : (previousChampions || [])
   const leaderScore = Number(entries?.[0]?.battle_score || 0)
   const guest = !participant
   const challengeText = guest
@@ -59,8 +61,8 @@ export function Hero({ season, entries, participant }: { season: BattleSeason | 
                 </p>
                 <div className="mt-5 w-full max-w-[21rem] rounded-2xl border border-amber-300/30 bg-gradient-to-r from-amber-300/[.10] via-cyan-300/[.07] to-violet-400/[.08] p-3 shadow-[0_0_32px_rgba(251,191,36,.14)]">
                   <div className="mb-2 flex items-center gap-2 text-[10px] font-black uppercase tracking-[.15em] text-amber-300"><Zap className="h-3.5 w-3.5"/>Untuk pengunjung baru</div>
-                  <a href="/pretest" className="flex min-h-14 items-center justify-center gap-2.5 rounded-xl bg-gradient-to-r from-amber-400 via-orange-400 to-fuchsia-500 px-5 py-3.5 text-base font-black text-slate-950 shadow-[0_0_34px_rgba(251,191,36,.32)] transition-all hover:-translate-y-0.5 hover:scale-[1.015]">
-                    <Zap className="h-5 w-5" /> Quick Battle — Pre-Test <ArrowRight className="h-5 w-5" />
+                  <a href="/quick-battle" className="flex min-h-14 items-center justify-center gap-2.5 rounded-xl bg-gradient-to-r from-amber-400 via-orange-400 to-fuchsia-500 px-5 py-3.5 text-base font-black text-slate-950 shadow-[0_0_34px_rgba(251,191,36,.32)] transition-all hover:-translate-y-0.5 hover:scale-[1.015]">
+                    <Zap className="h-5 w-5" /> Mulai 5 Soal Gratis <ArrowRight className="h-5 w-5" />
                   </a>
                   <p className="mt-2 text-center text-[10px] font-bold text-slate-400">Tidak memengaruhi ranking · hasil dapat disimpan setelah daftar</p>
                 </div>
@@ -93,7 +95,17 @@ export function Hero({ season, entries, participant }: { season: BattleSeason | 
 
           <div className="relative">
             <div className="pointer-events-none absolute inset-x-0 top-10 -z-0 mx-auto h-72 w-3/4 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(250,204,21,0.22),transparent_70%)] blur-2xl" />
-            <div className="relative z-10"><Podium entries={entries} /></div>
+            {!currentSeasonHasEntries && podiumEntries.length > 0 && (
+              <div className="mx-auto mb-3 w-fit rounded-full border border-amber-300/25 bg-amber-300/10 px-4 py-2 text-center text-[11px] font-black uppercase tracking-[.12em] text-amber-200 backdrop-blur-md">
+                Champion {previousSeasonLabel || "Season Sebelumnya"} · {season?.label || "Season baru"} baru dimulai
+              </div>
+            )}
+            <div className="relative z-10"><Podium entries={podiumEntries} /></div>
+            {!currentSeasonHasEntries && (
+              <div className="mx-auto mt-2 max-w-md rounded-2xl border border-cyan-300/20 bg-slate-950/75 px-5 py-3 text-center text-sm font-bold text-cyan-100 shadow-[0_0_28px_rgba(34,211,238,.16)] backdrop-blur-lg">
+                Belum ada skor di {season?.label || "season ini"}. Jadilah pemain pertama yang merebut <b className="text-amber-300">#1 Nasional</b>.
+              </div>
+            )}
             {leaderScore > 0 && (
               <div className="mx-auto mt-2 flex w-fit items-center gap-3 rounded-full border-2 border-amber-300/45 bg-slate-950/75 px-7 py-3.5 text-[15px] font-black text-amber-50 shadow-[0_0_34px_rgba(251,191,36,.30)] ring-1 ring-amber-200/15 backdrop-blur-lg sm:text-base">
                 <Trophy className="h-5 w-5 shrink-0 text-amber-300 drop-shadow-[0_0_8px_rgba(251,191,36,.65)]" />
