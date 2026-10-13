@@ -53,6 +53,8 @@ export type BattleOverview = {
   season: BattleSeason | null
   entries: BattleEntry[]
   weekly_entries: BattleEntry[]
+  previous_champions: BattleEntry[]
+  previous_season_label?: string
   participant: BattleParticipant | null
   generated_at?: string
 }
@@ -101,6 +103,8 @@ export async function fetchOverview(scope: Scope, participant: BattleParticipant
     season: data.season ?? null,
     entries: Array.isArray(data.entries) ? data.entries : [],
     weekly_entries: Array.isArray(data.weekly_entries) ? data.weekly_entries : [],
+    previous_champions: Array.isArray(data.previous_champions) ? data.previous_champions : [],
+    previous_season_label: data.previous_season_label,
     participant: data.participant ?? null,
     generated_at: data.generated_at,
   }
