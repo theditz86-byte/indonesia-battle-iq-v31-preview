@@ -11,6 +11,7 @@ import {
   Lightbulb,
   LockKeyhole,
   Medal,
+  MessageCircle,
   Rocket,
   Share2,
   ShieldCheck,
@@ -391,6 +392,15 @@ export default function ResultPage() {
     }catch{}
   }
 
+  function shareWhatsApp() {
+    if(!data?.participant_public_id || !result) return
+    const url=window.location.origin + "/challenge?id=" + encodeURIComponent(data.participant_public_id)
+    const score=Number(result.season_score ?? result.best_score ?? result.battle_score ?? 0).toLocaleString("id-ID")
+    const text=`🔥 Saya sudah punya ${score} Battle Point Season di ALZAVA. Bisa kalahkan saya? ⚔️\n\n${url}`
+    void track("share_clicked",{attempt_id:result.attempt_id,national_rank:result.national_rank,channel:"whatsapp"})
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`,"_blank","noopener,noreferrer")
+  }
+
   function printPremium() {
     window.print()
   }
@@ -454,13 +464,27 @@ export default function ResultPage() {
           </section>
         )}
 
+        <section className="no-print mb-6 overflow-hidden rounded-[1.75rem] border border-fuchsia-300/20 bg-[radial-gradient(circle_at_10%_0%,rgba(217,70,239,.18),transparent_20rem),linear-gradient(135deg,rgba(49,46,129,.42),rgba(8,15,35,.92))] p-5 shadow-[0_20px_70px_rgba(0,0,0,.30)] sm:p-6">
+          <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[.2em] text-fuchsia-300">Tantang Temanmu</p>
+              <h2 className="mt-2 text-2xl font-black text-white">Jangan berhenti di skor. Cari orang yang bisa melewatimu.</h2>
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-300">Bagikan Battle Point Season dan link tantanganmu. Teman bisa membuka tantangan lalu mencoba mengejar skor tersebut.</p>
+            </div>
+            <div className="grid shrink-0 gap-2 sm:min-w-[220px]">
+              <button onClick={shareWhatsApp} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-emerald-400 px-5 py-3 text-sm font-black text-slate-950 shadow-[0_0_24px_rgba(52,211,153,.22)]"><MessageCircle className="h-5 w-5"/>Tantang via WhatsApp</button>
+              <button onClick={share} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[.06] px-5 py-3 text-sm font-black text-white"><Share2 className="h-4 w-4"/>{copied?"Tautan disalin":"Bagikan ke Aplikasi Lain"}</button>
+            </div>
+          </div>
+        </section>
+
         {Array.isArray(data.attempts) && data.attempts.length > 1 && (
           <section className="no-print mb-6 rounded-[1.75rem] border border-white/10 bg-slate-950/45 p-4 shadow-xl backdrop-blur-xl sm:p-5">
             <div className="flex flex-wrap items-end justify-between gap-3">
               <div>
                 <p className="text-[10px] font-black uppercase tracking-[.2em] text-cyan-300">Riwayat Hasil Season Ini</p>
                 <h2 className="mt-1 text-xl font-black text-white">Pilih percobaan yang ingin dilihat</h2>
-                <p className="mt-1 text-sm text-slate-400">Setiap Ranked menyimpan hasilnya sendiri. Skor terbaik dari maksimal 3 kesempatan resmi menjadi skor leaderboard season.</p>
+                <p className="mt-1 text-sm text-slate-400">Setiap Ranked menyimpan hasilnya sendiri. Skor terbaik pada tiap Round mingguan diakumulasikan menjadi Battle Point Season.</p>
               </div>
               {switchingResult && <span className="rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1.5 text-xs font-bold text-cyan-200">Memuat hasil…</span>}
             </div>
