@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { ArrowRight, BrainCircuit, CheckCircle2, Loader2, MessageCircle, Send, ShieldCheck, Sparkles, X } from "lucide-react"
+import { ArrowRight, BrainCircuit, CheckCircle2, Loader2, Send, ShieldCheck, Sparkles, X } from "lucide-react"
 import type { BattleParticipant } from "@/lib/battle"
 import { getParticipantToken } from "@/lib/battle"
 
@@ -31,6 +31,7 @@ export function AlzavaAiCoach({ participant }: { participant: BattleParticipant 
     return () => document.removeEventListener("keydown", onKey)
   }, [open])
 
+  useEffect(() => { setMessages([]); setRemaining(null); setError("") }, [participant?.public_id])
   useEffect(() => { scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" }) }, [messages, busy])
   useEffect(() => {
     if (open && participant) inputRef.current?.focus()
