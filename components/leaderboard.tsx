@@ -25,9 +25,11 @@ function initials(name?: string) {
   return (name || "BP").split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]).join("").toUpperCase() || "BP"
 }
 
-export function Leaderboard({ entries, weeklyEntries, season, participant, scope, loading, error, updatedAt, onScopeChange, onRefresh }: {
+export function Leaderboard({ entries, weeklyEntries, previousChampions, previousSeasonLabel, season, participant, scope, loading, error, updatedAt, onScopeChange, onRefresh }: {
   entries: BattleEntry[]
   weeklyEntries: BattleEntry[]
+  previousChampions: BattleEntry[]
+  previousSeasonLabel?: string
   season: BattleSeason | null
   participant: BattleParticipant | null
   scope: Scope
@@ -83,7 +85,33 @@ export function Leaderboard({ entries, weeklyEntries, season, participant, scope
         {tabs.map((tab) => <button key={tab.scope} onClick={() => switchScope(tab.scope)} className={`flex-1 whitespace-nowrap rounded-xl px-4 py-2.5 text-sm font-semibold transition-all ${scope === tab.scope ? "bg-gradient-to-r from-indigo-600/80 to-violet-600/80 text-white shadow-[0_0_16px_rgba(99,102,241,0.4)]" : "text-slate-400 hover:text-white"}`}>{tab.label}</button>)}
       </div>
       {!participant && scope === "country" && <div className="mb-4 rounded-xl border border-cyan-300/15 bg-cyan-300/[.06] px-4 py-3 text-xs text-cyan-100">Masuk akun untuk membuka ranking Kecamatan, Kabupaten/Kota, dan Provinsi milikmu.</div>}
-      {error ? <div className="rounded-xl border border-rose-400/20 bg-rose-400/10 p-5 text-center text-sm text-rose-200">{error}</div> : loading && !activeEntries.length ? <div className="flex min-h-56 items-center justify-center text-sm text-slate-400"><RefreshCw className="mr-2 h-4 w-4 animate-spin" />Memuat peringkat…</div> : (
+      {error ? <div className="rounded-xl border border-rose-400/20 bg-rose-400/10 p-5 text-center text-sm text-rose-200">{error}</div> : loading && !activeEntries.length ? <div className="flex min-h-56 items-center justify-center text-sm text-slate-400"><RefreshCw className="mr-2 h-4 w-4 animate-spin" />Memuat peringkat…</div> : activeEntries.length===0 ? (
+        <div className="rounded-2xl border border-dashed border-cyan-300/20 bg-gradient-to-br from-cyan-300/[.06] via-white/[.025] to-amber-300/[.05] p-6 text-center">
+          <Trophy className="mx-auto h-9 w-9 text-amber-300"/>
+          <h3 className="mt-3 text-xl font-black text-white">{mode==="weekly" ? `Round ${season?.round_number || 1} baru dimulai` : `${season?.label || "Season"} baru dimulai`}</h3>
+          <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-slate-400">
+            Belum ada skor verified pada papan ini. Satu Ranked Battle cukup untuk membuka perebutan posisi pertama.
+          </p>
+          <a href={participant?"/battle-test":"/quick-battle"} className="mt-5 inline-flex rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-5 py-3 text-sm font-black text-white shadow-[0_0_24px_rgba(99,102,241,.28)]">
+            {participant ? "Rebut #1 Sekarang" : "Coba 5 Soal Gratis"}
+          </a>
+          {scope==="country" && mode==="season" && previousChampions.length>0 && (
+            <div className="mx-auto mt-7 max-w-2xl border-t border-white/10 pt-5">
+              <p className="text-[10px] font-black uppercase tracking-[.18em] text-amber-300">Champion {previousSeasonLabel || "Season Sebelumnya"}</p>
+              <div className="mt-3 grid gap-2 sm:grid-cols-3">
+                {previousChampions.slice(0,3).map((p,index)=>(
+                  <div key={p.participant_public_id || p.nickname || index} className="rounded-xl border border-white/10 bg-slate-950/40 p-3 text-left">
+                    <div className="flex items-center gap-3">
+                      {p.avatar_url?<img src={p.avatar_url} alt={p.nickname||"Champion"} className="h-9 w-9 rounded-full object-cover ring-1 ring-amber-300/30"/>:<div className="grid h-9 w-9 place-items-center rounded-full bg-amber-300/10 text-[10px] font-black text-amber-200">{initials(p.nickname)}</div>}
+                      <div className="min-w-0"><p className="truncate text-sm font-black text-white">#{index+1} {p.nickname||"Champion"}</p><p className="text-[11px] text-slate-500">{formatScore(p.battle_score)} BP</p></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      ) : (
         <>
           <div className="overflow-x-auto">
             <table className="w-full min-w-[560px] border-collapse">
