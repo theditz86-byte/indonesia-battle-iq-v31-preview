@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { Hero } from "@/components/hero"
+import { DailyMissionCard } from "@/components/daily-mission-card"
 import { Leaderboard } from "@/components/leaderboard"
 import { PathToTop, PromoBanner } from "@/components/sidebar-cards"
 import { SiteFooter } from "@/components/site-footer"
@@ -21,6 +22,8 @@ export function BattleDashboard() {
   const [entries, setEntries] = useState<BattleEntry[]>([])
   const [weeklyEntries, setWeeklyEntries] = useState<BattleEntry[]>([])
   const [heroEntries, setHeroEntries] = useState<BattleEntry[]>([])
+  const [previousChampions, setPreviousChampions] = useState<BattleEntry[]>([])
+  const [previousSeasonLabel, setPreviousSeasonLabel] = useState("")
   const [participant, setParticipant] = useState<BattleParticipant | null>(null)
   const [scope, setScope] = useState<Scope>("country")
   const [loading, setLoading] = useState(true)
@@ -49,6 +52,8 @@ export function BattleDashboard() {
       setSeason(data.season)
       setEntries(data.entries)
       setWeeklyEntries(data.weekly_entries)
+      setPreviousChampions(data.previous_champions)
+      setPreviousSeasonLabel(data.previous_season_label || "")
       if (targetScope === "country") setHeroEntries(data.entries)
       setParticipant(data.participant)
       participantRef.current = data.participant
@@ -97,9 +102,10 @@ export function BattleDashboard() {
     <div className="min-h-screen bg-slate-950 text-white">
       <SiteNavbar participant={participant} />
       <main>
-        <Hero season={season} entries={heroEntries} participant={participant} />
+        <Hero season={season} entries={heroEntries} previousChampions={previousChampions} previousSeasonLabel={previousSeasonLabel} participant={participant} />
         <div className="relative z-10 mx-auto mt-3 max-w-7xl px-4 sm:px-6 lg:mt-4">
           <UserProfileCard participant={participant} ownEntry={ownEntry} scope={scope} />
+          <div className="mt-4"><DailyMissionCard participant={participant} /></div>
         </div>
         <div className="mx-auto mt-10 max-w-7xl px-4 pb-16 sm:px-6">
           <div className="grid gap-6 lg:grid-cols-3">
@@ -107,6 +113,8 @@ export function BattleDashboard() {
               <Leaderboard
                 entries={entries}
                 weeklyEntries={weeklyEntries}
+                previousChampions={previousChampions}
+                previousSeasonLabel={previousSeasonLabel}
                 season={season}
                 participant={participant}
                 scope={scope}
