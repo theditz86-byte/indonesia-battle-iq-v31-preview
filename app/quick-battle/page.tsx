@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react"
 import { ArrowRight, Clock3, RotateCcw, Share2, Sparkles, Swords, Trophy, Zap } from "lucide-react"
-import { BATTLE_API_URL } from "@/lib/battle"
+import { BATTLE_API_URL, getParticipantToken } from "@/lib/battle"
 
 type Q = { q: string; options: string[]; a: number; domain: string }
 type Challenge = { nickname?: string; battle_score?: number; regency_name?: string; province_name?: string }
@@ -75,7 +75,8 @@ export default function QuickBattlePage(){
 
   function ranked(){
     if(challengeId) localStorage.setItem("alzava.challenge.id",challengeId)
-    window.location.href="/account"
+    try{localStorage.setItem("alzava.quick-battle.preview",JSON.stringify({point,correct,total:5,completed_at:new Date().toISOString()}))}catch{}
+    window.location.href=getParticipantToken()?"/battle-test":"/account?next=%2Fbattle-test"
   }
 
   async function share(){
@@ -102,7 +103,7 @@ export default function QuickBattlePage(){
         <Sparkles className="mx-auto h-8 w-8 text-amber-300"/><p className="mt-3 text-xs font-black uppercase tracking-[.2em] text-amber-300">Preview Battle Point</p><div className="mt-2 bg-gradient-to-b from-yellow-100 via-amber-300 to-amber-500 bg-clip-text text-7xl font-black text-transparent sm:text-8xl">{point}</div><p className="mt-2 text-sm text-slate-400">{correct}/5 benar · {elapsed} detik</p>
         <h1 className="mt-6 text-2xl font-black">Ini baru pemanasan.</h1><p className="mx-auto mt-2 max-w-lg text-sm leading-6 text-slate-300">Preview ini <b>bukan skor leaderboard resmi</b>. Masuk Ranked Battle untuk mendapatkan Battle Point resmi dan melihat posisi di Kecamatan, Kabupaten/Kota, Provinsi, dan Indonesia.</p>
         {challenge && <div className="mx-auto mt-5 max-w-md rounded-2xl border border-white/10 bg-black/20 p-4"><Swords className="mx-auto h-5 w-5 text-violet-300"/><p className="mt-2 text-sm">Target tantangan: <b>{Number(challenge.battle_score||0).toLocaleString("id-ID")}</b> Battle Point milik {challenge.nickname}.</p></div>}
-        <div className="mt-7 grid gap-3 sm:grid-cols-2"><button onClick={ranked} className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-5 py-3.5 font-black shadow-[0_0_28px_rgba(99,102,241,.35)]"><Trophy className="h-5 w-5"/>Masuk Ranked Battle<ArrowRight className="h-4 w-4"/></button><button onClick={share} className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 px-5 py-3.5 font-black"><Share2 className="h-5 w-5"/>{copied?"Tautan disalin":"Bagikan Quick Result"}</button></div>
+        <div className="mt-7 grid gap-3 sm:grid-cols-2"><button onClick={ranked} className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-5 py-3.5 font-black shadow-[0_0_28px_rgba(99,102,241,.35)]"><Trophy className="h-5 w-5"/>{getParticipantToken()?"Masuk Ranked Battle":"Simpan & Masuk Ranked"}<ArrowRight className="h-4 w-4"/></button><button onClick={share} className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 px-5 py-3.5 font-black"><Share2 className="h-5 w-5"/>{copied?"Tautan disalin":"Bagikan Quick Result"}</button></div>
         <button onClick={restart} className="mt-4 inline-flex items-center gap-2 text-sm font-bold text-slate-400 hover:text-white"><RotateCcw className="h-4 w-4"/>Coba 5 soal lain</button>
       </section>}
 
