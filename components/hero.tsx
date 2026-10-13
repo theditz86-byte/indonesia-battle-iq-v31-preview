@@ -96,11 +96,11 @@ export function Hero({ season, entries, previousChampions, previousSeasonLabel, 
           <div className="relative">
             <div className="pointer-events-none absolute inset-x-0 top-10 -z-0 mx-auto h-72 w-3/4 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(250,204,21,0.22),transparent_70%)] blur-2xl" />
             {!currentSeasonHasEntries && podiumEntries.length > 0 && (
-              <div className="mx-auto mb-3 w-fit rounded-full border border-amber-300/25 bg-amber-300/10 px-4 py-2 text-center text-[11px] font-black uppercase tracking-[.12em] text-amber-200 backdrop-blur-md">
+              <div className="relative z-20 mx-auto mb-10 w-fit rounded-full border border-amber-300/25 bg-amber-300/10 px-5 py-2.5 text-center text-[11px] font-black uppercase tracking-[.12em] text-amber-200 shadow-[0_0_24px_rgba(251,191,36,.12)] backdrop-blur-md">
                 Champion {previousSeasonLabel || "Season Sebelumnya"} · {season?.label || "Season baru"} baru dimulai
               </div>
             )}
-            <div className="relative z-10"><Podium entries={podiumEntries} /></div>
+            <div className="relative z-10 mt-2"><Podium entries={podiumEntries} /></div>
             {!currentSeasonHasEntries && (
               <div className="mx-auto mt-2 max-w-md rounded-2xl border border-cyan-300/20 bg-slate-950/75 px-5 py-3 text-center text-sm font-bold text-cyan-100 shadow-[0_0_28px_rgba(34,211,238,.16)] backdrop-blur-lg">
                 Belum ada skor di {season?.label || "season ini"}. Jadilah pemain pertama yang merebut <b className="text-amber-300">#1 Nasional</b>.
