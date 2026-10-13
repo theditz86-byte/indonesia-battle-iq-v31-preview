@@ -32,6 +32,7 @@ function source() {
 }
 
 async function send(eventName: string, metadata: Record<string, unknown> = {}) {
+  if (typeof window === "undefined" || window.location.hostname !== "alzava-battle-iq.pages.dev") return
   const token = getParticipantToken()
   try {
     await fetch(GROWTH_API, {
