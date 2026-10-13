@@ -69,6 +69,7 @@ function pageEvent(path: string) {
 
 export function GrowthTracker() {
   useEffect(() => {
+    if (window.location.hostname !== "alzava-battle-iq.pages.dev") return
     const event = pageEvent(window.location.pathname)
     if (event) void send(event)
 
