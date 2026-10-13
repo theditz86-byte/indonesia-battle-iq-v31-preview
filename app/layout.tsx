@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     template: "%s | ALZAVA Battle Point",
   },
   description:
-    "Competitive brain game Indonesia: Quick Battle Pre-Test, 3 Ranked Battle per season, Battle Point, ranking kecamatan hingga nasional, PVP 1v1, serta latihan SKD dan TIU.",
+    "Competitive brain game Indonesia: Quick Battle 5 soal tanpa daftar, Ranked Battle mingguan, Season 4 minggu, Battle Point, ranking kecamatan hingga nasional, serta latihan SKD dan TIU harian.",
   keywords: [
     "battle point Indonesia",
     "competitive brain game Indonesia",
@@ -56,7 +56,7 @@ export const metadata: Metadata = {
     siteName: "ALZAVA Battle Point",
     title: "ALZAVA Battle Point — Competitive Brain Game Indonesia",
     description:
-      "Coba Quick Battle Pre-Test, adu nalar di Ranked Battle dan PVP 1v1, raih Battle Point, dan kejar ranking dari kecamatan hingga nasional.",
+      "Coba 5 soal tanpa daftar, lanjut Ranked Battle mingguan, kumpulkan Battle Point sepanjang Season 4 minggu, dan kejar ranking dari kecamatan hingga nasional.",
     images: [{ url: "/images/hero-bg.png", width: 1200, height: 630, alt: "ALZAVA Battle Point" }],
   },
   twitter: {
