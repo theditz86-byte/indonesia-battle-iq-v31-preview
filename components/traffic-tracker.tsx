@@ -32,6 +32,8 @@ export function TrafficTracker(){
   const pathname=usePathname()
 
   useEffect(()=>{
+    if(typeof window==="undefined")return
+    if(window.location.hostname!=="alzava-battle-iq.pages.dev")return
     if(!pathname||pathname.startsWith("/admin"))return
     try{
       let visitor=localStorage.getItem(VISITOR_KEY)||""
