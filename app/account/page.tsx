@@ -1,6 +1,7 @@
 "use client"
 
 import { FormEvent, useEffect, useMemo, useState } from "react"
+import { Eye, EyeOff } from "lucide-react"
 import { PARTICIPANT_TOKEN_KEY } from "@/lib/battle"
 
 const ACCOUNT_API = "https://efndozplpwyemzgqfnep.supabase.co/functions/v1/battle-account"
@@ -72,6 +73,42 @@ function requestedNext() {
   return next.startsWith("/") && !next.startsWith("//") ? next : ""
 }
 
+
+function PasswordInput({ value, onChange, className, autoComplete, placeholder, minLength, required = true }: {
+  value: string
+  onChange: (value: string) => void
+  className: string
+  autoComplete?: string
+  placeholder?: string
+  minLength?: number
+  required?: boolean
+}) {
+  const [visible, setVisible] = useState(false)
+  return (
+    <div className="relative">
+      <input
+        type={visible ? "text" : "password"}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        required={required}
+        minLength={minLength}
+        autoComplete={autoComplete}
+        placeholder={placeholder}
+        className={`${className} w-full pr-12`}
+      />
+      <button
+        type="button"
+        onClick={() => setVisible((v) => !v)}
+        aria-label={visible ? "Sembunyikan password" : "Lihat password"}
+        title={visible ? "Sembunyikan password" : "Lihat password"}
+        className="absolute inset-y-0 right-0 grid w-12 place-items-center text-slate-400 transition-colors hover:text-cyan-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60"
+      >
+        {visible ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+      </button>
+    </div>
+  )
+}
+
 export default function AccountPage() {
   const [loading, setLoading] = useState(true)
   const [busy, setBusy] = useState(false)
@@ -108,13 +145,13 @@ export default function AccountPage() {
   const [eligibilityAccepted, setEligibilityAccepted] = useState(false)
 
   const used = Math.max(0, Number(participant?.attempts_used) || 0)
-  const freeRemaining = Math.max(0, Number(participant?.free_attempts_remaining ?? 3 - used) || 0)
+  const freeRemaining = Math.max(0, Number(participant?.free_attempts_remaining ?? 1 - used) || 0)
   const totalRemaining = Math.max(0, Number(participant?.attempts_remaining ?? freeRemaining) || 0)
 
   const action = useMemo(() => {
     if (participant?.active_attempt_id) return { href: "/battle-test", label: "Lanjutkan Ranked yang aktif" }
     if (freeRemaining > 0) return { href: "/battle-test", label: `Mulai Ranked · sisa ${freeRemaining}x` }
-    return { href: "/battle#peringkat", label: "3 Ranked season ini sudah digunakan" }
+    return { href: "/battle#peringkat", label: "Ranked gratis Round ini sudah digunakan" }
   }, [participant?.active_attempt_id, freeRemaining])
 
   async function loadMe(rawToken: string) {
@@ -195,7 +232,7 @@ export default function AccountPage() {
       setEditNickname(data.participant?.nickname || ""); setRecoveryEmail(data.participant?.email || "")
       const next = requestedNext()
       if (next) { window.location.href = next; return }
-      setNotice("Pendaftaran berhasil. Wilayah akun sudah dikunci dari daftar resmi dan Anda mendapat 3 Ranked Battle gratis pada season ini. Verifikasi email agar pemulihan password aktif.")
+      setNotice("Pendaftaran berhasil. Wilayah akun sudah dikunci dari daftar resmi dan Anda mendapat 1 Ranked Battle gratis pada Round minggu ini. Verifikasi email agar pemulihan password aktif.")
     } catch (e) { setError(messageText(e)) } finally { setBusy(false) }
   }
 
@@ -303,7 +340,7 @@ export default function AccountPage() {
         <div className="mb-7">
           <p className="text-xs font-black uppercase tracking-[.18em] text-cyan-300">AKUN PESERTA</p>
           <h1 className="mt-3 text-4xl font-black tracking-tight sm:text-6xl">Identitas Battle Anda</h1>
-          <p className="mt-4 max-w-3xl leading-7 text-slate-300">Kelola akun, nama panggilan, foto profil, dan kuota percobaan. Setiap peserta mendapat <strong className="text-white">3x Ranked Battle resmi gratis per season</strong>; skor terbaik menentukan posisi leaderboard.</p>
+          <p className="mt-4 max-w-3xl leading-7 text-slate-300">Kelola akun, nama panggilan, foto profil, dan kuota percobaan. Setiap peserta mendapat <strong className="text-white">1x Ranked Battle resmi gratis per Round mingguan</strong>; skor terbaik tiap Round diakumulasikan ke Battle Point Season.</p>
         </div>
 
         {notice && <div className="mb-5 rounded-2xl border border-emerald-400/30 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-100">{notice}</div>}
@@ -320,7 +357,7 @@ export default function AccountPage() {
               <form onSubmit={handleLogin} className="grid gap-5 p-6 sm:p-8">
                 <div><h2 className="text-2xl font-black">Masuk ke arena</h2><p className="mt-1 text-sm text-slate-400">Gunakan username dan password akun Battle Point Anda.</p></div>
                 <label className="grid gap-2 text-sm font-bold">Username<input value={loginUsername} onChange={(e) => setLoginUsername(e.target.value)} required autoComplete="username" className={fieldClass} /></label>
-                <label className="grid gap-2 text-sm font-bold">Password<input type="password" value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} required autoComplete="current-password" className={fieldClass} /></label>
+                <label className="grid gap-2 text-sm font-bold">Password<PasswordInput value={loginPassword} onChange={setLoginPassword} autoComplete="current-password" className={fieldClass} /></label>
                 <div className="flex flex-wrap items-center justify-between gap-3"><button type="button" disabled={busy} onClick={() => void requestPasswordReset()} className="text-sm font-bold text-cyan-300 hover:text-cyan-200 disabled:opacity-50">Lupa Password?</button><span className="text-xs text-slate-500">Isi username terlebih dahulu</span></div>
                 <button disabled={busy} className="rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-5 py-3 font-black disabled:opacity-60">{busy ? "Memproses…" : "Masuk"}</button>
                 <div className="text-center text-xs text-slate-500">Pengelola ALZAVA? <a href="/admin" className="font-bold text-cyan-300 hover:text-cyan-200">Masuk sebagai Admin</a></div>
@@ -330,7 +367,7 @@ export default function AccountPage() {
                 <div><h2 className="text-2xl font-black">Buat akun peserta</h2><p className="mt-1 text-sm text-slate-400">Wilayah sekarang dipilih dari daftar sistem agar ranking Kecamatan/Kabupaten tidak terpecah karena beda penulisan.</p></div>
                 <div className="grid gap-4 sm:grid-cols-2">
                   <label className="grid gap-2 text-sm font-bold">Username<input value={username} onChange={(e) => setUsername(e.target.value)} required minLength={3} maxLength={24} autoComplete="username" className={fieldClass} /></label>
-                  <label className="grid gap-2 text-sm font-bold">Password<input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} autoComplete="new-password" className={fieldClass} /></label>
+                  <label className="grid gap-2 text-sm font-bold">Password<PasswordInput value={password} onChange={setPassword} minLength={8} autoComplete="new-password" className={fieldClass} /></label>
                 </div>
                 <label className="grid gap-2 text-sm font-bold">Email <span className="font-normal text-slate-500">untuk pemulihan password</span><input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" placeholder="nama@email.com" className={fieldClass} /></label>
                 <label className="grid gap-2 text-sm font-bold">Nama Panggilan <span className="font-normal text-slate-500">nama yang tampil di peringkat</span><input value={nickname} onChange={(e) => setNickname(e.target.value)} required minLength={3} maxLength={24} placeholder="Contoh: Aditakaa" className={fieldClass} /></label>
@@ -356,21 +393,21 @@ export default function AccountPage() {
                 <div className="flex flex-wrap gap-2"><a href={action.href} className="rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-5 py-3 text-sm font-black">{action.label}</a><button onClick={()=>void logout()} className="rounded-xl border border-white/15 bg-white/5 px-5 py-3 text-sm font-bold text-slate-200 hover:bg-white/10">Keluar perangkat ini</button></div>
               </div>
               <div className="mt-7 grid gap-3 sm:grid-cols-4">
-                <div className="rounded-2xl border border-cyan-300/25 bg-cyan-300/10 p-4"><span className="text-xs text-cyan-100">Kuota Ranked / season</span><strong className="mt-1 block text-3xl font-black">3x</strong></div>
-                <div className="rounded-2xl border border-white/10 bg-white/5 p-4"><span className="text-xs text-slate-400">Ranked digunakan</span><strong className="mt-1 block text-3xl font-black">{Math.min(3, used)}/3</strong></div>
-                <div className="rounded-2xl border border-white/10 bg-white/5 p-4"><span className="text-xs text-slate-400">Sisa Ranked</span><strong className="mt-1 block text-3xl font-black">{freeRemaining}x</strong></div>
-                <div className="rounded-2xl border border-white/10 bg-white/5 p-4"><span className="text-xs text-slate-400">Format resmi</span><strong className="mt-1 block text-2xl font-black">20 soal</strong></div>
+                <div className="rounded-2xl border border-cyan-300/25 bg-cyan-300/10 p-4"><span className="text-xs text-cyan-100">Kuota gratis / Round</span><strong className="mt-1 block text-3xl font-black">1x</strong></div>
+                <div className="rounded-2xl border border-white/10 bg-white/5 p-4"><span className="text-xs text-slate-400">Ranked digunakan</span><strong className="mt-1 block text-3xl font-black">{Math.min(1, used)}/1</strong></div>
+                <div className="rounded-2xl border border-white/10 bg-white/5 p-4"><span className="text-xs text-slate-400">Sisa gratis</span><strong className="mt-1 block text-3xl font-black">{freeRemaining}x</strong></div>
+                <div className="rounded-2xl border border-white/10 bg-white/5 p-4"><span className="text-xs text-slate-400">Format resmi</span><strong className="mt-1 block text-2xl font-black">30 soal</strong></div>
               </div>
-              <p className="mt-4 text-sm text-slate-400">Sisa kesempatan season ini: <strong className="text-white">{totalRemaining}x</strong>. Skor terbaik dari maksimal 3 Ranked menentukan posisi leaderboard.</p>
+              <p className="mt-4 text-sm text-slate-400">Kesempatan tersedia saat ini: <strong className="text-white">{totalRemaining}x</strong> termasuk Bonus Attempt. Skor terbaik Round ini akan ditambahkan ke Battle Point Season.</p>
             </section>
 
-            {!participant.account_ready && <section className="rounded-3xl border border-amber-300/25 bg-amber-300/10 p-6"><h3 className="text-xl font-black">Amankan akun lama</h3><p className="mt-1 text-sm text-amber-100/80">Buat username dan password agar akun lama bisa dipakai di perangkat lain.</p><form onSubmit={claimAccount} className="mt-5 grid gap-4 sm:grid-cols-2"><input value={claimUsername} onChange={(e) => setClaimUsername(e.target.value)} required minLength={3} maxLength={24} placeholder="Username baru" className={fieldClass} /><input type="password" value={claimPassword} onChange={(e) => setClaimPassword(e.target.value)} required minLength={8} placeholder="Password minimal 8 karakter" className={fieldClass} /><button disabled={busy} className="rounded-xl bg-amber-300 px-5 py-3 font-black text-slate-950 sm:col-span-2 disabled:opacity-60">Aktifkan Login Akun</button></form></section>}
+            {!participant.account_ready && <section className="rounded-3xl border border-amber-300/25 bg-amber-300/10 p-6"><h3 className="text-xl font-black">Amankan akun lama</h3><p className="mt-1 text-sm text-amber-100/80">Buat username dan password agar akun lama bisa dipakai di perangkat lain.</p><form onSubmit={claimAccount} className="mt-5 grid gap-4 sm:grid-cols-2"><input value={claimUsername} onChange={(e) => setClaimUsername(e.target.value)} required minLength={3} maxLength={24} placeholder="Username baru" className={fieldClass} /><PasswordInput value={claimPassword} onChange={setClaimPassword} minLength={8} placeholder="Password minimal 8 karakter" className={fieldClass} /><button disabled={busy} className="rounded-xl bg-amber-300 px-5 py-3 font-black text-slate-950 sm:col-span-2 disabled:opacity-60">Aktifkan Login Akun</button></form></section>}
 
             <section className={`rounded-3xl border p-6 ${participant.email_verified ? "border-emerald-300/20 bg-emerald-300/[.06]" : "border-amber-300/25 bg-amber-300/10"}`}><div className="flex flex-wrap items-center justify-between gap-2"><h3 className="text-xl font-black">Email Pemulihan</h3><span className={`rounded-full px-3 py-1 text-xs font-black ${participant.email_verified?"bg-emerald-300/10 text-emerald-200":"bg-amber-300/10 text-amber-200"}`}>{participant.email_verified?"Terverifikasi":"Belum terverifikasi"}</span></div><p className="mt-1 text-sm text-slate-300">Email baru dapat dipakai untuk reset password setelah Anda membuka link verifikasi yang dikirim ALZAVA.</p><form onSubmit={saveRecoveryEmail} className="mt-5 flex flex-col gap-3 sm:flex-row"><input type="email" value={recoveryEmail} onChange={(e) => setRecoveryEmail(e.target.value)} required autoComplete="email" placeholder="nama@email.com" className={`${fieldClass} min-w-0 flex-1`} /><button disabled={busy} className="rounded-xl bg-emerald-500 px-5 py-3 font-black text-slate-950 disabled:opacity-60">{participant.email ? "Perbarui Email" : "Simpan Email"}</button>{participant.email && !participant.email_verified && <button type="button" onClick={()=>void requestEmailVerification()} disabled={busy} className="rounded-xl border border-amber-300/25 bg-amber-300/10 px-5 py-3 font-black text-amber-100 disabled:opacity-60">Kirim Verifikasi</button>}</form></section>
 
             <div className="grid gap-5 lg:grid-cols-2">
               <section className="rounded-3xl border border-white/15 bg-[#0a1a37]/90 p-6"><h3 className="text-xl font-black">Profil Arena</h3><form onSubmit={updateNickname} className="mt-5 grid gap-4"><label className="grid gap-2 text-sm font-bold">Nama Panggilan<input value={editNickname} onChange={(e) => setEditNickname(e.target.value)} required minLength={3} maxLength={24} className={fieldClass} /></label><label className="grid gap-2 text-sm font-bold">Foto profil <span className="font-normal text-slate-500">JPG/PNG/WebP, maks. 2 MB</span><input type="file" accept="image/jpeg,image/png,image/webp" disabled={busy} onChange={(e) => void uploadAvatar(e.target.files?.[0])} className={fieldClass} /></label>{notice.startsWith("Foto profil") && <div role="status" className="rounded-xl border border-emerald-300/30 bg-emerald-400/10 px-4 py-3 text-sm font-bold text-emerald-100 shadow-[0_0_20px_rgba(52,211,153,.10)]">✓ {notice}</div>}<button disabled={busy} className="rounded-xl bg-indigo-600 px-5 py-3 font-black disabled:opacity-60">Simpan Profil</button></form></section>
-              {participant.account_ready !== false && <section className="rounded-3xl border border-white/15 bg-[#0a1a37]/90 p-6"><h3 className="text-xl font-black">Keamanan Akun</h3><p className="mt-1 text-sm text-slate-400">Akun sekarang mendukung beberapa perangkat. Ganti password tanpa mengubah skor; pemulihan password akan mencabut seluruh sesi lama.</p><form onSubmit={changePassword} className="mt-5 grid gap-4"><input type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} required placeholder="Password saat ini" className={fieldClass} /><input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required minLength={8} placeholder="Password baru minimal 8 karakter" className={fieldClass} /><button disabled={busy} className="rounded-xl border border-white/15 bg-white/10 px-5 py-3 font-black hover:bg-white/15 disabled:opacity-60">Ganti Password</button></form><div className="mt-6 border-t border-white/10 pt-5"><p className="text-sm font-black text-rose-200">Hapus Akun</p><p className="mt-1 text-xs leading-5 text-slate-500">Menghapus akses publik, sesi login, profil, pertemanan, dan posisi leaderboard. Riwayat teknis minimum dapat dipertahankan untuk keamanan/audit.</p><button type="button" onClick={()=>void deleteAccount()} disabled={busy} className="mt-3 rounded-xl border border-rose-300/25 bg-rose-500/10 px-4 py-2.5 text-sm font-black text-rose-200 disabled:opacity-50">Hapus Akun Saya</button></div></section>}
+              {participant.account_ready !== false && <section className="rounded-3xl border border-white/15 bg-[#0a1a37]/90 p-6"><h3 className="text-xl font-black">Keamanan Akun</h3><p className="mt-1 text-sm text-slate-400">Akun sekarang mendukung beberapa perangkat. Ganti password tanpa mengubah skor; pemulihan password akan mencabut seluruh sesi lama.</p><form onSubmit={changePassword} className="mt-5 grid gap-4"><PasswordInput value={currentPassword} onChange={setCurrentPassword} placeholder="Password saat ini" autoComplete="current-password" className={fieldClass} /><PasswordInput value={newPassword} onChange={setNewPassword} minLength={8} placeholder="Password baru minimal 8 karakter" autoComplete="new-password" className={fieldClass} /><button disabled={busy} className="rounded-xl border border-white/15 bg-white/10 px-5 py-3 font-black hover:bg-white/15 disabled:opacity-60">Ganti Password</button></form><div className="mt-6 border-t border-white/10 pt-5"><p className="text-sm font-black text-rose-200">Hapus Akun</p><p className="mt-1 text-xs leading-5 text-slate-500">Menghapus akses publik, sesi login, profil, pertemanan, dan posisi leaderboard. Riwayat teknis minimum dapat dipertahankan untuk keamanan/audit.</p><button type="button" onClick={()=>void deleteAccount()} disabled={busy} className="mt-3 rounded-xl border border-rose-300/25 bg-rose-500/10 px-4 py-2.5 text-sm font-black text-rose-200 disabled:opacity-50">Hapus Akun Saya</button></div></section>}
             </div>
           </div>
         )}
