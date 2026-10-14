@@ -6,6 +6,14 @@
 - Cloudflare Worker `alzava-ai`: tries Gemini 3 Flash Preview first, then Workers AI Llama 3.2 3B when Gemini fails with an eligible error and fallback binding/flag is enabled.
 - Workers AI fallback is conditional, not guaranteed to answer when its own free quota is exhausted.
 
+## Browser chat persistence (V1)
+- AI Coach conversation is restored after reload and panel close for the same participant on the same browser.
+- Messages are stored in browser localStorage under a separate key per participant public ID (no login tokens/API keys). Limit: newest 200 messages and 140,000 characters (~0.3 MB of text).
+- "Hapus riwayat chat" deletes the active participant's browser copy after confirmation. Clearing browser site data or private/incognito sessions also removes chats.
+- History is not encrypted and is not synchronized between browsers/devices. Avoid putting passwords or sensitive personal information in chat, especially on shared devices.
+- Display-only persistence: history is **not automatically sent** to Gemini/Workers AI in follow-up prompts. Multi-turn model memory and cloud sync would be separate future features.
+- No new Supabase tables, Edge Function routes, network calls, quota changes, or Worker modifications are required.
+
 ## Operational limits and costs
 - Internal limits **remain 5 successful questions per account per WIB day and 120 global claims/day**. Do not remove them without separately assessing abuse/cost controls.
 - Google Gemini API free tier has project/model-specific rate limits.
