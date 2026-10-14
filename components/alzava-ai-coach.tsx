@@ -19,6 +19,7 @@ type LocalAiModule = {
   canRunLocal: () => Promise<boolean>
   warmupLocal: (onProgress: (text: string) => void) => Promise<void>
   askLocal: (question: string, history: Message[]) => Promise<string>
+  stopLocal: () => void
 }
 
 export function AlzavaAiCoach({ participant }: { participant: BattleParticipant | null }) {
@@ -71,6 +72,15 @@ export function AlzavaAiCoach({ participant }: { participant: BattleParticipant 
       setError("Model AI Lokal gagal dimuat. Pastikan browser mendukung WebGPU dan tersedia ruang/memori yang cukup.")
     }
   }
+  useEffect(() => {
+    // Free GPU memory when the chat closes; do not slow games or other ALZAVA screens.
+    if (!open) {
+      localEngineRef.current?.stopLocal()
+      setLocalStatus("idle")
+      setLocalProgress("")
+    }
+  }, [open])
+
   const refreshRemaining = useCallback(async () => {
     const requestId = ++quotaRequestRef.current
     const token = getParticipantToken()
@@ -220,11 +230,11 @@ export function AlzavaAiCoach({ participant }: { participant: BattleParticipant 
             <>
               <div className="shrink-0 border-b border-white/10 bg-[#08172f] px-3 pb-3 pt-3">
                 <div className="flex gap-2" aria-label="Pilih mode AI">
-                  <button type="button" onClick={() => { setMode("cloud"); setError("") }}
+                  <button type="button" onClick={() => { localEngineRef.current?.stopLocal(); setLocalStatus("idle"); setLocalProgress(""); setMode("cloud"); setError("") }} disabled={busy}
                     className={`flex-1 rounded-lg border px-3 py-2 text-xs font-bold transition ${mode === "cloud" ? "border-cyan-300/60 bg-cyan-300/20 text-cyan-100" : "border-white/10 bg-white/[.04] text-slate-300"}`}>
                     AI Online
                   </button>
-                  <button type="button" onClick={() => { setMode("local"); setError("") }}
+                  <button type="button" onClick={() => { setMode("local"); setError("") }} disabled={busy}
                     className={`flex-1 rounded-lg border px-3 py-2 text-xs font-bold transition ${mode === "local" ? "border-amber-300/60 bg-amber-300/15 text-amber-100" : "border-white/10 bg-white/[.04] text-slate-300"}`}>
                     AI Lokal (Beta)
                   </button>
