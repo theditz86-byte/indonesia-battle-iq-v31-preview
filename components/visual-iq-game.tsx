@@ -934,7 +934,7 @@ function buildQuestionBank(){
       "% dari harga tersisa, kemudian dikenai pajak "+tax+"%. Berapa total bayar?",
       answer,[Math.round(after),Math.round(first*(100+tax)/100),answer+price/20],i*83+11)
   })
-  const growths=[[800,20,10],[1000,25,20],[1200,30,10],[1600,10,25],
+  const growths=[[800,20,10],[1000,30,20],[1200,30,10],[1600,10,25],
     [2000,25,10],[2400,20,15],[3200,15,20],[4000,30,25]]
   growths.forEach(([initial,up,down],i)=>{
     const answer=Math.round(initial*(100+up)/100*(100-down)/100)
@@ -1031,8 +1031,8 @@ function buildQuestionBank(){
       "% selama "+d2+" hari. Jika "+reject+"% dari seluruh hasil ditolak, berapa yang lolos?",
       answer,[total,answer+daily,answer-daily],i*137+47)
   })
-  const pursuits=[[60,90,30],[40,60,60],[50,75,30],[60,100,60],
-    [80,120,45],[75,105,48],[45,75,40],[70,110,60]]
+  const pursuits=[[60,90,45],[40,60,60],[50,75,45],[60,100,60],
+    [80,120,45],[75,105,48],[45,75,60],[70,110,60]]
   pursuits.forEach(([a,b,minutes],i)=>{
     const answer=Math.round(b*(a*minutes/60/(b-a))*10)/10
     const round=(x:number)=>Number(x.toFixed(1)).toString()
@@ -1292,6 +1292,86 @@ function difficultyWeightedOrder(items:Question[],activeFamilies?:Set<string>){
     .map(item=>item.q)
 }
 
+
+type NumericalBucket="arith"|"growing"|"complex"|"ratio"|"applied"|"analysis"|"probability"|"story"
+
+// Porsi 20 numerik di dalam paket Tes IQ multi-domain 35 soal.
+// Satu family = satu metode berpikir; maksimal SATU per paket.
+const NUMERICAL_FAMILY_BUCKET:Record<string,NumericalBucket>={
+  "urutan-tetap":"arith","selisih-bertambah":"growing",
+  "dua-urutan":"complex","kali-tambah":"complex","selisih-kuadrat":"complex",
+  "operasi-selang-seling":"complex","rekursif-dua-suku":"complex","deret-seling-majemuk":"complex",
+  "rasio-total":"ratio","rasio-berantai":"ratio","rasio-berubah":"ratio",
+  "produktivitas-proporsional":"ratio",
+  "persentase-perubahan":"applied","diskon-pajak-bertahap":"applied",
+  "pertumbuhan-majemuk":"applied","margin-diskon":"applied",
+  "aturan-transformasi":"analysis","relasi-aljabar":"analysis","sistem-linear":"analysis",
+  "aritmetika-sisa":"analysis","digit-bersyarat":"analysis","optimasi-dua-kendala":"analysis",
+  "peluang-tanpa-pengembalian":"probability","kombinasi-syarat":"probability",
+  "peluang-tepat-satu":"probability",
+  "kecepatan-jarak":"story","kerja-bersama":"story","usia-relasi":"story",
+  "rata-rata-perubahan":"story","produksi-bertahap":"story","kejar-mengejar":"story",
+  "campuran-bertingkat":"story","laba-operasional":"story",
+}
+
+// Keluarga satu-langkah hanya dipakai sebagai fallback jika kuota keluarga sulit kurang.
+const NUMERICAL_ONE_STEP_FAMILIES=new Set<string>([
+  "rasio-total","persentase-perubahan","aturan-transformasi",
+  "relasi-aljabar","kecepatan-jarak","usia-relasi",
+])
+
+function pickBalancedNumerical(
+  bank:Question[],active:Set<string>,recent:Set<string>,selected:Question[]
+){
+  // Pola mudah boleh absen; peluangnya hanya 20% per jenis.
+  const arith=Math.random()<0.2?1:0
+  const growing=Math.random()<0.2?1:0
+  const quotas:Record<NumericalBucket,number>={
+    arith,growing,complex:3,ratio:3,applied:3,analysis:4,probability:2,
+    story:5-arith-growing,
+  }
+  const bucketOrder:NumericalBucket[]=[
+    "arith","growing","complex","ratio","applied","analysis","probability","story",
+  ]
+  const usedFamilies=new Set<string>()
+  for(const bucket of shuffle(bucketOrder)){
+    const needed=quotas[bucket]
+    let count=0
+    // Prioritas: keluarga aktif hari ini, soal belum dikerjakan,
+    // dan soal multi-langkah. Soal lama mudah hanya fallback terakhir.
+    const passes=[
+      {unseen:true,advanced:true,activeOnly:true},
+      {unseen:true,advanced:true,activeOnly:false},
+      {unseen:false,advanced:true,activeOnly:false},
+      {unseen:true,advanced:false,activeOnly:false},
+      {unseen:false,advanced:false,activeOnly:false},
+    ]
+    for(const pass of passes){
+      if(count>=needed)break
+      const candidates=bank.filter(q=>
+        q.domain==="numerical"&&NUMERICAL_FAMILY_BUCKET[q.family]===bucket&&
+        !usedFamilies.has(q.family)&&!selected.some(x=>x.id===q.id)&&
+        (!pass.unseen||!recent.has(q.id))&&
+        (!pass.advanced||!NUMERICAL_ONE_STEP_FAMILIES.has(q.family))&&
+        (!pass.activeOnly||active.has(q.family))
+      )
+      for(const q of difficultyWeightedOrder(candidates,active)){
+        if(count>=needed)break
+        if(usedFamilies.has(q.family)||!questionSafeForDisplay(q))continue
+        selected.push(q)
+        usedFamilies.add(q.family)
+        count++
+      }
+    }
+    if(count!==needed){
+      throw new Error("visual_iq_numerical_bucket_shortage:"+bucket+":"+count+"/"+needed)
+    }
+  }
+  if(selected.filter(q=>q.domain==="numerical").length!==20){
+    throw new Error("visual_iq_numerical_quota_mismatch")
+  }
+}
+
 function makeSet(){
   let recent:string[]=[]
   try{recent=JSON.parse(localStorage.getItem("alzava.visual-iq.recent-questions")||"[]")}catch{}
@@ -1333,7 +1413,7 @@ function makeSet(){
   // Only three advanced visual questions remain, and basic shape/dot/fill patterns are excluded.
   pickDomain("abstract",2,1)
   pickDomain("spatial",1,1)
-  pickDomain("numerical",20,2)
+  pickBalancedNumerical(safeBank,activeToday.numerical,recentSet,selected)
   pickDomain("verbal",12,1)
 
   const remaining:Record<Domain,number>={abstract:2,spatial:1,numerical:20,verbal:12}
