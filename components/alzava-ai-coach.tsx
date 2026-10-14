@@ -202,7 +202,7 @@ export function AlzavaAiCoach({ participant }: { participant: BattleParticipant 
                   <button type="submit" disabled={busy || !draft.trim() || remaining === 0} aria-label="Kirim pertanyaan" className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-cyan-300 text-slate-950 disabled:opacity-40"><Send className="h-4 w-4" /></button>
                 </div>
                 <div className="mt-2 flex items-center justify-between gap-2 text-[10px] text-slate-400">
-                  <span>{quotaLoading ? "Memeriksa kuota akun..." : remaining === null ? "Kuota belum terbaca · maks. ${AI_DAILY_LIMIT}/hari" : remaining === 0 ? "Jatah hari ini habis · reset 00.00 WIB" : `Sisa ${remaining} dari ${dailyLimit} pertanyaan hari ini`}</span>
+                  <span>{quotaLoading ? "Memeriksa kuota akun..." : remaining === null ? `Kuota belum terbaca · maks. ${AI_DAILY_LIMIT}/hari` : remaining === 0 ? "Jatah hari ini habis · reset 00.00 WIB" : `Sisa ${remaining} dari ${dailyLimit} pertanyaan hari ini`}</span>
                   <span>{lastProvider ? `${lastProvider} · ` : ""}AI dapat keliru</span>
                 </div>
               </form>
