@@ -844,6 +844,229 @@ function buildQuestionBank(){
     ))
   })
 
+
+  // Bank TIU lanjutan: tiap family mewakili METODE penalaran yang berbeda.
+  const advancedNum=(
+    id:string,family:string,title:string,prompt:string,
+    correct:string|number,wrong:(string|number)[],seed:number
+  )=>{
+    const answer=String(correct)
+    const distractors=[...new Set(wrong.map(String))].filter(x=>x!==answer)
+    // Pertahankan tepat empat opsi unik sekalipun parameter soal berimpit.
+    if(distractors.length<3&&Number.isFinite(Number(answer))){
+      let offset=1
+      while(distractors.length<3){
+        const candidate=String(Number(answer)+offset*7)
+        if(candidate!==answer&&!distractors.includes(candidate))distractors.push(candidate)
+        offset++
+      }
+    }
+    if(distractors.length<3)throw new Error("numerical_distractor_collision:"+id)
+    push(textQuestion(id,family,"numerical","Numerik",title,4,prompt,answer,distractors,seed))
+  }
+  const nGcd=(a:number,b:number):number=>{
+    while(b){const next=a%b;a=b;b=next}
+    return a
+  }
+  const nFrac=(a:number,b:number)=>{const d=nGcd(a,b);return (a/d)+"/"+(b/d)}
+  const nC=(n:number,k:number)=>{
+    let count=1
+    for(let j=1;j<=k;j++)count=count*(n-k+j)/j
+    return Math.round(count)
+  }
+
+  // Deret menengah/sulit: rekursif dan pergantian dua subderet berbeda.
+  for(let a=2;a<=11;a++){
+    const b=a+3,shift=a%3+1,seq=[a,b]
+    for(let i=2;i<5;i++)seq.push(seq[i-1]+seq[i-2]+shift)
+    const answer=seq[3]+seq[4]+shift
+    advancedNum("num-recur-"+a,"rekursif-dua-suku","Deret Rekursif",
+      "Tentukan suku berikutnya: "+seq.join(", ")+", __",
+      answer,[answer-shift,answer+shift,answer+b],a*61)
+  }
+  for(let a=4;a<=13;a++){
+    const b=a+15,seq=[a,b,a+3,2*b-1,a+9,4*b-3],answer=a+18
+    advancedNum("num-cross-"+a,"deret-seling-majemuk","Deret Dua Aturan",
+      "Tentukan suku berikutnya: "+seq.join(", ")+", __",
+      answer,[answer-3,answer+3,answer+6],a*67)
+  }
+
+  // Rasio tiga variabel, rasio yang berubah, dan proporsi mesin+efisiensi.
+  const ratioChains=[[2,3,4,5,3],[3,4,5,7,2],[4,5,3,7,2],[3,7,2,5,4],
+    [5,6,3,4,2],[2,5,4,7,3],[4,7,3,5,2],[5,8,2,3,3]]
+  ratioChains.forEach(([a,b,c,d,unit],i)=>{
+    const p=a*c*unit,q=b*c*unit,r=b*d*unit
+    advancedNum("num-ratio-chain-"+i,"rasio-berantai","Rasio Bertingkat",
+      "P : Q = "+a+" : "+b+" dan Q : R = "+c+" : "+d+
+      ". Jumlah P, Q, dan R adalah "+(p+q+r)+". Berapa nilai R?",
+      r,[r-unit,r+unit,r+b*unit],i*71+3)
+  })
+  const ratioChanges=[[2,3,12,6,6],[3,5,10,10,5],[4,7,9,8,7],[5,8,8,12,8],
+    [3,4,15,9,5],[2,5,11,10,5],[4,9,7,14,7],[3,7,12,8,6]]
+  ratioChanges.forEach(([a,b,unit,plus,minus],i)=>{
+    const afterA=a*unit+plus,afterB=b*unit-minus
+    if(afterB<=0)return
+    const div=nGcd(afterA,afterB),answer=(a+b)*unit
+    advancedNum("num-ratio-change-"+i,"rasio-berubah","Rasio Setelah Perubahan",
+      "Awalnya A : B = "+a+" : "+b+". Setelah A bertambah "+plus+
+      " dan B berkurang "+minus+", rasionya menjadi "+(afterA/div)+" : "+(afterB/div)+
+      ". Berapa jumlah A dan B sebelum perubahan?",
+      answer,[answer-unit,answer+unit,answer+3*unit],i*73+5)
+  })
+  const machines=[[4,3,12,6,5,80],[3,5,10,8,3,75],[5,4,8,6,5,75],[4,6,10,9,4,80],
+    [6,3,12,8,5,75],[3,4,16,5,6,75],[5,6,8,10,3,80],[4,5,12,8,5,75]]
+  machines.forEach(([m,h,rate,m2,h2,eff],i)=>{
+    const base=m*h*rate,raw=m2*h2*rate,answer=Math.round(raw*eff/100)
+    advancedNum("num-machines-"+i,"produktivitas-proporsional","Proporsi Produktivitas",
+      m+" mesin menghasilkan "+base+" unit selama "+h+" jam. Berapa hasil "+m2+
+      " mesin selama "+h2+" jam dengan efisiensi "+eff+"% dari semula?",
+      answer,[raw,answer+rate,answer-rate],i*79+7)
+  })
+
+  // Persentase multi-tahap (bukan soal naik/turun satu langkah).
+  const discounts=[[200000,20,10,10],[300000,10,20,10],[400000,20,15,10],[600000,15,20,10],
+    [800000,25,10,10],[500000,10,15,10],[240000,20,25,10],[360000,25,20,10]]
+  discounts.forEach(([price,d1,d2,tax],i)=>{
+    const first=price*(100-d1)/100,after=first*(100-d2)/100
+    const answer=Math.round(after*(100+tax)/100)
+    advancedNum("num-discounts-"+i,"diskon-pajak-bertahap","Diskon dan Pajak",
+      "Harga Rp"+price+" didiskon "+d1+"%, lalu "+d2+
+      "% dari harga tersisa, kemudian dikenai pajak "+tax+"%. Berapa total bayar?",
+      answer,[Math.round(after),Math.round(first*(100+tax)/100),answer+price/20],i*83+11)
+  })
+  const growths=[[800,20,10],[1000,30,20],[1200,30,10],[1600,10,25],
+    [2000,25,10],[2400,20,15],[3200,15,20],[4000,30,25]]
+  growths.forEach(([initial,up,down],i)=>{
+    const answer=Math.round(initial*(100+up)/100*(100-down)/100)
+    advancedNum("num-compound-"+i,"pertumbuhan-majemuk","Persentase Bertahap",
+      "Produksi "+initial+" unit meningkat "+up+
+      "% lalu berkurang "+down+"% dari hasil terakhir. Berapa produksi akhirnya?",
+      answer,[Math.round(initial*(100+up-down)/100),answer+initial/20,answer-initial/20],i*89+13)
+  })
+  const margins=[[160000,25,20],[240000,20,25],[320000,25,20],[400000,20,20],
+    [480000,25,25],[600000,20,25],[640000,25,20],[800000,20,20]]
+  margins.forEach(([cost,profit,discount],i)=>{
+    const answer=Math.round(cost*(100+profit)/(100-discount))
+    advancedNum("num-margin-"+i,"margin-diskon","Laba dan Harga Label",
+      "Modal Rp"+cost+". Penjual menargetkan keuntungan "+profit+
+      "% dari modal setelah memberikan diskon "+discount+"%. Berapa harga label awal?",
+      answer,[Math.round(cost*(100+profit)/100),answer+cost/10,answer-cost/10],i*97+17)
+  })
+
+  // Analitis: dua variabel, kongruensi, batas kendala, dan digit.
+  const equations=[[9,3,2,3,3,2],[12,4,3,2,2,5],[14,5,2,5,3,4],[16,6,4,3,2,5],
+    [18,7,3,4,5,2],[11,3,5,2,2,3],[13,4,3,5,4,2],[15,5,2,3,3,4]]
+  equations.forEach(([x,y,a,b,c,d],i)=>{
+    const first=a*x+b*y,second=c*x+d*y,answer=2*x-y
+    advancedNum("num-equations-"+i,"sistem-linear","Sistem Persamaan",
+      "Jika "+a+"x + "+b+"y = "+first+" dan "+c+"x + "+d+
+      "y = "+second+", tentukan 2x - y.",
+      answer,[answer-y,answer+y,answer+2],i*101+19)
+  })
+  const remainders=[[4,1,5,2,50],[3,2,7,4,60],[5,1,8,3,80],[7,4,9,2,100],
+    [4,3,7,2,90],[5,4,9,1,110],[3,1,8,5,75],[7,2,8,3,95]]
+  remainders.forEach(([m1,r1,m2,r2,threshold],i)=>{
+    let answer=threshold+1
+    while(answer%m1!==r1||answer%m2!==r2)answer++
+    advancedNum("num-remainders-"+i,"aritmetika-sisa","Logika Sisa Pembagian",
+      "Bilangan bulat terkecil di atas "+threshold+" jika dibagi "+m1+
+      " bersisa "+r1+" dan jika dibagi "+m2+" bersisa "+r2+". Berapakah bilangannya?",
+      answer,[answer-m1,answer+m1,answer+m2],i*103+23)
+  })
+  const digits=[[5,1],[5,2],[6,2],[6,3],[7,2],[7,3],[8,2],[8,3]]
+  digits.forEach(([a,b],i)=>{
+    const answer=10*a+b
+    advancedNum("num-digits-"+i,"digit-bersyarat","Digit Bersyarat",
+      "Jumlah dua digit sebuah bilangan adalah "+(a+b)+
+      ". Bilangan tersebut "+(9*(a-b))+" lebih besar daripada bilangan hasil pembalikan digitnya. Bilangan awal?",
+      answer,[answer-9,answer+9,10*b+a],i*107+29)
+  })
+  const optimizations=[[3,5,24,2,1,12,7,8],[4,3,28,1,2,12,8,7],
+    [5,4,34,2,1,13,12,9],[3,4,27,1,2,12,6,9],
+    [4,6,36,2,1,14,10,11],[5,3,30,2,2,14,13,8],
+    [6,4,38,1,2,13,13,11],[4,5,33,2,1,14,9,10]]
+  optimizations.forEach(([ca,cb,budget,ta,tb,time,pa,pb],i)=>{
+    let answer=0
+    for(let a=0;a<=budget/ca;a++)for(let b=0;b<=budget/cb;b++){
+      if(a*ca+b*cb<=budget&&a*ta+b*tb<=time)answer=Math.max(answer,a*pa+b*pb)
+    }
+    advancedNum("num-optimize-"+i,"optimasi-dua-kendala","Optimasi Dua Kendala",
+      "Unit A membutuhkan biaya "+ca+" dan waktu "+ta+" untuk "+pa+
+      " poin. Unit B membutuhkan biaya "+cb+" dan waktu "+tb+" untuk "+pb+
+      " poin. Biaya maksimal "+budget+", waktu maksimal "+time+
+      ". Berapa poin maksimum untuk jumlah unit bulat tidak negatif?",
+      answer,[answer-2,answer+2,answer+5],i*109+31)
+  })
+
+  // Probabilitas dan kombinatorika murni (tanpa pengembalian dan batasan anggota).
+  const balls=[[4,3],[5,4],[6,5],[7,4],[8,5],[5,6],[6,4],[7,6]]
+  balls.forEach(([red,blue],i)=>{
+    const total=nC(red+blue,2),both=nC(red,2),one=red*blue
+    advancedNum("num-two-red-"+i,"peluang-tanpa-pengembalian","Peluang Pengambilan",
+      "Ada "+red+" bola merah dan "+blue+
+      " bola biru. Jika dua bola diambil sekaligus tanpa pengembalian, berapa peluang keduanya merah?",
+      nFrac(both,total),[nFrac(both-1,total),nFrac(both+1,total),nFrac(both+2,total)],i*113+37)
+    advancedNum("num-one-red-"+i,"peluang-tepat-satu","Peluang Tepat Satu",
+      "Ada "+red+" bola merah dan "+blue+
+      " bola biru. Jika dua bola diambil sekaligus, berapa peluang tepat satu bola merah?",
+      nFrac(one,total),[nFrac(one-1,total),nFrac(one+1,total),nFrac(one+2,total)],i*131+43)
+  })
+  const teams=[[7,3],[8,3],[8,4],[9,3],[9,4],[10,3],[10,4],[11,4]]
+  teams.forEach(([count,size],i)=>{
+    const answer=nC(count,size)-nC(count-2,size-2)
+    advancedNum("num-teams-"+i,"kombinasi-syarat","Kombinasi Bersyarat",
+      "Dari "+count+" orang dipilih tim berisi "+size+
+      " orang. Dua orang tertentu tidak boleh berada dalam satu tim. Berapa banyak susunan tim?",
+      answer,[nC(count,size),answer-1,answer+1],i*127+41)
+  })
+
+  // Soal cerita multi-tahap (sebagian tidak bergantung pada deret).
+  const productions=[[40,3,4,25,10],[60,2,3,25,10],[80,3,5,25,20],[100,4,3,20,10],
+    [120,3,4,25,10],[80,4,5,20,10],[60,3,4,20,10],[100,3,5,25,20]]
+  productions.forEach(([daily,d1,d2,rate,reject],i)=>{
+    const total=daily*d1+daily*(100+rate)/100*d2
+    const answer=Math.round(total*(100-reject)/100)
+    advancedNum("num-production-"+i,"produksi-bertahap","Produksi Dua Tahap",
+      "Produksi "+daily+" unit/hari selama "+d1+" hari, lalu meningkat "+rate+
+      "% selama "+d2+" hari. Jika "+reject+"% dari seluruh hasil ditolak, berapa yang lolos?",
+      answer,[total,answer+daily,answer-daily],i*137+47)
+  })
+  const pursuits=[[60,90,45],[40,60,60],[50,75,45],[60,100,60],
+    [80,120,45],[75,105,48],[45,75,60],[70,110,60]]
+  pursuits.forEach(([a,b,minutes],i)=>{
+    const answer=Math.round(b*(a*minutes/60/(b-a))*10)/10
+    const round=(x:number)=>Number(x.toFixed(1)).toString()
+    advancedNum("num-catchup-"+i,"kejar-mengejar","Kejar Mengejar",
+      "A berangkat "+minutes+" menit lebih awal dengan kecepatan "+a+
+      " km/jam. B berangkat dari titik yang sama dengan kecepatan "+b+
+      " km/jam. Di jarak berapa km B menyusul A? Bulatkan satu desimal bila perlu.",
+      round(answer),[round(answer+10),round(answer-10),round(answer+20)],i*139+53)
+  })
+  const mixtures=[[5,20,5,40,2.5],[8,20,2,50,2],[4,15,6,35,2],
+    [6,25,4,45,2],[3,20,7,30,2],[4,10,8,40,3],
+    [5,30,5,50,5],[8,15,4,45,3]]
+  mixtures.forEach(([v1,c1,v2,c2,water],i)=>{
+    const answer=Math.round((v1*c1+v2*c2)/(v1+v2+water)*10)/10
+    const percent=(x:number)=>x.toFixed(1).replace(".",",")+"%"
+    advancedNum("num-mixture-"+i,"campuran-bertingkat","Campuran Bertingkat",
+      "Campurkan "+v1+" liter larutan "+c1+"% dan "+v2+" liter larutan "+c2+
+      "%, lalu tambahkan "+water+" liter air. Berapa kadar akhir? Bulatkan satu desimal.",
+      percent(answer),[percent(answer+2),percent(answer-2),percent(answer+4)],i*149+59)
+  })
+  const operations=[[100000,8000,50,14000,5],[180000,9000,60,17000,10],
+    [120000,10000,40,18000,5],[250000,10000,70,18000,10],
+    [160000,7000,80,13000,5],[200000,12000,60,20000,10],
+    [300000,9000,90,17000,5],[240000,11000,80,19000,10]]
+  operations.forEach(([fixed,cost,qty,sale,fee],i)=>{
+    const omzet=qty*sale,answer=Math.round(omzet*(100-fee)/100-qty*cost-fixed)
+    if(answer<=0)return
+    advancedNum("num-operations-"+i,"laba-operasional","Laba Operasional",
+      "Biaya tetap Rp"+fixed+" dan biaya variabel Rp"+cost+" per unit. Terjual "+qty+
+      " unit dengan harga Rp"+sale+"/unit. Komisi penjualan "+fee+
+      "% dari omzet. Berapa laba bersih sebelum pajak?",
+      answer,[answer+fixed,answer-fixed,answer+Math.round(omzet*fee/100)],i*151+61)
+  })
+
   // VERBAL REASONING — original Indonesian items, deliberately separate from MyIQTested wording.
   const verbalItems=[
     ["ver-ana-1","analogi-fungsi","Analogi Kata",2,"Kompas berhubungan dengan arah seperti termometer berhubungan dengan ...","suhu",["waktu","tekanan","jarak"]],
@@ -1069,6 +1292,86 @@ function difficultyWeightedOrder(items:Question[],activeFamilies?:Set<string>){
     .map(item=>item.q)
 }
 
+
+type NumericalBucket="arith"|"growing"|"complex"|"ratio"|"applied"|"analysis"|"probability"|"story"
+
+// Porsi 20 numerik di dalam paket Tes IQ multi-domain 35 soal.
+// Satu family = satu metode berpikir; maksimal SATU per paket.
+const NUMERICAL_FAMILY_BUCKET:Record<string,NumericalBucket>={
+  "urutan-tetap":"arith","selisih-bertambah":"growing",
+  "dua-urutan":"complex","kali-tambah":"complex","selisih-kuadrat":"complex",
+  "operasi-selang-seling":"complex","rekursif-dua-suku":"complex","deret-seling-majemuk":"complex",
+  "rasio-total":"ratio","rasio-berantai":"ratio","rasio-berubah":"ratio",
+  "produktivitas-proporsional":"ratio",
+  "persentase-perubahan":"applied","diskon-pajak-bertahap":"applied",
+  "pertumbuhan-majemuk":"applied","margin-diskon":"applied",
+  "aturan-transformasi":"analysis","relasi-aljabar":"analysis","sistem-linear":"analysis",
+  "aritmetika-sisa":"analysis","digit-bersyarat":"analysis","optimasi-dua-kendala":"analysis",
+  "peluang-tanpa-pengembalian":"probability","kombinasi-syarat":"probability",
+  "peluang-tepat-satu":"probability",
+  "kecepatan-jarak":"story","kerja-bersama":"story","usia-relasi":"story",
+  "rata-rata-perubahan":"story","produksi-bertahap":"story","kejar-mengejar":"story",
+  "campuran-bertingkat":"story","laba-operasional":"story",
+}
+
+// Keluarga satu-langkah hanya dipakai sebagai fallback jika kuota keluarga sulit kurang.
+const NUMERICAL_ONE_STEP_FAMILIES=new Set<string>([
+  "rasio-total","persentase-perubahan","aturan-transformasi",
+  "relasi-aljabar","kecepatan-jarak","usia-relasi",
+])
+
+function pickBalancedNumerical(
+  bank:Question[],active:Set<string>,recent:Set<string>,selected:Question[]
+){
+  // Pola mudah boleh absen; peluangnya hanya 20% per jenis.
+  const arith=Math.random()<0.2?1:0
+  const growing=Math.random()<0.2?1:0
+  const quotas:Record<NumericalBucket,number>={
+    arith,growing,complex:3,ratio:3,applied:3,analysis:4,probability:2,
+    story:5-arith-growing,
+  }
+  const bucketOrder:NumericalBucket[]=[
+    "arith","growing","complex","ratio","applied","analysis","probability","story",
+  ]
+  const usedFamilies=new Set<string>()
+  for(const bucket of shuffle(bucketOrder)){
+    const needed=quotas[bucket]
+    let count=0
+    // Prioritas: keluarga aktif hari ini, soal belum dikerjakan,
+    // dan soal multi-langkah. Soal lama mudah hanya fallback terakhir.
+    const passes=[
+      {unseen:true,advanced:true,activeOnly:true},
+      {unseen:true,advanced:true,activeOnly:false},
+      {unseen:false,advanced:true,activeOnly:false},
+      {unseen:true,advanced:false,activeOnly:false},
+      {unseen:false,advanced:false,activeOnly:false},
+    ]
+    for(const pass of passes){
+      if(count>=needed)break
+      const candidates=bank.filter(q=>
+        q.domain==="numerical"&&NUMERICAL_FAMILY_BUCKET[q.family]===bucket&&
+        !usedFamilies.has(q.family)&&!selected.some(x=>x.id===q.id)&&
+        (!pass.unseen||!recent.has(q.id))&&
+        (!pass.advanced||!NUMERICAL_ONE_STEP_FAMILIES.has(q.family))&&
+        (!pass.activeOnly||active.has(q.family))
+      )
+      for(const q of difficultyWeightedOrder(candidates,active)){
+        if(count>=needed)break
+        if(usedFamilies.has(q.family)||!questionSafeForDisplay(q))continue
+        selected.push(q)
+        usedFamilies.add(q.family)
+        count++
+      }
+    }
+    if(count!==needed){
+      throw new Error("visual_iq_numerical_bucket_shortage:"+bucket+":"+count+"/"+needed)
+    }
+  }
+  if(selected.filter(q=>q.domain==="numerical").length!==20){
+    throw new Error("visual_iq_numerical_quota_mismatch")
+  }
+}
+
 function makeSet(){
   let recent:string[]=[]
   try{recent=JSON.parse(localStorage.getItem("alzava.visual-iq.recent-questions")||"[]")}catch{}
@@ -1110,7 +1413,7 @@ function makeSet(){
   // Only three advanced visual questions remain, and basic shape/dot/fill patterns are excluded.
   pickDomain("abstract",2,1)
   pickDomain("spatial",1,1)
-  pickDomain("numerical",20,2)
+  pickBalancedNumerical(safeBank,activeToday.numerical,recentSet,selected)
   pickDomain("verbal",12,1)
 
   const remaining:Record<Domain,number>={abstract:2,spatial:1,numerical:20,verbal:12}
