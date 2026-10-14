@@ -34,6 +34,7 @@ export function AlzavaAiCoach({ participant }: { participant: BattleParticipant 
   const [remaining, setRemaining] = useState<number | null>(null)
   const [dailyLimit, setDailyLimit] = useState(AI_DAILY_LIMIT)
   const [lastProvider, setLastProvider] = useState("")
+  const [historyAvailable, setHistoryAvailable] = useState(true)
   const [quotaLoading, setQuotaLoading] = useState(false)
   const quotaRequestRef = useRef(0)
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -57,7 +58,7 @@ export function AlzavaAiCoach({ participant }: { participant: BattleParticipant 
     // Persist only the currently authenticated participant's messages.
     // Never overwrite stored history with the empty state during account switches.
     if (!participantId || chatState.ownerId !== participantId) return
-    saveAiChatHistory(participantId, chatState.messages)
+    setHistoryAvailable(saveAiChatHistory(participantId, chatState.messages))
   }, [participantId, chatState])
 
   function appendMessage(ownerId: string, message: Message) {
@@ -251,7 +252,7 @@ export function AlzavaAiCoach({ participant }: { participant: BattleParticipant 
                   <span>{quotaLoading ? "Memeriksa kuota akun..." : remaining === null ? `Kuota belum terbaca · maks. ${AI_DAILY_LIMIT}/hari` : remaining === 0 ? "Jatah hari ini habis · reset 00.00 WIB" : `Sisa ${remaining} dari ${dailyLimit} pertanyaan hari ini`}</span>
                   <span>{lastProvider ? `${lastProvider} · ` : ""}AI dapat keliru</span>
                 </div>
-                <p className="mt-1 text-[10px] text-slate-500">Riwayat tersimpan di browser ini, tidak tersinkron antarperangkat.</p>
+                <p className="mt-1 text-[10px] text-slate-500">{historyAvailable ? "Riwayat tersimpan di browser ini, tidak tersinkron antarperangkat." : "Penyimpanan browser tidak tersedia; chat bisa hilang setelah reload."}</p>
               </form>
             </>
           )}
