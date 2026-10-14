@@ -34,7 +34,7 @@ async function digest(value: string) {
   const bytes = await crypto.subtle.digest("SHA-256",new TextEncoder().encode(value));
   return [...new Uint8Array(bytes)].map(v=>v.toString(16).padStart(2,"0")).join("");
 }
-async function rpc(name: string, tokenHash: string): Promise<{ok?:boolean;reason?:string;remaining?:number}> {
+async function rpc(name: string, tokenHash: string): Promise<{ok?:boolean;reason?:string;remaining?:number;daily_limit?:number}> {
   const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${name}`, {
     method:"POST",
     headers:{"Content-Type":"application/json","apikey":SERVICE_KEY,"Authorization":`Bearer ${SERVICE_KEY}`},
@@ -86,7 +86,7 @@ Deno.serve(async (req) => {
     const quota = await rpc("alzava_ai_claim",tokenHash);
     if (!quota.ok) {
       if (quota.reason === "unauthorized") return reply({error:"Sesi telah berakhir. Silakan masuk kembali."},401,origin);
-      if (quota.reason === "daily_limit") return reply({error:"Jatah 3 pertanyaan AI hari ini sudah digunakan. Kembali besok ya."},429,origin);
+      if (quota.reason === "daily_limit") return reply({error:"Jatah 5 pertanyaan AI hari ini sudah digunakan. Kembali besok ya."},429,origin);
       return reply({error:"Kuota AI gratis hari ini sudah habis. Coba lagi besok."},429,origin);
     }
     claimed = true;
@@ -134,7 +134,7 @@ Deno.serve(async (req) => {
     }
     if (!answer) throw new Error(lastReason);
     console.info("[alzava-ai-coach] answer_ok", { provider });
-    return reply({ok:true,answer:answer.slice(0,6000),remaining:quota.remaining,provider},200,origin);
+    return reply({ok:true,answer:answer.slice(0,6000),remaining:quota.remaining,daily_limit:quota.daily_limit || 5,provider},200,origin);
   } catch (e) {
     const reason = e instanceof Error ? e.message : "unknown";
     console.error("[alzava-ai-coach] request_failed", { reason, userPromptChars: prompt.length });
