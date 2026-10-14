@@ -1,9 +1,11 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState } from "react"
-import { ArrowRight, BrainCircuit, CheckCircle2, Loader2, Send, ShieldCheck, Sparkles, X } from "lucide-react"
+import { ArrowRight, BrainCircuit, CheckCircle2, Loader2, Send, ShieldCheck, Sparkles, Trash2, X } from "lucide-react"
 import type { BattleParticipant } from "@/lib/battle"
 import { getParticipantToken } from "@/lib/battle"
+import { clearAiChatHistory, readAiChatHistory, saveAiChatHistory, trimAiChatMessages } from "@/lib/ai-chat-history"
+import type { AiChatMessage } from "@/lib/ai-chat-history"
 
 const AI_API = "https://efndozplpwyemzgqfnep.supabase.co/functions/v1/alzava-ai-coach"
 const LOGO = "/ai/alzava-ai-coach.svg"
@@ -14,11 +16,19 @@ const SUGGESTIONS = [
   "Buat contoh soal penalaran sulit",
   "Jelaskan topik sains yang menarik",
 ]
-type Message = { role: "user" | "assistant"; text: string }
+type Message = AiChatMessage
+type ChatState = { ownerId: string; messages: Message[] }
+const EMPTY_MESSAGES: Message[] = []
 export function AlzavaAiCoach({ participant }: { participant: BattleParticipant | null }) {
+  const participantId = participant?.public_id || ""
+  const [chatState, setChatState] = useState<ChatState>({ ownerId: "", messages: [] })
+  // Never display another participant's conversation while changing accounts.
+  const messages = participantId && chatState.ownerId === participantId ? chatState.messages : EMPTY_MESSAGES
+  const historyReady = Boolean(participantId && chatState.ownerId === participantId)
+  const currentParticipantRef = useRef(participantId)
+  currentParticipantRef.current = participantId
   const [open, setOpen] = useState(false)
   const [draft, setDraft] = useState("")
-  const [messages, setMessages] = useState<Message[]>([])
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState("")
   const [remaining, setRemaining] = useState<number | null>(null)
@@ -36,7 +46,35 @@ export function AlzavaAiCoach({ participant }: { participant: BattleParticipant 
     return () => document.removeEventListener("keydown", onKey)
   }, [open])
 
-  useEffect(() => { setMessages([]); setRemaining(null); setError(""); setLastProvider("") }, [participant?.public_id])
+  useEffect(() => {
+    setChatState({ ownerId: participantId, messages: participantId ? readAiChatHistory(participantId) : [] })
+    setRemaining(null)
+    setError("")
+    setLastProvider("")
+  }, [participantId])
+
+  useEffect(() => {
+    // Persist only the currently authenticated participant's messages.
+    // Never overwrite stored history with the empty state during account switches.
+    if (!participantId || chatState.ownerId !== participantId) return
+    saveAiChatHistory(participantId, chatState.messages)
+  }, [participantId, chatState])
+
+  function appendMessage(ownerId: string, message: Message) {
+    setChatState(previous => {
+      if (previous.ownerId !== ownerId) return previous
+      return { ownerId, messages: trimAiChatMessages([...previous.messages, message]) }
+    })
+  }
+
+  function eraseHistory() {
+    if (!participantId || !historyReady || messages.length === 0 || busy) return
+    if (!window.confirm("Hapus seluruh riwayat AI Coach untuk akun ini dari browser ini?")) return
+    clearAiChatHistory(participantId)
+    setChatState({ ownerId: participantId, messages: [] })
+    setLastProvider("")
+    setError("")
+  }
 
   const refreshRemaining = useCallback(async () => {
     const requestId = ++quotaRequestRef.current
@@ -67,14 +105,14 @@ export function AlzavaAiCoach({ participant }: { participant: BattleParticipant 
     if (open && participant) void refreshRemaining()
   }, [open, participant?.public_id, refreshRemaining])
 
-  useEffect(() => { scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" }) }, [messages, busy])
+  useEffect(() => { if (open) scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" }) }, [messages, busy, open])
   useEffect(() => {
     if (open && participant) inputRef.current?.focus()
   }, [open, participant])
 
   async function send(event?: React.FormEvent) {
     event?.preventDefault()
-    if (busy || !participant) return
+    if (busy || !participant || !historyReady) return
     const question = draft.trim()
     if (!question) return
     if (question.length > 650) { setError("Maksimal 650 karakter."); return }
@@ -88,7 +126,7 @@ export function AlzavaAiCoach({ participant }: { participant: BattleParticipant 
     setQuotaLoading(false)
     setBusy(true)
     setError("")
-    setMessages(previous => [...previous, { role: "user", text: question }])
+    appendMessage(participantId, { role: "user", text: question })
     setDraft("")
     try {
       const controller = new AbortController()
@@ -109,11 +147,13 @@ export function AlzavaAiCoach({ participant }: { participant: BattleParticipant 
       if (!response.ok || !result?.ok || typeof result?.answer !== "string") {
         throw new Error(typeof result?.error === "string" ? result.error : "AI sedang tidak tersedia. Coba lagi nanti.")
       }
-      setMessages(previous => [...previous, { role: "assistant", text: result.answer }])
+      if (currentParticipantRef.current !== participantId) return
+      appendMessage(participantId, { role: "assistant", text: result.answer })
       if (Number.isFinite(result.remaining)) setRemaining(Number(result.remaining))
       if (Number.isInteger(result.daily_limit) && result.daily_limit > 0 && result.daily_limit <= 100) setDailyLimit(result.daily_limit)
       setLastProvider(result.provider === "workers-ai" ? "Cloudflare AI" : "Gemini AI")
     } catch (cause) {
+      if (currentParticipantRef.current !== participantId) return
       void refreshRemaining()
       setError(cause instanceof Error && cause.name === "AbortError"
         ? "Respons terlalu lama. Silakan coba lagi."
@@ -163,6 +203,12 @@ export function AlzavaAiCoach({ participant }: { participant: BattleParticipant 
               <div className="text-[11px] font-black tracking-[.1em] text-amber-300">ALZAVA AI COACH</div>
               <p className="text-[11px] font-medium text-cyan-100/80">Asisten belajar SKD & pengetahuan umum</p>
             </div>
+            {participant && messages.length > 0 && (
+              <button type="button" onClick={eraseHistory} disabled={busy} aria-label="Hapus riwayat chat"
+                title="Hapus riwayat di perangkat ini" className="rounded-lg p-2 text-slate-300 hover:bg-white/10 hover:text-amber-200 disabled:opacity-40">
+                <Trash2 className="h-[18px] w-[18px]" />
+              </button>
+            )}
             <button type="button" onClick={() => setOpen(false)} aria-label="Tutup panel" className="rounded-lg p-2 text-slate-300 hover:bg-white/10 hover:text-white"><X className="h-5 w-5" /></button>
           </header>
 
@@ -199,12 +245,13 @@ export function AlzavaAiCoach({ participant }: { participant: BattleParticipant 
               <form onSubmit={send} className="shrink-0 border-t border-white/10 bg-[#0a1931] p-3">
                 <div className="flex items-end gap-2 rounded-xl border border-cyan-300/20 bg-white/[.05] p-2">
                   <textarea ref={inputRef} value={draft} maxLength={650} rows={2} onChange={e => setDraft(e.target.value)} onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); void send() } }} placeholder="Tanya SKD, sains, bahasa, atau apa saja..." aria-label="Pertanyaan untuk AI Coach" className="max-h-28 min-h-[48px] flex-1 resize-none bg-transparent px-2 py-1 text-sm text-white outline-none placeholder:text-slate-500" />
-                  <button type="submit" disabled={busy || !draft.trim() || remaining === 0} aria-label="Kirim pertanyaan" className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-cyan-300 text-slate-950 disabled:opacity-40"><Send className="h-4 w-4" /></button>
+                  <button type="submit" disabled={busy || !historyReady || !draft.trim() || remaining === 0} aria-label="Kirim pertanyaan" className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-cyan-300 text-slate-950 disabled:opacity-40"><Send className="h-4 w-4" /></button>
                 </div>
                 <div className="mt-2 flex items-center justify-between gap-2 text-[10px] text-slate-400">
                   <span>{quotaLoading ? "Memeriksa kuota akun..." : remaining === null ? `Kuota belum terbaca · maks. ${AI_DAILY_LIMIT}/hari` : remaining === 0 ? "Jatah hari ini habis · reset 00.00 WIB" : `Sisa ${remaining} dari ${dailyLimit} pertanyaan hari ini`}</span>
                   <span>{lastProvider ? `${lastProvider} · ` : ""}AI dapat keliru</span>
                 </div>
+                <p className="mt-1 text-[10px] text-slate-500">Riwayat tersimpan di browser ini, tidak tersinkron antarperangkat.</p>
               </form>
             </>
           )}
