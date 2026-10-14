@@ -131,7 +131,7 @@ Deno.serve(async (req) => {
       break;
     }
     if (!answer) throw new Error(lastReason);
-    return reply({ok:true,answer:answer.slice(0,6000),remaining:quota.remaining},200,origin);
+    return reply({ok:true,answer:answer.slice(0,6000),remaining:quota.remaining,provider:result.provider === "workers-ai" ? "workers-ai" : "gemini"},200,origin);
   } catch (e) {
     const reason = e instanceof Error ? e.message : "unknown";
     console.error("[alzava-ai-coach] request_failed", { reason, userPromptChars: prompt.length });
