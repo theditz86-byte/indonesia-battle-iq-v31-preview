@@ -15,7 +15,8 @@ V1 menggabungkan Gemini sebagai AI Online utama, Workers AI sebagai fallback ber
 2. Jika Cloudflare Pages Git-integrated, konfirmasi Deployment produksi main berhasil. Jika Direct Upload, deploy static export di folder out.
 3. Login sebagai peserta: pilih AI Online (default) atau AI Lokal (Beta).
 4. AI Lokal hanya mengunduh setelah tombol Unduh & aktifkan AI Lokal ditekan dan dukungan WebGPU terdeteksi. Tidak ada inferensi lokal otomatis.
-5. Model WebLLM yang digunakan: Qwen2.5-0.5B-Instruct-q4f16_1-MLC (~945 MB VRAM, kebutuhan unduhan/cache tambahan); pustaka diambil secara lazy-load dari @mlc-ai/web-llm@0.2.85. Perhitungan prompt lokal berjalan di browser.
+5. Model WebLLM yang digunakan: Qwen2.5-0.5B-Instruct-q4f16_1-MLC (~945 MB VRAM, kebutuhan unduhan/cache tambahan); pustaka diambil secara lazy-load dari @mlc-ai/web-llm@0.2.85 dalam Dedicated Web Worker terpisah. Worker tidak memiliki akses ke DOM/localStorage atau token login; ia hanya menerima teks chat yang dikirim secara eksplisit. Model/pustaka berasal dari sumber eksternal, jadi pemeriksaan keamanan dependency tetap diperlukan sebelum peluncuran skala besar. Perhitungan prompt berjalan di perangkat.
+6. Ketika chat ditutup atau beralih ke AI Online, Web Worker dihentikan agar GPU bebas untuk game ALZAVA.
 
 ## Cloudflare Worker — aktivasi manual
 1. Pada Cloudflare Workers & Pages → alzava-ai → Edit Code: simpan backup Worker Gemini yang sudah berfungsi.
