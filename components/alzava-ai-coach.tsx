@@ -66,10 +66,13 @@ export function AlzavaAiCoach({ participant }: { participant: BattleParticipant 
       localEngineRef.current = module
       await module.warmupLocal(text => setLocalProgress(text))
       setLocalStatus("ready")
-    } catch {
+    } catch (cause) {
       setLocalStatus("idle")
       setLocalProgress("")
-      setError("Model AI Lokal gagal dimuat. Pastikan browser mendukung WebGPU dan tersedia ruang/memori yang cukup.")
+      const message = cause instanceof Error ? cause.message : ""
+      setError(/^\\[[A-Z_]{3,40}\\] /.test(message)
+        ? message.slice(0, 290)
+        : "Model AI Lokal gagal dimuat. Periksa koneksi, WebGPU, dan memori perangkat. Kamu tetap bisa memakai AI Online.")
     }
   }
   useEffect(() => {
