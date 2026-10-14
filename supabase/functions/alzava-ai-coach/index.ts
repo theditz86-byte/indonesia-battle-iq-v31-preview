@@ -100,6 +100,7 @@ Deno.serve(async (req) => {
     ].join("\n");
     const deadline = Date.now() + 29000;
     let answer = "";
+    let provider: "gemini" | "workers-ai" = "gemini";
     let lastReason = "gateway";
     for (let attempt = 0; attempt < 2; attempt++) {
       let response: Response;
@@ -121,6 +122,7 @@ Deno.serve(async (req) => {
       const result = await response.json().catch(()=>({}));
       if (response.ok && result.ok === true && typeof result.answer === "string" && result.answer.trim()) {
         answer = result.answer.trim();
+        provider = result.provider === "workers-ai" ? "workers-ai" : "gemini";
         break;
       }
       lastReason = response.status === 429 ? "quota" : `gateway_http_${response.status}`;
@@ -131,7 +133,6 @@ Deno.serve(async (req) => {
       break;
     }
     if (!answer) throw new Error(lastReason);
-    const provider = result.provider === "workers-ai" ? "workers-ai" : "gemini";
     console.info("[alzava-ai-coach] answer_ok", { provider });
     return reply({ok:true,answer:answer.slice(0,6000),remaining:quota.remaining,provider},200,origin);
   } catch (e) {
