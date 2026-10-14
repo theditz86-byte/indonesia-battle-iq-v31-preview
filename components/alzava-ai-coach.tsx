@@ -7,6 +7,7 @@ import { getParticipantToken } from "@/lib/battle"
 
 const AI_API = "https://efndozplpwyemzgqfnep.supabase.co/functions/v1/alzava-ai-coach"
 const LOGO = "/ai/alzava-ai-coach.svg"
+const AI_DAILY_LIMIT = 5
 const SUGGESTIONS = [
   "Ajari aku trik deret angka TIU",
   "Bagaimana cara belajar TWK yang efektif?",
@@ -21,6 +22,7 @@ export function AlzavaAiCoach({ participant }: { participant: BattleParticipant 
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState("")
   const [remaining, setRemaining] = useState<number | null>(null)
+  const [dailyLimit, setDailyLimit] = useState(AI_DAILY_LIMIT)
   const [lastProvider, setLastProvider] = useState("")
   const [quotaLoading, setQuotaLoading] = useState(false)
   const quotaRequestRef = useRef(0)
@@ -49,6 +51,9 @@ export function AlzavaAiCoach({ participant }: { participant: BattleParticipant 
       })
       const result = await response.json().catch(() => ({}))
       if (quotaRequestRef.current !== requestId) return
+      if (response.ok && result?.ok && Number.isInteger(result?.daily_limit) && result.daily_limit > 0 && result.daily_limit <= 100) {
+        setDailyLimit(result.daily_limit)
+      }
       setRemaining(response.ok && result?.ok && Number.isFinite(result?.remaining)
         ? Math.max(0, Number(result.remaining)) : null)
     } catch {
@@ -106,6 +111,7 @@ export function AlzavaAiCoach({ participant }: { participant: BattleParticipant 
       }
       setMessages(previous => [...previous, { role: "assistant", text: result.answer }])
       if (Number.isFinite(result.remaining)) setRemaining(Number(result.remaining))
+      if (Number.isInteger(result.daily_limit) && result.daily_limit > 0 && result.daily_limit <= 100) setDailyLimit(result.daily_limit)
       setLastProvider(result.provider === "workers-ai" ? "Cloudflare AI" : "Gemini AI")
     } catch (cause) {
       void refreshRemaining()
@@ -196,7 +202,7 @@ export function AlzavaAiCoach({ participant }: { participant: BattleParticipant 
                   <button type="submit" disabled={busy || !draft.trim() || remaining === 0} aria-label="Kirim pertanyaan" className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-cyan-300 text-slate-950 disabled:opacity-40"><Send className="h-4 w-4" /></button>
                 </div>
                 <div className="mt-2 flex items-center justify-between gap-2 text-[10px] text-slate-400">
-                  <span>{quotaLoading ? "Memeriksa kuota akun..." : remaining === null ? "Kuota belum terbaca · maks. 3/hari" : remaining === 0 ? "Jatah hari ini habis · reset 00.00 WIB" : `Sisa ${remaining} dari 3 pertanyaan hari ini`}</span>
+                  <span>{quotaLoading ? "Memeriksa kuota akun..." : remaining === null ? `Kuota belum terbaca · maks. ${AI_DAILY_LIMIT}/hari` : remaining === 0 ? "Jatah hari ini habis · reset 00.00 WIB" : `Sisa ${remaining} dari ${dailyLimit} pertanyaan hari ini`}</span>
                   <span>{lastProvider ? `${lastProvider} · ` : ""}AI dapat keliru</span>
                 </div>
               </form>

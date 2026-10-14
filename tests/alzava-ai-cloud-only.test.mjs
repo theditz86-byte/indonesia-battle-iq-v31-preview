@@ -10,7 +10,7 @@ test("AI Coach provides a single cloud chat interface, with no broken AI Lokal m
   assert.match(ui, /X-Battle-Token/);
   assert.match(ui, /remaining === 0/);
   assert.match(ui, /result\.provider === "workers-ai"/);
-  assert.match(ui, /\`Sisa \$\{remaining\} dari 3 pertanyaan hari ini\`/);
+  assert.match(ui, /\`Sisa \$\{remaining\} dari \$\{dailyLimit\} pertanyaan hari ini\`/);
 });
 
 test("No dormant browser AI model script or WebLLM CSP exception remains", () => {
