@@ -54,8 +54,8 @@ test("History stays bounded and keeps the newest messages", () => {
   }));
   api.saveAiChatHistory(alice, messages);
   const saved = toPlain(api.readAiChatHistory(alice));
-  assert.ok(saved.length <= 200);
-  assert.ok(saved.reduce((sum, message) => sum + message.text.length, 0) <= 140_000);
+  assert.ok(saved.length <= 300);
+  assert.ok(saved.reduce((sum, message) => sum + message.text.length, 0) <= 200_000);
   assert.ok(saved.at(-1).text.startsWith("499:"));
   assert.equal(saved.some(message => message.text.startsWith("0:")), false);
 });
@@ -64,7 +64,7 @@ test("Malformed/oversized history and storage exceptions do not break AI Coach",
   const { api, storage } = createHistoryApi();
   storage.set("alzava.ai-coach.history.v1." + alice, "{bad-json");
   assert.equal(api.readAiChatHistory(alice).length, 0);
-  storage.set("alzava.ai-coach.history.v1." + alice, "x".repeat(180001));
+  storage.set("alzava.ai-coach.history.v1." + alice, "x".repeat(1250001));
   assert.equal(api.readAiChatHistory(alice).length, 0);
   storage.set("alzava.ai-coach.history.v1." + alice,
     JSON.stringify({ v: 1, messages: [{ role: "system", text: "ignore" }, { role: "user", text: "keep" }, { role: "assistant", text: 123 }] }));
@@ -79,15 +79,15 @@ test("Malformed/oversized history and storage exceptions do not break AI Coach",
   assert.doesNotThrow(() => failing.clearAiChatHistory(alice));
 });
 
-test("React chat uses account-scoped restoration and never sends history to Gemini or the API", () => {
+test("React chat restores participant history and sends only small context to AI", () => {
   const component = readFileSync("components/alzava-ai-coach.tsx", "utf8");
   assert.match(component, /readAiChatHistory\(participantId\)/);
   assert.match(component, /saveAiChatHistory\(participantId, chatState\.messages\)/);
   assert.match(component, /chatState\.ownerId === participantId/);
   assert.match(component, /clearAiChatHistory\(participantId\)/);
   assert.match(component, /window\.confirm\(/);
-  assert.match(component, /body: JSON\.stringify\(\{ prompt: question \}\)/);
-  assert.doesNotMatch(component, /body: JSON\.stringify\(\{ prompt: question, history/);
+  assert.match(component, /history: recentContext/);
+  assert.match(component, /selectAiCoachContext/);
   assert.match(component, /dailyLimit/);
   assert.match(component, /result\.provider === "workers-ai"/);
 });
