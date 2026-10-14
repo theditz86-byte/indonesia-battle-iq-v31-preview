@@ -26,7 +26,7 @@ async function exercise({ provider = "gemini", gatewayFails = false, limited = f
       calls.claim++;
       return Response.json(limited
         ? { ok: false, reason: "daily_limit" }
-        : { ok: true, remaining: 2 });
+        : { ok: true, remaining: 2, daily_limit: 5 });
     }
     if (url.includes("/rest/v1/rpc/alzava_ai_refund")) {
       calls.refund++;
@@ -80,6 +80,7 @@ test("Gemini success response does not throw a result scope ReferenceError", asy
   assert.equal(body.ok, true);
   assert.equal(body.provider, "gemini");
   assert.equal(body.remaining, 2);
+  assert.equal(body.daily_limit, 5);
   assert.equal(calls.refund, 0);
 });
 
@@ -100,5 +101,6 @@ test("Upstream failure refunds the existing cloud quota", async () => {
 test("Daily-limit denial never calls the AI gateway", async () => {
   const { response, calls } = await exercise({ limited: true });
   assert.equal(response.status, 429);
+  // Limit is checked server-side before requesting Gemini or Workers AI.
   assert.equal(calls.gateway, 0);
 });
