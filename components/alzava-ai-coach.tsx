@@ -70,7 +70,7 @@ export function AlzavaAiCoach({ participant }: { participant: BattleParticipant 
       setLocalStatus("idle")
       setLocalProgress("")
       const message = cause instanceof Error ? cause.message : ""
-      setError(/^\\[[A-Z_]{3,40}\\] /.test(message)
+      setError(/^\[[A-Z_]{3,40}\] /.test(message)
         ? message.slice(0, 290)
         : "Model AI Lokal gagal dimuat. Periksa koneksi, WebGPU, dan memori perangkat. Kamu tetap bisa memakai AI Online.")
     }
