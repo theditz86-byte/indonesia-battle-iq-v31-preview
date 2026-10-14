@@ -6,6 +6,7 @@ import type { BattleParticipant } from "@/lib/battle"
 import { getParticipantToken } from "@/lib/battle"
 import { clearAiChatHistory, readAiChatHistory, saveAiChatHistory, trimAiChatMessages } from "@/lib/ai-chat-history"
 import type { AiChatMessage } from "@/lib/ai-chat-history"
+import { selectAiCoachContext } from "@/lib/ai-coach-context"
 
 const AI_API = "https://efndozplpwyemzgqfnep.supabase.co/functions/v1/alzava-ai-coach"
 const LOGO = "/ai/alzava-ai-coach.svg"
@@ -123,6 +124,7 @@ export function AlzavaAiCoach({ participant }: { participant: BattleParticipant 
     }
     const token = getParticipantToken()
     if (!token) { setError("Silakan masuk kembali ke akun ALZAVA."); return }
+    const recentContext = selectAiCoachContext(messages)
     ++quotaRequestRef.current
     setQuotaLoading(false)
     setBusy(true)
@@ -137,7 +139,7 @@ export function AlzavaAiCoach({ participant }: { participant: BattleParticipant 
         response = await fetch(AI_API, {
           method: "POST",
           headers: { "Content-Type": "application/json", "X-Battle-Token": token },
-          body: JSON.stringify({ prompt: question }),
+          body: JSON.stringify({ prompt: question, history: recentContext }),
           signal: controller.signal,
           cache: "no-store",
         })
@@ -252,7 +254,7 @@ export function AlzavaAiCoach({ participant }: { participant: BattleParticipant 
                   <span>{quotaLoading ? "Memeriksa kuota akun..." : remaining === null ? `Kuota belum terbaca · maks. ${AI_DAILY_LIMIT}/hari` : remaining === 0 ? "Jatah hari ini habis · reset 00.00 WIB" : `Sisa ${remaining} dari ${dailyLimit} pertanyaan hari ini`}</span>
                   <span>{lastProvider ? `${lastProvider} · ` : ""}AI dapat keliru</span>
                 </div>
-                <p className="mt-1 text-[10px] text-slate-500">{historyAvailable ? "Riwayat tersimpan di browser ini, tidak tersinkron antarperangkat." : "Penyimpanan browser tidak tersedia; chat bisa hilang setelah reload."}</p>
+                <p className="mt-1 text-[10px] text-slate-500">{historyAvailable ? "Riwayat tersimpan di browser ini. Maks. 8 pesan terakhir dikirim sebagai konteks AI; tidak tersinkron antarperangkat." : "Penyimpanan browser tidak tersedia; chat bisa hilang setelah reload."}</p>
               </form>
             </>
           )}
