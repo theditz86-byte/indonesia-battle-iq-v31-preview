@@ -3,10 +3,10 @@
 export type AiChatMessage = { role: "user" | "assistant"; text: string }
 
 const KEY_PREFIX = "alzava.ai-coach.history.v1."
-const MAX_MESSAGES = 200
-const MAX_TOTAL_CHARACTERS = 140_000
+const MAX_MESSAGES = 300
+const MAX_TOTAL_CHARACTERS = 200_000
 const MAX_TEXT_CHARACTERS = 6_000
-const MAX_SERIALIZED_CHARACTERS = 180_000
+const MAX_SERIALIZED_CHARACTERS = 1_250_000
 
 function historyKey(participantId: string): string | null {
   if (!/^[a-zA-Z0-9_-]{8,128}$/.test(participantId)) return null
