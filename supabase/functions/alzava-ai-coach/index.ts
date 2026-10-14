@@ -76,6 +76,7 @@ Deno.serve(async (req) => {
     if (new TextEncoder().encode(raw).byteLength > 7000) return reply({error:"Pesan terlalu panjang."},413,origin);
     body = JSON.parse(raw);
   } catch { return reply({error:"Format pertanyaan tidak valid."},400,origin); }
+  if (!body || typeof body !== "object" || Array.isArray(body)) return reply({error:"Format pertanyaan tidak valid."},400,origin);
   const prompt = typeof body.prompt === "string" ? body.prompt.trim() : "";
   if (!prompt || prompt.length > 650) return reply({error:"Pertanyaan maksimal 650 karakter."},400,origin);
 
