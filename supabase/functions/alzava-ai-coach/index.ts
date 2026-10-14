@@ -124,14 +124,16 @@ Deno.serve(async (req) => {
         break;
       }
       lastReason = response.status === 429 ? "quota" : `gateway_http_${response.status}`;
-      if (attempt === 0 && [502,503,504].includes(response.status) && deadline - Date.now() > 3000) {
+      if (attempt === 0 && [502,503,504].includes(response.status) && typeof result?.code !== "string" && deadline - Date.now() > 3000) {
         await new Promise(resolve => setTimeout(resolve, 350));
         continue;
       }
       break;
     }
     if (!answer) throw new Error(lastReason);
-    return reply({ok:true,answer:answer.slice(0,6000),remaining:quota.remaining},200,origin);
+    const provider = result.provider === "workers-ai" ? "workers-ai" : "gemini";
+    console.info("[alzava-ai-coach] answer_ok", { provider });
+    return reply({ok:true,answer:answer.slice(0,6000),remaining:quota.remaining,provider},200,origin);
   } catch (e) {
     const reason = e instanceof Error ? e.message : "unknown";
     console.error("[alzava-ai-coach] request_failed", { reason, userPromptChars: prompt.length });

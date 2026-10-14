@@ -14,6 +14,13 @@ const SUGGESTIONS = [
   "Jelaskan topik sains yang menarik",
 ]
 type Message = { role: "user" | "assistant"; text: string }
+type AiMode = "cloud" | "local"
+type LocalAiModule = {
+  canRunLocal: () => Promise<boolean>
+  warmupLocal: (onProgress: (text: string) => void) => Promise<void>
+  askLocal: (question: string, history: Message[]) => Promise<string>
+  stopLocal: () => void
+}
 
 export function AlzavaAiCoach({ participant }: { participant: BattleParticipant | null }) {
   const [open, setOpen] = useState(false)
@@ -22,6 +29,11 @@ export function AlzavaAiCoach({ participant }: { participant: BattleParticipant 
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState("")
   const [remaining, setRemaining] = useState<number | null>(null)
+  const [mode, setMode] = useState<AiMode>("cloud")
+  const [localStatus, setLocalStatus] = useState<"idle" | "loading" | "ready" | "unsupported">("idle")
+  const [localProgress, setLocalProgress] = useState("")
+  const [lastProvider, setLastProvider] = useState("")
+  const localEngineRef = useRef<LocalAiModule | null>(null)
   const [quotaLoading, setQuotaLoading] = useState(false)
   const quotaRequestRef = useRef(0)
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -34,7 +46,41 @@ export function AlzavaAiCoach({ participant }: { participant: BattleParticipant 
     return () => document.removeEventListener("keydown", onKey)
   }, [open])
 
-  useEffect(() => { setMessages([]); setRemaining(null); setError("") }, [participant?.public_id])
+  useEffect(() => { setMessages([]); setRemaining(null); setError(""); setMode("cloud"); setLastProvider("") }, [participant?.public_id])
+
+  async function enableLocal() {
+    if (localStatus === "loading" || localStatus === "ready") return
+    setLocalStatus("loading")
+    setError("")
+    setLocalProgress("Memeriksa dukungan WebGPU...")
+    try {
+      // This module is outside the main bundle and loaded only after an explicit click.
+      const path = "/ai/alzava-local-engine.mjs"
+      const module = await import(/* webpackIgnore: true */ path) as LocalAiModule
+      if (!await module.canRunLocal()) {
+        setLocalStatus("unsupported")
+        setLocalProgress("")
+        setError("Perangkat/browser ini tidak mendukung WebGPU. Gunakan AI Online.")
+        return
+      }
+      localEngineRef.current = module
+      await module.warmupLocal(text => setLocalProgress(text))
+      setLocalStatus("ready")
+    } catch {
+      setLocalStatus("idle")
+      setLocalProgress("")
+      setError("Model AI Lokal gagal dimuat. Pastikan browser mendukung WebGPU dan tersedia ruang/memori yang cukup.")
+    }
+  }
+  useEffect(() => {
+    // Free GPU memory when the chat closes; do not slow games or other ALZAVA screens.
+    if (!open) {
+      localEngineRef.current?.stopLocal()
+      setLocalStatus("idle")
+      setLocalProgress("")
+    }
+  }, [open])
+
   const refreshRemaining = useCallback(async () => {
     const requestId = ++quotaRequestRef.current
     const token = getParticipantToken()
@@ -70,9 +116,20 @@ export function AlzavaAiCoach({ participant }: { participant: BattleParticipant 
     event?.preventDefault()
     if (busy || !participant) return
     const question = draft.trim()
-    const token = getParticipantToken()
-    if (!question || !token) { setError("Silakan masuk kembali ke akun ALZAVA."); return }
+    if (!question) return
     if (question.length > 650) { setError("Maksimal 650 karakter."); return }
+    if (mode === "cloud" && remaining === 0) {
+      setError("Kuota AI Online sudah habis. Pilih AI Lokal jika perangkat mendukung.")
+      return
+    }
+    if (mode === "local" && localStatus !== "ready") {
+      setError("Aktifkan model AI Lokal dahulu.")
+      return
+    }
+    const token = mode === "cloud" ? getParticipantToken() : ""
+    if (mode === "cloud" && !token) { setError("Silakan masuk kembali ke akun ALZAVA."); return }
+
+    const history = messages.slice(-6)
     ++quotaRequestRef.current
     setQuotaLoading(false)
     setBusy(true)
@@ -80,28 +137,37 @@ export function AlzavaAiCoach({ participant }: { participant: BattleParticipant 
     setMessages(previous => [...previous, { role: "user", text: question }])
     setDraft("")
     try {
-      const controller = new AbortController()
-      const timeout = window.setTimeout(() => controller.abort(), 35000)
-      let response: Response
-      try {
-        response = await fetch(AI_API, {
-          method: "POST",
-          headers: { "Content-Type": "application/json", "X-Battle-Token": token },
-          body: JSON.stringify({ prompt: question }),
-          signal: controller.signal,
-          cache: "no-store",
-        })
-      } finally {
-        window.clearTimeout(timeout)
+      if (mode === "local") {
+        const local = localEngineRef.current
+        if (!local) throw new Error("AI Lokal belum siap. Aktifkan model terlebih dahulu.")
+        const answer = await local.askLocal(question, history)
+        setMessages(previous => [...previous, { role: "assistant", text: answer }])
+        setLastProvider("AI Lokal")
+      } else {
+        const controller = new AbortController()
+        const timeout = window.setTimeout(() => controller.abort(), 35000)
+        let response: Response
+        try {
+          response = await fetch(AI_API, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "X-Battle-Token": token },
+            body: JSON.stringify({ prompt: question }),
+            signal: controller.signal,
+            cache: "no-store",
+          })
+        } finally {
+          window.clearTimeout(timeout)
+        }
+        const result = await response.json().catch(() => ({}))
+        if (!response.ok || !result?.ok || typeof result?.answer !== "string") {
+          throw new Error(typeof result?.error === "string" ? result.error : "AI sedang tidak tersedia. Coba lagi nanti.")
+        }
+        setMessages(previous => [...previous, { role: "assistant", text: result.answer }])
+        if (Number.isFinite(result.remaining)) setRemaining(Number(result.remaining))
+        setLastProvider(result.provider === "workers-ai" ? "Cloudflare AI" : "Gemini AI")
       }
-      const result = await response.json().catch(() => ({}))
-      if (!response.ok || !result?.ok || typeof result?.answer !== "string") {
-        throw new Error(typeof result?.error === "string" ? result.error : "AI sedang tidak tersedia. Coba lagi nanti.")
-      }
-      setMessages(previous => [...previous, { role: "assistant", text: result.answer }])
-      if (Number.isFinite(result.remaining)) setRemaining(Number(result.remaining))
     } catch (cause) {
-      void refreshRemaining()
+      if (mode === "cloud") void refreshRemaining()
       setError(cause instanceof Error && cause.name === "AbortError"
         ? "Respons terlalu lama. Silakan coba lagi."
         : cause instanceof Error ? cause.message : "Terjadi kendala, coba lagi nanti.")
@@ -117,12 +183,12 @@ export function AlzavaAiCoach({ participant }: { participant: BattleParticipant 
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-[10px] font-black uppercase tracking-[.19em] text-cyan-300">ALZAVA Intelligence</span>
-              <span className="rounded-full border border-emerald-300/25 bg-emerald-400/10 px-2 py-0.5 text-[9px] font-extrabold text-emerald-300">Gemini AI</span>
+              <span className="rounded-full border border-emerald-300/25 bg-emerald-400/10 px-2 py-0.5 text-[9px] font-extrabold text-emerald-300">Hybrid AI</span>
             </div>
             <h2 className="mt-1 text-2xl font-black tracking-tight text-white sm:text-[27px]">Kenalkan, <span className="bg-gradient-to-r from-amber-300 to-cyan-300 bg-clip-text text-transparent">ALZAVA AI Coach</span></h2>
             <p className="mt-1 max-w-2xl text-sm leading-6 text-slate-300">Asisten belajar untuk SKD, penalaran, matematika, sains, bahasa, dan pengetahuan umum. Tanyakan konsep yang ingin kamu pahami.</p>
             <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] font-bold text-cyan-100/75">
-              <span className="inline-flex items-center gap-1"><CheckCircle2 className="h-3.5 w-3.5 text-emerald-300" /> Gratis dengan kuota harian</span>
+              <span className="inline-flex items-center gap-1"><CheckCircle2 className="h-3.5 w-3.5 text-emerald-300" /> Cloud gratis terbatas · opsi AI Lokal</span>
               <span className="inline-flex items-center gap-1"><ShieldCheck className="h-3.5 w-3.5 text-amber-300" /> Tidak aktif untuk bantuan ujian berlangsung</span>
             </div>
           </div>
@@ -162,7 +228,31 @@ export function AlzavaAiCoach({ participant }: { participant: BattleParticipant 
             </div>
           ) : (
             <>
-              <div ref={scrollRef} aria-live="polite" className="min-h-[190px] flex-1 space-y-3 overflow-y-auto px-4 py-4 text-sm">
+              <div className="shrink-0 border-b border-white/10 bg-[#08172f] px-3 pb-3 pt-3">
+                <div className="flex gap-2" aria-label="Pilih mode AI">
+                  <button type="button" onClick={() => { localEngineRef.current?.stopLocal(); setLocalStatus("idle"); setLocalProgress(""); setMode("cloud"); setError("") }} disabled={busy}
+                    className={`flex-1 rounded-lg border px-3 py-2 text-xs font-bold transition ${mode === "cloud" ? "border-cyan-300/60 bg-cyan-300/20 text-cyan-100" : "border-white/10 bg-white/[.04] text-slate-300"}`}>
+                    AI Online
+                  </button>
+                  <button type="button" onClick={() => { setMode("local"); setError("") }} disabled={busy}
+                    className={`flex-1 rounded-lg border px-3 py-2 text-xs font-bold transition ${mode === "local" ? "border-amber-300/60 bg-amber-300/15 text-amber-100" : "border-white/10 bg-white/[.04] text-slate-300"}`}>
+                    AI Lokal (Beta)
+                  </button>
+                </div>
+                {mode === "local" && (
+                  <div className="mt-2 space-y-2 text-[11px] leading-5 text-slate-300">
+                    <p>Tanpa kuota API cloud. Memproses chat di perangkatmu; butuh WebGPU, RAM/GPU memadai, dan unduhan model yang bisa berukuran ratusan MB.</p>
+                    {localStatus !== "ready" ? (
+                      <button type="button" onClick={() => void enableLocal()} disabled={localStatus === "loading"}
+                        className="rounded-lg border border-amber-300/35 bg-amber-300/15 px-3 py-2 font-bold text-amber-100 disabled:opacity-60">
+                        {localStatus === "loading" ? "Menyiapkan AI Lokal..." : "Unduh & aktifkan AI Lokal"}
+                      </button>
+                    ) : <p className="font-semibold text-emerald-300">AI Lokal siap digunakan.</p>}
+                    {localProgress && <p role="status" className="break-words text-cyan-200">{localProgress}</p>}
+                  </div>
+                )}
+              </div>
+              <div ref={scrollRef} aria-live="polite" className="min-h-[130px] flex-1 space-y-3 overflow-y-auto px-4 py-4 text-sm">
                 {messages.length === 0 && (
                   <div className="space-y-4">
                     <p className="text-sm leading-6 text-slate-200">Halo! Aku siap membantu belajar SKD, penalaran, dan berbagai topik pengetahuan umum. Mau bertanya apa hari ini?</p>
@@ -185,12 +275,12 @@ export function AlzavaAiCoach({ participant }: { participant: BattleParticipant 
               </div>
               <form onSubmit={send} className="shrink-0 border-t border-white/10 bg-[#0a1931] p-3">
                 <div className="flex items-end gap-2 rounded-xl border border-cyan-300/20 bg-white/[.05] p-2">
-                  <textarea ref={inputRef} value={draft} maxLength={650} rows={2} onChange={e => setDraft(e.target.value)} onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); void send() } }} placeholder="Tanya SKD, sains, bahasa, atau apa saja..." aria-label="Pertanyaan untuk AI Coach" className="max-h-28 min-h-[48px] flex-1 resize-none bg-transparent px-2 py-1 text-sm text-white outline-none placeholder:text-slate-500" />
-                  <button type="submit" disabled={busy || !draft.trim() || remaining === 0} aria-label="Kirim pertanyaan" className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-cyan-300 text-slate-950 disabled:opacity-40"><Send className="h-4 w-4" /></button>
+                  <textarea ref={inputRef} value={draft} maxLength={650} rows={2} onChange={e => setDraft(e.target.value)} onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); void send() } }} placeholder={mode === "local" ? "Tanya ke AI di perangkatmu..." : "Tanya SKD, sains, bahasa, atau apa saja..."} aria-label="Pertanyaan untuk AI Coach" className="max-h-28 min-h-[48px] flex-1 resize-none bg-transparent px-2 py-1 text-sm text-white outline-none placeholder:text-slate-500" />
+                  <button type="submit" disabled={busy || !draft.trim() || (mode === "cloud" && remaining === 0) || (mode === "local" && localStatus !== "ready")} aria-label="Kirim pertanyaan" className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-cyan-300 text-slate-950 disabled:opacity-40"><Send className="h-4 w-4" /></button>
                 </div>
                 <div className="mt-2 flex items-center justify-between gap-2 text-[10px] text-slate-400">
-                  <span>{quotaLoading ? "Memeriksa kuota akun..." : remaining === null ? "Kuota belum terbaca · maks. 3/hari" : remaining === 0 ? "Jatah hari ini habis · reset 00.00 WIB" : `Sisa ${remaining} dari 3 pertanyaan hari ini`}</span>
-                  <span>AI dapat keliru · periksa jawaban</span>
+                  <span>{mode === "local" ? (localStatus === "ready" ? "AI Lokal · tanpa kuota API" : "AI Lokal · perlu aktivasi") : quotaLoading ? "Memeriksa kuota akun..." : remaining === null ? "Kuota belum terbaca · maks. 3/hari" : remaining === 0 ? "Jatah hari ini habis · reset 00.00 WIB" : `Sisa ${remaining} dari 3 pertanyaan hari ini`}</span>
+                  <span>{lastProvider ? `${lastProvider} · ` : ""}AI dapat keliru</span>
                 </div>
               </form>
             </>
