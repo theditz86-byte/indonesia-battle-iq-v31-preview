@@ -20,15 +20,15 @@ function getWorker() {
   const instance = new Worker("/ai/alzava-local-worker.mjs", { type: "module", name: "alzava-local" });
   localWorker = instance;
   instance.onmessage = event => {
-    const { id, type, progress, answer, error } = event.data || {};
+    const { id, type, progress, answer, error, code } = event.data || {};
     const entry = pending.get(id);
     if (!entry) return;
     if (type === "progress") { entry.onProgress?.(String(progress).slice(0, 160)); return; }
     pending.delete(id);
-    if (type === "error") entry.reject(new Error(String(error || "AI Lokal mengalami gangguan.").slice(0, 220)));
+    if (type === "error") entry.reject(new Error(`[${String(code || "MODEL_ERROR").replace(/[^A-Z_]/g, "").slice(0, 40)}] ${String(error || "AI Lokal mengalami gangguan.").slice(0, 220)}`));
     else entry.resolve(answer);
   };
-  instance.onerror = () => clearWorker("AI Lokal tidak dapat dijalankan pada browser ini.");
+  instance.onerror = () => clearWorker("[WORKER_BLOCKED] Worker AI Lokal gagal dijalankan. Periksa pengaturan keamanan browser dan coba lagi.");
   instance.onmessageerror = () => clearWorker("Pesan AI Lokal tidak terbaca.");
   return instance;
 }
