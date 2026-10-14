@@ -55,7 +55,7 @@ async function askGemini(prompt, env, model) {
       },
       body: JSON.stringify({
         contents: [{ role: "user", parts: [{ text: prompt }] }],
-        generationConfig: { temperature: 0.5, maxOutputTokens: 768 }
+        generationConfig: { temperature: 0.5, maxOutputTokens: 768, thinkingConfig: { thinkingLevel: "minimal" } }
       }),
       signal: AbortSignal.timeout(GEMINI_TIMEOUT_MS)
     });
