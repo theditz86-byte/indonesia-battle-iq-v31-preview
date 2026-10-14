@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { ArrowRight, BrainCircuit, CheckCircle2, Loader2, Send, ShieldCheck, Sparkles, X } from "lucide-react"
 import type { BattleParticipant } from "@/lib/battle"
 import { getParticipantToken } from "@/lib/battle"
@@ -11,6 +11,7 @@ const SUGGESTIONS = [
   "Ajari aku trik deret angka TIU",
   "Bagaimana cara belajar TWK yang efektif?",
   "Buat contoh soal penalaran sulit",
+  "Jelaskan topik sains yang menarik",
 ]
 type Message = { role: "user" | "assistant"; text: string }
 
@@ -21,6 +22,8 @@ export function AlzavaAiCoach({ participant }: { participant: BattleParticipant 
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState("")
   const [remaining, setRemaining] = useState<number | null>(null)
+  const [quotaLoading, setQuotaLoading] = useState(false)
+  const quotaRequestRef = useRef(0)
   const scrollRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
 
@@ -32,6 +35,32 @@ export function AlzavaAiCoach({ participant }: { participant: BattleParticipant 
   }, [open])
 
   useEffect(() => { setMessages([]); setRemaining(null); setError("") }, [participant?.public_id])
+  const refreshRemaining = useCallback(async () => {
+    const requestId = ++quotaRequestRef.current
+    const token = getParticipantToken()
+    if (!token || !participant) { setRemaining(null); setQuotaLoading(false); return }
+    setQuotaLoading(true)
+    try {
+      const response = await fetch(AI_API, {
+        method: "GET",
+        headers: { "X-Battle-Token": token },
+        cache: "no-store",
+      })
+      const result = await response.json().catch(() => ({}))
+      if (quotaRequestRef.current !== requestId) return
+      setRemaining(response.ok && result?.ok && Number.isFinite(result?.remaining)
+        ? Math.max(0, Number(result.remaining)) : null)
+    } catch {
+      if (quotaRequestRef.current === requestId) setRemaining(null)
+    } finally {
+      if (quotaRequestRef.current === requestId) setQuotaLoading(false)
+    }
+  }, [participant?.public_id])
+
+  useEffect(() => {
+    if (open && participant) void refreshRemaining()
+  }, [open, participant?.public_id, refreshRemaining])
+
   useEffect(() => { scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" }) }, [messages, busy])
   useEffect(() => {
     if (open && participant) inputRef.current?.focus()
@@ -44,6 +73,8 @@ export function AlzavaAiCoach({ participant }: { participant: BattleParticipant 
     const token = getParticipantToken()
     if (!question || !token) { setError("Silakan masuk kembali ke akun ALZAVA."); return }
     if (question.length > 650) { setError("Maksimal 650 karakter."); return }
+    ++quotaRequestRef.current
+    setQuotaLoading(false)
     setBusy(true)
     setError("")
     setMessages(previous => [...previous, { role: "user", text: question }])
@@ -70,6 +101,7 @@ export function AlzavaAiCoach({ participant }: { participant: BattleParticipant 
       setMessages(previous => [...previous, { role: "assistant", text: result.answer }])
       if (Number.isFinite(result.remaining)) setRemaining(Number(result.remaining))
     } catch (cause) {
+      void refreshRemaining()
       setError(cause instanceof Error && cause.name === "AbortError"
         ? "Respons terlalu lama. Silakan coba lagi."
         : cause instanceof Error ? cause.message : "Terjadi kendala, coba lagi nanti.")
@@ -88,7 +120,7 @@ export function AlzavaAiCoach({ participant }: { participant: BattleParticipant 
               <span className="rounded-full border border-emerald-300/25 bg-emerald-400/10 px-2 py-0.5 text-[9px] font-extrabold text-emerald-300">Gemini AI</span>
             </div>
             <h2 className="mt-1 text-2xl font-black tracking-tight text-white sm:text-[27px]">Kenalkan, <span className="bg-gradient-to-r from-amber-300 to-cyan-300 bg-clip-text text-transparent">ALZAVA AI Coach</span></h2>
-            <p className="mt-1 max-w-2xl text-sm leading-6 text-slate-300">Pelatih belajarmu untuk SKD, TIU, TWK, dan TKP. Tanya konsep yang sulit, minta pembahasan, dan pelajari strategi menjawab soal.</p>
+            <p className="mt-1 max-w-2xl text-sm leading-6 text-slate-300">Asisten belajar untuk SKD, penalaran, matematika, sains, bahasa, dan pengetahuan umum. Tanyakan konsep yang ingin kamu pahami.</p>
             <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] font-bold text-cyan-100/75">
               <span className="inline-flex items-center gap-1"><CheckCircle2 className="h-3.5 w-3.5 text-emerald-300" /> Gratis dengan kuota harian</span>
               <span className="inline-flex items-center gap-1"><ShieldCheck className="h-3.5 w-3.5 text-amber-300" /> Tidak aktif untuk bantuan ujian berlangsung</span>
@@ -116,7 +148,7 @@ export function AlzavaAiCoach({ participant }: { participant: BattleParticipant 
             <img src={LOGO} alt="" className="h-12 w-12 object-contain" />
             <div className="min-w-0 flex-1">
               <div className="text-[11px] font-black tracking-[.1em] text-amber-300">ALZAVA AI COACH</div>
-              <p className="text-[11px] font-medium text-cyan-100/80">Asisten belajar SKD & penalaran</p>
+              <p className="text-[11px] font-medium text-cyan-100/80">Asisten belajar SKD & pengetahuan umum</p>
             </div>
             <button type="button" onClick={() => setOpen(false)} aria-label="Tutup panel" className="rounded-lg p-2 text-slate-300 hover:bg-white/10 hover:text-white"><X className="h-5 w-5" /></button>
           </header>
@@ -133,7 +165,7 @@ export function AlzavaAiCoach({ participant }: { participant: BattleParticipant 
               <div ref={scrollRef} aria-live="polite" className="min-h-[190px] flex-1 space-y-3 overflow-y-auto px-4 py-4 text-sm">
                 {messages.length === 0 && (
                   <div className="space-y-4">
-                    <p className="text-sm leading-6 text-slate-200">Halo! Aku siap membantumu memahami materi SKD. Mau belajar apa hari ini?</p>
+                    <p className="text-sm leading-6 text-slate-200">Halo! Aku siap membantu belajar SKD, penalaran, dan berbagai topik pengetahuan umum. Mau bertanya apa hari ini?</p>
                     <div className="grid gap-2">
                       {SUGGESTIONS.map(text => (
                         <button key={text} type="button" onClick={() => { setDraft(text); inputRef.current?.focus() }} className="rounded-xl border border-cyan-300/20 bg-cyan-300/[.07] px-3 py-2.5 text-left text-xs font-semibold text-cyan-100 transition hover:bg-cyan-300/15">
@@ -153,11 +185,11 @@ export function AlzavaAiCoach({ participant }: { participant: BattleParticipant 
               </div>
               <form onSubmit={send} className="shrink-0 border-t border-white/10 bg-[#0a1931] p-3">
                 <div className="flex items-end gap-2 rounded-xl border border-cyan-300/20 bg-white/[.05] p-2">
-                  <textarea ref={inputRef} value={draft} maxLength={650} rows={2} onChange={e => setDraft(e.target.value)} onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); void send() } }} placeholder="Tanya AI tentang SKD, TIU, TWK..." aria-label="Pertanyaan untuk AI Coach" className="max-h-28 min-h-[48px] flex-1 resize-none bg-transparent px-2 py-1 text-sm text-white outline-none placeholder:text-slate-500" />
-                  <button type="submit" disabled={busy || !draft.trim()} aria-label="Kirim pertanyaan" className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-cyan-300 text-slate-950 disabled:opacity-40"><Send className="h-4 w-4" /></button>
+                  <textarea ref={inputRef} value={draft} maxLength={650} rows={2} onChange={e => setDraft(e.target.value)} onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); void send() } }} placeholder="Tanya SKD, sains, bahasa, atau apa saja..." aria-label="Pertanyaan untuk AI Coach" className="max-h-28 min-h-[48px] flex-1 resize-none bg-transparent px-2 py-1 text-sm text-white outline-none placeholder:text-slate-500" />
+                  <button type="submit" disabled={busy || !draft.trim() || remaining === 0} aria-label="Kirim pertanyaan" className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-cyan-300 text-slate-950 disabled:opacity-40"><Send className="h-4 w-4" /></button>
                 </div>
                 <div className="mt-2 flex items-center justify-between gap-2 text-[10px] text-slate-400">
-                  <span>{remaining === null ? "3 pertanyaan per hari per akun" : `Sisa ${remaining} pertanyaan hari ini`}</span>
+                  <span>{quotaLoading ? "Memeriksa kuota akun..." : remaining === null ? "Kuota belum terbaca · maks. 3/hari" : remaining === 0 ? "Jatah hari ini habis · reset 00.00 WIB" : `Sisa ${remaining} dari 3 pertanyaan hari ini`}</span>
                   <span>AI dapat keliru · periksa jawaban</span>
                 </div>
               </form>
