@@ -7,7 +7,7 @@
 - Workers AI fallback is conditional, not guaranteed to answer when its own free quota is exhausted.
 
 ## Operational limits and costs
-- Internal limits **remain 3 successful questions per account per WIB day and 120 global claims/day**. Do not remove them without separately assessing abuse/cost controls.
+- Internal limits **remain 5 successful questions per account per WIB day and 120 global claims/day**. Do not remove them without separately assessing abuse/cost controls.
 - Google Gemini API free tier has project/model-specific rate limits.
 - Workers AI Free has a daily free allocation; Workers Paid may charge beyond its free allocation. Check current account usage and billing before increasing traffic.
 - Free cloud chatbot service **is not unlimited**; both upstreams can become unavailable.
