@@ -1601,9 +1601,9 @@ export function VisualIqGame(){
 
     <main className="mx-auto max-w-md px-4 pb-12 pt-6">
       <div className="text-center">
-        <div className="text-[11px] font-black uppercase tracking-[.15em] text-slate-300">{current.title}</div>
+        <div className="text-[12px] font-black uppercase tracking-[.12em] text-slate-200 sm:text-[13px]">{current.title}</div>
         {(current.layout==="odd" || current.layout==="single") && (
-          <p className="mx-auto mt-2 max-w-sm text-[12px] font-semibold leading-5 text-slate-500">{current.hint}</p>
+          <p className="mx-auto mt-2 max-w-sm px-2 text-[15px] font-semibold leading-[1.5] text-slate-200 sm:text-base">{current.hint}</p>
         )}
       </div>
 
