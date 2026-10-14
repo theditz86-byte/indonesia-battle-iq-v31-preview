@@ -8,11 +8,13 @@
 
 ## Browser chat persistence (V1)
 - AI Coach conversation is restored after reload and panel close for the same participant on the same browser.
-- Messages are stored in browser localStorage under a separate key per participant public ID (no login tokens/API keys). Limit: newest 200 messages and 140,000 characters (~0.3 MB of text).
-- "Hapus riwayat chat" deletes the active participant's browser copy after confirmation. Clearing browser site data or private/incognito sessions also removes chats.
-- History is not encrypted and is not synchronized between browsers/devices. Avoid putting passwords or sensitive personal information in chat, especially on shared devices.
-- Display-only persistence: history is **not automatically sent** to Gemini/Workers AI in follow-up prompts. Multi-turn model memory and cloud sync would be separate future features.
-- No new Supabase tables, Edge Function routes, network calls, quota changes, or Worker modifications are required.
+- Messages are stored in browser localStorage under a separate key per participant public ID (no login tokens/API keys). Limit: newest **300 messages / 200,000 characters**, up to 6,000 characters per message.
+- "Hapus riwayat chat" deletes the active participant's browser copy after confirmation. Clearing site data or private/incognito sessions also removes chats.
+- Browser storage is **not encrypted** and does not synchronize between browsers/devices. Avoid entering passwords or sensitive personal information, especially on shared devices.
+- **Context-aware follow-ups**: The browser sends only up to the **eight newest messages totaling 2,200 characters** to the authenticated Supabase AI endpoint when a new question is asked. Supabase validates the excerpt before claiming quota, then attaches it to the latest prompt sent to the Gemini/Workers AI Gateway. Providers receive only this excerpt, not the complete 200,000-character history.
+- This is bounded **short-term context**, not unlimited long-term model memory. Older messages remain visible on the device but cannot always influence a new response without restating them. The model does not automatically store account-level persistent memory.
+- Request size is capped server-side (7 KB incoming, ~8.9 KB gateway payload) and quota stays **five successful questions/user/day** with global 120/day.
+- No new Supabase tables or Cloudflare Worker code is needed. Supabase Edge Function must be deployed alongside the frontend.
 
 ## Operational limits and costs
 - Internal limits **remain 5 successful questions per account per WIB day and 120 global claims/day**. Do not remove them without separately assessing abuse/cost controls.
