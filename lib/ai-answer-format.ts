@@ -40,7 +40,7 @@ function normalizeMathBody(input: string): string {
   result = result.replace(/\\(?:left|right|displaystyle|textstyle)\b/g, "")
   result = result.replace(/\\([a-zA-Z]+)\b/g, (match, command: string) => MATH_SYMBOLS[command] || match)
   result = result.replace(/\\([{}%_$#&])/g, "$1")
-  result = result.replace(/([\^_])(?:\{([^{}]+)\}|([0-9nijk+=()-]+))/g,
+  result = result.replace(/([\^_])(?:\{([^{}]+)\}|([0-9]+|[nijk]))/g,
     (match, operator: string, braced: string | undefined, naked: string | undefined) => {
       const content = braced ?? naked ?? ""
       return convertScript(content, operator === "^" ? SUPERSCRIPT : SUBSCRIPT, match)
