@@ -7,6 +7,7 @@ import { getParticipantToken } from "@/lib/battle"
 import { clearAiChatHistory, readAiChatHistory, saveAiChatHistory, trimAiChatMessages } from "@/lib/ai-chat-history"
 import type { AiChatMessage } from "@/lib/ai-chat-history"
 import { selectAiCoachContext } from "@/lib/ai-coach-context"
+import { AlzavaAiFormattedMessage } from "@/components/alzava-ai-formatted-message"
 
 const AI_API = "https://efndozplpwyemzgqfnep.supabase.co/functions/v1/alzava-ai-coach"
 const LOGO = "/ai/alzava-ai-coach.svg"
@@ -239,7 +240,7 @@ export function AlzavaAiCoach({ participant }: { participant: BattleParticipant 
                 )}
                 {messages.map((message, index) => (
                   <div key={index} className={`rounded-2xl px-3.5 py-3 leading-6 whitespace-pre-wrap break-words ${message.role === "user" ? "ml-7 bg-cyan-300/15 text-cyan-50" : "mr-4 border border-white/10 bg-white/[.06] text-slate-100"}`}>
-                    {message.text}
+                    {message.role === "assistant" ? <AlzavaAiFormattedMessage text={message.text} /> : message.text}
                   </div>
                 ))}
                 {busy && <div className="flex items-center gap-2 text-xs text-cyan-200"><Loader2 className="h-4 w-4 animate-spin" /> AI sedang menyusun jawaban...</div>}
