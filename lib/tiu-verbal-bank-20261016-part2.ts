@@ -1,0 +1,28 @@
+// ALZAVA — 16 October 2026, original advanced TIU logic questions.
+// Format: [id, family, title, difficulty, prompt, correct, distractors].
+export const alzavaAdvancedTiuOctober16PartTwo = [
+  ["ver-set-201","himpunan-inferensi","Inferensi Himpunan",4,
+    "Semua pemeriksa adalah auditor. Sebagian auditor bukan pegawai tetap. Kesimpulan mengenai pemeriksa adalah ...",
+    "Belum dapat dipastikan apakah ada pemeriksa yang bukan pegawai tetap.",
+    ["Semua pemeriksa bukan pegawai tetap.","Sebagian pemeriksa pasti bukan pegawai tetap.","Tidak ada pemeriksa yang menjadi auditor."]],
+  ["ver-set-202","himpunan-inferensi","Inferensi Himpunan",4,
+    "Sebagian analis adalah penulis. Tidak ada penulis yang mangkir dari pelatihan. Kesimpulan yang pasti benar adalah ...",
+    "Sebagian analis tidak mangkir dari pelatihan.",
+    ["Semua analis mengikuti pelatihan.","Tidak ada analis yang menjadi penulis.","Semua peserta pelatihan adalah analis."]],
+  ["ver-set-203","himpunan-inferensi","Inferensi Himpunan",4,
+    "Semua P adalah Q. Sebagian Q bukan R. Dari kedua premis, hubungan P dan R adalah ...",
+    "Belum dapat dipastikan apakah sebagian P bukan R.",
+    ["Semua P pasti bukan R.","Sebagian P pasti bukan R.","Tidak ada P yang merupakan Q."]],
+  ["ver-data-201","kecukupan-informasi","Kecukupan Data",4,
+    "Untuk menentukan x diketahui I: x + y = 12; II: x - y = 4. Informasi yang cukup adalah ...",
+    "Kedua pernyataan bersama-sama cukup, masing-masing tidak cukup.",
+    ["Pernyataan I saja cukup.","Pernyataan II saja cukup.","Kedua pernyataan tetap tidak cukup."]],
+  ["ver-data-202","kecukupan-informasi","Kecukupan Data",4,
+    "Bilangan bulat x memenuhi I: x lebih besar dari 5; II: x lebih kecil dari 9. Apakah x tunggal?",
+    "Tidak; x masih dapat bernilai 6, 7, atau 8.",
+    ["Ya, x pasti 7.","Ya, x pasti 6.","Ya, x pasti 8."]],
+  ["ver-data-203","kecukupan-informasi","Kecukupan Data",4,
+    "Untuk menentukan a diketahui I: a : b = 3 : 2; II: a + b = 50. Informasi yang cukup adalah ...",
+    "Kedua pernyataan bersama-sama cukup; a = 30.",
+    ["Pernyataan I saja cukup.","Pernyataan II saja cukup.","Kedua pernyataan tidak cukup."]],
+] as const
