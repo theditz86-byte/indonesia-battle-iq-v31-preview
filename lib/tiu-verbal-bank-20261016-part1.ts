@@ -1,0 +1,28 @@
+// ALZAVA — 16 October 2026, original advanced TIU logic questions.
+// Format: [id, family, title, difficulty, prompt, correct, distractors].
+export const alzavaAdvancedTiuOctober16 = [
+  ["ver-contra-201","implikasi-kontrapositif","Kontraposisi Berantai",4,
+    "Jika laporan lengkap maka diverifikasi. Jika diverifikasi maka tanda terima diterbitkan. Tidak ada tanda terima. Kesimpulan yang pasti benar adalah ...",
+    "Laporan tidak lengkap.",
+    ["Laporan pasti sudah diverifikasi.","Laporan lengkap tetapi tanda terima tertunda.","Tidak ada hubungan logis."]],
+  ["ver-contra-202","implikasi-kontrapositif","Kontraposisi Gabungan",4,
+    "Jika listrik padam atau jaringan putus, alarm aktif. Alarm tidak aktif. Pernyataan yang pasti benar adalah ...",
+    "Listrik tidak padam dan jaringan tidak putus.",
+    ["Listrik padam tetapi jaringan normal.","Jaringan putus tetapi listrik normal.","Satu gangguan pasti terjadi."]],
+  ["ver-contra-203","implikasi-kontrapositif","Evaluasi Implikasi",4,
+    "Jika P maka Q. Jika Q maka R. Diketahui R benar, tetapi informasi lain tidak ada. Kesimpulan yang sah adalah ...",
+    "Kebenaran P maupun Q belum dapat dipastikan.",
+    ["P pasti benar.","Q pasti benar.","P dan Q pasti salah."]],
+  ["ver-case-201","analisis-kasus-eksklusif","Kasus Eksklusif",4,
+    "Tepat satu dari dua proposal A dan B disetujui. Proposal A tidak disetujui. Kesimpulan yang pasti benar adalah ...",
+    "Proposal B disetujui.",
+    ["Kedua proposal ditolak.","Kedua proposal disetujui.","Tidak ada kesimpulan yang mungkin ditarik."]],
+  ["ver-case-202","analisis-kasus-eksklusif","Kasus Bersyarat",4,
+    "Dari tiga lampu A, B, dan C, tepat dua menyala. Lampu A padam. Pernyataan yang pasti benar adalah ...",
+    "Lampu B dan C menyala.",
+    ["Hanya lampu B menyala.","Hanya lampu C menyala.","Semua lampu padam."]],
+  ["ver-case-203","analisis-kasus-eksklusif","Penalaran Keadaan",4,
+    "Tepat satu dari mesin P, Q, dan R rusak. Mesin P dan Q normal. Kesimpulan yang pasti benar adalah ...",
+    "Mesin R rusak.",
+    ["Semua mesin normal.","Mesin P dan R rusak.","Mesin Q rusak."]],
+] as const
