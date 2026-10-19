@@ -1,0 +1,199 @@
+{
+  "date": "2026-10-19",
+  "title": "ALZAVA TIU Hard Bank Batch",
+  "version": 1,
+  "items": [
+    {
+      "id": "ALZ-261019-N037",
+      "category": "numerik",
+      "family": "deret-dua-operasi-berantai",
+      "subcategory": "Deret Dua Aturan",
+      "difficulty": "sulit",
+      "prompt": "Tentukan suku berikutnya: 4, 7, 15, 18, 37, 40, __.",
+      "options": [
+        "81",
+        "77",
+        "80",
+        "83"
+      ],
+      "answer": 0,
+      "explanation": "Pola bergantian +3 lalu ×2+1; suku berikutnya 40×2+1=81."
+    },
+    {
+      "id": "ALZ-261019-N038",
+      "category": "numerik",
+      "family": "rasio-berantai-tiga-kelompok",
+      "subcategory": "Perbandingan Bertingkat",
+      "difficulty": "sulit",
+      "prompt": "P : Q = 3 : 4 dan Q : R = 2 : 5. Jika jumlah P, Q, dan R adalah 340, berapa nilai R?",
+      "options": [
+        "200",
+        "180",
+        "220",
+        "240"
+      ],
+      "answer": 0,
+      "explanation": "Samakan Q menjadi 4 bagian: P:Q:R=3:4:10. Total 17 bagian=340, satu bagian 20, maka R=200."
+    },
+    {
+      "id": "ALZ-261019-N039",
+      "category": "numerik",
+      "family": "persentase-naik-diskon-beruntun",
+      "subcategory": "Persentase Beruntun",
+      "difficulty": "sulit",
+      "prompt": "Harga barang Rp800.000 naik 15%, kemudian diberi diskon 10% dari harga setelah kenaikan. Berapa harga akhirnya?",
+      "options": [
+        "Rp828.000",
+        "Rp820.000",
+        "Rp840.000",
+        "Rp810.000"
+      ],
+      "answer": 0,
+      "explanation": "800.000×1,15=920.000; 920.000×0,90=828.000."
+    },
+    {
+      "id": "ALZ-261019-N040",
+      "category": "numerik",
+      "family": "rata-rata-penggantian-dua-nilai",
+      "subcategory": "Rata-rata Tertimbang",
+      "difficulty": "sulit",
+      "prompt": "Rata-rata 8 bilangan adalah 18. Salah satu bilangan 14 diganti menjadi 26. Berapa rata-rata yang baru?",
+      "options": [
+        "19,5",
+        "19",
+        "20",
+        "20,5"
+      ],
+      "answer": 0,
+      "explanation": "Jumlah awal 144. Penggantian menambah jumlah 12, sehingga jumlah baru 156 dan rata-rata 19,5."
+    },
+    {
+      "id": "ALZ-261019-N041",
+      "category": "numerik",
+      "family": "kombinasi-larangan-pasangan",
+      "subcategory": "Kombinatorika dengan Larangan",
+      "difficulty": "sulit",
+      "prompt": "Dari 8 orang dipilih tim beranggotakan 3 orang. Dua orang tertentu tidak boleh terpilih bersama. Berapa banyak tim yang mungkin?",
+      "options": [
+        "50",
+        "48",
+        "52",
+        "56"
+      ],
+      "answer": 0,
+      "explanation": "C(8,3)=56. Tim yang memuat kedua orang tertentu berjumlah C(6,1)=6. Jadi 56−6=50."
+    },
+    {
+      "id": "ALZ-261019-N042",
+      "category": "numerik",
+      "family": "kerja-gabungan-pecahan",
+      "subcategory": "Kerja dan Laju",
+      "difficulty": "sulit",
+      "prompt": "A menyelesaikan pekerjaan dalam 12 hari dan B dalam 18 hari. Jika bekerja bersama dengan laju tetap, berapa hari yang diperlukan?",
+      "options": [
+        "7,2 hari",
+        "6 hari",
+        "7,5 hari",
+        "8 hari"
+      ],
+      "answer": 0,
+      "explanation": "Laju gabungan 1/12+1/18=5/36 pekerjaan per hari. Waktu=36/5=7,2 hari."
+    },
+    {
+      "id": "ALZ-261019-L041",
+      "category": "logika",
+      "family": "silogisme-tiga-premis-beririsan",
+      "subcategory": "Silogisme Kompleks",
+      "difficulty": "sulit",
+      "prompt": "Premis: (1) Semua auditor adalah teliti. (2) Sebagian peneliti adalah auditor. (3) Tidak ada orang teliti yang ceroboh. Kesimpulan: I. Sebagian peneliti teliti. II. Tidak ada auditor yang ceroboh. III. Sebagian peneliti tidak ceroboh. Mana yang pasti benar?",
+      "options": [
+        "I, II, dan III benar",
+        "Hanya I dan II benar",
+        "Hanya II dan III benar",
+        "Hanya I benar"
+      ],
+      "answer": 0,
+      "explanation": "Peneliti yang merupakan auditor pasti teliti. Semua auditor teliti, dan tidak ada orang teliti yang ceroboh; ketiga kesimpulan benar."
+    },
+    {
+      "id": "ALZ-261019-L042",
+      "category": "logika",
+      "family": "implikasi-dua-cabang",
+      "subcategory": "Implikasi dan Kontraposisi",
+      "difficulty": "sulit",
+      "prompt": "Jika A terjadi maka B terjadi. Jika C terjadi maka D terjadi. Diketahui B tidak terjadi dan D terjadi. Kesimpulan mana yang pasti benar?",
+      "options": [
+        "A tidak terjadi",
+        "C pasti terjadi",
+        "B terjadi",
+        "D tidak terjadi"
+      ],
+      "answer": 0,
+      "explanation": "Dari A→B dan ¬B, kontraposisi memberi ¬A. D benar tidak membuktikan C benar."
+    },
+    {
+      "id": "ALZ-261019-L043",
+      "category": "logika",
+      "family": "urutan-parsial-transitif",
+      "subcategory": "Urutan Parsial",
+      "difficulty": "sulit",
+      "prompt": "Empat tugas P, Q, R, dan S mengikuti aturan: S harus sebelum P, P sebelum R, dan S sebelum Q. Kesimpulan mana yang pasti benar?",
+      "options": [
+        "S sebelum R",
+        "Q sebelum P",
+        "R sebelum S",
+        "P sebelum S"
+      ],
+      "answer": 0,
+      "explanation": "Karena S sebelum P dan P sebelum R, secara transitif S pasti sebelum R."
+    },
+    {
+      "id": "ALZ-261019-L044",
+      "category": "logika",
+      "family": "syarat-perlu-berantai",
+      "subcategory": "Syarat Perlu dan Cukup",
+      "difficulty": "sulit",
+      "prompt": "Jika laporan disetujui, audit selesai. Audit selesai hanya jika bukti lengkap. Ternyata bukti belum lengkap. Kesimpulan yang pasti adalah ...",
+      "options": [
+        "Laporan tidak disetujui",
+        "Audit pasti selesai",
+        "Bukti lengkap",
+        "Laporan pasti disetujui"
+      ],
+      "answer": 0,
+      "explanation": "Audit selesai mensyaratkan bukti lengkap. Karena bukti belum lengkap, audit belum selesai; laporan tidak mungkin telah disetujui."
+    },
+    {
+      "id": "ALZ-261019-L045",
+      "category": "logika",
+      "family": "negasi-kuantor-eksistensial",
+      "subcategory": "Kuantor dan Negasi",
+      "difficulty": "sulit",
+      "prompt": "Negasi yang tepat dari pernyataan “Semua peserta yang lulus numerik juga lulus logika” adalah ...",
+      "options": [
+        "Ada peserta yang lulus numerik tetapi tidak lulus logika",
+        "Semua peserta gagal numerik",
+        "Tidak ada peserta yang lulus logika",
+        "Ada peserta yang gagal pada kedua tes"
+      ],
+      "answer": 0,
+      "explanation": "Negasi dari 'semua X memenuhi Y' adalah 'ada setidaknya satu X yang tidak memenuhi Y'."
+    },
+    {
+      "id": "ALZ-261019-L046",
+      "category": "logika",
+      "family": "kecukupan-data-perbandingan",
+      "subcategory": "Kecukupan Data",
+      "difficulty": "sulit",
+      "prompt": "Apakah x > y? (1) x − y = 3. (2) x + y = 10. Pilih penilaian kecukupan informasi yang tepat.",
+      "options": [
+        "Pernyataan (1) saja cukup; (2) saja tidak cukup",
+        "Pernyataan (2) saja cukup; (1) saja tidak cukup",
+        "Keduanya bersama-sama diperlukan; masing-masing tidak cukup",
+        "Masing-masing pernyataan sendiri sudah cukup"
+      ],
+      "answer": 0,
+      "explanation": "x−y=3 langsung menunjukkan x>y. x+y=10 saja tidak menentukan urutan x dan y."
+    }
+  ]
+}
