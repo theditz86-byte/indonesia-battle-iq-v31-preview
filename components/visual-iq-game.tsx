@@ -528,7 +528,42 @@ function buildQuestionBank(){
     }
   }
 
-  // 12) Hard analogy: apply rotation, dot movement, and fill toggle together.
+  // 12) Four-rule matrix: shape cycle + rotation + dot orbit + fill parity.
+  // The family is advanced and may appear at most once in a 35-question package.
+  for(const phase of [0,1,2]){
+    for(const start of [0,90,180,270]){
+      for(let dotStart=0;dotStart<4;dotStart++){
+        const dir=phase%2===0?1:-1
+        const cells:Glyph[]=[]
+        for(let row=0;row<3;row++){
+          for(let col=0;col<3;col++){
+            if(row===2&&col===2)continue
+            const kind=SHAPES[(row+col+phase)%3]
+            const angle=normAngle(start+(row*2+col)*dir*90)
+            const dot=CORNERS[(dotStart+row+2*col*dir+40)%4]
+            const filled=(row+col+dotStart+phase)%2===0
+            cells.push(g(kind,angle,filled,dot))
+          }
+        }
+        const correctKind=SHAPES[(4+phase)%3]
+        const correctAngle=normAngle(start+6*dir*90)
+        const correctDot=CORNERS[(dotStart+2+4*dir+40)%4]
+        const correctFilled=(4+dotStart+phase)%2===0
+        push(optionized(
+          baseQuestion("abs-m3-quad-"+start+"-"+phase+"-"+dotStart,"matrix-empat-aturan","abstract","Abstrak","Matriks Empat Aturan 3 × 3","","matrix3",4,cells),
+          g(correctKind,correctAngle,correctFilled,correctDot),
+          [
+            g(correctKind,correctAngle,!correctFilled,correctDot),
+            g(correctKind,normAngle(correctAngle+90),correctFilled,correctDot),
+            g(correctKind,correctAngle,correctFilled,rotatePos(correctDot,1)),
+          ],
+          start+phase*37+dotStart*11+5
+        ))
+      }
+    }
+  }
+
+  // 13) Hard analogy: apply rotation, dot movement, and fill toggle together.
   for(let start=0;start<4;start++){
     for(const turns of [1,2,3]){
       for(const fillMode of [0,1]){
@@ -1067,6 +1102,26 @@ function buildQuestionBank(){
       answer,[answer+fixed,answer-fixed,answer+Math.round(omzet*fee/100)],i*151+61)
   })
 
+  // Daily hard batch 2026-10-21: one new item in each existing quota family.
+  advancedNum("num-daily-20261021-01","rekursif-dua-suku","Deret Rekursif Berantai",
+    "Tentukan suku berikutnya: 6, 11, 18, 30, 49, __.",
+    80,[79,82,91],20261021)
+  advancedNum("num-daily-20261021-02","rasio-berantai","Perbandingan Tiga Kelompok",
+    "P : Q = 3 : 5 dan Q : R = 4 : 7. Jika jumlah P, Q, dan R adalah 134, berapa nilai R?",
+    70,[66,74,80],20261022)
+  advancedNum("num-daily-20261021-03","persentase-perubahan","Persentase Beruntun",
+    "Harga barang Rp600.000 naik 12%, lalu diberi diskon 15% dari harga setelah kenaikan. Berapa harga akhirnya?",
+    571200,[568000,576000,580000],20261023)
+  advancedNum("num-daily-20261021-04","sistem-linear","Sistem Persamaan",
+    "Diketahui 2x + 3y = 25 dan x + y = 11. Berapa nilai x?",
+    8,[7,9,10],20261024)
+  advancedNum("num-daily-20261021-05","kombinasi-syarat","Kombinatorika dengan Larangan",
+    "Dari 9 kandidat dipilih 3 orang. Dua kandidat tertentu tidak boleh terpilih bersama. Berapa banyak tim yang mungkin?",
+    77,[70,78,84],20261025)
+  advancedNum("num-daily-20261021-06","kerja-bersama","Laju Kerja Gabungan",
+    "A menyelesaikan pekerjaan dalam 8 hari dan B dalam 12 hari. Jika bekerja bersama dengan laju tetap, berapa hari yang diperlukan?",
+    "4,8 hari",["4 hari","5 hari","6 hari"],20261026)
+
   // VERBAL REASONING — original Indonesian items, deliberately separate from MyIQTested wording.
   const verbalItems=[
     ["ver-ana-1","analogi-fungsi","Analogi Kata",2,"Kompas berhubungan dengan arah seperti termometer berhubungan dengan ...","suhu",["waktu","tekanan","jarak"]],
@@ -1112,6 +1167,28 @@ function buildQuestionBank(){
       item[0],item[1],"verbal","Verbal",item[2],item[3],
       item[4],item[5],[...item[6]],index*7+3
     ))
+  })
+
+  const dailyLogicItems=[
+    ["daily-logic-20261021-01","silogisme-tiga-premis","Silogisme Tiga Premis",4,
+      "Semua auditor teliti. Sebagian analis adalah auditor. Tidak ada orang teliti yang ceroboh. Kesimpulan yang pasti benar adalah ...",
+      "Sebagian analis tidak ceroboh",
+      ["Semua analis teliti","Semua orang teliti adalah auditor","Sebagian auditor ceroboh"]],
+    ["daily-logic-20261021-02","implikasi-kontraposisi","Implikasi Berantai",4,
+      "Jika laporan disetujui, audit selesai. Audit selesai hanya jika bukti lengkap. Bukti belum lengkap. Kesimpulan yang pasti adalah ...",
+      "Laporan tidak disetujui",
+      ["Audit pasti selesai","Bukti pasti lengkap","Laporan pasti disetujui"]],
+    ["daily-logic-20261021-03","urutan-transitif","Urutan Multi-Kendala",4,
+      "P harus sebelum Q, Q sebelum R, dan S sesudah R. Pernyataan mana yang pasti benar?",
+      "P sebelum S",
+      ["Q sebelum P","S sebelum P","R sebelum Q"]],
+    ["daily-logic-20261021-04","negasi-kuantor","Negasi Pernyataan Universal",4,
+      "Negasi yang tepat dari 'Setiap peserta yang lulus numerik juga lulus logika' adalah ...",
+      "Ada peserta yang lulus numerik tetapi tidak lulus logika",
+      ["Semua peserta gagal numerik","Tidak ada peserta yang lulus logika","Ada peserta yang gagal pada kedua tes"]],
+  ] as const
+  dailyLogicItems.forEach((item,index)=>{
+    push(textQuestion(item[0],item[1],"verbal","Verbal",item[2],item[3],item[4],item[5],[...item[6]],index*7+3))
   })
 
   for(const q of bank){
@@ -1185,6 +1262,7 @@ const SIMPLE_GEOMETRIC_GROUP=new Set<string>([
 // Only high-complexity visual reasoning can enter the 35-question package.
 const ADVANCED_VISUAL_FAMILIES=new Set<string>([
   "matrix-tiga-aturan",
+  "matrix-empat-aturan",
   "analogi-tiga-aturan",
   "lipat-kertas-ganda",
   "rotasi-cermin",
@@ -1244,8 +1322,12 @@ function stableHash(value:string){
 }
 
 function localDayIndex(){
-  const now=new Date()
-  return Math.floor(Date.UTC(now.getFullYear(),now.getMonth(),now.getDate())/86400000)
+  // Rotasi bank harus mengikuti kalender Indonesia (WIB), bukan zona waktu perangkat.
+  const parts=new Intl.DateTimeFormat("en-CA",{
+    timeZone:"Asia/Jakarta",year:"numeric",month:"2-digit",day:"2-digit"
+  }).formatToParts(new Date())
+  const value=(type:string)=>Number(parts.find(part=>part.type===type)?.value||0)
+  return Math.floor(Date.UTC(value("year"),value("month")-1,value("day"))/86400000)
 }
 
 function dailyFamilyMultiplier(family:string){
