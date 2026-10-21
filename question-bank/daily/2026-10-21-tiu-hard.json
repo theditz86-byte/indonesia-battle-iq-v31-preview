@@ -1,0 +1,167 @@
+{
+  "date": "2026-10-21",
+  "title": "ALZAVA TIU Hard Bank Batch",
+  "version": 1,
+  "items": [
+    {
+      "id": "ALZ-261021-N001",
+      "category": "numerik",
+      "family": "rekursif-dua-suku",
+      "subcategory": "Deret Rekursif",
+      "difficulty": "sulit",
+      "prompt": "Tentukan suku berikutnya: 6, 11, 18, 30, 49, __.",
+      "options": [
+        "80",
+        "79",
+        "82",
+        "91"
+      ],
+      "answer": 0,
+      "explanation": "Mulai suku ketiga, setiap suku = dua suku sebelumnya + 1. Jadi suku berikutnya 30 + 49 + 1 = 80."
+    },
+    {
+      "id": "ALZ-261021-N002",
+      "category": "numerik",
+      "family": "rasio-berantai",
+      "subcategory": "Perbandingan Bertingkat",
+      "difficulty": "sulit",
+      "prompt": "P : Q = 3 : 5 dan Q : R = 4 : 7. Jika jumlah P, Q, dan R adalah 134, berapa nilai R?",
+      "options": [
+        "66",
+        "70",
+        "74",
+        "80"
+      ],
+      "answer": 1,
+      "explanation": "Samakan Q: P:Q:R = 24:40:70. Totalnya 134, sehingga R = 70."
+    },
+    {
+      "id": "ALZ-261021-N003",
+      "category": "numerik",
+      "family": "persentase-perubahan",
+      "subcategory": "Persentase Beruntun",
+      "difficulty": "sulit",
+      "prompt": "Harga barang Rp600.000 naik 12%, lalu diberi diskon 15% dari harga setelah kenaikan. Berapa harga akhirnya?",
+      "options": [
+        "Rp568.000",
+        "Rp576.000",
+        "Rp571.200",
+        "Rp580.000"
+      ],
+      "answer": 2,
+      "explanation": "Rp600.000 × 1,12 = Rp672.000. Setelah diskon: Rp672.000 × 0,85 = Rp571.200."
+    },
+    {
+      "id": "ALZ-261021-N004",
+      "category": "numerik",
+      "family": "sistem-linear",
+      "subcategory": "Sistem Persamaan",
+      "difficulty": "sulit",
+      "prompt": "Diketahui 2x + 3y = 25 dan x + y = 11. Berapa nilai x?",
+      "options": [
+        "7",
+        "9",
+        "10",
+        "8"
+      ],
+      "answer": 3,
+      "explanation": "Dari x+y=11, y=11−x. Substitusi menghasilkan 2x+3(11−x)=25, sehingga x=8."
+    },
+    {
+      "id": "ALZ-261021-N005",
+      "category": "numerik",
+      "family": "kombinasi-syarat",
+      "subcategory": "Kombinatorika dengan Larangan",
+      "difficulty": "sulit",
+      "prompt": "Dari 9 kandidat dipilih 3 orang. Dua kandidat tertentu tidak boleh terpilih bersama. Berapa banyak tim yang mungkin?",
+      "options": [
+        "77",
+        "70",
+        "78",
+        "84"
+      ],
+      "answer": 0,
+      "explanation": "Total tim C(9,3)=84. Tim yang memuat kedua kandidat tertentu ada C(7,1)=7. Jadi 84−7=77."
+    },
+    {
+      "id": "ALZ-261021-N006",
+      "category": "numerik",
+      "family": "kerja-bersama",
+      "subcategory": "Laju Kerja Gabungan",
+      "difficulty": "sulit",
+      "prompt": "A menyelesaikan pekerjaan dalam 8 hari dan B dalam 12 hari. Jika bekerja bersama dengan laju tetap, berapa hari yang diperlukan?",
+      "options": [
+        "4 hari",
+        "4,8 hari",
+        "5 hari",
+        "6 hari"
+      ],
+      "answer": 1,
+      "explanation": "Laju gabungan 1/8+1/12=5/24 pekerjaan per hari, sehingga waktu yang dibutuhkan 24/5=4,8 hari."
+    },
+    {
+      "id": "ALZ-261021-L001",
+      "category": "logika",
+      "family": "silogisme-tiga-premis",
+      "subcategory": "Silogisme Kompleks",
+      "difficulty": "sulit",
+      "prompt": "Semua auditor teliti. Sebagian analis adalah auditor. Tidak ada orang teliti yang ceroboh. Kesimpulan yang pasti benar adalah ...",
+      "options": [
+        "Semua analis teliti",
+        "Semua orang teliti adalah auditor",
+        "Sebagian analis tidak ceroboh",
+        "Sebagian auditor ceroboh"
+      ],
+      "answer": 2,
+      "explanation": "Sebagian analis adalah auditor; semua auditor teliti dan tidak ada orang teliti yang ceroboh. Jadi sebagian analis tidak ceroboh."
+    },
+    {
+      "id": "ALZ-261021-L002",
+      "category": "logika",
+      "family": "implikasi-kontraposisi",
+      "subcategory": "Implikasi Berantai",
+      "difficulty": "sulit",
+      "prompt": "Jika laporan disetujui, audit selesai. Audit selesai hanya jika bukti lengkap. Bukti belum lengkap. Kesimpulan yang pasti adalah ...",
+      "options": [
+        "Audit pasti selesai",
+        "Bukti pasti lengkap",
+        "Laporan pasti disetujui",
+        "Laporan tidak disetujui"
+      ],
+      "answer": 3,
+      "explanation": "Audit selesai mensyaratkan bukti lengkap. Karena bukti belum lengkap, audit tidak selesai; maka laporan tidak mungkin disetujui."
+    },
+    {
+      "id": "ALZ-261021-L003",
+      "category": "logika",
+      "family": "urutan-transitif",
+      "subcategory": "Urutan Multi-Kendala",
+      "difficulty": "sulit",
+      "prompt": "P harus sebelum Q, Q sebelum R, dan S sesudah R. Pernyataan mana yang pasti benar?",
+      "options": [
+        "P sebelum S",
+        "Q sebelum P",
+        "S sebelum P",
+        "R sebelum Q"
+      ],
+      "answer": 0,
+      "explanation": "P sebelum Q sebelum R sebelum S, sehingga P pasti sebelum S."
+    },
+    {
+      "id": "ALZ-261021-L004",
+      "category": "logika",
+      "family": "negasi-kuantor",
+      "subcategory": "Negasi Pernyataan Universal",
+      "difficulty": "sulit",
+      "prompt": "Negasi yang tepat dari 'Setiap peserta yang lulus numerik juga lulus logika' adalah ...",
+      "options": [
+        "Semua peserta gagal numerik",
+        "Ada peserta yang lulus numerik tetapi tidak lulus logika",
+        "Tidak ada peserta yang lulus logika",
+        "Ada peserta yang gagal pada kedua tes"
+      ],
+      "answer": 1,
+      "explanation": "Negasi dari pernyataan universal adalah adanya setidaknya satu peserta yang lulus numerik tetapi tidak lulus logika."
+    }
+  ]
+}
