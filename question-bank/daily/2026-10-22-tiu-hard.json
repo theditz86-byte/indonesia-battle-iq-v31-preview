@@ -1,0 +1,199 @@
+{
+  "date": "2026-10-22",
+  "title": "ALZAVA TIU Hard Bank Batch",
+  "version": 1,
+  "items": [
+    {
+      "id": "ALZ-261022-N001",
+      "category": "numerik",
+      "family": "deret-seling-dua-lajur",
+      "subcategory": "deret-seling-dua-lajur",
+      "difficulty": "sulit",
+      "prompt": "Tentukan suku berikutnya: 5, 4, 10, 9, 20, 19, 40, __.",
+      "options": [
+        "41",
+        "39",
+        "38",
+        "79"
+      ],
+      "answer": 1,
+      "explanation": "Pisahkan posisi ganjil dan genap. Ganjil dikali 2; genap bertambah 5, 10, 20, sehingga suku berikutnya 39."
+    },
+    {
+      "id": "ALZ-261022-N002",
+      "category": "numerik",
+      "family": "sistem-sisa-kongruensi",
+      "subcategory": "sistem-sisa-kongruensi",
+      "difficulty": "sulit",
+      "prompt": "Tentukan bilangan bulat terkecil yang lebih besar dari 100, bersisa 2 saat dibagi 7 dan bersisa 4 saat dibagi 9.",
+      "options": [
+        "121",
+        "114",
+        "130",
+        "184"
+      ],
+      "answer": 0,
+      "explanation": "Pola solusi berulang setiap KPK(7,9)=63. Nilai 58 memenuhi kedua sisa; nilai terkecil di atas 100 ialah 58+63=121."
+    },
+    {
+      "id": "ALZ-261022-N003",
+      "category": "numerik",
+      "family": "jalur-grid-dengan-larangan",
+      "subcategory": "jalur-grid-dengan-larangan",
+      "difficulty": "sulit",
+      "prompt": "Pada kisi, seseorang bergerak dari (0,0) ke (4,3) hanya ke kanan atau ke atas melalui lintasan terpendek. Lintasan harus melewati (2,1), tetapi tidak boleh melewati (3,2). Berapa banyak lintasan yang mungkin?",
+      "options": [
+        "8",
+        "9",
+        "6",
+        "12"
+      ],
+      "answer": 2,
+      "explanation": "Ke (2,1) ada 3 lintasan. Dari (2,1) ke (4,3) ada 6 lintasan, 4 di antaranya melewati (3,2), jadi tersisa 2. Total 3×2=6."
+    },
+    {
+      "id": "ALZ-261022-N004",
+      "category": "numerik",
+      "family": "peluang-satu-merah-satu-biru",
+      "subcategory": "peluang-satu-merah-satu-biru",
+      "difficulty": "sulit",
+      "prompt": "Sebuah kantong berisi 5 bola merah, 4 biru, dan 3 hijau. Dua bola diambil sekaligus tanpa pengembalian. Berapa peluang terambil tepat satu merah dan satu biru?",
+      "options": [
+        "5/18",
+        "4/11",
+        "2/9",
+        "10/33"
+      ],
+      "answer": 3,
+      "explanation": "Pasangan yang memenuhi 5×4=20; seluruh pasangan C(12,2)=66. Peluang=20/66=10/33."
+    },
+    {
+      "id": "ALZ-261022-N005",
+      "category": "numerik",
+      "family": "himpunan-tiga-kelompok-inklusi-eksklusi",
+      "subcategory": "himpunan-tiga-kelompok-inklusi-eksklusi",
+      "difficulty": "sulit",
+      "prompt": "Dari 120 peserta, 62 mengikuti A, 55 mengikuti B, dan 48 mengikuti C. Sebanyak 25 mengikuti A dan B, 20 mengikuti A dan C, 18 mengikuti B dan C, serta 10 mengikuti ketiganya. Berapa peserta yang tidak mengikuti satu pun?",
+      "options": [
+        "10",
+        "8",
+        "12",
+        "15"
+      ],
+      "answer": 1,
+      "explanation": "Yang mengikuti minimal satu=62+55+48−25−20−18+10=112. Yang tidak mengikuti satu pun=120−112=8."
+    },
+    {
+      "id": "ALZ-261022-N006",
+      "category": "numerik",
+      "family": "siklus-digit-pangkat",
+      "subcategory": "siklus-digit-pangkat",
+      "difficulty": "sulit",
+      "prompt": "Apa digit satuan dari 7^2026?",
+      "options": [
+        "1",
+        "3",
+        "9",
+        "7"
+      ],
+      "answer": 2,
+      "explanation": "Digit satuan pangkat 7 berulang 7,9,3,1 dengan periode 4. 2026 bersisa 2 saat dibagi 4, sehingga digit satuannya 9."
+    },
+    {
+      "id": "ALZ-261022-L001",
+      "category": "logika",
+      "family": "silogisme-transitif-arsip",
+      "subcategory": "silogisme-transitif-arsip",
+      "difficulty": "sulit",
+      "prompt": "Setiap naskah yang lolos telaah masuk arsip digital. Tidak satu pun naskah yang belum ditandatangani boleh masuk arsip digital. Sebagian naskah proyek R lolos telaah. Kesimpulan: I. Sebagian naskah proyek R masuk arsip digital. II. Sebagian naskah proyek R telah ditandatangani. III. Semua naskah proyek R telah ditandatangani. Mana yang pasti benar?",
+      "options": [
+        "Hanya I benar",
+        "Hanya II benar",
+        "I dan II saja",
+        "I, II, dan III"
+      ],
+      "answer": 2,
+      "explanation": "Naskah proyek R yang lolos telaah masuk arsip digital; naskah yang masuk arsip digital pasti telah ditandatangani. I dan II benar; III tidak dapat dipastikan."
+    },
+    {
+      "id": "ALZ-261022-L002",
+      "category": "logika",
+      "family": "kegagalan-inferensi-irisan",
+      "subcategory": "kegagalan-inferensi-irisan",
+      "difficulty": "sulit",
+      "prompt": "Semua anggota klub debat membaca buku. Sebagian pembaca buku gemar catur. Kesimpulan: sebagian anggota klub debat gemar catur. Penilaian yang tepat adalah ...",
+      "options": [
+        "Tidak dapat disimpulkan dari premis",
+        "Pasti benar",
+        "Pasti salah",
+        "Bertentangan langsung dengan premis"
+      ],
+      "answer": 0,
+      "explanation": "Pembaca buku yang gemar catur belum tentu anggota klub debat. Irisan tersebut tidak dipastikan oleh premis."
+    },
+    {
+      "id": "ALZ-261022-L003",
+      "category": "logika",
+      "family": "susunan-melingkar-kendala",
+      "subcategory": "susunan-melingkar-kendala",
+      "difficulty": "sulit",
+      "prompt": "Enam orang A, B, C, D, E, dan F duduk melingkar. A berhadapan dengan D. B tepat di sebelah kanan A. E berhadapan dengan B. C tidak duduk bersebelahan dengan D. Siapa yang berhadapan dengan F?",
+      "options": [
+        "A",
+        "B",
+        "E",
+        "C"
+      ],
+      "answer": 3,
+      "explanation": "Setelah posisi A, D, B, dan E ditempatkan, dua kursi tersisa untuk C dan F. C tidak boleh bersebelahan dengan D, sehingga C berhadapan dengan F."
+    },
+    {
+      "id": "ALZ-261022-L004",
+      "category": "logika",
+      "family": "jadwal-blok-berurutan",
+      "subcategory": "jadwal-blok-berurutan",
+      "difficulty": "sulit",
+      "prompt": "Empat tugas W, X, Y, dan Z masing-masing dijadwalkan satu kali dari Senin sampai Kamis. W harus sebelum X; Z harus tepat sehari setelah Y; dan Y tidak boleh pada Senin. Ada berapa jadwal yang memenuhi semua aturan?",
+      "options": [
+        "2",
+        "1",
+        "3",
+        "4"
+      ],
+      "answer": 0,
+      "explanation": "Blok YZ hanya dapat Selasa–Rabu atau Rabu–Kamis. Pada masing-masing kasus W dan X mengisi dua hari tersisa dengan W lebih dahulu. Total 2 jadwal."
+    },
+    {
+      "id": "ALZ-261022-L005",
+      "category": "logika",
+      "family": "konsistensi-kondisional-bercabang",
+      "subcategory": "konsistensi-kondisional-bercabang",
+      "difficulty": "sulit",
+      "prompt": "Jika R benar maka S benar. Jika T benar maka S salah. Diketahui S benar. Kesimpulan mana yang pasti benar?",
+      "options": [
+        "R pasti benar",
+        "T pasti salah",
+        "R pasti salah",
+        "S pasti salah"
+      ],
+      "answer": 1,
+      "explanation": "Jika T benar maka S salah. Karena S benar, T tidak mungkin benar. Tidak ada kesimpulan pasti tentang R."
+    },
+    {
+      "id": "ALZ-261022-L006",
+      "category": "logika",
+      "family": "kekeliruan-menegaskan-akibat",
+      "subcategory": "kekeliruan-menegaskan-akibat",
+      "difficulty": "sulit",
+      "prompt": "Premis: Jika sebuah berkas terenkripsi, berkas itu tidak dapat dibaca tanpa kunci. Fakta: Berkas tersebut tidak dapat dibaca tanpa kunci. Kesimpulan: berkas tersebut pasti terenkripsi. Apakah argumen ini sah?",
+      "options": [
+        "Sah karena akibatnya benar",
+        "Sah jika semua berkas diamankan",
+        "Sah karena premis pertama berlaku",
+        "Tidak sah; akibat yang sama dapat terjadi karena sebab lain"
+      ],
+      "answer": 3,
+      "explanation": "Ini kekeliruan menegaskan akibat. Tidak dapat dibaca tanpa kunci tidak membuktikan berkas terenkripsi; ada sebab lain yang mungkin."
+    }
+  ]
+}
