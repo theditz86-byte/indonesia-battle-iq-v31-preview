@@ -19,9 +19,9 @@
   "exact_prompt_duplicates_vs_2026_10_21_22": 0,
   "family_overlap_vs_2026_10_21_22": [],
   "max_prompt_token_jaccard_vs_previous_batches": {
-    "new_id": "ALZ-261023-N001",
-    "previous_id": "ALZ-261021-N001",
-    "jaccard": 1
+    "new_id": "ALZ-261023-L001",
+    "previous_id": "ALZ-261021-L001",
+    "jaccard": 0.435
   },
   "production_changed": false
 }
