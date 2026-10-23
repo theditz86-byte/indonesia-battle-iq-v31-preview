@@ -9,7 +9,7 @@
       "family": "deret-selisih-kuadrat",
       "subcategory": "Deret Selisih Kuadrat",
       "difficulty": "sulit",
-      "prompt": "Tentukan suku berikutnya: 2, 6, 15, 31, 56, __.",
+      "prompt": "Lengkapi pola bilangan dengan satu suku yang hilang: 2, 6, 15, 31, 56, __.",
       "options": [
         "90",
         "92",
