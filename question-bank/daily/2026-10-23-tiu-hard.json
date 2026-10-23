@@ -1,0 +1,199 @@
+{
+  "date": "2026-10-23",
+  "title": "ALZAVA TIU Hard Bank Batch",
+  "version": 1,
+  "items": [
+    {
+      "id": "ALZ-261023-N001",
+      "category": "numerik",
+      "family": "deret-selisih-kuadrat",
+      "subcategory": "Deret Selisih Kuadrat",
+      "difficulty": "sulit",
+      "prompt": "Tentukan suku berikutnya: 2, 6, 15, 31, 56, __.",
+      "options": [
+        "90",
+        "92",
+        "94",
+        "96"
+      ],
+      "answer": 1,
+      "explanation": "Selisihnya 4, 9, 16, 25, yaitu 2², 3², 4², 5². Selisih berikutnya 36, sehingga suku berikutnya 92."
+    },
+    {
+      "id": "ALZ-261023-N002",
+      "category": "numerik",
+      "family": "campuran-konsentrasi",
+      "subcategory": "Campuran Konsentrasi",
+      "difficulty": "sulit",
+      "prompt": "Larutan berkadar garam 30% dicampur dengan larutan 50% untuk menghasilkan 40 liter larutan berkadar 42,5%. Berapa liter larutan 30% yang diperlukan?",
+      "options": [
+        "10 liter",
+        "15 liter",
+        "20 liter",
+        "25 liter"
+      ],
+      "answer": 1,
+      "explanation": "0,30x+0,50(40−x)=0,425×40, sehingga x=15 liter."
+    },
+    {
+      "id": "ALZ-261023-N003",
+      "category": "numerik",
+      "family": "rata-rata-nilai-dikeluarkan",
+      "subcategory": "Rata-rata dan Nilai yang Dikeluarkan",
+      "difficulty": "sulit",
+      "prompt": "Rata-rata enam nilai adalah 72. Setelah satu nilai dikeluarkan, rata-rata lima nilai yang tersisa menjadi 68. Berapa nilai yang dikeluarkan?",
+      "options": [
+        "88",
+        "90",
+        "92",
+        "96"
+      ],
+      "answer": 2,
+      "explanation": "Jumlah awal 432 dan jumlah lima nilai tersisa 340. Nilai yang dikeluarkan adalah 432−340=92."
+    },
+    {
+      "id": "ALZ-261023-N004",
+      "category": "numerik",
+      "family": "kejar-mengejar-berangkat-terlambat",
+      "subcategory": "Kecepatan Relatif dengan Waktu Mulai Berbeda",
+      "difficulty": "sulit",
+      "prompt": "Dua kota berjarak 360 km. Kendaraan A berangkat pukul 08.00 dengan kecepatan 70 km/jam. Kendaraan B berangkat dari kota seberang pukul 09.00 menuju A dengan kecepatan 50 km/jam. Pukul berapa mereka bertemu?",
+      "options": [
+        "11.25",
+        "11.00",
+        "11.30",
+        "12.00"
+      ],
+      "answer": 0,
+      "explanation": "Pada pukul 09.00, A telah menempuh 70 km; jarak tersisa 290 km. Kecepatan saling mendekat 120 km/jam, sehingga waktu tambahan 2 jam 25 menit. Mereka bertemu pukul 11.25."
+    },
+    {
+      "id": "ALZ-261023-N005",
+      "category": "numerik",
+      "family": "rasio-setelah-transfer",
+      "subcategory": "Perbandingan Setelah Pemindahan",
+      "difficulty": "sulit",
+      "prompt": "Jumlah A dan B berbanding 5 : 7. Sebanyak 15% dari jumlah A dipindahkan ke B tanpa mengubah jumlah total. Berapa perbandingan A : B setelah pemindahan?",
+      "options": [
+        "17 : 31",
+        "17 : 29",
+        "5 : 7",
+        "31 : 17"
+      ],
+      "answer": 0,
+      "explanation": "Misalkan A=5k dan B=7k. Yang dipindahkan 0,75k. Nilai baru A=4,25k dan B=7,75k, sehingga perbandingannya 17:31."
+    },
+    {
+      "id": "ALZ-261023-N006",
+      "category": "numerik",
+      "family": "peluang-dua-dadu-jumlah-ekstrem",
+      "subcategory": "Peluang Dua Dadu",
+      "difficulty": "sulit",
+      "prompt": "Dua dadu bersisi enam dilempar bersamaan. Berapa peluang jumlah kedua mata dadu sekurang-kurangnya 10?",
+      "options": [
+        "1/6",
+        "1/4",
+        "5/18",
+        "1/3"
+      ],
+      "answer": 0,
+      "explanation": "Jumlah 10 memiliki 3 hasil, 11 memiliki 2, dan 12 memiliki 1. Peluangnya 6/36=1/6."
+    },
+    {
+      "id": "ALZ-261023-L001",
+      "category": "logika",
+      "family": "silogisme-himpunan-disjungsi",
+      "subcategory": "Silogisme Kompleks",
+      "difficulty": "sulit",
+      "prompt": "Semua auditor adalah pegawai bersertifikat. Tidak ada pegawai bersertifikat yang merupakan kontraktor eksternal. Sebagian staf pengadaan adalah auditor. Kesimpulan: I. Sebagian staf pengadaan bersertifikat. II. Tidak ada auditor yang merupakan kontraktor eksternal. III. Semua staf pengadaan bukan kontraktor eksternal. Kesimpulan yang pasti benar adalah ...",
+      "options": [
+        "Hanya I",
+        "Hanya II",
+        "I dan II saja",
+        "I, II, dan III"
+      ],
+      "answer": 2,
+      "explanation": "Sebagian staf pengadaan yang merupakan auditor pasti bersertifikat, jadi I benar. II juga benar. III tidak pasti karena tidak semua staf pengadaan diketahui sebagai auditor."
+    },
+    {
+      "id": "ALZ-261023-L002",
+      "category": "logika",
+      "family": "teka-teki-satu-pelaku-satu-pernyataan-benar",
+      "subcategory": "Konsistensi Pernyataan",
+      "difficulty": "sulit",
+      "prompt": "Tepat satu dari A, B, dan C mengambil sebuah berkas, dan tepat satu pernyataan berikut benar. A berkata, “B yang mengambil berkas.” B berkata, “Saya tidak mengambil berkas.” C berkata, “A tidak mengambil berkas.” Siapa yang mengambil berkas?",
+      "options": [
+        "B",
+        "C",
+        "Tidak dapat ditentukan",
+        "A"
+      ],
+      "answer": 3,
+      "explanation": "Jika A mengambil berkas, hanya pernyataan B yang benar. Jika B atau C yang mengambil, dua pernyataan benar. Jadi A yang mengambil berkas."
+    },
+    {
+      "id": "ALZ-261023-L003",
+      "category": "logika",
+      "family": "kecukupan-data-domain-positif",
+      "subcategory": "Kecukupan Data",
+      "difficulty": "sulit",
+      "prompt": "x dan y adalah bilangan bulat positif. Apakah x > y? (1) x² > y². (2) x + y = 17. Pilih penilaian yang tepat.",
+      "options": [
+        "Pernyataan (2) saja cukup; (1) saja tidak cukup",
+        "Pernyataan (1) saja cukup; (2) saja tidak cukup",
+        "Kedua pernyataan bersama-sama diperlukan",
+        "Masing-masing pernyataan sendiri sudah cukup"
+      ],
+      "answer": 1,
+      "explanation": "Karena x dan y positif, x²>y² langsung berarti x>y, sehingga (1) cukup. Jumlah x+y=17 saja tidak cukup."
+    },
+    {
+      "id": "ALZ-261023-L004",
+      "category": "logika",
+      "family": "evaluasi-kausal-variabel-pengganggu",
+      "subcategory": "Evaluasi Argumen Kausal",
+      "difficulty": "sulit",
+      "prompt": "Setelah kantor menerapkan sistem antrean baru, waktu tunggu rata-rata turun 20%. Kepala kantor menyimpulkan sistem baru menyebabkan penurunan itu. Temuan mana yang paling melemahkan kesimpulan tersebut?",
+      "options": [
+        "Mayoritas pengunjung menyatakan tampilan sistem baru mudah dipahami",
+        "Sistem baru menyediakan lebih banyak jenis laporan",
+        "Waktu tunggu juga turun pada beberapa kantor yang belum memakai sistem baru",
+        "Pada periode yang sama, jumlah loket digandakan dan jumlah pemohon turun 30%"
+      ],
+      "answer": 3,
+      "explanation": "Penambahan loket dan penurunan jumlah pemohon merupakan penjelasan alternatif yang kuat atas penurunan waktu tunggu."
+    },
+    {
+      "id": "ALZ-261023-L005",
+      "category": "logika",
+      "family": "penempatan-kasus-kendala-transitif",
+      "subcategory": "Penalaran Penempatan",
+      "difficulty": "sulit",
+      "prompt": "Lima analis A, B, C, D, dan E masing-masing mendapat satu kasus bernomor 1 sampai 5. E mendapat kasus 1, C mendapat kasus 4, D tidak mendapat kasus 1 atau 5, dan nomor kasus A lebih kecil daripada nomor kasus B. Siapa yang pasti mendapat kasus 5?",
+      "options": [
+        "A",
+        "C",
+        "B",
+        "D"
+      ],
+      "answer": 2,
+      "explanation": "E menempati 1, C menempati 4, dan D harus menempati 2 atau 3. Karena A harus bernomor lebih kecil daripada B, B pasti mendapat 5."
+    },
+    {
+      "id": "ALZ-261023-L006",
+      "category": "logika",
+      "family": "disjungsi-eksklusif-kondisional",
+      "subcategory": "Disjungsi dan Syarat",
+      "difficulty": "sulit",
+      "prompt": "Jika proposal lolos telaah, rekomendasi X atau Y (minimal satu) diterbitkan. Rekomendasi X dan Y tidak dapat diterbitkan bersamaan. Proposal tersebut lolos telaah. Kesimpulan yang pasti benar adalah ...",
+      "options": [
+        "Rekomendasi X dan Y sama-sama diterbitkan",
+        "Tidak ada rekomendasi yang diterbitkan",
+        "Proposal sebenarnya tidak lolos telaah",
+        "Tepat satu dari rekomendasi X atau Y diterbitkan"
+      ],
+      "answer": 3,
+      "explanation": "Proposal yang lolos telaah harus menghasilkan minimal satu rekomendasi. Karena X dan Y tidak dapat terbit bersamaan, tepat satu diterbitkan."
+    }
+  ]
+}
