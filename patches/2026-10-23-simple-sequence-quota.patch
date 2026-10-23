@@ -1,0 +1,12 @@
+--- a/components/visual-iq-game.tsx
++++ b/components/visual-iq-game.tsx
+@@
+-  // Pola mudah boleh absen; peluangnya hanya 20% per jenis.
+-  const arith=Math.random()<0.2?1:0
+-  const growing=Math.random()<0.2?1:0
++  // Maksimal satu keluarga deret sederhana per paket.
++  // Peluang totalnya tetap 20%; jika terpilih, pilih tepat satu jenis.
++  const simpleSequence: "arith" | "growing" | null =
++    Math.random() < 0.2 ? (Math.random() < 0.5 ? "arith" : "growing") : null
++  const arith = simpleSequence === "arith" ? 1 : 0
++  const growing = simpleSequence === "growing" ? 1 : 0
