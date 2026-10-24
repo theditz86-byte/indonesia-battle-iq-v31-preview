@@ -14,17 +14,17 @@
   "answer_position_counts": {
     "A": 3,
     "B": 3,
-    "C": 2,
-    "D": 4
+    "C": 3,
+    "D": 3
   },
   "exact_prompt_duplicates_vs_2026_10_21_to_23": 0,
   "family_overlap_vs_2026_10_21_to_23": [],
-  "max_token_jaccard_similarity_vs_previous_batches": 0.6470588235294118,
+  "max_token_jaccard_similarity_vs_previous_batches": 0.55,
   "max_similarity_pair": {
-    "new_id": "ALZ-261024-L003",
+    "new_id": "ALZ-261024-L001",
     "previous_id": "ALZ-261021-L001",
     "previous_date": "2026-10-21",
-    "similarity": 0.647
+    "similarity": 0.55
   },
   "semantic_review_note": "Token Jaccard is a screening metric, not a full semantic-equivalence test.",
   "production_changed": false
