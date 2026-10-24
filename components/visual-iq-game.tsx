@@ -1222,10 +1222,10 @@ function buildQuestionBank(){
       "Sistem menyala jika dan hanya jika kedua sensor A dan B aktif. Saat pengujian, sistem tidak menyala. Kesimpulan yang pasti adalah ...",
       "Setidaknya satu sensor tidak aktif",
       ["Kedua sensor pasti aktif","Kedua sensor pasti tidak aktif","Sistem pasti aktif"]],
-    ["daily-logic-20261024-05","syarat-finalisasi-bukti","Syarat Finalisasi Bukti",4,
-      "Jika proyek lolos audit, laporan final diterbitkan. Laporan final diterbitkan hanya jika seluruh bukti telah diverifikasi. Ada bukti yang belum diverifikasi. Kesimpulan yang pasti adalah ...",
-      "Proyek tidak lolos audit",
-      ["Laporan final pasti diterbitkan","Seluruh bukti telah diverifikasi","Proyek pasti lolos audit"]],
+    ["daily-logic-20261024-05","hitung-kode-kendala","Kode dengan Kendala",4,
+      "Kode akses terdiri dari tiga digit berbeda yang dipilih dari angka 1 sampai 5 tanpa pengulangan. Digit pertama harus genap dan digit terakhir harus lebih besar daripada digit pertama. Ada berapa kode yang mungkin?",
+      "12 kode",
+      ["10 kode","14 kode","16 kode"]],
   ] as const
   dailyLogicItems.forEach((item,index)=>{
     push(textQuestion(item[0],item[1],"verbal","Verbal",item[2],item[3],item[4],item[5],[...item[6]],index*7+3))
