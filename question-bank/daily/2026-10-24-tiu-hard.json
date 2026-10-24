@@ -1,0 +1,199 @@
+{
+  "date": "2026-10-24",
+  "title": "ALZAVA Daily TIU & Abstract Bank Batch",
+  "version": 1,
+  "items": [
+    {
+      "id": "ALZ-261024-N001",
+      "category": "numerik",
+      "family": "deret-operasi-selang-seling",
+      "subcategory": "Deret Operasi Bergantian",
+      "difficulty": "sulit",
+      "prompt": "Tentukan suku berikutnya: 4, 12, 14, 42, 44, 132, __.",
+      "options": [
+        "134",
+        "396",
+        "136",
+        "130"
+      ],
+      "answer": 0,
+      "explanation": "Pola bergantian ×3 lalu +2. Setelah 132, operasi berikutnya +2, sehingga hasilnya 134."
+    },
+    {
+      "id": "ALZ-261024-N002",
+      "category": "numerik",
+      "family": "produktivitas-multi-faktor",
+      "subcategory": "Produktivitas Multi-Faktor",
+      "difficulty": "menengah-sulit",
+      "prompt": "Tiga printer identik mencetak 540 halaman dalam 6 menit. Dengan laju tetap, berapa halaman yang dicetak 5 printer dalam 8 menit?",
+      "options": [
+        "1080",
+        "1200",
+        "1350",
+        "1500"
+      ],
+      "answer": 1,
+      "explanation": "Laju per printer per menit = 540 ÷ (3×6) = 30 halaman. Maka 5×8×30 = 1.200 halaman."
+    },
+    {
+      "id": "ALZ-261024-N003",
+      "category": "numerik",
+      "family": "geometri-perimeter-luas",
+      "subcategory": "Perimeter dan Luas",
+      "difficulty": "sulit",
+      "prompt": "Sebuah persegi panjang berkeliling 84 cm. Panjangnya 3 cm lebih besar daripada dua kali lebarnya. Berapa luasnya?",
+      "options": [
+        "364 cm²",
+        "390 cm²",
+        "377 cm²",
+        "406 cm²"
+      ],
+      "answer": 2,
+      "explanation": "Panjang + lebar = 42. Jika panjang = 2l + 3, maka 3l + 3 = 42 sehingga lebar 13 cm dan panjang 29 cm. Luas = 377 cm²."
+    },
+    {
+      "id": "ALZ-261024-N004",
+      "category": "numerik",
+      "family": "kecepatan-rerata-jarak-sama",
+      "subcategory": "Kecepatan Rata-Rata untuk Jarak Sama",
+      "difficulty": "sulit",
+      "prompt": "Kendaraan menempuh 120 km dengan kecepatan 40 km/jam dan 120 km berikutnya dengan kecepatan 60 km/jam. Berapa kecepatan rata-rata seluruh perjalanan?",
+      "options": [
+        "50 km/jam",
+        "45 km/jam",
+        "52 km/jam",
+        "48 km/jam"
+      ],
+      "answer": 3,
+      "explanation": "Total jarak 240 km. Waktu yang dibutuhkan 120/40 + 120/60 = 3 + 2 = 5 jam. Kecepatan rata-rata = 240/5 = 48 km/jam."
+    },
+    {
+      "id": "ALZ-261024-N005",
+      "category": "numerik",
+      "family": "rasio-persentase-ekuivalen",
+      "subcategory": "Rasio dari Persentase",
+      "difficulty": "menengah-sulit",
+      "prompt": "Jika 80% dari x sama dengan 120% dari y, dengan x dan y positif, berapa rasio x : y?",
+      "options": [
+        "3 : 2",
+        "2 : 3",
+        "4 : 5",
+        "5 : 4"
+      ],
+      "answer": 0,
+      "explanation": "0,8x = 1,2y, sehingga x/y = 1,2/0,8 = 1,5. Jadi x:y = 3:2."
+    },
+    {
+      "id": "ALZ-261024-N006",
+      "category": "numerik",
+      "family": "rata-rata-antar-kelompok",
+      "subcategory": "Rata-Rata Antar Kelompok",
+      "difficulty": "sulit",
+      "prompt": "Rata-rata 12 nilai adalah 68. Rata-rata 5 nilai pertama adalah 72. Berapa rata-rata 7 nilai sisanya?",
+      "options": [
+        "64",
+        "65 1/7",
+        "66",
+        "67"
+      ],
+      "answer": 1,
+      "explanation": "Jumlah 12 nilai = 12×68 = 816. Jumlah 5 nilai pertama = 5×72 = 360. Sisa jumlah 456, sehingga rata-rata tujuh nilai = 456/7 = 65 1/7."
+    },
+    {
+      "id": "ALZ-261024-L001",
+      "category": "logika",
+      "family": "silogisme-arsip-audit",
+      "subcategory": "Silogisme Kompleks",
+      "difficulty": "sulit",
+      "prompt": "Semua arsiparis teliti. Tidak ada orang teliti yang mengabaikan jejak audit. Sebagian staf pengadaan adalah arsiparis. Kesimpulan yang pasti benar adalah ...",
+      "options": [
+        "Hanya I: sebagian staf pengadaan teliti",
+        "Hanya II: semua staf pengadaan arsiparis",
+        "I dan II saja: sebagian staf pengadaan teliti dan tidak mengabaikan jejak audit; tetapi tidak semua staf pengadaan pasti arsiparis",
+        "I, II, dan III benar"
+      ],
+      "answer": 2,
+      "explanation": "Sebagian staf pengadaan yang merupakan arsiparis pasti teliti dan tidak mengabaikan jejak audit. Tidak ada premis yang menyatakan semua staf pengadaan arsiparis."
+    },
+    {
+      "id": "ALZ-261024-L002",
+      "category": "logika",
+      "family": "implikasi-kontraposisi-berantai",
+      "subcategory": "Implikasi Berantai",
+      "difficulty": "sulit",
+      "prompt": "Jika proposal disetujui, anggaran diberikan. Jika anggaran diberikan, pelaksanaan dimulai. Pelaksanaan belum dimulai. Kesimpulan yang pasti adalah ...",
+      "options": [
+        "Proposal disetujui",
+        "Anggaran pasti diberikan",
+        "Pelaksanaan sudah dimulai",
+        "Proposal tidak disetujui"
+      ],
+      "answer": 3,
+      "explanation": "Dari anggaran diberikan → pelaksanaan dimulai, kontraposisinya adalah pelaksanaan belum dimulai → anggaran tidak diberikan. Karena proposal disetujui → anggaran diberikan, proposal tidak disetujui."
+    },
+    {
+      "id": "ALZ-261024-L003",
+      "category": "logika",
+      "family": "validitas-himpunan-predikat",
+      "subcategory": "Himpunan dan Predikat",
+      "difficulty": "sulit",
+      "prompt": "Tidak ada reviewer yang menjadi pengaju. Sebagian auditor adalah reviewer. Semua auditor teliti. Kesimpulan yang pasti benar adalah ...",
+      "options": [
+        "Semua orang teliti adalah auditor",
+        "Sebagian auditor teliti dan bukan pengaju",
+        "Tidak ada auditor yang menjadi pengaju",
+        "Semua reviewer adalah auditor"
+      ],
+      "answer": 1,
+      "explanation": "Sebagian auditor yang merupakan reviewer pasti teliti dan bukan pengaju. Premis tidak menyatakan semua auditor adalah reviewer."
+    },
+    {
+      "id": "ALZ-261024-L004",
+      "category": "logika",
+      "family": "negasi-kuantor-konjungsi",
+      "subcategory": "Negasi Kuantor dan Konjungsi",
+      "difficulty": "sulit",
+      "prompt": "Negasi yang tepat dari 'Setiap laporan yang disahkan telah diverifikasi dan diarsipkan' adalah ...",
+      "options": [
+        "Tidak ada laporan yang disahkan",
+        "Semua laporan yang belum diverifikasi tidak disahkan",
+        "Ada laporan yang disahkan dan telah diverifikasi",
+        "Ada laporan yang disahkan tetapi belum diverifikasi atau belum diarsipkan"
+      ],
+      "answer": 3,
+      "explanation": "Negasi 'semua X memenuhi A dan B' adalah 'ada X yang tidak memenuhi A atau tidak memenuhi B'."
+    },
+    {
+      "id": "ALZ-261024-L005",
+      "category": "logika",
+      "family": "syarat-finalisasi-bukti",
+      "subcategory": "Syarat Perlu Berantai",
+      "difficulty": "sulit",
+      "prompt": "Jika proyek lolos audit, laporan final diterbitkan. Laporan final diterbitkan hanya jika seluruh bukti telah diverifikasi. Ada bukti yang belum diverifikasi. Kesimpulan yang pasti adalah ...",
+      "options": [
+        "Laporan final pasti diterbitkan",
+        "Seluruh bukti telah diverifikasi",
+        "Proyek pasti lolos audit",
+        "Proyek tidak lolos audit"
+      ],
+      "answer": 3,
+      "explanation": "Laporan final mensyaratkan seluruh bukti diverifikasi. Karena ada bukti yang belum diverifikasi, laporan final tidak terbit; proyek tidak mungkin lolos audit menurut implikasi pertama."
+    },
+    {
+      "id": "ALZ-261024-A001",
+      "category": "abstrak",
+      "family": "abstrak-tiga-aturan-urutan",
+      "subcategory": "Pola Abstrak Multi-Aturan",
+      "difficulty": "sulit",
+      "prompt": "Bentuk berganti segitiga dan persegi. Isian mengikuti siklus tanpa isi, berisi, berisi, tanpa isi. Titik bergerak searah jarum jam: kiri atas, kanan atas, kanan bawah, kiri bawah. Urutan: 1) segitiga tanpa isi titik kiri atas; 2) persegi berisi titik kanan atas; 3) segitiga berisi titik kanan bawah; 4) persegi tanpa isi titik kiri bawah; 5) segitiga tanpa isi titik kiri atas. Simbol ke-6 adalah ...",
+      "options": [
+        "Persegi penuh, titik kanan atas",
+        "Segitiga penuh, titik kanan atas",
+        "Persegi kosong, titik kanan atas",
+        "Persegi penuh, titik kiri atas"
+      ],
+      "answer": 0,
+      "explanation": "Pada simbol ke-6 bentuknya persegi, isian kembali penuh menurut siklus empat langkah, dan titik berpindah dari kiri atas ke kanan atas."
+    }
+  ]
+}
