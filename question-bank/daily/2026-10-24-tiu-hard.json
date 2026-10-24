@@ -102,18 +102,18 @@
     {
       "id": "ALZ-261024-L001",
       "category": "logika",
-      "family": "silogisme-arsip-audit",
-      "subcategory": "Silogisme Kompleks",
+      "family": "silogisme-rantai-publikasi",
+      "subcategory": "Silogisme Rantai Publikasi",
       "difficulty": "sulit",
-      "prompt": "Semua arsiparis teliti. Tidak ada orang teliti yang mengabaikan jejak audit. Sebagian staf pengadaan adalah arsiparis. Kesimpulan yang pasti benar adalah ...",
+      "prompt": "Semua berkas yang lolos pemindaian mendapat cap digital. Tidak ada berkas tanpa cap digital yang dapat dikirim. Dua berkas dari batch K lolos pemindaian. Kesimpulan mana yang pasti benar? I. Kedua berkas itu memiliki cap digital. II. Kedua berkas itu pasti telah dikirim. III. Semua berkas batch K lolos pemindaian.",
       "options": [
-        "Hanya I: sebagian staf pengadaan teliti",
-        "Hanya II: semua staf pengadaan arsiparis",
-        "I dan II saja: sebagian staf pengadaan teliti dan tidak mengabaikan jejak audit; tetapi tidak semua staf pengadaan pasti arsiparis",
+        "I dan II benar",
+        "Hanya II benar",
+        "Hanya I benar",
         "I, II, dan III benar"
       ],
       "answer": 2,
-      "explanation": "Sebagian staf pengadaan yang merupakan arsiparis pasti teliti dan tidak mengabaikan jejak audit. Tidak ada premis yang menyatakan semua staf pengadaan arsiparis."
+      "explanation": "Kedua berkas yang lolos pemindaian pasti mendapat cap digital, sehingga I benar. Cap digital tidak menjamin berkas telah dikirim, dan tidak ada informasi bahwa semua berkas batch K lolos pemindaian; II dan III tidak pasti benar."
     },
     {
       "id": "ALZ-261024-L002",
