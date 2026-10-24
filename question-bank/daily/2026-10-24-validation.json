@@ -19,12 +19,12 @@
   },
   "exact_prompt_duplicates_vs_2026_10_21_to_23": 0,
   "family_overlap_vs_2026_10_21_to_23": [],
-  "max_token_jaccard_similarity_vs_previous_batches": 0.47619047619047616,
+  "max_token_jaccard_similarity_vs_previous_batches": 0.4,
   "max_similarity_pair": {
-    "new_id": "ALZ-261024-L005",
-    "previous_id": "ALZ-261021-L002",
+    "new_id": "ALZ-261024-L003",
+    "previous_id": "ALZ-261021-L003",
     "previous_date": "2026-10-21",
-    "similarity": 0.476
+    "similarity": 0.4
   },
   "semantic_review_note": "Token Jaccard is a screening metric, not a full semantic-equivalence test.",
   "production_changed": false
