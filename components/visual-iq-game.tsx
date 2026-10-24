@@ -1234,7 +1234,7 @@ function buildQuestionBank(){
   push(textQuestion(
     "abstract-daily-20261024-01","abstrak-tiga-aturan-urutan","abstract","Abstrak",
     "Pola Multi-Aturan",4,
-    "Bentuk berganti segitiga dan persegi. Isian mengikuti siklus kosong, penuh, penuh, kosong. Titik bergerak searah jarum jam: kiri atas, kanan atas, kanan bawah, kiri bawah. Urutan: 1) segitiga kosong titik kiri atas; 2) persegi penuh titik kanan atas; 3) segitiga penuh titik kanan bawah; 4) persegi kosong titik kiri bawah; 5) segitiga kosong titik kiri atas. Simbol ke-6 adalah ...",
+    "Bentuk berganti segitiga dan persegi. Isian mengikuti siklus tanpa isi, berisi, berisi, tanpa isi. Titik bergerak searah jarum jam: kiri atas, kanan atas, kanan bawah, kiri bawah. Urutan: 1) segitiga tanpa isi titik kiri atas; 2) persegi berisi titik kanan atas; 3) segitiga berisi titik kanan bawah; 4) persegi tanpa isi titik kiri bawah; 5) segitiga tanpa isi titik kiri atas. Simbol ke-6 adalah ...",
     "Persegi penuh, titik kanan atas",
     ["Segitiga penuh, titik kanan atas","Persegi kosong, titik kanan atas","Persegi penuh, titik kiri atas"],2026102407
   ))
