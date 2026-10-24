@@ -134,34 +134,34 @@
     {
       "id": "ALZ-261024-L003",
       "category": "logika",
-      "family": "validitas-himpunan-predikat",
-      "subcategory": "Himpunan dan Predikat",
+      "family": "relasi-urutan-simbolik",
+      "subcategory": "Relasi Urutan Simbolik",
       "difficulty": "sulit",
-      "prompt": "Tidak ada reviewer yang menjadi pengaju. Sebagian auditor adalah reviewer. Semua auditor teliti. Kesimpulan yang pasti benar adalah ...",
+      "prompt": "Gunakan aturan: X ≻ Y berarti X lebih tinggi dari Y; X ≺ Y berarti X lebih rendah dari Y; X ≡ Y berarti setingkat. Diketahui P ≻ Q, Q ≺ R, R ≡ S, dan S ≻ T. Pernyataan mana yang pasti benar?",
       "options": [
-        "Semua orang teliti adalah auditor",
-        "Sebagian auditor teliti dan bukan pengaju",
-        "Tidak ada auditor yang menjadi pengaju",
-        "Semua reviewer adalah auditor"
+        "P lebih tinggi daripada S",
+        "R lebih tinggi daripada Q",
+        "Q lebih tinggi daripada T",
+        "T lebih tinggi daripada R"
       ],
       "answer": 1,
-      "explanation": "Sebagian auditor yang merupakan reviewer pasti teliti dan bukan pengaju. Premis tidak menyatakan semua auditor adalah reviewer."
+      "explanation": "Q ≺ R berarti R lebih tinggi daripada Q. Hubungan P terhadap S dan Q terhadap T tidak dapat dipastikan; T juga tidak lebih tinggi daripada R."
     },
     {
       "id": "ALZ-261024-L004",
       "category": "logika",
-      "family": "negasi-kuantor-konjungsi",
-      "subcategory": "Negasi Kuantor dan Konjungsi",
+      "family": "kondisi-bikondisional-sensor",
+      "subcategory": "Kondisi Dua Sensor",
       "difficulty": "sulit",
-      "prompt": "Negasi yang tepat dari 'Setiap laporan yang disahkan telah diverifikasi dan diarsipkan' adalah ...",
+      "prompt": "Sistem menyala jika dan hanya jika kedua sensor A dan B aktif. Saat pengujian, sistem tidak menyala. Kesimpulan yang pasti adalah ...",
       "options": [
-        "Tidak ada laporan yang disahkan",
-        "Semua laporan yang belum diverifikasi tidak disahkan",
-        "Ada laporan yang disahkan dan telah diverifikasi",
-        "Ada laporan yang disahkan tetapi belum diverifikasi atau belum diarsipkan"
+        "Kedua sensor pasti aktif",
+        "Kedua sensor pasti tidak aktif",
+        "Setidaknya satu sensor tidak aktif",
+        "Sistem pasti aktif"
       ],
-      "answer": 3,
-      "explanation": "Negasi 'semua X memenuhi A dan B' adalah 'ada X yang tidak memenuhi A atau tidak memenuhi B'."
+      "answer": 2,
+      "explanation": "Sistem menyala tepat ketika kedua sensor aktif. Karena sistem tidak menyala, tidak mungkin kedua sensor sama-sama aktif; setidaknya satu tidak aktif."
     },
     {
       "id": "ALZ-261024-L005",
