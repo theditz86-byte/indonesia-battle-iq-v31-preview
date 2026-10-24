@@ -166,18 +166,18 @@
     {
       "id": "ALZ-261024-L005",
       "category": "logika",
-      "family": "syarat-finalisasi-bukti",
-      "subcategory": "Syarat Perlu Berantai",
+      "family": "hitung-kode-kendala",
+      "subcategory": "Penghitungan dengan Kendala",
       "difficulty": "sulit",
-      "prompt": "Jika proyek lolos audit, laporan final diterbitkan. Laporan final diterbitkan hanya jika seluruh bukti telah diverifikasi. Ada bukti yang belum diverifikasi. Kesimpulan yang pasti adalah ...",
+      "prompt": "Kode akses terdiri dari tiga digit berbeda yang dipilih dari angka 1 sampai 5 tanpa pengulangan. Digit pertama harus genap dan digit terakhir harus lebih besar daripada digit pertama. Ada berapa kode yang mungkin?",
       "options": [
-        "Laporan final pasti diterbitkan",
-        "Seluruh bukti telah diverifikasi",
-        "Proyek pasti lolos audit",
-        "Proyek tidak lolos audit"
+        "10 kode",
+        "14 kode",
+        "16 kode",
+        "12 kode"
       ],
       "answer": 3,
-      "explanation": "Laporan final mensyaratkan seluruh bukti diverifikasi. Karena ada bukti yang belum diverifikasi, laporan final tidak terbit; proyek tidak mungkin lolos audit menurut implikasi pertama."
+      "explanation": "Jika digit pertama 2, digit terakhir dapat 3, 4, atau 5 (3 pilihan), lalu digit tengah punya 3 pilihan: 9 kode. Jika digit pertama 4, digit terakhir harus 5 (1 pilihan), lalu digit tengah punya 3 pilihan: 3 kode. Total 12 kode."
     },
     {
       "id": "ALZ-261024-A001",
