@@ -1122,6 +1122,26 @@ function buildQuestionBank(){
     "A menyelesaikan pekerjaan dalam 8 hari dan B dalam 12 hari. Jika bekerja bersama dengan laju tetap, berapa hari yang diperlukan?",
     "4,8 hari",["4 hari","5 hari","6 hari"],20261026)
 
+  // Daily hard batch 2026-10-24: new methods, with distinct families.
+  advancedNum("num-daily-20261024-01","deret-operasi-selang-seling","Deret Operasi Bergantian",
+    "Tentukan suku berikutnya: 4, 12, 14, 42, 44, 132, __.",
+    134,[396,136,130],2026102401)
+  advancedNum("num-daily-20261024-02","produktivitas-multi-faktor","Produktivitas Multi-Faktor",
+    "Tiga printer identik mencetak 540 halaman dalam 6 menit. Dengan laju tetap, berapa halaman yang dicetak 5 printer dalam 8 menit?",
+    1200,[1080,1350,1500],2026102402)
+  advancedNum("num-daily-20261024-03","geometri-perimeter-luas","Perimeter dan Luas",
+    "Sebuah persegi panjang berkeliling 84 cm. Panjangnya 3 cm lebih besar daripada dua kali lebarnya. Berapa luasnya?",
+    377,[364,390,406],2026102403)
+  advancedNum("num-daily-20261024-04","kecepatan-rerata-jarak-sama","Kecepatan Rata-Rata untuk Jarak Sama",
+    "Kendaraan menempuh 120 km dengan kecepatan 40 km/jam dan 120 km berikutnya dengan kecepatan 60 km/jam. Berapa kecepatan rata-rata seluruh perjalanan?",
+    48,[50,45,52],2026102404)
+  advancedNum("num-daily-20261024-05","rasio-persentase-ekuivalen","Rasio dari Persentase",
+    "Jika 80% dari x sama dengan 120% dari y, dengan x dan y positif, berapa rasio x : y?",
+    "3:2",["2:3","4:5","5:4"],2026102405)
+  advancedNum("num-daily-20261024-06","rata-rata-antar-kelompok","Rata-Rata Antar Kelompok",
+    "Rata-rata 12 nilai adalah 68. Rata-rata 5 nilai pertama adalah 72. Berapa rata-rata 7 nilai sisanya?",
+    "65 1/7",["64","66","67"],2026102406)
+
   // VERBAL REASONING — original Indonesian items, deliberately separate from MyIQTested wording.
   const verbalItems=[
     ["ver-ana-1","analogi-fungsi","Analogi Kata",2,"Kompas berhubungan dengan arah seperti termometer berhubungan dengan ...","suhu",["waktu","tekanan","jarak"]],
@@ -1186,10 +1206,38 @@ function buildQuestionBank(){
       "Negasi yang tepat dari 'Setiap peserta yang lulus numerik juga lulus logika' adalah ...",
       "Ada peserta yang lulus numerik tetapi tidak lulus logika",
       ["Semua peserta gagal numerik","Tidak ada peserta yang lulus logika","Ada peserta yang gagal pada kedua tes"]],
+    ["daily-logic-20261024-01","silogisme-arsip-audit","Silogisme Arsip dan Audit",4,
+      "Semua arsiparis teliti. Tidak ada orang teliti yang mengabaikan jejak audit. Sebagian staf pengadaan adalah arsiparis. Kesimpulan yang pasti benar adalah ...",
+      "Sebagian staf pengadaan teliti dan tidak mengabaikan jejak audit",
+      ["Semua staf pengadaan adalah arsiparis","Tidak ada arsiparis yang staf pengadaan","Semua orang teliti adalah arsiparis"]],
+    ["daily-logic-20261024-02","implikasi-kontraposisi-berantai","Implikasi Berantai",4,
+      "Jika proposal disetujui, anggaran diberikan. Jika anggaran diberikan, pelaksanaan dimulai. Pelaksanaan belum dimulai. Kesimpulan yang pasti adalah ...",
+      "Proposal tidak disetujui",
+      ["Proposal disetujui","Anggaran pasti diberikan","Pelaksanaan sudah dimulai"]],
+    ["daily-logic-20261024-03","validitas-himpunan-predikat","Himpunan dan Predikat",4,
+      "Tidak ada reviewer yang menjadi pengaju. Sebagian auditor adalah reviewer. Semua auditor teliti. Kesimpulan yang pasti benar adalah ...",
+      "Sebagian auditor teliti dan bukan pengaju",
+      ["Semua orang teliti adalah auditor","Tidak ada auditor yang menjadi pengaju","Semua reviewer adalah auditor"]],
+    ["daily-logic-20261024-04","negasi-kuantor-konjungsi","Negasi Kuantor dan Konjungsi",4,
+      "Negasi yang tepat dari 'Setiap laporan yang disahkan telah diverifikasi dan diarsipkan' adalah ...",
+      "Ada laporan yang disahkan tetapi belum diverifikasi atau belum diarsipkan",
+      ["Tidak ada laporan yang disahkan","Semua laporan yang belum diverifikasi tidak disahkan","Ada laporan yang diverifikasi dan diarsipkan"]],
+    ["daily-logic-20261024-05","syarat-finalisasi-bukti","Syarat Finalisasi Bukti",4,
+      "Jika proyek lolos audit, laporan final diterbitkan. Laporan final diterbitkan hanya jika seluruh bukti telah diverifikasi. Ada bukti yang belum diverifikasi. Kesimpulan yang pasti adalah ...",
+      "Proyek tidak lolos audit",
+      ["Laporan final pasti diterbitkan","Seluruh bukti telah diverifikasi","Proyek pasti lolos audit"]],
   ] as const
   dailyLogicItems.forEach((item,index)=>{
     push(textQuestion(item[0],item[1],"verbal","Verbal",item[2],item[3],item[4],item[5],[...item[6]],index*7+3))
   })
+
+  push(textQuestion(
+    "abstract-daily-20261024-01","abstrak-tiga-aturan-urutan","abstract","Abstrak",
+    "Pola Multi-Aturan",4,
+    "Bentuk berganti segitiga dan persegi. Isian mengikuti siklus kosong, penuh, penuh, kosong. Titik bergerak searah jarum jam: kiri atas, kanan atas, kanan bawah, kiri bawah. Urutan: 1) segitiga kosong titik kiri atas; 2) persegi penuh titik kanan atas; 3) segitiga penuh titik kanan bawah; 4) persegi kosong titik kiri bawah; 5) segitiga kosong titik kiri atas. Simbol ke-6 adalah ...",
+    "Persegi penuh, titik kanan atas",
+    ["Segitiga penuh, titik kanan atas","Persegi kosong, titik kanan atas","Persegi penuh, titik kiri atas"],2026102407
+  ))
 
   for(const q of bank){
     if(textAnswerLeaked(q)){
@@ -1383,6 +1431,10 @@ const NUMERICAL_FAMILY_BUCKET:Record<string,NumericalBucket>={
   "urutan-tetap":"arith","selisih-bertambah":"growing",
   "dua-urutan":"complex","kali-tambah":"complex","selisih-kuadrat":"complex",
   "operasi-selang-seling":"complex","rekursif-dua-suku":"complex","deret-seling-majemuk":"complex",
+  "deret-operasi-selang-seling":"complex",
+  "produktivitas-multi-faktor":"ratio","rasio-persentase-ekuivalen":"ratio",
+  "geometri-perimeter-luas":"analysis",
+  "kecepatan-rerata-jarak-sama":"story","rata-rata-antar-kelompok":"story",
   "rasio-total":"ratio","rasio-berantai":"ratio","rasio-berubah":"ratio",
   "produktivitas-proporsional":"ratio",
   "persentase-perubahan":"applied","diskon-pajak-bertahap":"applied",
@@ -1405,9 +1457,13 @@ const NUMERICAL_ONE_STEP_FAMILIES=new Set<string>([
 function pickBalancedNumerical(
   bank:Question[],active:Set<string>,recent:Set<string>,selected:Question[]
 ){
-  // Pola mudah boleh absen; peluangnya hanya 20% per jenis.
-  const arith=Math.random()<0.2?1:0
-  const growing=Math.random()<0.2?1:0
+  // Maksimal satu keluarga deret sederhana per paket; peluang total tetap 20%.
+  const includeSimpleSequence=Math.random()<0.2
+  const simpleSequence:"arith"|"growing"|null=includeSimpleSequence
+    ?(Math.random()<0.5?"arith":"growing")
+    :null
+  const arith=simpleSequence==="arith"?1:0
+  const growing=simpleSequence==="growing"?1:0
   const quotas:Record<NumericalBucket,number>={
     arith,growing,complex:3,ratio:3,applied:3,analysis:4,probability:2,
     story:5-arith-growing,
