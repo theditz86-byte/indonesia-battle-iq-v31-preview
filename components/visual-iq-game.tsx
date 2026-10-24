@@ -528,7 +528,42 @@ function buildQuestionBank(){
     }
   }
 
-  // 12) Hard analogy: apply rotation, dot movement, and fill toggle together.
+  // 12) Four-rule matrix: shape cycle + rotation + dot orbit + fill parity.
+  // The family is advanced and may appear at most once in a 35-question package.
+  for(const phase of [0,1,2]){
+    for(const start of [0,90,180,270]){
+      for(let dotStart=0;dotStart<4;dotStart++){
+        const dir=phase%2===0?1:-1
+        const cells:Glyph[]=[]
+        for(let row=0;row<3;row++){
+          for(let col=0;col<3;col++){
+            if(row===2&&col===2)continue
+            const kind=SHAPES[(row+col+phase)%3]
+            const angle=normAngle(start+(row*2+col)*dir*90)
+            const dot=CORNERS[(dotStart+row+2*col*dir+40)%4]
+            const filled=(row+col+dotStart+phase)%2===0
+            cells.push(g(kind,angle,filled,dot))
+          }
+        }
+        const correctKind=SHAPES[(4+phase)%3]
+        const correctAngle=normAngle(start+6*dir*90)
+        const correctDot=CORNERS[(dotStart+2+4*dir+40)%4]
+        const correctFilled=(4+dotStart+phase)%2===0
+        push(optionized(
+          baseQuestion("abs-m3-quad-"+start+"-"+phase+"-"+dotStart,"matrix-empat-aturan","abstract","Abstrak","Matriks Empat Aturan 3 × 3","","matrix3",4,cells),
+          g(correctKind,correctAngle,correctFilled,correctDot),
+          [
+            g(correctKind,correctAngle,!correctFilled,correctDot),
+            g(correctKind,normAngle(correctAngle+90),correctFilled,correctDot),
+            g(correctKind,correctAngle,correctFilled,rotatePos(correctDot,1)),
+          ],
+          start+phase*37+dotStart*11+5
+        ))
+      }
+    }
+  }
+
+  // 13) Hard analogy: apply rotation, dot movement, and fill toggle together.
   for(let start=0;start<4;start++){
     for(const turns of [1,2,3]){
       for(const fillMode of [0,1]){
@@ -1067,6 +1102,46 @@ function buildQuestionBank(){
       answer,[answer+fixed,answer-fixed,answer+Math.round(omzet*fee/100)],i*151+61)
   })
 
+  // Daily hard batch 2026-10-21: one new item in each existing quota family.
+  advancedNum("num-daily-20261021-01","rekursif-dua-suku","Deret Rekursif Berantai",
+    "Tentukan suku berikutnya: 6, 11, 18, 30, 49, __.",
+    80,[79,82,91],20261021)
+  advancedNum("num-daily-20261021-02","rasio-berantai","Perbandingan Tiga Kelompok",
+    "P : Q = 3 : 5 dan Q : R = 4 : 7. Jika jumlah P, Q, dan R adalah 134, berapa nilai R?",
+    70,[66,74,80],20261022)
+  advancedNum("num-daily-20261021-03","persentase-perubahan","Persentase Beruntun",
+    "Harga barang Rp600.000 naik 12%, lalu diberi diskon 15% dari harga setelah kenaikan. Berapa harga akhirnya?",
+    571200,[568000,576000,580000],20261023)
+  advancedNum("num-daily-20261021-04","sistem-linear","Sistem Persamaan",
+    "Diketahui 2x + 3y = 25 dan x + y = 11. Berapa nilai x?",
+    8,[7,9,10],20261024)
+  advancedNum("num-daily-20261021-05","kombinasi-syarat","Kombinatorika dengan Larangan",
+    "Dari 9 kandidat dipilih 3 orang. Dua kandidat tertentu tidak boleh terpilih bersama. Berapa banyak tim yang mungkin?",
+    77,[70,78,84],20261025)
+  advancedNum("num-daily-20261021-06","kerja-bersama","Laju Kerja Gabungan",
+    "A menyelesaikan pekerjaan dalam 8 hari dan B dalam 12 hari. Jika bekerja bersama dengan laju tetap, berapa hari yang diperlukan?",
+    "4,8 hari",["4 hari","5 hari","6 hari"],20261026)
+
+  // Daily hard batch 2026-10-24: new methods, with distinct families.
+  advancedNum("num-daily-20261024-01","deret-operasi-selang-seling","Deret Operasi Bergantian",
+    "Tentukan suku berikutnya: 4, 12, 14, 42, 44, 132, __.",
+    134,[396,136,130],2026102401)
+  advancedNum("num-daily-20261024-02","produktivitas-multi-faktor","Produktivitas Multi-Faktor",
+    "Tiga printer identik mencetak 540 halaman dalam 6 menit. Dengan laju tetap, berapa halaman yang dicetak 5 printer dalam 8 menit?",
+    1200,[1080,1350,1500],2026102402)
+  advancedNum("num-daily-20261024-03","geometri-perimeter-luas","Perimeter dan Luas",
+    "Sebuah persegi panjang berkeliling 84 cm. Panjangnya 3 cm lebih besar daripada dua kali lebarnya. Berapa luasnya?",
+    377,[364,390,406],2026102403)
+  advancedNum("num-daily-20261024-04","kecepatan-rerata-jarak-sama","Kecepatan Rata-Rata untuk Jarak Sama",
+    "Kendaraan menempuh 120 km dengan kecepatan 40 km/jam dan 120 km berikutnya dengan kecepatan 60 km/jam. Berapa kecepatan rata-rata seluruh perjalanan?",
+    48,[50,45,52],2026102404)
+  advancedNum("num-daily-20261024-05","rasio-persentase-ekuivalen","Rasio dari Persentase",
+    "Jika 80% dari x sama dengan 120% dari y, dengan x dan y positif, berapa rasio x : y?",
+    "3:2",["2:3","4:5","5:4"],2026102405)
+  advancedNum("num-daily-20261024-06","rata-rata-antar-kelompok","Rata-Rata Antar Kelompok",
+    "Rata-rata 12 nilai adalah 68. Rata-rata 5 nilai pertama adalah 72. Berapa rata-rata 7 nilai sisanya?",
+    "65 1/7",["64","66","67"],2026102406)
+
   // VERBAL REASONING — original Indonesian items, deliberately separate from MyIQTested wording.
   const verbalItems=[
     ["ver-ana-1","analogi-fungsi","Analogi Kata",2,"Kompas berhubungan dengan arah seperti termometer berhubungan dengan ...","suhu",["waktu","tekanan","jarak"]],
@@ -1113,6 +1188,56 @@ function buildQuestionBank(){
       item[4],item[5],[...item[6]],index*7+3
     ))
   })
+
+  const dailyLogicItems=[
+    ["daily-logic-20261021-01","silogisme-tiga-premis","Silogisme Tiga Premis",4,
+      "Semua auditor teliti. Sebagian analis adalah auditor. Tidak ada orang teliti yang ceroboh. Kesimpulan yang pasti benar adalah ...",
+      "Sebagian analis tidak ceroboh",
+      ["Semua analis teliti","Semua orang teliti adalah auditor","Sebagian auditor ceroboh"]],
+    ["daily-logic-20261021-02","implikasi-kontraposisi","Implikasi Berantai",4,
+      "Jika laporan disetujui, audit selesai. Audit selesai hanya jika bukti lengkap. Bukti belum lengkap. Kesimpulan yang pasti adalah ...",
+      "Laporan tidak disetujui",
+      ["Audit pasti selesai","Bukti pasti lengkap","Laporan pasti disetujui"]],
+    ["daily-logic-20261021-03","urutan-transitif","Urutan Multi-Kendala",4,
+      "P harus sebelum Q, Q sebelum R, dan S sesudah R. Pernyataan mana yang pasti benar?",
+      "P sebelum S",
+      ["Q sebelum P","S sebelum P","R sebelum Q"]],
+    ["daily-logic-20261021-04","negasi-kuantor","Negasi Pernyataan Universal",4,
+      "Negasi yang tepat dari 'Setiap peserta yang lulus numerik juga lulus logika' adalah ...",
+      "Ada peserta yang lulus numerik tetapi tidak lulus logika",
+      ["Semua peserta gagal numerik","Tidak ada peserta yang lulus logika","Ada peserta yang gagal pada kedua tes"]],
+    ["daily-logic-20261024-01","silogisme-rantai-publikasi","Silogisme Rantai Publikasi",4,
+      "Semua berkas yang lolos pemindaian mendapat cap digital. Tidak ada berkas tanpa cap digital yang dapat dikirim. Dua berkas dari batch K lolos pemindaian. Kesimpulan mana yang pasti benar? I. Kedua berkas itu memiliki cap digital. II. Kedua berkas itu pasti telah dikirim. III. Semua berkas batch K lolos pemindaian.",
+      "Hanya I benar",
+      ["I dan II benar","Hanya II benar","I, II, dan III benar"]],
+    ["daily-logic-20261024-02","implikasi-kontraposisi-berantai","Implikasi Berantai",4,
+      "Jika proposal disetujui, anggaran diberikan. Jika anggaran diberikan, pelaksanaan dimulai. Pelaksanaan belum dimulai. Kesimpulan yang pasti adalah ...",
+      "Proposal tidak disetujui",
+      ["Proposal disetujui","Anggaran pasti diberikan","Pelaksanaan sudah dimulai"]],
+    ["daily-logic-20261024-03","relasi-urutan-simbolik","Relasi Urutan Simbolik",4,
+      "Gunakan aturan: X ≻ Y berarti X lebih tinggi dari Y; X ≺ Y berarti X lebih rendah dari Y; X ≡ Y berarti setingkat. Diketahui P ≻ Q, Q ≺ R, R ≡ S, dan S ≻ T. Pernyataan mana yang pasti benar?",
+      "R lebih tinggi daripada Q",
+      ["P lebih tinggi daripada S","Q lebih tinggi daripada T","T lebih tinggi daripada R"]],
+    ["daily-logic-20261024-04","kondisi-bikondisional-sensor","Kondisi Dua Sensor",4,
+      "Sistem menyala jika dan hanya jika kedua sensor A dan B aktif. Saat pengujian, sistem tidak menyala. Kesimpulan yang pasti adalah ...",
+      "Setidaknya satu sensor tidak aktif",
+      ["Kedua sensor pasti aktif","Kedua sensor pasti tidak aktif","Sistem pasti aktif"]],
+    ["daily-logic-20261024-05","hitung-kode-kendala","Kode dengan Kendala",4,
+      "Kode akses terdiri dari tiga digit berbeda yang dipilih dari angka 1 sampai 5 tanpa pengulangan. Digit pertama harus genap dan digit terakhir harus lebih besar daripada digit pertama. Ada berapa kode yang mungkin?",
+      "12 kode",
+      ["10 kode","14 kode","16 kode"]],
+  ] as const
+  dailyLogicItems.forEach((item,index)=>{
+    push(textQuestion(item[0],item[1],"verbal","Verbal",item[2],item[3],item[4],item[5],[...item[6]],index*7+3))
+  })
+
+  push(textQuestion(
+    "abstract-daily-20261024-01","abstrak-tiga-aturan-urutan","abstract","Abstrak",
+    "Pola Multi-Aturan",4,
+    "Bentuk berganti segitiga dan persegi. Isian mengikuti siklus tanpa isi, berisi, berisi, tanpa isi. Titik bergerak searah jarum jam: kiri atas, kanan atas, kanan bawah, kiri bawah. Urutan: 1) segitiga tanpa isi titik kiri atas; 2) persegi berisi titik kanan atas; 3) segitiga berisi titik kanan bawah; 4) persegi tanpa isi titik kiri bawah; 5) segitiga tanpa isi titik kiri atas. Simbol ke-6 adalah ...",
+    "Persegi penuh, titik kanan atas",
+    ["Segitiga penuh, titik kanan atas","Persegi kosong, titik kanan atas","Persegi penuh, titik kiri atas"],2026102407
+  ))
 
   for(const q of bank){
     if(textAnswerLeaked(q)){
@@ -1185,6 +1310,7 @@ const SIMPLE_GEOMETRIC_GROUP=new Set<string>([
 // Only high-complexity visual reasoning can enter the 35-question package.
 const ADVANCED_VISUAL_FAMILIES=new Set<string>([
   "matrix-tiga-aturan",
+  "matrix-empat-aturan",
   "analogi-tiga-aturan",
   "lipat-kertas-ganda",
   "rotasi-cermin",
@@ -1244,8 +1370,12 @@ function stableHash(value:string){
 }
 
 function localDayIndex(){
-  const now=new Date()
-  return Math.floor(Date.UTC(now.getFullYear(),now.getMonth(),now.getDate())/86400000)
+  // Rotasi bank harus mengikuti kalender Indonesia (WIB), bukan zona waktu perangkat.
+  const parts=new Intl.DateTimeFormat("en-CA",{
+    timeZone:"Asia/Jakarta",year:"numeric",month:"2-digit",day:"2-digit"
+  }).formatToParts(new Date())
+  const value=(type:string)=>Number(parts.find(part=>part.type===type)?.value||0)
+  return Math.floor(Date.UTC(value("year"),value("month")-1,value("day"))/86400000)
 }
 
 function dailyFamilyMultiplier(family:string){
@@ -1301,6 +1431,10 @@ const NUMERICAL_FAMILY_BUCKET:Record<string,NumericalBucket>={
   "urutan-tetap":"arith","selisih-bertambah":"growing",
   "dua-urutan":"complex","kali-tambah":"complex","selisih-kuadrat":"complex",
   "operasi-selang-seling":"complex","rekursif-dua-suku":"complex","deret-seling-majemuk":"complex",
+  "deret-operasi-selang-seling":"complex",
+  "produktivitas-multi-faktor":"ratio","rasio-persentase-ekuivalen":"ratio",
+  "geometri-perimeter-luas":"analysis",
+  "kecepatan-rerata-jarak-sama":"story","rata-rata-antar-kelompok":"story",
   "rasio-total":"ratio","rasio-berantai":"ratio","rasio-berubah":"ratio",
   "produktivitas-proporsional":"ratio",
   "persentase-perubahan":"applied","diskon-pajak-bertahap":"applied",
@@ -1323,9 +1457,13 @@ const NUMERICAL_ONE_STEP_FAMILIES=new Set<string>([
 function pickBalancedNumerical(
   bank:Question[],active:Set<string>,recent:Set<string>,selected:Question[]
 ){
-  // Pola mudah boleh absen; peluangnya hanya 20% per jenis.
-  const arith=Math.random()<0.2?1:0
-  const growing=Math.random()<0.2?1:0
+  // Maksimal satu keluarga deret sederhana per paket; peluang total tetap 20%.
+  const includeSimpleSequence=Math.random()<0.2
+  const simpleSequence:"arith"|"growing"|null=includeSimpleSequence
+    ?(Math.random()<0.5?"arith":"growing")
+    :null
+  const arith=simpleSequence==="arith"?1:0
+  const growing=simpleSequence==="growing"?1:0
   const quotas:Record<NumericalBucket,number>={
     arith,growing,complex:3,ratio:3,applied:3,analysis:4,probability:2,
     story:5-arith-growing,

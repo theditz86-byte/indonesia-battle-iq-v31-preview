@@ -1,0 +1,23 @@
+{
+  "date": "2026-10-22",
+  "question_count": 12,
+  "category_counts": {
+    "numerik": 6,
+    "logika": 6
+  },
+  "unique_ids": true,
+  "unique_families": true,
+  "unique_prompts": true,
+  "four_unique_options_each": true,
+  "valid_answer_indices": true,
+  "answer_position_counts": {
+    "A": 3,
+    "B": 3,
+    "C": 3,
+    "D": 3
+  },
+  "duplicate_prompts_vs_2026_10_21": 0,
+  "family_overlap_vs_2026_10_21": 0,
+  "max_prompt_similarity_note": "No exact duplicates or family overlap against the 2026-10-21 batch; semantic review remains manual.",
+  "production_changed": false
+}

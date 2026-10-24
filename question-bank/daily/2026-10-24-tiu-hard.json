@@ -1,0 +1,199 @@
+{
+  "date": "2026-10-24",
+  "title": "ALZAVA Daily TIU & Abstract Bank Batch",
+  "version": 1,
+  "items": [
+    {
+      "id": "ALZ-261024-N001",
+      "category": "numerik",
+      "family": "deret-operasi-selang-seling",
+      "subcategory": "Deret Operasi Bergantian",
+      "difficulty": "sulit",
+      "prompt": "Tentukan suku berikutnya: 4, 12, 14, 42, 44, 132, __.",
+      "options": [
+        "134",
+        "396",
+        "136",
+        "130"
+      ],
+      "answer": 0,
+      "explanation": "Pola bergantian ×3 lalu +2. Setelah 132, operasi berikutnya +2, sehingga hasilnya 134."
+    },
+    {
+      "id": "ALZ-261024-N002",
+      "category": "numerik",
+      "family": "produktivitas-multi-faktor",
+      "subcategory": "Produktivitas Multi-Faktor",
+      "difficulty": "menengah-sulit",
+      "prompt": "Tiga printer identik mencetak 540 halaman dalam 6 menit. Dengan laju tetap, berapa halaman yang dicetak 5 printer dalam 8 menit?",
+      "options": [
+        "1080",
+        "1200",
+        "1350",
+        "1500"
+      ],
+      "answer": 1,
+      "explanation": "Laju per printer per menit = 540 ÷ (3×6) = 30 halaman. Maka 5×8×30 = 1.200 halaman."
+    },
+    {
+      "id": "ALZ-261024-N003",
+      "category": "numerik",
+      "family": "geometri-perimeter-luas",
+      "subcategory": "Perimeter dan Luas",
+      "difficulty": "sulit",
+      "prompt": "Sebuah persegi panjang berkeliling 84 cm. Panjangnya 3 cm lebih besar daripada dua kali lebarnya. Berapa luasnya?",
+      "options": [
+        "364 cm²",
+        "390 cm²",
+        "377 cm²",
+        "406 cm²"
+      ],
+      "answer": 2,
+      "explanation": "Panjang + lebar = 42. Jika panjang = 2l + 3, maka 3l + 3 = 42 sehingga lebar 13 cm dan panjang 29 cm. Luas = 377 cm²."
+    },
+    {
+      "id": "ALZ-261024-N004",
+      "category": "numerik",
+      "family": "kecepatan-rerata-jarak-sama",
+      "subcategory": "Kecepatan Rata-Rata untuk Jarak Sama",
+      "difficulty": "sulit",
+      "prompt": "Kendaraan menempuh 120 km dengan kecepatan 40 km/jam dan 120 km berikutnya dengan kecepatan 60 km/jam. Berapa kecepatan rata-rata seluruh perjalanan?",
+      "options": [
+        "50 km/jam",
+        "45 km/jam",
+        "52 km/jam",
+        "48 km/jam"
+      ],
+      "answer": 3,
+      "explanation": "Total jarak 240 km. Waktu yang dibutuhkan 120/40 + 120/60 = 3 + 2 = 5 jam. Kecepatan rata-rata = 240/5 = 48 km/jam."
+    },
+    {
+      "id": "ALZ-261024-N005",
+      "category": "numerik",
+      "family": "rasio-persentase-ekuivalen",
+      "subcategory": "Rasio dari Persentase",
+      "difficulty": "menengah-sulit",
+      "prompt": "Jika 80% dari x sama dengan 120% dari y, dengan x dan y positif, berapa rasio x : y?",
+      "options": [
+        "3 : 2",
+        "2 : 3",
+        "4 : 5",
+        "5 : 4"
+      ],
+      "answer": 0,
+      "explanation": "0,8x = 1,2y, sehingga x/y = 1,2/0,8 = 1,5. Jadi x:y = 3:2."
+    },
+    {
+      "id": "ALZ-261024-N006",
+      "category": "numerik",
+      "family": "rata-rata-antar-kelompok",
+      "subcategory": "Rata-Rata Antar Kelompok",
+      "difficulty": "sulit",
+      "prompt": "Rata-rata 12 nilai adalah 68. Rata-rata 5 nilai pertama adalah 72. Berapa rata-rata 7 nilai sisanya?",
+      "options": [
+        "64",
+        "65 1/7",
+        "66",
+        "67"
+      ],
+      "answer": 1,
+      "explanation": "Jumlah 12 nilai = 12×68 = 816. Jumlah 5 nilai pertama = 5×72 = 360. Sisa jumlah 456, sehingga rata-rata tujuh nilai = 456/7 = 65 1/7."
+    },
+    {
+      "id": "ALZ-261024-L001",
+      "category": "logika",
+      "family": "silogisme-rantai-publikasi",
+      "subcategory": "Silogisme Rantai Publikasi",
+      "difficulty": "sulit",
+      "prompt": "Semua berkas yang lolos pemindaian mendapat cap digital. Tidak ada berkas tanpa cap digital yang dapat dikirim. Dua berkas dari batch K lolos pemindaian. Kesimpulan mana yang pasti benar? I. Kedua berkas itu memiliki cap digital. II. Kedua berkas itu pasti telah dikirim. III. Semua berkas batch K lolos pemindaian.",
+      "options": [
+        "I dan II benar",
+        "Hanya II benar",
+        "Hanya I benar",
+        "I, II, dan III benar"
+      ],
+      "answer": 2,
+      "explanation": "Kedua berkas yang lolos pemindaian pasti mendapat cap digital, sehingga I benar. Cap digital tidak menjamin berkas telah dikirim, dan tidak ada informasi bahwa semua berkas batch K lolos pemindaian; II dan III tidak pasti benar."
+    },
+    {
+      "id": "ALZ-261024-L002",
+      "category": "logika",
+      "family": "implikasi-kontraposisi-berantai",
+      "subcategory": "Implikasi Berantai",
+      "difficulty": "sulit",
+      "prompt": "Jika proposal disetujui, anggaran diberikan. Jika anggaran diberikan, pelaksanaan dimulai. Pelaksanaan belum dimulai. Kesimpulan yang pasti adalah ...",
+      "options": [
+        "Proposal disetujui",
+        "Anggaran pasti diberikan",
+        "Pelaksanaan sudah dimulai",
+        "Proposal tidak disetujui"
+      ],
+      "answer": 3,
+      "explanation": "Dari anggaran diberikan → pelaksanaan dimulai, kontraposisinya adalah pelaksanaan belum dimulai → anggaran tidak diberikan. Karena proposal disetujui → anggaran diberikan, proposal tidak disetujui."
+    },
+    {
+      "id": "ALZ-261024-L003",
+      "category": "logika",
+      "family": "relasi-urutan-simbolik",
+      "subcategory": "Relasi Urutan Simbolik",
+      "difficulty": "sulit",
+      "prompt": "Gunakan aturan: X ≻ Y berarti X lebih tinggi dari Y; X ≺ Y berarti X lebih rendah dari Y; X ≡ Y berarti setingkat. Diketahui P ≻ Q, Q ≺ R, R ≡ S, dan S ≻ T. Pernyataan mana yang pasti benar?",
+      "options": [
+        "P lebih tinggi daripada S",
+        "R lebih tinggi daripada Q",
+        "Q lebih tinggi daripada T",
+        "T lebih tinggi daripada R"
+      ],
+      "answer": 1,
+      "explanation": "Q ≺ R berarti R lebih tinggi daripada Q. Hubungan P terhadap S dan Q terhadap T tidak dapat dipastikan; T juga tidak lebih tinggi daripada R."
+    },
+    {
+      "id": "ALZ-261024-L004",
+      "category": "logika",
+      "family": "kondisi-bikondisional-sensor",
+      "subcategory": "Kondisi Dua Sensor",
+      "difficulty": "sulit",
+      "prompt": "Sistem menyala jika dan hanya jika kedua sensor A dan B aktif. Saat pengujian, sistem tidak menyala. Kesimpulan yang pasti adalah ...",
+      "options": [
+        "Kedua sensor pasti aktif",
+        "Kedua sensor pasti tidak aktif",
+        "Setidaknya satu sensor tidak aktif",
+        "Sistem pasti aktif"
+      ],
+      "answer": 2,
+      "explanation": "Sistem menyala tepat ketika kedua sensor aktif. Karena sistem tidak menyala, tidak mungkin kedua sensor sama-sama aktif; setidaknya satu tidak aktif."
+    },
+    {
+      "id": "ALZ-261024-L005",
+      "category": "logika",
+      "family": "hitung-kode-kendala",
+      "subcategory": "Penghitungan dengan Kendala",
+      "difficulty": "sulit",
+      "prompt": "Kode akses terdiri dari tiga digit berbeda yang dipilih dari angka 1 sampai 5 tanpa pengulangan. Digit pertama harus genap dan digit terakhir harus lebih besar daripada digit pertama. Ada berapa kode yang mungkin?",
+      "options": [
+        "10 kode",
+        "14 kode",
+        "16 kode",
+        "12 kode"
+      ],
+      "answer": 3,
+      "explanation": "Jika digit pertama 2, digit terakhir dapat 3, 4, atau 5 (3 pilihan), lalu digit tengah punya 3 pilihan: 9 kode. Jika digit pertama 4, digit terakhir harus 5 (1 pilihan), lalu digit tengah punya 3 pilihan: 3 kode. Total 12 kode."
+    },
+    {
+      "id": "ALZ-261024-A001",
+      "category": "abstrak",
+      "family": "abstrak-tiga-aturan-urutan",
+      "subcategory": "Pola Abstrak Multi-Aturan",
+      "difficulty": "sulit",
+      "prompt": "Bentuk berganti segitiga dan persegi. Isian mengikuti siklus tanpa isi, berisi, berisi, tanpa isi. Titik bergerak searah jarum jam: kiri atas, kanan atas, kanan bawah, kiri bawah. Urutan: 1) segitiga tanpa isi titik kiri atas; 2) persegi berisi titik kanan atas; 3) segitiga berisi titik kanan bawah; 4) persegi tanpa isi titik kiri bawah; 5) segitiga tanpa isi titik kiri atas. Simbol ke-6 adalah ...",
+      "options": [
+        "Persegi penuh, titik kanan atas",
+        "Segitiga penuh, titik kanan atas",
+        "Persegi kosong, titik kanan atas",
+        "Persegi penuh, titik kiri atas"
+      ],
+      "answer": 0,
+      "explanation": "Pada simbol ke-6 bentuknya persegi, isian kembali penuh menurut siklus empat langkah, dan titik berpindah dari kiri atas ke kanan atas."
+    }
+  ]
+}

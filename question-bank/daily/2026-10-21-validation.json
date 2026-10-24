@@ -1,0 +1,17 @@
+{
+  "date": "2026-10-21",
+  "questions": 10,
+  "numerik": 6,
+  "logika": 4,
+  "uniqueIds": 10,
+  "uniqueFamilies": 10,
+  "uniquePrompts": 10,
+  "optionsValid": true,
+  "answerPositionCounts": [
+    3,
+    3,
+    2,
+    2
+  ],
+  "productionChanged": false
+}
